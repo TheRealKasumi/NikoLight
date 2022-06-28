@@ -1,0 +1,22 @@
+### PlatformIO ###
+mcu/.pio
+
+### VS Code ###
+.vscode
+
+### C4D Models ###
+pcb/*.c4d
+
+### Frontend ###
+web-app/node_modules
+web-app/.pnp
+web-app/.pnp.js
+web-app/coverage
+web-app/build
+web-app/npm-debug.log*
+web-app/yarn-debug.log*
+web-app/yarn-error.log*
+web-app/.env.local
+web-app/.env.development.local
+web-app/.env.test.local
+web-app/.env.production.local
