@@ -16,6 +16,7 @@
 
 #include "configuration/SystemConfiguration.h"
 #include "configuration/IniFile.h"
+#include "logging/Logger.h"
 
 namespace TesLight
 {

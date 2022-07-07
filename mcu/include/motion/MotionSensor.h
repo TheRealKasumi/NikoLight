@@ -14,6 +14,8 @@
 #include <stdint.h>
 #include <Wire.h>
 
+#include "logging/Logger.h"
+
 namespace TesLight
 {
 	typedef struct MotionSensorData

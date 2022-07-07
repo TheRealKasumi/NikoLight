@@ -34,9 +34,11 @@ TesLight::IniFile::~IniFile()
  */
 bool TesLight::IniFile::load(const String fileName)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("IniFile.cpp:load"), (String)F("Loading ini file: ") + fileName);
 	File file = this->fileSystem->open(fileName, FILE_READ);
 	if (!file || file.isDirectory())
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("IniFile.cpp:load"), F("Failed to open file for reading."));
 		return false;
 	}
 
@@ -44,8 +46,10 @@ bool TesLight::IniFile::load(const String fileName)
 	while (file.available())
 	{
 		const String fileLine = this->readNextLine(&file);
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:load"), (String)F("Ini file line: ") + fileLine);
 		if (!this->isValidLine(fileLine))
 		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("IniFile.cpp:load"), (String)F("The ini file is not valid. Error in line: ") + fileLine);
 			return false;
 		}
 
@@ -53,7 +57,17 @@ bool TesLight::IniFile::load(const String fileName)
 	}
 
 	file.close();
-	return this->isValid();
+
+	if (this->isValid())
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("IniFile.cpp:load"), F("Ini file loaded successfully."));
+		return true;
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("IniFile.cpp:load"), F("Failed to parse ini file. The file is invalid."));
+		return false;
+	}
 }
 
 /**
@@ -64,18 +78,23 @@ bool TesLight::IniFile::load(const String fileName)
  */
 bool TesLight::IniFile::save(const String fileName)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("IniFile.cpp:save"), (String)F("Saving ini file: ") + fileName);
 	File file = this->fileSystem->open(fileName, FILE_WRITE);
 	if (!file)
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("IniFile.cpp:load"), F("Failed to open file for writing."));
 		return false;
 	}
 
 	for (auto const &pair : this->keyValueMap)
 	{
-		this->writeLine(&file, pair.first + ":" + pair.second);
+		const String line = pair.first + ":" + pair.second;
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:load"), (String)F("Writing line: ") + line);
+		this->writeLine(&file, line);
 	}
 
 	file.close();
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("IniFile.cpp:save"), F("Ini file saved successfully."));
 	return true;
 }
 
@@ -87,6 +106,7 @@ bool TesLight::IniFile::save(const String fileName)
  */
 bool TesLight::IniFile::keyExists(const String key)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:keyExists"), (String)F("Checking if key \"") + key + F("\" exists in ini file."));
 	return keyValueMap.count(key) > 0;
 }
 
@@ -98,12 +118,15 @@ bool TesLight::IniFile::keyExists(const String key)
  */
 String TesLight::IniFile::getValue(const String key, const String defaultValue)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:getValue"), (String)F("Reading value for key \"") + key + F("\"."));
 	if (this->keyExists(key))
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:keyExists"), (String)F("Key found, returning value \"") + keyValueMap[key] + F("\"."));
 		return keyValueMap[key];
 	}
 	else
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:keyExists"), (String)F("Key not found, returning default value \"") + defaultValue + F("\"."));
 		return defaultValue;
 	}
 }
@@ -115,12 +138,15 @@ String TesLight::IniFile::getValue(const String key, const String defaultValue)
  */
 void TesLight::IniFile::setValue(const String key, const String value)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:setValue"), (String)F("Setting value for key \"") + key + F("\" to \"") + value + F("\"."));
 	if (keyExists(key))
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:setValue"), F("Key exists, overwriting value."));
 		keyValueMap[key] = value;
 	}
 	else
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:setValue"), F("Key does not exist. Adding new key-value pair."));
 		keyValueMap.insert(std::make_pair(key, value));
 	}
 }
@@ -133,12 +159,15 @@ void TesLight::IniFile::setValue(const String key, const String value)
  */
 bool TesLight::IniFile::removeValue(const String key)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:removeValue"), (String)F("Removing value for key \"") + key + F("\"."));
 	if (!this->keyExists(key))
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:removeValue"), F("Key was not found, done."));
 		return false;
 	}
 
 	this->keyValueMap.erase(key);
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:removeValue"), F("Key-value pair was removed."));
 	return true;
 }
 
@@ -149,14 +178,16 @@ bool TesLight::IniFile::removeValue(const String key)
  */
 bool TesLight::IniFile::isValid()
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:isValid"), F("Verifing ini file."));
 	for (auto const &pair : this->keyValueMap)
 	{
 		if (this->keyValueMap.count(pair.first) != 1)
 		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:isValid"), F("Verification failed. At least one key is duplicated."));
 			return false;
 		}
 	}
-
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:isValid"), F("The ini file is valid."));
 	return true;
 }
 
@@ -168,12 +199,23 @@ bool TesLight::IniFile::isValid()
  */
 bool TesLight::IniFile::isValidLine(const String iniFileLine)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:isValidLine"), (String)F("Verifing ini file line: ") + iniFileLine);
 	if (iniFileLine.length() < 2)
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:isValidLine"), F("Verification failed. The line is too short."));
 		return false;
 	}
 
-	return iniFileLine.indexOf(F(":")) > 0;
+	if (iniFileLine.indexOf(F(":")) > 0)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:isValidLine"), F("The line is valid."));
+		return true;
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:isValidLine"), F("Verification failed. The line is missing the \":\" separator."));
+		return false;
+	}
 }
 
 /**
@@ -183,8 +225,10 @@ bool TesLight::IniFile::isValidLine(const String iniFileLine)
  */
 String TesLight::IniFile::extractKey(const String iniFileLine)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:extractKey"), (String)F("Extracting key from line: ") + iniFileLine);
 	if (!this->isValidLine(iniFileLine))
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:extractKey"), F("The line is invalid."));
 		return F("");
 	}
 
@@ -199,8 +243,10 @@ String TesLight::IniFile::extractKey(const String iniFileLine)
  */
 String TesLight::IniFile::extractValue(const String iniFileLine)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:extractKey"), (String)F("Extracting value from line: ") + iniFileLine);
 	if (!this->isValidLine(iniFileLine))
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("IniFile.cpp:extractValue"), F("The line is invalid."));
 		return F("");
 	}
 

@@ -4,7 +4,9 @@
  * @brief Entry point, initialization and main loop of the program.
  * @version 0.0.1
  * @date 2022-06-22
+ *
  * @copyright Copyright (c) 2022
+ *
  */
 #include <Arduino.h>
 #include <SD.h>
@@ -22,7 +24,6 @@
 #include "led/animators/GradientAnimator.h"
 #include "led/animators/StaticColorAnimator.h"
 
-TesLight::Logger *logger = nullptr;
 TesLight::Configuration *configuration = nullptr;
 TesLight::LedDriver *ledDriver[NUM_LED_DRIVERS] = {nullptr};
 TesLight::LedAnimator *ledAnimator[NUM_LED_DRIVERS] = {nullptr};
@@ -53,6 +54,23 @@ void printLogo()
 }
 
 /**
+ * @brief Initialize the serial and SD card logger.
+ * @return true when initialized successfully
+ * @return false when error
+ */
+bool initializeLogger(bool sdLogging)
+{
+	if (!sdLogging)
+	{
+		return TesLight::Logger::begin(SERIAL_BAUD_RATE);
+	}
+	else
+	{
+		return TesLight::Logger::begin(SERIAL_BAUD_RATE, &SD, LOG_FILE_NAME);
+	}
+}
+
+/**
  * @brief Initialize the SD card.
  * @return true when initialized successfully
  * @return false when error
@@ -60,17 +78,6 @@ void printLogo()
 bool initializeSdCard()
 {
 	return SD.begin(SD_CS_PIN);
-}
-
-/**
- * @brief Initialize the serial and sd logger.
- * @return true when initialized successfully
- * @return false when error
- */
-bool initializeLogger()
-{
-	logger = new TesLight::Logger(SERIAL_BAUD_RATE, &SD, LOG_FILE_NAME);
-	return logger->begin();
 }
 
 /**
@@ -99,9 +106,9 @@ bool initializeLedDrivers()
 		}
 
 		const TesLight::LedDriverConfig config = configuration->getLedDriverConfig(i);
-		logger->info(F("main.cpp:initializeLedDrivers"), (String)F("Initialize LED driver for ") + config.ledCount + F(" LED's on pin ") + config.ledPin);
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("main.cpp:initializeLedDrivers"), (String)F("Initialize LED driver for ") + config.ledCount + F(" LED's on pin ") + config.ledPin);
 
-		ledDriver[i] = new TesLight::LedDriver(config.ledPin, i, config.ledCount, logger);
+		ledDriver[i] = new TesLight::LedDriver(config.ledPin, i, config.ledCount);
 		if (!ledDriver[i]->begin())
 		{
 			return false;
@@ -127,7 +134,7 @@ bool initializeLedAnimators()
 
 		const TesLight::LedDriverConfig driverConfig = configuration->getLedDriverConfig(i);
 		const TesLight::LedAnimatorConfig animatorConfig = configuration->getLedAnimatorConfig(i);
-		logger->info(F("main.cpp:initializeLedAnimators"), (String)F("Initialize LED animator of type ") + animatorConfig.type + F(" for ") + driverConfig.ledCount + F(" LED's on pin ") + driverConfig.ledPin);
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("main.cpp:initializeLedAnimators"), (String)F("Initialize LED animator of type ") + animatorConfig.type + F(" for ") + driverConfig.ledCount + F(" LED's on pin ") + driverConfig.ledPin);
 
 		// Rainbow type
 		if (animatorConfig.type == 0)
@@ -178,7 +185,7 @@ bool initializeMotionSensor()
  */
 void initializeWiFiManager()
 {
-	wifiManager = new TesLight::WiFiManager(logger);
+	wifiManager = new TesLight::WiFiManager();
 }
 
 /**
@@ -190,14 +197,10 @@ void initializeWebServer()
 }
 
 /**
- * @brief Print the error message via the serial monitor and stop the program.
- * @param errorMessage error message
+ * @brief Stop the program.
  */
-void stop(const String errorMessage)
+void stop()
 {
-	Serial.begin(SERIAL_BAUD_RATE);
-	Serial.print(F("Program stopped due to an error: "));
-	Serial.println(errorMessage);
 	while (1)
 		;
 }
@@ -207,92 +210,97 @@ void stop(const String errorMessage)
  */
 void setup()
 {
-	Serial.begin(SERIAL_BAUD_RATE);
+	initializeLogger(false);
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Booting up..."));
 	printLogo();
-	Serial.println(F("Boot"));
 
-	Serial.println(F("Initialize SD card."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Initialize SD card..."));
 	if (initializeSdCard())
 	{
-		Serial.println(F("SD card initialized."));
-		delay(250);
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("SD card initialized."));
 	}
 	else
 	{
-		stop(F("Failed to initialize SD card."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("main.cpp:setup"), F("Failed to initialize SD card."));
+		stop();
 	}
 
-	Serial.println(F("Initialize logger."));
-	delay(250);
-	if (!initializeLogger())
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Switching to SD card logger..."));
+	delay(500);
+	if (initializeLogger(true))
 	{
-		stop(F("Failed to initialize logger."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Switched to SD card logger."));
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("main.cpp:setup"), F("Failed to switch to SD card logger."));
+		stop();
 	}
 
-	logger->info(F("main.cpp:setup"), F("Initialize and load configuration."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Initialize and load configuration..."));
 	if (initializedConfiguration())
 	{
-		logger->info(F("main.cpp:setup"), F("Runtime configuration loaded."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Runtime configuration loaded."));
 	}
 	else
 	{
-		logger->error(F("main.cpp:setup"), F("Failed to load runtime configuration."));
-		stop(F("Failed to load runtime configuration."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("main.cpp:setup"), F("Failed to load runtime configuration."));
+		stop();
 	}
 
-	logger->info(F("main.cpp:setup"), F("Initialize LED drivers."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Initialize LED drivers..."));
 	if (initializeLedDrivers())
 	{
-		logger->info(F("main.cpp:setup"), F("LED drivers initialized."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("LED drivers initialized."));
 	}
 	else
 	{
-		logger->error(F("main.cpp:setup"), F("Failed to initialize LED drivers."));
-		stop(F("Failed to initialize LED drivers."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("main.cpp:setup"), F("Failed to initialize LED drivers."));
+		stop();
 	}
 
-	logger->info(F("main.cpp:setup"), F("Initialize LED animators."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Initialize LED animators..."));
 	if (initializeLedAnimators())
 	{
-		logger->info(F("main.cpp:setup"), F("LED animators initialized."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("LED animators initialized."));
 	}
 	else
 	{
-		logger->error(F("main.cpp:setup"), F("Failed to initialize LED animators."));
-		stop(F("Failed to initialize LED animators."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("main.cpp:setup"), F("Failed to initialize LED animators."));
+		stop();
 	}
 
-	logger->info(F("main.cpp:setup"), F("Initialize motion sensor."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Initialize motion sensor..."));
 	if (initializeMotionSensor())
 	{
-		logger->info(F("main.cpp:setup"), F("Motion sensor initialized."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Motion sensor initialized."));
 	}
 	else
 	{
-		logger->error(F("main.cpp:setup"), F("Failed to initialize motion sensor."));
-		stop(F("Failed to initialize motion sensor."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("main.cpp:setup"), F("Failed to initialize motion sensor."));
+		stop();
 	}
 
-	logger->info(F("main.cpp:setup"), F("Initialize WiFiManager."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Initialize WiFiManager..."));
 	initializeWiFiManager();
-	logger->info(F("main.cpp:setup"), F("WiFi manager initialized."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("WiFi manager initialized."));
 
-	logger->info(F("main.cpp:setup"), F("Starting WiFi access point."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Starting WiFi access point..."));
 	if (wifiManager->startAccessPoint(configuration->getApSSID().c_str(), configuration->getApPassword().c_str(), configuration->getApChannel(), false, configuration->getApMaxConnections()))
 	{
-		logger->info(F("main.cpp:setup"), F("WiFi AP started and running."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("WiFi AP started and running."));
 	}
 	else
 	{
-		logger->error(F("main.cpp:setup"), F("Failed to start WiFi access point. Please check your configuration."));
-		stop(F("Failed to start WiFi access point."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("main.cpp:setup"), F("Failed to start WiFi access point. Please check your configuration."));
+		stop();
 	}
 
-	logger->info(F("main.cpp:setup"), F("Starting Webserver."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Starting Webserver..."));
 	initializeWebServer();
-	logger->info(F("main.cpp:setup"), (String)F("Webserver started on port ") + WEB_SERVER_PORT + F("."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), (String)F("Webserver started on port ") + WEB_SERVER_PORT + F("."));
 
-	logger->info(F("main.cpp:setup"), F("Program initialized successfully, going into work mode."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Program initialized successfully, going into work mode."));
 }
 
 /**
@@ -308,7 +316,12 @@ void loop()
 		for (uint8_t i = 0; i < NUM_LED_DRIVERS; i++)
 		{
 			ledAnimator[i]->render();
-			ledDriver[i]->show();
+			if (!ledDriver[i]->show())
+			{
+				TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("main.cpp:loop"), F("Failed to send out LED data because the driver returned with an error."));
+				ledTimer = 0xffffffffffffffff;
+				break;
+			}
 		}
 
 		ledFrameCounter++;
@@ -321,7 +334,7 @@ void loop()
 
 		if (!motionSensor->readData())
 		{
-			logger->error(F("main.cpp:loop"), F("Failed to read motion sensor data."));
+			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("main.cpp:loop"), F("Failed to read motion sensor data."));
 			motionSensorTimer = 0xffffffffffffffff;
 		}
 	}
@@ -332,7 +345,7 @@ void loop()
 		fpsTimer = millis();
 
 		ledFrameCounter /= FPS_CYCLE_TIME / 1000;
-		logger->info(F("main.cpp:loop"), (String)F("LEDs running at an average of ") + ledFrameCounter + F(" FPS"));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:loop"), (String)F("LEDs running at an average of ") + ledFrameCounter + F(" FPS"));
 
 		ledFrameCounter = 0;
 	}

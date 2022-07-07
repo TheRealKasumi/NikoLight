@@ -1,9 +1,9 @@
 /**
  * @file Logger.h
  * @author TheRealKasumi
- * @brief Contains a class to log information to the serial monitor or sd card.
+ * @brief Static class containing the {@link TesLight::Logger}.
  * @version 0.0.1
- * @date 2022-06-28
+ * @date 2022-07-05
  *
  * @copyright Copyright (c) 2022
  *
@@ -16,31 +16,44 @@
 
 namespace TesLight
 {
+
 	class Logger
 	{
 	public:
-		Logger();
-		Logger(const uint32_t baudRate);
-		Logger(const uint32_t baudRate, FS *fileSystem, const String fileName);
-		~Logger();
+		enum LogLevel
+		{
+			DEBUG = 0,
+			INFO = 1,
+			WARN = 2,
+			ERROR = 3
+		};
 
-		bool begin();
+		static bool begin();
+		static bool begin(const uint32_t baudRate);
+		static bool begin(FS *fs, const String fn);
+		static bool begin(uint32_t baudRate, FS *fs, const String fn);
 
-		void info(const String source, const String message);
-		void warn(const String source, const String message);
-		void error(const String source, const String message);
+		static void setMinLogLevel(const TesLight::Logger::LogLevel logLevel);
 
-		size_t getLogSize();
-		void readLog(uint8_t *buffer, const size_t start, const size_t bufferSize);
-		void clearLog();
+		static void log(const TesLight::Logger::LogLevel logLevel, const String source, const String message);
+		static void logLn(const TesLight::Logger::LogLevel logLevel, const String source, const String message);
+
+		static size_t getLogSize();
+		static void readLog(uint8_t *buffer, const size_t start, const size_t bufferSize);
+		static void clearLog();
 
 	private:
-		uint32_t baudRate;
-		FS *fileSystem;
-		String fileName;
+		static bool logToSerial;
+		static bool logToFile;
+		static FS *fileSystem;
+		static String fileName;
+		static TesLight::Logger::LogLevel minLogLevel;
 
-		void log(const String logLevel, const String source, const String message);
-		String getTimeString();
+		Logger(){};
+
+		static bool testOpenFile(FS *fs, const String fn);
+		static String getLogLevelString(const TesLight::Logger::LogLevel logLevel);
+		static String getTimeString();
 	};
 }
 

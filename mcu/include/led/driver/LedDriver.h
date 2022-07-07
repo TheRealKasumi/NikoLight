@@ -13,6 +13,7 @@
 
 #include <stdint.h>
 #include <driver/rmt.h>
+
 #include "led/driver/Pixel.h"
 #include "led/driver/LedAnimator.h"
 #include "logging/Logger.h"
@@ -27,7 +28,7 @@ namespace TesLight
 	class LedDriver
 	{
 	public:
-		LedDriver(const uint8_t pin, const uint8_t channel, const uint8_t pixelCount, TesLight::Logger *logger);
+		LedDriver(const uint8_t pin, const uint8_t channel, const uint8_t pixelCount);
 		~LedDriver();
 
 		TesLight::Pixel *getPixels();
@@ -38,7 +39,7 @@ namespace TesLight
 
 		bool begin();
 		bool end();
-		void show();
+		bool show();
 
 	private:
 		uint8_t pin;
@@ -46,7 +47,6 @@ namespace TesLight
 		bool driverInstalled;
 		uint16_t pixelCount;
 		TesLight::Pixel *pixels;
-		TesLight::Logger *logger;
 
 		rmt_config_t getRmtConfig();
 

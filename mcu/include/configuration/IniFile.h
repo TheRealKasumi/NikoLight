@@ -15,6 +15,8 @@
 #include <FS.h>
 #include <map>
 
+#include "logging/Logger.h"
+
 namespace TesLight
 {
 	class IniFile

@@ -13,6 +13,7 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
+
 #include "logging/Logger.h"
 
 namespace TesLight
@@ -20,16 +21,11 @@ namespace TesLight
 	class WiFiManager
 	{
 	public:
-		WiFiManager(TesLight::Logger *logger);
+		WiFiManager();
 		~WiFiManager();
 
 		bool startAccessPoint(const char *ssid, const char *password = 0, uint8_t channel = 1, bool hidden = 0, uint8_t maxConnections = 1);
 		bool connectTo(const char *ssid, const char *password = 0, const uint32_t timeout = 5000);
-
-	private:
-		TesLight::Logger *logger;
-
-		void init();
 	};
 }
 

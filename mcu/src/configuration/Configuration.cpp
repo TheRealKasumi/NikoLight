@@ -17,6 +17,7 @@
  */
 TesLight::Configuration::Configuration(FS *fileSystem, const String fileName)
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:Configuration"), F("Initialize configuration..."));
 	this->fileSystem = fileSystem;
 	this->fileName = fileName;
 	this->apSSID = F("");
@@ -39,6 +40,7 @@ TesLight::Configuration::Configuration(FS *fileSystem, const String fileName)
 			this->ledAnimatorConfig[i].customField[j] = 0;
 		}
 	}
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:Configuration"), F("Configuration initialized."));
 }
 
 /**
@@ -54,6 +56,7 @@ TesLight::Configuration::~Configuration()
  */
 String TesLight::Configuration::getApSSID()
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:getApSSID"), F("Get access point ssid."));
 	return apSSID;
 }
 
@@ -63,6 +66,7 @@ String TesLight::Configuration::getApSSID()
  */
 void TesLight::Configuration::setApSSID(const String ssid)
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:setApSSID"), (String)F("Set access point ssid to: ") + ssid);
 	this->apSSID = ssid;
 }
 
@@ -72,6 +76,7 @@ void TesLight::Configuration::setApSSID(const String ssid)
  */
 uint8_t TesLight::Configuration::getApChannel()
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:getApChannel"), F("Get access point channel."));
 	return this->apChannel;
 }
 
@@ -81,6 +86,7 @@ uint8_t TesLight::Configuration::getApChannel()
  */
 void TesLight::Configuration::setApChannel(const uint8_t apChannel)
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:setApChannel"), (String)F("Set access point channel to: ") + String(apChannel));
 	this->apChannel = apChannel;
 }
 
@@ -91,6 +97,7 @@ void TesLight::Configuration::setApChannel(const uint8_t apChannel)
  */
 bool TesLight::Configuration::getApHidden()
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:getApHidden"), F("Get access point hidden."));
 	return this->apHidden;
 }
 
@@ -100,6 +107,7 @@ bool TesLight::Configuration::getApHidden()
  */
 void TesLight::Configuration::setApHidden(const bool apHidden)
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:setApHidden"), (String)F("Set access point hidden to: ") + String(apHidden));
 	this->apHidden = apHidden;
 }
 
@@ -109,6 +117,7 @@ void TesLight::Configuration::setApHidden(const bool apHidden)
  */
 uint8_t TesLight::Configuration::getApMaxConnections()
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:getApMaxConnections"), F("Get access point max connections."));
 	return this->apMaxConnections;
 }
 
@@ -118,6 +127,7 @@ uint8_t TesLight::Configuration::getApMaxConnections()
  */
 void TesLight::Configuration::setApMaxConnections(const uint8_t apMaxConnections)
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:setApMaxConnections"), (String)F("Set access point max connections to: ") + String(apMaxConnections));
 	this->apMaxConnections = apMaxConnections;
 }
 
@@ -127,6 +137,7 @@ void TesLight::Configuration::setApMaxConnections(const uint8_t apMaxConnections
  */
 String TesLight::Configuration::getApPassword()
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:getApPassword"), F("Get access point password."));
 	return apPassword;
 }
 
@@ -136,6 +147,7 @@ String TesLight::Configuration::getApPassword()
  */
 void TesLight::Configuration::setApPassword(const String password)
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:setApPassword"), F("Set access point password to: <hidden>"));
 	this->apPassword = password;
 }
 
@@ -145,6 +157,7 @@ void TesLight::Configuration::setApPassword(const String password)
  */
 String TesLight::Configuration::getWifiSSID()
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:getWifiSSID"), F("Get WiFi network ssid."));
 	return wifiSSID;
 }
 
@@ -154,6 +167,7 @@ String TesLight::Configuration::getWifiSSID()
  */
 void TesLight::Configuration::setWifiSSID(const String ssid)
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:setWifiSSID"), (String)F("Set WiFi network ssid to: ") + ssid);
 	this->wifiSSID = ssid;
 }
 
@@ -163,6 +177,7 @@ void TesLight::Configuration::setWifiSSID(const String ssid)
  */
 String TesLight::Configuration::getWifiPassword()
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:getWifiPassword"), F("Get WiFi password."));
 	return wifiPassword;
 }
 
@@ -172,6 +187,7 @@ String TesLight::Configuration::getWifiPassword()
  */
 void TesLight::Configuration::setWifiPassword(const String password)
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:setWifiPassword"), F("Set WiFi password to: <hidden>"));
 	this->wifiPassword = password;
 }
 
@@ -182,6 +198,7 @@ void TesLight::Configuration::setWifiPassword(const String password)
  */
 TesLight::LedDriverConfig TesLight::Configuration::getLedDriverConfig(const uint8_t index)
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:getLedDriverConfig"), (String)F("Get LedDriverConfig with index: ") + String(index));
 	return this->ledDriverConfig[index];
 }
 
@@ -192,6 +209,7 @@ TesLight::LedDriverConfig TesLight::Configuration::getLedDriverConfig(const uint
  */
 void TesLight::Configuration::setLedDriverConfig(const TesLight::LedDriverConfig ledDriverConfig, const uint8_t index)
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:setLedDriverConfig"), (String)F("Set LedDriverConfig with index: ") + String(index));
 	this->ledDriverConfig[index] = ledDriverConfig;
 }
 
@@ -202,6 +220,7 @@ void TesLight::Configuration::setLedDriverConfig(const TesLight::LedDriverConfig
  */
 TesLight::LedAnimatorConfig TesLight::Configuration::getLedAnimatorConfig(const uint8_t index)
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:getLedAnimatorConfig"), (String)F("Get LedAnimatorConfig with index: ") + String(index));
 	return this->ledAnimatorConfig[index];
 }
 
@@ -212,6 +231,7 @@ TesLight::LedAnimatorConfig TesLight::Configuration::getLedAnimatorConfig(const 
  */
 void TesLight::Configuration::setLedAnimatorConfig(const TesLight::LedAnimatorConfig ledAnimatorConfig, const uint8_t index)
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:setLedAnimatorConfig"), (String)F("Set LedAnimatorConfig with index: ") + String(index));
 	this->ledAnimatorConfig[index] = ledAnimatorConfig;
 }
 
@@ -223,15 +243,19 @@ void TesLight::Configuration::setLedAnimatorConfig(const TesLight::LedAnimatorCo
  */
 bool TesLight::Configuration::load(bool loadDefaultIfNotExist)
 {
+	TesLight::Logger::log(TesLight::Logger::INFO, F("Configuration.cpp:load"), (String)F("Loading configuration from file \"") + this->fileName + F("\"..."));
 	TesLight::IniFile iniFile(this->fileSystem);
 	if (!iniFile.load(this->fileName))
 	{
 		if (!loadDefaultIfNotExist)
 		{
+			TesLight::Logger::log(TesLight::Logger::ERROR, F("Configuration.cpp:load"), F("Failed to load configuration. The file could not be opened."));
 			return false;
 		}
 	}
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:load"), F("Configuration file loaded."));
 
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:load"), F("Parsing configuration from file..."));
 	this->apSSID = iniFile.getValue(F("AP_SSID"), F("TesLight"));
 	this->apPassword = iniFile.getValue(F("AP_PASSWORD"), F("TesLight"));
 	this->apChannel = iniFile.getValue(F("AP_CHANNEL"), F("1")).toInt();
@@ -261,6 +285,7 @@ bool TesLight::Configuration::load(bool loadDefaultIfNotExist)
 	}
 	delete[] ledAnimatorConfig;
 	delete[] ledDriverConfig;
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:load"), F("Configuration parsed."));
 
 	return true;
 }
@@ -272,8 +297,8 @@ bool TesLight::Configuration::load(bool loadDefaultIfNotExist)
  */
 bool TesLight::Configuration::save()
 {
+	TesLight::Logger::log(TesLight::Logger::INFO, F("Configuration.cpp:save"), (String)F("Saving configuration to file \"") + this->fileName + F("\"..."));
 	TesLight::IniFile iniFile(this->fileSystem);
-
 	iniFile.setValue(F("AP_SSID"), this->apSSID);
 	iniFile.setValue(F("AP_PASSWORD"), this->apPassword);
 	iniFile.setValue(F("WIFI_SSID"), this->wifiSSID);
@@ -303,7 +328,14 @@ bool TesLight::Configuration::save()
 	delete[] ledAnimatorConfig;
 	delete[] ledDriverConfig;
 
-	return iniFile.save(this->fileName);
+	if (!iniFile.save(this->fileName))
+	{
+		TesLight::Logger::log(TesLight::Logger::ERROR, F("Configuration.cpp:save"), F("Failed to save configuration."));
+		return false;
+	}
+
+	TesLight::Logger::log(TesLight::Logger::INFO, F("Configuration.cpp:save"), F("Configuration saved."));
+	return true;
 }
 
 /**
@@ -314,6 +346,7 @@ bool TesLight::Configuration::save()
  */
 int *TesLight::Configuration::parseIntArray(const String array, const uint8_t len)
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:parseIntArray"), (String)F("Parsing int array: ") + array);
 	int *parsedArray = new int[len];
 	uint8_t arrayIndex = 0;
 	String buffer = F("");
@@ -331,6 +364,7 @@ int *TesLight::Configuration::parseIntArray(const String array, const uint8_t le
 			buffer = F("");
 		}
 	}
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:parseIntArray"), F("Array parsed successfully."));
 
 	return parsedArray;
 }
@@ -343,6 +377,7 @@ int *TesLight::Configuration::parseIntArray(const String array, const uint8_t le
  */
 String TesLight::Configuration::intArrayToString(const int *array, const uint8_t len)
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:intArrayToString"), F("Writing int array."));
 	String buffer = F("");
 	for (uint8_t i = 0; i < len; i++)
 	{
@@ -352,5 +387,6 @@ String TesLight::Configuration::intArrayToString(const int *array, const uint8_t
 		}
 		buffer += array[i];
 	}
+	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:intArrayToString"), F("Array written successfully."));
 	return buffer;
 }

@@ -19,6 +19,8 @@
  */
 TesLight::WebServer::WebServer(const uint16_t port, FS *fileSystem, const String staticContentLocation)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("WebServer.cpp:WebServer"), (String)F("Starting webserver on port ") + String(port) + F("."));
+
 	this->server = new AsyncWebServer(port);
 	this->fileSystem = fileSystem;
 	this->staticContentLocation = staticContentLocation;
@@ -26,6 +28,8 @@ TesLight::WebServer::WebServer(const uint16_t port, FS *fileSystem, const String
 	this->init();
 
 	this->server->begin();
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("WebServer.cpp:WebServer"), F("Webserver running."));
 }
 
 /**
@@ -41,9 +45,11 @@ TesLight::WebServer::~WebServer()
  */
 void TesLight::WebServer::init()
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("WebServer.cpp:init"), F("Setting handler for not found error."));
 	this->server->onNotFound([this](AsyncWebServerRequest *request)
 							 { this->handleNotFound(request); });
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("WebServer.cpp:init"), (String)F("Serving static files from: ") + this->staticContentLocation);
 	this->server->serveStatic("/", *this->fileSystem, this->staticContentLocation.c_str());
 }
 

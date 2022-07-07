@@ -1,122 +1,130 @@
 /**
  * @file Logger.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TesLight::Logger}.
+ * @brief Implementation of {@link TesLight::Logger}.
  * @version 0.0.1
- * @date 2022-06-28
+ * @date 2022-07-05
  *
  * @copyright Copyright (c) 2022
  *
  */
 #include "logging/Logger.h"
 
-/**
- * @brief Create a new instance of {@link TesLight::Logger}.
- */
-TesLight::Logger::Logger()
-{
-	this->baudRate = 115200;
-	this->fileSystem = nullptr;
-	this->fileName = F("");
-}
+// Initialize
+bool TesLight::Logger::logToSerial = false;
+bool TesLight::Logger::logToFile = false;
+FS *TesLight::Logger::fileSystem = nullptr;
+String TesLight::Logger::fileName = F("");
+TesLight::Logger::LogLevel TesLight::Logger::minLogLevel = TesLight::Logger::LogLevel::DEBUG;
 
 /**
- * @brief Create a new instance of {@link TesLight::Logger} with a given baud rate.
- * @param baudRate baud rate for the serial connection
- */
-TesLight::Logger::Logger(const uint32_t baudRate)
-{
-	this->baudRate = baudRate;
-	this->fileSystem = nullptr;
-	this->fileName = F("");
-}
-
-/**
- * @brief Create a new instance of {@link TesLight::Logger}.
- * @param baudRate baudrate for the serial connection
- * @param fileSystem instsance of {@link FS} for the logfile
- * @param fileName full file name of the log file
- */
-TesLight::Logger::Logger(const uint32_t baudRate, FS *fileSystem, const String fileName)
-{
-	this->baudRate = baudRate;
-	this->fileSystem = fileSystem;
-	this->fileName = fileName;
-}
-
-/**
- * @brief Destroy the {@link TesLight::Logger} instance.
- */
-TesLight::Logger::~Logger()
-{
-}
-
-/**
- * @brief Initialize the {@link TesLight::Logger}.
- * @return true when successful
- * @return false when there was an error
+ * @brief Initialiize the {@link TesLight::Logger}.
+ * @return true always
  */
 bool TesLight::Logger::begin()
 {
-	Serial.begin(this->baudRate);
-
-	if (this->fileSystem != nullptr)
-	{
-		File logFile = this->fileSystem->open(this->fileName, FILE_APPEND);
-		if (!logFile)
-		{
-			error(F("Logger.cpp:begin"), F("Failed to open log file."));
-			return false;
-		}
-		logFile.close();
-	}
-
-	info(F("Logger.cpp:begin"), F("Logger initialized successfully."));
 	return true;
 }
 
 /**
- * @brief Print information messages.
- * @param source source of the message
- * @param message message
+ * @brief Initialiize the {@link TesLight::Logger}.
+ * @param baudRate serial baud rate
+ * @return true always
  */
-void TesLight::Logger::info(const String source, const String message)
+bool TesLight::Logger::begin(const uint32_t baudRate)
 {
-	log(F("info"), source, message);
+	Serial.begin(baudRate);
+	logToSerial = true;
+	return true;
 }
 
 /**
- * @brief Print warning messages.
- * @param source source of the message
- * @param message message
+ * @brief Initialiize the {@link TesLight::Logger}.
+ * @param fs instance of the {@link FS} containing the file
+ * @param fn full name of the file
+ * @return true when successful
+ * @return false when there was an error
  */
-void TesLight::Logger::warn(const String source, const String message)
+bool TesLight::Logger::begin(FS *fs, const String fn)
 {
-	log(F("warning"), source, message);
+	logToFile = testOpenFile(fs, fn);
+	fileSystem = fs;
+	fileName = fn;
+	return true;
 }
 
 /**
- * @brief Print error messages.
- * @param source source of the message
- * @param message message
+ * @brief Initialiize the {@link TesLight::Logger}.
+ * @param baudRate serial baud rate
+ * @param fs instance of the {@link FS} containing the file
+ * @param fn full name of the file
+ * @return true when successful
+ * @return false when there was an error
  */
-void TesLight::Logger::error(const String source, const String message)
+bool TesLight::Logger::begin(uint32_t baudRate, FS *fs, const String fn)
 {
-	log(F("error"), source, message);
+	Serial.begin(baudRate);
+	logToSerial = true;
+	logToFile = testOpenFile(fs, fn);
+	fileSystem = fs;
+	fileName = fn;
+	return true;
 }
 
 /**
- * @brief Get the size of the log on the sd card.
- * @return size_t number of bytes
+ * @brief Set the minimum {@link TesLight.:LogLevel} that is logged.
+ * @param logLevel minimum {@link TesLight::Logger::LogLevel}
+ */
+void TesLight::Logger::setMinLogLevel(const TesLight::Logger::LogLevel logLevel)
+{
+	minLogLevel = logLevel;
+}
+
+/**
+ * @brief Log a message depending on the log level, source and message.
+ * @param logLevel log level for the message
+ * @param source source of the message
+ * @param message message text
+ */
+void TesLight::Logger::log(const TesLight::Logger::LogLevel logLevel, const String source, const String message)
+{
+	const String logString = getTimeString() + F(" [") + getLogLevelString(logLevel) + F("] (") + source + F("): ") + message + F("\r\n");
+
+	if (logLevel < minLogLevel)
+	{
+		return;
+	}
+
+	if (logToSerial)
+	{
+		Serial.print(logString);
+	}
+
+	if (logToFile)
+	{
+
+		File logFile = fileSystem->open(fileName, FILE_APPEND);
+		if (!logFile)
+		{
+			return;
+		}
+		logFile.write((uint8_t *)logString.c_str(), logString.length());
+		logFile.close();
+	}
+}
+
+/**
+ * @brief Get the size of the log file on the SD card.
+ * @return size_t log file size in bytes
  */
 size_t TesLight::Logger::getLogSize()
 {
-	if (this->fileSystem == nullptr)
+	if (!logToFile)
 	{
 		return 0;
 	}
 
-	File logFile = this->fileSystem->open(fileName, FILE_READ);
+	File logFile = fileSystem->open(fileName, FILE_READ);
 	if (!logFile)
 	{
 		return 0;
@@ -128,19 +136,19 @@ size_t TesLight::Logger::getLogSize()
 }
 
 /**
- * @brief Read a number of bytes from the log on the sd card.
- * @param buffer buffer to hold the log data
- * @param start start position to read from
- * @param bufferSize size of the buffer / number of bytes to read
+ * @brief Read a part from the log file stored on the SD card.
+ * @param buffer buffer to storage for the data
+ * @param start start index from where to read the log
+ * @param bufferSize size of the buffer
  */
 void TesLight::Logger::readLog(uint8_t *buffer, const size_t start, const size_t bufferSize)
 {
-	if (this->fileSystem == nullptr)
+	if (!logToFile)
 	{
 		return;
 	}
 
-	File logFile = this->fileSystem->open(fileName, FILE_READ);
+	File logFile = fileSystem->open(fileName, FILE_READ);
 	if (!logFile)
 	{
 		return;
@@ -152,41 +160,63 @@ void TesLight::Logger::readLog(uint8_t *buffer, const size_t start, const size_t
 }
 
 /**
- * @brief Clear the log.
+ * @brief Clear the log file on the SD card.
  */
 void TesLight::Logger::clearLog()
 {
-	if (this->fileSystem == nullptr)
+	if (!logToFile)
 	{
 		return;
 	}
 
-	this->fileSystem->remove(fileName);
+	fileSystem->remove(fileName);
 }
 
 /**
- * @brief Log a message to the serial monitor and sd card when connected.
- * @param logLevel level of the log message
- * @param source source of the message
- * @param message message
+ * @brief Test if a file can be opened.
+ * @return true when file can be opened
+ * @return false when file can not be opened
  */
-void TesLight::Logger::log(const String logLevel, const String source, const String message)
+bool TesLight::Logger::testOpenFile(FS *fs, const String fn)
 {
-	const String logString = getTimeString() + F(" [") + logLevel + F("] (") + source + F("): ") + message + F("\r\n");
-	Serial.print(logString);
-
-	if (this->fileSystem == nullptr)
+	if (fs != nullptr)
 	{
-		return;
+		File logFile = fs->open(fn, FILE_APPEND);
+		if (logFile)
+		{
+			logFile.close();
+			return true;
+		}
 	}
 
-	File logFile = this->fileSystem->open(fileName, FILE_APPEND);
-	if (!logFile)
+	return false;
+}
+
+/**
+ * @brief Get the {@link String} representation of the {@link TesLight::Logger::LogLevel}.
+ * @param logLevel log level
+ * @return {@link String} representation of the {@link TesLight::Logger::LogLevel}
+ */
+String TesLight::Logger::getLogLevelString(const TesLight::Logger::LogLevel logLevel)
+{
+	if (logLevel == TesLight::Logger::LogLevel::DEBUG)
 	{
-		return;
+		return F("DEBUG");
 	}
-	logFile.write((uint8_t *)logString.c_str(), logString.length());
-	logFile.close();
+	else if (logLevel == TesLight::Logger::LogLevel::INFO)
+	{
+		return F("INFO");
+	}
+	else if (logLevel == TesLight::Logger::LogLevel::INFO)
+	{
+		return F("WARN");
+	}
+	else if (logLevel == TesLight::Logger::LogLevel::ERROR)
+	{
+		return F("ERROR");
+	}
+
+	return F("UNKNOWN");
 }
 
 /**
