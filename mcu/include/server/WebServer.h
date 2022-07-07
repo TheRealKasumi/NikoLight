@@ -16,6 +16,8 @@
 #include <ESPAsyncWebServer.h>
 #include <FS.h>
 
+#include "logging/Logger.h"
+
 namespace TesLight
 {
 	class WebServer

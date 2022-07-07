@@ -15,16 +15,14 @@
  * @param pin ESP32 pin
  * @param channel rmt lib channel to use for the output. Valid range is 0 to 7.
  * @param pixelCount number of pixels
- * @param logger instance of {@link TesLight::Logger}
  */
-TesLight::LedDriver::LedDriver(const uint8_t pin, const uint8_t channel, const uint8_t pixelCount, TesLight::Logger *logger)
+TesLight::LedDriver::LedDriver(const uint8_t pin, const uint8_t channel, const uint8_t pixelCount)
 {
 	this->pin = pin;
 	this->channel = channel;
 	this->driverInstalled = false;
 	this->pixelCount = pixelCount;
 	this->pixels = nullptr;
-	this->logger = logger;
 }
 
 /**
@@ -80,29 +78,35 @@ TesLight::Pixel TesLight::LedDriver::getPixel(const uint16_t index)
  */
 bool TesLight::LedDriver::begin()
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("LedDriver.cpp:begin"), (String)F("Initialize LED driver for ") + String(this->pixelCount) + F(" LEDs using pin ") + String(this->pin) + F(" and rmt channel ") + String(this->channel) + F("."));
 	if (this->channel > 7)
 	{
-		logger->error(F("LedDriver.cpp:begin"), F("The channel must be in the valid range of 0 to 7."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("LedDriver.cpp:begin"), F("The channel must be between 0 and (including) 7."));
 		return false;
 	}
 
 	if (this->pixelCount == 0)
 	{
-		logger->error(F("LedDriver.cpp:begin"), F("The pixel count must not be 0."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("LedDriver.cpp:begin"), F("The pixel count must not be 0."));
 		return false;
 	}
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("LedDriver.cpp:begin"), F("Allocating memory for pixel array."));
 	this->pixels = new TesLight::Pixel[this->pixelCount];
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("LedDriver.cpp:begin"), F("Getting rmt driver configuration."));
 	rmt_config_t rmtConfig = this->getRmtConfig();
 	this->driverInstalled = this->installDriver(&rmtConfig);
-	if (!this->driverInstalled)
+	if (this->driverInstalled)
 	{
-		logger->error(F("LedDriver.cpp:begin"), F("Failed to install rmt driver for data transmission to leds."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("LedDriver.cpp:begin"), F("LED driver initialized successfully."));
+		return true;
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("LedDriver.cpp:begin"), F("Failed to initialize LED driver. The rmt driver could not be installed."));
 		return false;
 	}
-
-	return true;
 }
 
 /**
@@ -112,45 +116,55 @@ bool TesLight::LedDriver::begin()
  */
 bool TesLight::LedDriver::end()
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("LedDriver.cpp:end"), F("Cleaning up LED driver."));
 	if (this->pixels)
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("LedDriver.cpp:end"), F("Freeing pixel array memory."));
 		delete[] this->pixels;
 		this->pixels = nullptr;
 	}
 
 	if (this->driverInstalled)
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("LedDriver.cpp:end"), F("Uninstalling rmt driver."));
 		rmt_config_t rmtConfig = this->getRmtConfig();
 		if (!this->uninstallDriver(&rmtConfig))
 		{
-			logger->error(F("LedDriver.cpp:end"), F("Failed to uninstall rmt driver."));
+			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("LedDriver.cpp:end"), F("Failed to uninstall rmt driver."));
 			return false;
 		}
 	}
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("LedDriver.cpp:end"), F("LED driver uninstalled."));
 	return true;
 }
 
 /**
  * @brief Display the {@TesLight::Pixel} array.
+ * @return true when successful
+ * @return false when there is an error
  */
-void TesLight::LedDriver::show()
+bool TesLight::LedDriver::show()
 {
 	rmt_config_t rmtConfig = this->getRmtConfig();
 	rmt_item32_t *ledDataBuffer = new rmt_item32_t[this->pixelCount * BITS_PER_LED_CMD];
 	this->prepareLedDataBuffer(ledDataBuffer);
 
+	bool error = false;
 	if (rmt_write_items(rmtConfig.channel, ledDataBuffer, this->pixelCount * BITS_PER_LED_CMD, false) != ESP_OK)
 	{
-		logger->error(F("LedDriver.cpp:installDriver"), F("Failed to write led data via rmt driver."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("LedDriver.cpp:show"), F("Failed to write led data via rmt driver."));
+		error = true;
 	}
 
 	if (rmt_wait_tx_done(rmtConfig.channel, portMAX_DELAY) != ESP_OK)
 	{
-		logger->error(F("LedDriver.cpp:installDriver"), F("Failed to wait for rmt driver to send led data."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("LedDriver.cpp:show"), F("Failed to wait for rmt driver to send led data."));
+		error = true;
 	}
 
 	delete[] ledDataBuffer;
+	return !error;
 }
 
 /**

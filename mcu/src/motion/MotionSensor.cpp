@@ -19,6 +19,7 @@
  */
 TesLight::MotionSensor::MotionSensor(const uint8_t deviceAddress, const uint8_t sdaPin, const uint8_t sclPin, const uint8_t bufferSize)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("MotionSensor.cpp:MotionSensor"), F("Initializing Motion Sensor properties."));
 	this->deviceAddress = deviceAddress;
 	this->sdaPin = sdaPin;
 	this->sclPin = sclPin;
@@ -26,6 +27,7 @@ TesLight::MotionSensor::MotionSensor(const uint8_t deviceAddress, const uint8_t 
 	this->bufferIndex = 0;
 	this->motionData = new TesLight::MotionSensorData[this->bufferSize];
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("MotionSensor.cpp:MotionSensor"), F("Initializing buffers."));
 	this->initializeMotionSensorData(this->motionData, this->bufferSize);
 	this->initializeMotionSensorData(&this->offsetData, 1);
 }
@@ -46,49 +48,61 @@ TesLight::MotionSensor::~MotionSensor()
  */
 bool TesLight::MotionSensor::begin(const bool autoCalibrate)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("MotionSensor.cpp:begin"), F("Initializing Initializing Motion Sensor."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("MotionSensor.cpp:begin"), F("Initializing I2C communication."));
 	Wire.begin(this->sdaPin, this->sclPin);
 
 	// Wake up
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("MotionSensor.cpp:begin"), F("Waking up motion sensor."));
 	Wire.beginTransmission(this->deviceAddress);
 	Wire.write(0x6B);
 	Wire.write(0);
 	if (Wire.endTransmission(true) != 0)
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("MotionSensor.cpp:begin"), F("Communication error. Failed to wake motion sensor."));
 		return false;
 	}
 
 	// Set acc to +/- 2G
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("MotionSensor.cpp:begin"), F("Setting acceleration scale to +/- 2G."));
 	Wire.beginTransmission(this->deviceAddress);
 	Wire.write(0x1C);
 	Wire.write(0x00);
 	if (Wire.endTransmission(true) != 0)
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("MotionSensor.cpp:begin"), F("Communication error. Failed to set acceleration scale."));
 		return false;
 	}
 
 	// Set Gyro to +/- 250°/s
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("MotionSensor.cpp:begin"), F("Setting rotation scale to +/- 250°/s."));
 	Wire.beginTransmission(this->deviceAddress);
 	Wire.write(0x1B);
 	Wire.write(0x00);
 	if (Wire.endTransmission(true) != 0)
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("MotionSensor.cpp:begin"), F("Communication error. Failed to set rotation scale."));
 		return false;
 	}
 
 	// Initially fill the buffer
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("MotionSensor.cpp:begin"), F("Initially filling buffer."));
 	if (!this->readData(false))
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("MotionSensor.cpp:begin"), F("Communication error. Failed to read motion data."));
 		return false;
 	}
 
 	// Set the offset for calibration
 	if (autoCalibrate)
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("MotionSensor.cpp:begin"), F("Calculating sensor offsets."));
 		this->offsetData = this->getData();
 		this->offsetData.accZRaw -= 16384;
 		this->offsetData.accZG -= 1.0;
 	}
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("MotionSensor.cpp:begin"), F("Motion sensor initialized successfully."));
 	return true;
 }
 
@@ -108,6 +122,7 @@ bool TesLight::MotionSensor::readData(const bool asRingBuffer)
 		Wire.endTransmission(false);
 		if (Wire.requestFrom(this->deviceAddress, 6, true) != 6)
 		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("MotionSensor.cpp:readData"), F("Communication error. Failed to read acceleration registers."));
 			return false;
 		}
 
@@ -125,6 +140,7 @@ bool TesLight::MotionSensor::readData(const bool asRingBuffer)
 		Wire.endTransmission(false);
 		if (Wire.requestFrom(this->deviceAddress, 6, true) != 6)
 		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("MotionSensor.cpp:readData"), F("Communication error. Failed to read rotation registers."));
 			return false;
 		}
 
