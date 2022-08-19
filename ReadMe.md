@@ -1,5 +1,7 @@
 # TesLight
 
+![Logo](web-app/assets/img/icon.png)
+
 ## Beta Warning
 
 Currently this project is in a very early beta stage.
