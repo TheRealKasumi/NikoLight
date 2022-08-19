@@ -20,6 +20,7 @@ TesLight::LedDriver::LedDriver(const uint8_t pin, const uint8_t channel, const u
 {
 	this->pin = pin;
 	this->channel = channel;
+	this->active = false;
 	this->driverInstalled = false;
 	this->pixelCount = pixelCount;
 	this->pixels = nullptr;
@@ -69,6 +70,15 @@ void TesLight::LedDriver::setPixel(const uint16_t index, const TesLight::Pixel p
 TesLight::Pixel TesLight::LedDriver::getPixel(const uint16_t index)
 {
 	return this->pixels[index];
+}
+
+/**
+ * @brief Set the LED's active/inactive
+ * @param active LED's on/off
+ */
+void TesLight::LedDriver::setActive(const bool active)
+{
+	this->active = active;
 }
 
 /**
@@ -219,8 +229,8 @@ void TesLight::LedDriver::prepareLedDataBuffer(rmt_item32_t *ledDataBuffer)
 		uint32_t mask = 1 << (BITS_PER_LED_CMD - 1);
 		for (uint8_t j = 0; j < BITS_PER_LED_CMD; j++)
 		{
-			uint32_t bit_is_set = this->pixels[i].getColor() & mask;
-			ledDataBuffer[i * BITS_PER_LED_CMD + j] = bit_is_set ? (rmt_item32_t){{{T1H, 1, TL, 0}}} : (rmt_item32_t){{{T0H, 1, TL, 0}}};
+			uint32_t bit = this->active ? this->pixels[i].getColor() & mask : 0;
+			ledDataBuffer[i * BITS_PER_LED_CMD + j] = bit ? (rmt_item32_t){{{T1H, 1, TL, 0}}} : (rmt_item32_t){{{T0H, 1, TL, 0}}};
 			mask >>= 1;
 		}
 	}

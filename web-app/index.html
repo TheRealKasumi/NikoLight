@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>TesLight</title>
+		<link rel="icon" type="image/png" href="assets/img/icon.png" />
+		<link rel="stylesheet" href="style/stylesheet.css" />
+	</head>
+
+	<body>
+		<div class="background" id="background"></div>
+
+		<div class="loader" id="loader">
+			<img src="assets/img/loader.png" />
+			<p>Verbinde...</p>
+		</div>
+
+		<div class="message hidden center" id="message-box"><p id="message-box-text"></p></div>
+
+		<div class="main center hidden" id="led-view">
+			<div class="header"><p>Farbschema Konfiguration</p></div>
+			<div class="viewport center" id="viewport"></div>
+			<div class="control center">
+				<div class="container center">
+					<select class="combo" id="zone-select">
+						<option value="Dash">Dash</option>
+						<option value="Center">Mittelkonsole</option>
+						<option value="FLD">Tür VL</option>
+						<option value="FRD">Tür VR</option>
+						<option value="RLD">Tür HL</option>
+						<option value="RRD">Tür HR</option>
+					</select>
+					<select class="combo" id="animator-type-select">
+						<option value="Rainbow">Regenbogen</option>
+						<option value="Rainbow Middle">Regenbogen Mittig</option>
+						<option value="Gradient">Farbverlauf</option>
+						<option value="Static">Statisch</option>
+					</select>
+					<div class="container slider" id="brightness-slider">
+						<img src="assets/img/brightness_icon.png" />
+						<input class="brightness" type="range" min="0" max="255" value="50" />
+					</div>
+					<div class="container slider hidden" id="color-slider-1">
+						<img src="assets/img/color_icon.png" />
+						<input class="color" type="range" min="0" max="255" value="0" />
+					</div>
+					<div class="container slider hidden" id="satturation-slider-1">
+						<img src="assets/img/satturation_icon.png" />
+						<input class="brightness" type="range" min="0" max="255" value="255" />
+					</div>
+					<div class="container slider hidden" id="color-slider-2">
+						<img src="assets/img/color_icon.png" />
+						<input class="color" type="range" min="0" max="255" value="0" />
+					</div>
+					<div class="container slider hidden" id="satturation-slider-2">
+						<img src="assets/img/satturation_icon.png" />
+						<input class="brightness" type="range" min="0" max="255" value="255" />
+					</div>
+					<div class="container slider" id="speed-slider">
+						<img src="assets/img/speed_icon.png" />
+						<input class="brightness" type="range" min="0" max="255" value="50" />
+					</div>
+					<div class="container slider" id="distance-slider">
+						<img src="assets/img/distance_icon.png" />
+						<input class="brightness" type="range" min="0" max="255" value="20" />
+					</div>
+					<div class="container check" id="reverse-check">
+						<img src="assets/img/reverse_icon.png" />
+						<input id="reverse-check-input" type="checkbox" />
+						<label for="reverse-check-input">Richtung invertieren</label>
+					</div>
+					<button class="button" id="apply-led-button">Anwenden</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="main center hidden" id="settings-view">
+			<div class="header"><p class="title">System Konfiguration</p></div>
+			<div class="message center warn" style="margin-top: -10px; margin-bottom: 30px">
+				<p>Ändere diese Konfiguration nur, wenn du dir wirklich sicher bist.</p>
+			</div>
+			<div class="control center setting">
+				<div class="container center">
+					<p>Zone:</p>
+					<select class="combo" id="zone-select-settings">
+						<option value="Dash">Dash</option>
+						<option value="Center">Mittelkonsole</option>
+						<option value="FLD">Tür VL</option>
+						<option value="FRD">Tür VR</option>
+						<option value="RLD">Tür HL</option>
+						<option value="RRD">Tür HR</option>
+					</select>
+					<p>Hardware Pin:</p>
+					<select class="combo" id="hardware-pin-select">
+						<option value="13">13</option>
+						<option value="14">14</option>
+						<option value="15">15</option>
+						<option value="16">16</option>
+						<option value="17">17</option>
+						<option value="21">21</option>
+					</select>
+					<p>LED Anzahl:</p>
+					<input
+						class="ledcount"
+						type="number"
+						name="led-count"
+						placeholder="5"
+						min="1"
+						max="100"
+						id="led-count-input"
+					/>
+				</div>
+			</div>
+			<div class="control center setting">
+				<div class="container center">
+					<p>Access Point SSID:</p>
+					<input class="ssid" type="text" name="ssid" placeholder="TesLight" id="ap-ssid-input" />
+
+					<p>Access Point Passwort:</p>
+					<input class="password" type="text" name="password" placeholder="TesLight" id="ap-password-input" />
+				</div>
+			</div>
+			<div class="container center">
+				<button class="button" id="apply-settings-button">Anwenden</button>
+			</div>
+		</div>
+
+		<div class="tabbar center hidden" id="tab-bar">
+			<div class="fit center">
+				<img class="tabicon active" id="led-tab-button" src="assets/img/led_icon_2.png" />
+				<img class="tabicon" id="settings-tab-button" src="assets/img/settings_icon.png" />
+			</div>
+		</div>
+
+		<script src="js/lib/particles.min.js"></script>
+		<script src="js/effects/particles.js"></script>
+		<script src="js/exception/Exception.js"></script>
+		<script src="js/service/LedService.js"></script>
+		<script src="js/service/WiFiService.js"></script>
+		<script src="js/util/ColorSpaceConverter.js"></script>
+		<script src="js/controller/MainController.js"></script>
+		<script src="js/controller/LedController.js"></script>
+		<script src="js/controller/SettingsController.js"></script>
+	</body>
+</html>

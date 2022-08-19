@@ -4,9 +4,6 @@ mcu/.pio
 ### VS Code ###
 .vscode
 
-### C4D Models ###
-pcb/*.c4d
-
 ### Frontend ###
 web-app/node_modules
 web-app/.pnp
