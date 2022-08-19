@@ -15,7 +15,7 @@
 #include <driver/rmt.h>
 
 #include "led/driver/Pixel.h"
-#include "led/driver/LedAnimator.h"
+#include "led/animator/LedAnimator.h"
 #include "logging/Logger.h"
 
 #define BITS_PER_LED_CMD 24
@@ -37,6 +37,8 @@ namespace TesLight
 		void setPixel(const uint16_t index, const TesLight::Pixel pixel);
 		TesLight::Pixel getPixel(const uint16_t index);
 
+		void setActive(const bool active);
+
 		bool begin();
 		bool end();
 		bool show();
@@ -44,6 +46,7 @@ namespace TesLight
 	private:
 		uint8_t pin;
 		uint8_t channel;
+		bool active;
 		bool driverInstalled;
 		uint16_t pixelCount;
 		TesLight::Pixel *pixels;

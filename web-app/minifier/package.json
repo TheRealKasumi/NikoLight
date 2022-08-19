@@ -1,0 +1,17 @@
+{
+	"name": "minifier",
+	"version": "0.0.1",
+	"description": "Tool to minify the TesLight frontend.",
+	"author": "TheRealKasumi",
+	"license": "ISC",
+	"main": "index.js",
+	"scripts": {
+		"minify": "node index.js ../index.html"
+	},
+	"dependencies": {
+		"html-minifier": "^4.0.0",
+		"jsdom": "^20.0.0",
+		"uglify-js": "^3.16.2",
+		"uglifycss": "^0.0.29"
+	}
+}

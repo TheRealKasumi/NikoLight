@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Contains a class to load and save the (runtime) configuration.
  * @version 0.0.1
- * @date 2022-06-28
+ * @date 2022-07-28
  *
  * @copyright Copyright (c) 2022
  *
@@ -15,81 +15,65 @@
 #include <FS.h>
 
 #include "configuration/SystemConfiguration.h"
-#include "configuration/IniFile.h"
+#include "util/BinaryFile.h"
 #include "logging/Logger.h"
 
 namespace TesLight
 {
-	typedef struct LedDriverConfig
-	{
-		uint8_t ledPin;
-		uint16_t ledCount;
-	} LedDriverConfig;
-
-	typedef struct LedAnimatorConfig
-	{
-		uint8_t type;
-		uint8_t speed;
-		uint16_t offset;
-		uint8_t brightness;
-		bool reverse;
-		uint8_t customField[10];
-	} LedAnimatorConfig;
-
 	class Configuration
 	{
 	public:
+		struct LogConfig
+		{
+			TesLight::Logger::LogLevel logLevel;
+		};
+
+		struct WiFiConfig
+		{
+			String accessPointSsid;
+			String accessPointPassword;
+			uint8_t accessPointChannel;
+			bool accessPointHidden;
+			uint8_t accessPointMaxConnections;
+			String wifiSsid;
+			String wifiPassword;
+		};
+
+		struct LedConfig
+		{
+			uint8_t ledPin;
+			uint16_t ledCount;
+			uint8_t type;
+			uint8_t speed;
+			uint16_t offset;
+			uint8_t brightness;
+			bool reverse;
+			uint8_t customField[NUM_ANIMATOR_CUSTOM_FIELDS];
+		};
+
 		Configuration(FS *fileSystem, const String fileName);
 		~Configuration();
 
-		String getApSSID();
-		void setApSSID(const String ssid);
+		TesLight::Configuration::LogConfig getLogConfig();
+		void setLogConfig(TesLight::Configuration::LogConfig logConfig);
 
-		uint8_t getApChannel();
-		void setApChannel(const uint8_t apChannel);
+		TesLight::Configuration::WiFiConfig getWiFiConfig();
+		void setWiFiConfig(TesLight::Configuration::WiFiConfig wifiConfig);
 
-		bool getApHidden();
-		void setApHidden(const bool apHidden);
+		TesLight::Configuration::LedConfig getLedConfig(const uint8_t index);
+		void setLedConfig(const TesLight::Configuration::LedConfig ledConfig, const uint8_t index);
 
-		uint8_t getApMaxConnections();
-		void setApMaxConnections(const uint8_t apMaxConnections);
-
-		String getApPassword();
-		void setApPassword(const String password);
-
-		String getWifiSSID();
-		void setWifiSSID(const String ssid);
-
-		String getWifiPassword();
-		void setWifiPassword(const String password);
-
-		TesLight::LedDriverConfig getLedDriverConfig(const uint8_t index);
-		void setLedDriverConfig(const TesLight::LedDriverConfig ledDriverConfig, const uint8_t index);
-
-		TesLight::LedAnimatorConfig getLedAnimatorConfig(const uint8_t index);
-		void setLedAnimatorConfig(const TesLight::LedAnimatorConfig ledAnimatorConfig, const uint8_t index);
-
-		bool load(bool loadDefaultIfNotExist = true);
+		void loadDefaults();
+		bool load();
 		bool save();
 
 	private:
 		FS *fileSystem;
 		String fileName;
 
-		String apSSID;
-		String apPassword;
-		uint8_t apChannel;
-		bool apHidden;
-		uint8_t apMaxConnections;
-
-		String wifiSSID;
-		String wifiPassword;
-
-		TesLight::LedDriverConfig ledDriverConfig[NUM_LED_DRIVERS];
-		TesLight::LedAnimatorConfig ledAnimatorConfig[NUM_LED_DRIVERS];
-
-		int *parseIntArray(const String array, const uint8_t len);
-		String intArrayToString(const int *array, const uint8_t len);
+		TesLight::Configuration::LogConfig logConfig;
+		TesLight::Configuration::WiFiConfig wifiConfig;
+		TesLight::Configuration::LedConfig ledConfig[NUM_LED_DRIVERS];
 	};
 }
 

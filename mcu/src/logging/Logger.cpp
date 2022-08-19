@@ -207,7 +207,7 @@ String TesLight::Logger::getLogLevelString(const TesLight::Logger::LogLevel logL
 	{
 		return F("INFO");
 	}
-	else if (logLevel == TesLight::Logger::LogLevel::INFO)
+	else if (logLevel == TesLight::Logger::LogLevel::WARN)
 	{
 		return F("WARN");
 	}

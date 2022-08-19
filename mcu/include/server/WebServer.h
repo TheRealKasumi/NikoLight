@@ -12,6 +12,7 @@
 #define WEBSERVER_H
 
 #include <stdint.h>
+
 #include <HTTP_Method.h>
 #include <ESPAsyncWebServer.h>
 #include <FS.h>
@@ -25,6 +26,9 @@ namespace TesLight
 	public:
 		WebServer(const uint16_t port, FS *fileSystem, const String staticContentLocation);
 		~WebServer();
+
+		void addRequestHandler(const char *uri, http_method method, ArRequestHandlerFunction handler);
+		void addRequestBodyHandler(const char *uri, http_method method, ArRequestHandlerFunction requestHandler, ArBodyHandlerFunction bodyHandler);
 
 	private:
 		AsyncWebServer *server;
