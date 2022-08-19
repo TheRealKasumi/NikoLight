@@ -2,6 +2,19 @@
 
 ![Logo](web-app/assets/img/icon.png)
 
+## Important Notes
+
+Creating this project costs me a lot of time, work and money.
+Nevertheless I share it publicly with you.
+You can use it for free, modify it and even sell it.
+But please **don't steal** my work, be a little **respectful** and **give credits**.
+
+Also keep in mind that you should be careful working on the project and especially your car.
+Use the project at own risk.
+
+That said, I hope you have a lot of fun.
+Thank you💖.
+
 ## Beta Warning
 
 Currently this project is in a very early beta stage.
