@@ -51,17 +51,22 @@ This gives the whole system a more OEM like feeling.
 You think "Wtf is she talking about"?
 Maybe have a look at a few pictures.
 
-![Teaser 1](documentation/media/teaser_1.jpeg)
+![Teaser 1](/documentation/media/teaser/teaser_1.jpeg)
 
-![Teaser 2](documentation/media/teaser_2.gif)
+![Teaser 2](/documentation/media/teaser/teaser_2.gif)
 
-![Teaser 3](documentation/media/teaser_3.gif)
+![Teaser 3](/documentation/media/teaser/teaser_3.gif)
 
+## Planning
 
-## Material List
+It is recommended to read the [planning](/documentation/planning.md) document before you start with the project.
+There are some important considerations and decisions you have to make first.
+This will save you some trouble and makes it easier to buy the right parts.
+
+## Part List
 
 Todo :(
 
-## Guides
+## Build Guide
 
 Todo :(
