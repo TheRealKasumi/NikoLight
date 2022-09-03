@@ -9,8 +9,8 @@ It will also help to build the project later.
 
 The LED configuration is the most important step.
 Here you need to think about where, how and how many LEDs you want to install in your car.
-This hightly depends on your wishes and will influence the part list and building steps.
-Also it will affect how much work you have to put into the project.
+This highly depends on your wishes and will influence the part list and building steps.
+Also, it will affect how much work you have to put into the project.
 So let's start with some important information.
 
 ### TesLight and LEDs
@@ -26,7 +26,7 @@ It is mainly limited by the amount of memory and secondary by the processing pow
 
 Every single LED in a zone is **addressable**.
 This means that TesLight can "talk" to the individual LED's and set a 24 bit color and brightness value for each.
-This is achived by **chaining the LED's** like it is done on LED strips.
+This is achieved by **chaining the LED's** like it is done on LED strips.
 As a consequence you can obviously use **WS2812 compatible LED strips**. 
 
 ![Teaser 3](/documentation/media/planning/led-chain.png)
@@ -57,7 +57,7 @@ More about that at a later point in the build guide.
 | Rear Doors      | 4     | 405cm + 8cm + 75cm + 75cm | 5, 6             |
 
 So for this build we would need ~90 LEDs and ~20m cable with 3 wires.
-Also 15m of of the fiber "cable" was used around the doors and center console.
+Also 15m of the fiber "cable" was used around the doors and center console.
 Make sure to measure the required length carefully for the build.
 
 # Power Consumption
@@ -69,12 +69,12 @@ If more power is required, a heatsink or external regulator is required.
 
 Assuming "standard" 5x5mm LED chips, each channel can draw around 20mA at 5V and maximum brightness.
 Since each LED has 3 channels (red, green, blue), a current draw of around 60mA has to be assumed.
-To calculate the total power draw, to following formular can be used:
+To calculate the total power draw, to following formula can be used:
 
 `power = led_count * 0.06 * 5`
 
 In the example configuration above this would result in a power draw of around 27W.
 So in this case no external regulator would be required.
-For cooler operation and safety it can still be recommendable to buy a external regulator.
+For cooler operation and safety it can still be recommendable to buy an external regulator.
 Keep in mind here that the car can easily reach more than 80°C when parked and the sun is shining.
 The regulator should be well dimensioned because it can not dissipate much heat.
