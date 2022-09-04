@@ -3,7 +3,7 @@
 This document contains a list of all required parts to build TesLight.
 The list was split into required and optional parts.
 Since TesLight can be modified in a lot of ways, the actual part list depends a little on your individual plans.
-Make sure to read the [planning](/documentation/planning.md) document first.
+Make sure to read the [planning](planning.md) document first.
 Also the list assumes that you have all required tools and materials for building electronics projects like a soldering iron.
 
 ## Required Parts

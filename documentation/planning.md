@@ -29,7 +29,7 @@ This means that TesLight can "talk" to the individual LED's and set a 24 bit col
 This is achieved by **chaining the LED's** like it is done on LED strips.
 As a consequence you can obviously use **WS2812 compatible LED strips**. 
 
-![Teaser 3](/documentation/media/planning/led-chain.png)
+![LED Chain](media/planning/led-chain.png)
 
 ### Zones
 
@@ -42,7 +42,7 @@ Since TesLight was mainly designed for the Tesla Model 3 and Model Y there is a 
 The guide will focus on these.
 This is the same configuration shown in the teaser.
 
-![Teaser 1](/documentation/media/teaser/teaser_1.jpeg)
+![Teaser 1](media/teaser/teaser_1.jpeg)
 
 The following table assumes that the TesLight controller is placed below of the center console.
 This allows easy access and positions the controller centered in the car.
