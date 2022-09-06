@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Implementation of the {@TesLight::RainbowAnimator}.
  * @version 0.0.1
- * @date 2022-06-28
+ * @date 2022-09-06
  *
  * @copyright Copyright (c) 2022
  *
@@ -39,20 +39,40 @@ void TesLight::RainbowAnimator::init()
 
 /**
  * @brief Render a rainbow to the {@link TesLight::Pixel} array.
- *        Depending on the settings this can be done from side to side or from the middle.
  */
 void TesLight::RainbowAnimator::render()
 {
 	const uint16_t middle = this->pixelCount / 2;
 	for (uint16_t i = 0; i < this->pixelCount; i++)
 	{
-		const float red = this->rainbowMode == TesLight::RainbowMode::RAINBOW_LINEAR || i < middle ? this->degToRad((angle + 0.0f) + i * this->offset) : this->degToRad((360.0f - angle + 0.0f) + i * this->offset);
-		const float green = this->rainbowMode == TesLight::RainbowMode::RAINBOW_LINEAR || i < middle ? this->degToRad((angle + 120.0f) + i * this->offset) : this->degToRad((360.0f - angle + 120.0f) + i * this->offset);
-		const float blue = this->rainbowMode == TesLight::RainbowMode::RAINBOW_LINEAR || i < middle ? this->degToRad((angle + 240.0f) + i * this->offset) : this->degToRad((360.0f - angle + 240.0f) + i * this->offset);
+		float redAngle = 0.0f;
+		float greenAngle = 0.0f;
+		float blueAngle = 0.0f;
 
-		this->pixels[i].setRed(this->cutNegative(fastCos(red)) * 255.0f * this->brightness);
-		this->pixels[i].setGreen(this->cutNegative(fastCos(green)) * 255.0f * this->brightness);
-		this->pixels[i].setBlue(this->cutNegative(fastCos(blue)) * 255.0f * this->brightness);
+		if (this->rainbowMode == TesLight::RainbowMode::RAINBOW_SOLID)
+		{
+			redAngle = this->angle + 0.0f;
+			greenAngle = this->angle + 120.0f;
+			blueAngle = this->angle + 240.0f;
+		}
+
+		else if (this->rainbowMode == TesLight::RainbowMode::RAINBOW_LINEAR)
+		{
+			redAngle = (this->angle + 0.0f) + i * this->offset;
+			greenAngle = (this->angle + 120.0f) + i * this->offset;
+			blueAngle = (this->angle + 240.0f) + i * this->offset;
+		}
+
+		else if (this->rainbowMode == TesLight::RainbowMode::RAINBOW_CENTER)
+		{
+			redAngle = i < middle ? (this->angle + 0.0f) + i * this->offset : (this->angle + 0.0f) + (this->pixelCount - i) * this->offset;
+			greenAngle = i < middle ? (this->angle + 120.0f) + i * this->offset : (this->angle + 120.0f) + (this->pixelCount - i) * this->offset;
+			blueAngle = i < middle ? (this->angle + 240.0f) + i * this->offset : (this->angle + 240.0f) + (this->pixelCount - i) * this->offset;
+		}
+
+		this->pixels[i].setRed(this->trapezoid(redAngle) * 255.0f * this->brightness);
+		this->pixels[i].setGreen(this->trapezoid(greenAngle) * 255.0f * this->brightness);
+		this->pixels[i].setBlue(this->trapezoid(blueAngle) * 255.0f * this->brightness);
 	}
 
 	if (this->reverse)

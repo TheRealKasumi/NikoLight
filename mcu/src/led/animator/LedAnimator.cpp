@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Contains the implementation of {@link TesLight::LedAnimator}.
  * @version 0.0.1
- * @date 2022-06-28
+ * @date 2022-09-06
  *
  * @copyright Copyright (c) 2022
  *
@@ -148,49 +148,40 @@ bool TesLight::LedAnimator::getReverse()
 }
 
 /**
- * @brief Convert deg to rad.
- * @param deg angle in deg
- * @return float angle in rad
+ * @brief Create a trapezoid waveform. The returned value depends on the input angle.
+ * @param angle input angle in degree
+ * @return float value between 0.0 and 1.0 representing the trapezoid
  */
-float TesLight::LedAnimator::degToRad(const float deg)
+float TesLight::LedAnimator::trapezoid(float angle)
 {
-	return deg * 0.0174533f;
-}
+	// This will limit the angle to [0...360]
+	float factor = angle / 360.0f;
+	factor -= (int)factor;
+	angle = factor * 360.0f;
+	if (angle < 0.0f)
+	{
+		angle = 360.0f + angle;
+	}
 
-/**
- * @brief Return the non-negative value.
- * @param input input
- * @return float non-negative value
- */
-float TesLight::LedAnimator::abs(const float input)
-{
-	return input >= 0.0f ? input : -input;
-}
+	if ((angle >= 0.0f && angle < 60.0f) || (angle >= 300.0f && angle <= 360.0f))
+	{
+		return 1.0f;
+	}
 
-/**
- * @brief Fast cos approximation.
- * @param angle angle in rad
- * @return float cos approximation
- */
-float TesLight::LedAnimator::fastCos(float angle)
-{
-	const float tp = 1.0f / (2.0f * 3.1415926f);
-	angle *= tp;
-	angle -= float(0.25f) + floor(angle + float(0.25f));
-	angle *= float(16.0f) * (abs(angle) - float(0.5f));
-	return angle;
-}
+	else if (angle >= 60.0f && angle < 120.0f)
+	{
+		return 1.0f - (angle - 60.0f) / 60.0f;
+	}
 
-/**
- * @brief Cut all values below 0.0.
- * @param input input
- * @return float number >= 0.0
- */
-float TesLight::LedAnimator::cutNegative(const float input)
-{
-	if (input < 0.0f)
+	else if (angle >= 120.0f && angle < 240.0f)
 	{
 		return 0.0f;
 	}
-	return input;
+
+	else if (angle >= 240.0f && angle < 300)
+	{
+		return (angle - 240.0f) / 60.0f;
+	}
+
+	return 0.0f;
 }

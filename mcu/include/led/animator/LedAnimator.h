@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Contains a base class for all led animators.
  * @version 0.0.1
- * @date 2022-06-28
+ * @date 2022-09-06
  *
  * @copyright Copyright (c) 2022
  *
@@ -53,10 +53,7 @@ namespace TesLight
 		float brightness;
 		bool reverse;
 
-		static float degToRad(const float deg);
-		static float cutNegative(const float input);
-		static float abs(const float input);
-		static float fastCos(float angle);
+		static float trapezoid(float angle);
 	};
 }
 
