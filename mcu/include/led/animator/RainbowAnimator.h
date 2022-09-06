@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Contains a class to render a rainbow.
  * @version 0.0.1
- * @date 2022-06-28
+ * @date 2022-09-06
  *
  * @copyright Copyright (c) 2022
  *
@@ -18,8 +18,10 @@ namespace TesLight
 {
 	enum RainbowMode
 	{
+		RAINBOW_SOLID,
 		RAINBOW_LINEAR,
-		RAINBOW_CENTER
+		RAINBOW_CENTER,
+		RAINBOW_SLIDE
 	};
 
 	class RainbowAnimator : public LedAnimator

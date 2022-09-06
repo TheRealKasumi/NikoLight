@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Contains the (static) system configuration.
  * @version 0.0.1
- * @date 2022-06-22
+ * @date 2022-09-06
  *
  * @copyright Copyright (c) 2022
  *
@@ -45,9 +45,9 @@
 #define WEB_SERVER_STATIC_CONTENT "/web-app"
 
 // Timer configuration
-#define LED_CYCLE_TIME 15
-#define SWITCH_SENSOR_CYCLE_TIME 20
-#define MOTION_SENSOR_CYCLE_TIME 15
-#define FPS_CYCLE_TIME 10000
+#define LED_CYCLE_TIME 16300
+#define SWITCH_SENSOR_CYCLE_TIME 20000
+#define MOTION_SENSOR_CYCLE_TIME 50000
+#define FPS_CYCLE_TIME 10000000
 
 #endif
