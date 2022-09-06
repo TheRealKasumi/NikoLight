@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Entry point, initialization and main loop of the program.
  * @version 0.0.1
- * @date 2022-06-22
+ * @date 2022-09-06
  *
  * @copyright Copyright (c) 2022
  *
@@ -169,8 +169,16 @@ bool initializeLedDrivers()
 		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("main.cpp:initializeLedDrivers"), (String)F("Initialize LED driver for ") + config.ledCount + F(" LED's on pin ") + config.ledPin + F("."));
 		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("main.cpp:initializeLedDrivers"), (String)F("Initialize LED animator of type ") + config.type + F(" for ") + config.ledCount + F(" LED's on pin ") + config.ledPin);
 
-		// Rainbow linear type
+		// Rainbow solid type
 		if (config.type == 0)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("main.cpp:initializeLedDrivers"), (String)F("Type of animator ") + String(i) + F(" is rainbow solid."));
+			ledAnimator[i] = new TesLight::RainbowAnimator();
+			((TesLight::RainbowAnimator *)ledAnimator[i])->setRainbowMode(TesLight::RainbowMode::RAINBOW_SOLID);
+		}
+
+		// Rainbow linear type
+		else if (config.type == 1)
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("main.cpp:initializeLedDrivers"), (String)F("Type of animator ") + String(i) + F(" is rainbow linear."));
 			ledAnimator[i] = new TesLight::RainbowAnimator();
@@ -178,7 +186,7 @@ bool initializeLedDrivers()
 		}
 
 		// Rainbow middle type
-		if (config.type == 1)
+		else if (config.type == 2)
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("main.cpp:initializeLedDrivers"), (String)F("Type of animator ") + String(i) + F(" is rainbow middle."));
 			ledAnimator[i] = new TesLight::RainbowAnimator();
@@ -186,7 +194,7 @@ bool initializeLedDrivers()
 		}
 
 		// Gradient type
-		else if (config.type == 2)
+		else if (config.type == 3)
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("main.cpp:initializeLedDrivers"), (String)F("Type of animator ") + String(i) + F(" is gradient."));
 			ledAnimator[i] = new TesLight::GradientAnimator();
@@ -194,7 +202,7 @@ bool initializeLedDrivers()
 		}
 
 		// Static color type
-		else if (config.type == 3)
+		else if (config.type == 4)
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("main.cpp:initializeLedDrivers"), (String)F("Type of animator ") + String(i) + F(" is static color."));
 			ledAnimator[i] = new TesLight::StaticColorAnimator();
@@ -407,7 +415,7 @@ void setup()
 	initializeRestApi();
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), (String)F("REST api initialized."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("Program initialized successfully, going into work mode."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:setup"), F("TesLight initialized successfully, going into work mode."));
 }
 
 /**
@@ -416,9 +424,9 @@ void setup()
 void loop()
 {
 	// Handle the LEDs
-	if (millis() - ledTimer > LED_CYCLE_TIME)
+	if (micros() - ledTimer > LED_CYCLE_TIME)
 	{
-		ledTimer = millis();
+		ledTimer = micros();
 
 		for (uint8_t i = 0; i < NUM_LED_DRIVERS; i++)
 		{
@@ -440,7 +448,7 @@ void loop()
 	}
 
 	// Handle the switch sensor
-	if (millis() - switchSensorTimer > SWITCH_SENSOR_CYCLE_TIME)
+	if (micros() - switchSensorTimer > SWITCH_SENSOR_CYCLE_TIME)
 	{
 		switchSensorTimer = millis();
 
@@ -463,9 +471,9 @@ void loop()
 	}
 
 	// Handle the motion sensor
-	if (millis() - motionSensorTimer > MOTION_SENSOR_CYCLE_TIME)
+	if (micros() - motionSensorTimer > MOTION_SENSOR_CYCLE_TIME)
 	{
-		motionSensorTimer = millis();
+		motionSensorTimer = micros();
 
 		if (motionSensor == nullptr || !motionSensor->readData())
 		{
@@ -475,11 +483,11 @@ void loop()
 	}
 
 	// Measure the FPS
-	if (millis() - fpsTimer >= FPS_CYCLE_TIME)
+	if (micros() - fpsTimer >= FPS_CYCLE_TIME)
 	{
-		fpsTimer = millis();
+		fpsTimer = micros();
 
-		ledFrameCounter /= FPS_CYCLE_TIME / 1000;
+		ledFrameCounter /= FPS_CYCLE_TIME / 1000000;
 		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("main.cpp:loop"), (String)F("LEDs running at an average of ") + ledFrameCounter + F(" FPS"));
 
 		ledFrameCounter = 0;

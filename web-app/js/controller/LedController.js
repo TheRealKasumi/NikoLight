@@ -109,6 +109,11 @@ class LedController {
 			case "Rainbow":
 				this.mainController.showUiElement(this.uiElements.brightnessSlider, true);
 				this.mainController.showUiElement(this.uiElements.speedSlider, true);
+				this.mainController.showUiElement(this.uiElements.reverseCheck, true);
+				break;
+			case "Rainbow Linear":
+				this.mainController.showUiElement(this.uiElements.brightnessSlider, true);
+				this.mainController.showUiElement(this.uiElements.speedSlider, true);
 				this.mainController.showUiElement(this.uiElements.distanceSlider, true);
 				this.mainController.showUiElement(this.uiElements.reverseCheck, true);
 				break;
@@ -158,7 +163,8 @@ class LedController {
 	 * @param event event context
 	 */
 	onBrightnessSliderChanged = (event) => {
-		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).brightness = event.target.value;
+		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).brightness =
+			event.target.value;
 	};
 
 	/**
@@ -174,7 +180,8 @@ class LedController {
 	 * @param event event context
 	 */
 	onSatturationSliderChanged1 = (event) => {
-		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).satturation1 = event.target.value;
+		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).satturation1 =
+			event.target.value;
 	};
 
 	/**
@@ -190,7 +197,8 @@ class LedController {
 	 * @param event event context
 	 */
 	onSatturationSliderChanged2 = (event) => {
-		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).satturation2 = event.target.value;
+		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).satturation2 =
+			event.target.value;
 	};
 
 	/**
@@ -214,7 +222,8 @@ class LedController {
 	 * @param event event context
 	 */
 	onReverseCheckChanged = (event) => {
-		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).reverse = event.target.checked;
+		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).reverse =
+			event.target.checked;
 	};
 
 	/**
