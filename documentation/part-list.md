@@ -44,6 +44,10 @@ Also the list assumes that you have all required tools and materials for buildin
 | Shrinking tube               | depends | [Amazon][TUBES]      | Will help you to have a cleaner and safer build                           |
 | Fabric tape                  | depends | [Amazon][TAPE]       | Will help you to have a cleaner and safer build                           |
 
+## Order the PCB and Printed Parts
+
+See [build guide](build.md#order-the-pcb-and-3d-printed-parts).
+
 [JLCPCB]: https://cart.jlcpcb.com/quote?orderType=1&stencilLayer=2&stencilWidth=100&stencilLength=100
 [ESP32]: https://www.amazon.de/AZDelivery-NodeMCU-Development-Nachfolgermodell-ESP8266/dp/B071P98VTG/ref=sr_1_3?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=3U1PNFQJDSD0A&keywords=az%2Besp32&qid=1661668180&sprefix=az%2Besp32%2Caps%2C82&sr=8-3&th=1
 [WS2812B]: https://www.amazon.de/BTF-LIGHTING-adressierbar-Vollfarbiger-wasserdichte-DIY-Projekte/dp/B088BRY2SH/ref=sr_1_8?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1OSVQ80JPAJDG&keywords=ws2812b+strip+60%2Fm&qid=1662188470&sprefix=ws2812b+strip+60%2Fm%2Caps%2C82&sr=8-8
