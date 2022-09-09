@@ -53,13 +53,14 @@ class LedService {
 					// Rainbow
 					case 0:
 					case 1:
+					case 2:
 						// Skip custom properties
 						j += 10;
 						break;
 
 					// Gradient and static color
-					case 2:
 					case 3:
+					case 4:
 						const rgb1 = {
 							red: binConfig[j++],
 							green: binConfig[j++],
@@ -112,13 +113,14 @@ class LedService {
 					// Rainbow
 					case 0:
 					case 1:
+					case 2:
 						// No custom properties
 						j += 10;
 						break;
 
 					// Gradient and static color
-					case 2:
 					case 3:
+					case 4:
 						const hsv1 = {
 							hue: configuration[i].hue1 / 255.0,
 							satturation: configuration[i].satturation1 / 255.0,
