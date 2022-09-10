@@ -77,7 +77,53 @@ Then continue their instructions to finish the order.
 
 ## Assemble the TesLight Controller
 
+First make sure you have all required parts.
+Go back to the [part list](part-list.md) if you want to check it again.
+Prepare your tools, pre-heat the soldering station and the fun part can start😋.
+
+![pcb-parts](media/build/pcb-parts.jpeg)
+
+Don't worry, it's not as hard as it looks first.
+
+### Solder the MPU6050 (Motion Sensor)
+
+This part is the easiest and can be done in two ways.
+Place the MPU6050 (Motion Sensor) in the marked place on the PCB.
+Make sure to align it precisely so that the holes and contacts line up.
+Now it has to be soldered to the PCB.
+This can be done directly using the holes or by using small wires.
+Choice is yours.
+Just make sure the sensor can not move and is mounted as low and flat as possible.
+The space is requied later.
+
+### Solder the Micro SD Card Holder
+
+At first make sure that you bought a fitting card holder by placing it on the PCB and trying to align the contacts.
+Some card holder have tiny plastic pin at the bottom.
+These can simply be cut so it lays flat on the PBC.
+If everything seems to fit well, move the card holder aside.
+Use your soldering station to put a **very thin** layer of solder onto the contact plates.
+This will make the soldering process easier.
+Don't forget the 4 ground contacts around the card holder.
+
+Bring the card holder back in place and make sure it's aligned precisely.
+Then start with the 4 ground contacts so that it can't move anymore.
+Now continue with the remaining contacs.
+It's recommended to heat then up and then do a stroking movement away from the card holder.
+This way you usually get nice and clean connections.
+Make sure there aren't any bridged or unconnected pins left.
+This step is very important because otherwise the controller might not work later and you have to desolder the ESP32 board again.
+Save yourself some pain and make sure everything is fine.
+
+### Solder the SMD Resistors
+
+todo
+
+
+
 ## Assemble the LEDs
+
+todo
 
 ## Upload the Software
 
@@ -121,3 +167,19 @@ You should see the TesLight controller starting up but then stopping with `Faile
 
 ### Prepare and insert the Micro SD Card
 
+TesLight **requires** a `FAT` or `FAT32` formatted micro SD card.
+At least 512MB of storage is recommended for upcoming features.
+The SD card is used to store your settings, animations, logs and the browser based UI.
+In the future it might be possible to create fully customized animations.
+These will also be stored on the SD card.
+
+Since the controller will create the settings and log data automatically, only the UI files must be copied to the SD card.
+The UI come as single html file with all required data embedded into it.
+It can be found in the [web-app](/web-app/) folder and is called [index.html.min.html](/web-app/index.html.min.html).
+Create a new folder called `web-app` in the root of your SD card.
+Copy the [index.html.min.html](/web-app/index.html.min.html) into the newly created folder and rename it to `index.html`.
+Eject the SD card from your computer and insert it into the micros SD card slot of the TesLight controller.
+
+## Let's test it!
+
+todo
