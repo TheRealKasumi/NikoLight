@@ -145,6 +145,7 @@ body {
 	background: linear-gradient(to right, #1e305e, #154061);
 	opacity: 0.8;
 	box-shadow: 0px 0px 8px 8px #0000005e;
+	display: none;
 }
 
 .tabbar {
