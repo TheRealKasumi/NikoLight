@@ -29,6 +29,8 @@
 #include "led/animator/GradientAnimator.h"
 #include "led/animator/StaticColorAnimator.h"
 
+#define MAX_ULONG_VALUE 0xffffffffffffffff
+
 TesLight::Configuration *configuration = nullptr;
 TesLight::LedDriver *ledDriver[NUM_LED_DRIVERS] = {nullptr};
 TesLight::LedAnimator *ledAnimator[NUM_LED_DRIVERS] = {nullptr};
@@ -424,7 +426,7 @@ void setup()
 void loop()
 {
 	// Handle the LEDs
-	if (micros() - ledTimer > LED_CYCLE_TIME)
+	if (micros() - ledTimer > LED_CYCLE_TIME && ledTimer != MAX_ULONG_VALUE)
 	{
 		ledTimer = micros();
 
@@ -439,7 +441,7 @@ void loop()
 			if (!ledDriver[i]->show())
 			{
 				TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("main.cpp:loop"), F("Failed to send out LED data because the driver returned with an error. LED's are disabled now."));
-				ledTimer = 0xffffffffffffffff;
+				ledTimer = MAX_ULONG_VALUE;
 				break;
 			}
 		}
@@ -448,7 +450,7 @@ void loop()
 	}
 
 	// Handle the switch sensor
-	if (micros() - switchSensorTimer > SWITCH_SENSOR_CYCLE_TIME)
+	if (micros() - switchSensorTimer > SWITCH_SENSOR_CYCLE_TIME && switchSensorTimer != MAX_ULONG_VALUE)
 	{
 		switchSensorTimer = millis();
 
@@ -466,19 +468,19 @@ void loop()
 		else
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("main.cpp:loop"), F("Failed to read switch sensor data. Switch sensor is disabled now."));
-			switchSensorTimer = 0xffffffffffffffff;
+			switchSensorTimer = MAX_ULONG_VALUE;
 		}
 	}
 
 	// Handle the motion sensor
-	if (micros() - motionSensorTimer > MOTION_SENSOR_CYCLE_TIME)
+	if (micros() - motionSensorTimer > MOTION_SENSOR_CYCLE_TIME && motionSensorTimer != MAX_ULONG_VALUE)
 	{
 		motionSensorTimer = micros();
 
 		if (motionSensor == nullptr || !motionSensor->readData())
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("main.cpp:loop"), F("Failed to read motion sensor data. Motion sensor is disabled now."));
-			motionSensorTimer = 0xffffffffffffffff;
+			motionSensorTimer = MAX_ULONG_VALUE;
 		}
 	}
 

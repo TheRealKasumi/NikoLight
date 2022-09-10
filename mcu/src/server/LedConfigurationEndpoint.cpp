@@ -191,5 +191,5 @@ bool TesLight::LedConfigurationEndpoint::validateLedCount(const int ledCount)
  */
 bool TesLight::LedConfigurationEndpoint::validateAnimatorType(const int animatorType)
 {
-	return animatorType >= 0 && animatorType <= 3;
+	return animatorType >= 0 && animatorType <= 4;
 }
