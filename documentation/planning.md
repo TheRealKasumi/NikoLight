@@ -51,12 +51,12 @@ More about that at a later point in the build guide.
 
 | Zone            | LED's | Cable Length              | Physical Channel |
 |-----------------|-------|---------------------------|------------------|
-| Dash            | 70-80 | 150cm                     | 1                |
+| Dash            | 34-72 | 150cm                     | 1                |
 | Center Console  | 2     | 100cm                     | 2                |
 | Front Doors     | 4     | 265cm + 8cm + 75cm + 90cm | 3, 4             |
 | Rear Doors      | 4     | 405cm + 8cm + 75cm + 75cm | 5, 6             |
 
-So for this build we would need ~90 LEDs and ~20m cable with 3 wires.
+So for this build we would need 44 to 82 LEDs and ~20m cable with 3 wires.
 Also 15m of the fiber "cable" was used around the doors and center console.
 Make sure to measure the required length carefully for the build.
 
@@ -64,17 +64,27 @@ Make sure to measure the required length carefully for the build.
 
 Since the WS2812 type LED's and the TesLight controller require a stable 5V power supply, the power consumption becomes relevant.
 TesLight can be built with an on-board 2-3A buck converter.
-This results in a power output of around 42W max for the LED's.
-If more power is required, a heatsink or external regulator is required.
+This results in a power output of around 10-15W max for the LED's.
+If more power is required a external regulator is required.
 
-Assuming "standard" 5x5mm LED chips, each channel can draw around 20mA at 5V and maximum brightness.
-Since each LED has 3 channels (red, green, blue), a current draw of around 60mA has to be assumed.
+Assuming "standard" 5x5mm LED chips, each channel can draw around 15mA at 5V and maximum brightness.
+Since each LED has 3 channels (red, green, blue), a current draw of around 45mA has to be assumed.
 To calculate the total power draw, to following formula can be used:
 
-`power = led_count * 0.06 * 5`
+`power = led_count * 0.045 * 5`
 
-In the example configuration above this would result in a power draw of around 27W.
-So in this case no external regulator would be required.
-For cooler operation and safety it can still be recommendable to buy an external regulator.
-Keep in mind here that the car can easily reach more than 80°C when parked and the sun is shining.
-The regulator should be well dimensioned because it can not dissipate much heat.
+From the example configuration above we assume a total of 44 to 82 LED's.
+
+In the first case this would result in a current draw of around 1.98A or a total power of 9.9W.
+The on board regulator is perfectly suitable for this kind of load.
+
+Assuming the second case with 82 LED's, we have to expect a current draw of up to 3.69A or a total power of 18.45W.
+This could theoretically reach the limit of the onboard regulator.
+In practice, these loads are only reached when the LED's are set to full brightness at a constant white color.
+If you are planing to do so, you should go with an external regulator with a higher power limit.
+Otherwise when using the rainbow effects or lower brighness, these limits will not be reached.
+
+> What happens when I exceed the power limit of the regulator permanently?
+
+When using a proper LM2596 (not faked ones), it will shut down as soon as a critical current or temperature is reached.
+It's not recommended but it shouldn't destroy or burn anything.
