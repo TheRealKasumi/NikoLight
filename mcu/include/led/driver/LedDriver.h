@@ -18,7 +18,7 @@
 #include "led/animator/LedAnimator.h"
 #include "logging/Logger.h"
 
-#define BITS_PER_LED_CMD 24
+#define BITS_PER_LED 24
 #define T0H 14
 #define T1H 52
 #define TL 52
@@ -28,7 +28,7 @@ namespace TesLight
 	class LedDriver
 	{
 	public:
-		LedDriver(const uint8_t pin, const uint8_t channel, const uint8_t pixelCount);
+		LedDriver(const uint8_t pin, const uint8_t channel, const uint8_t pixelCount, const float animationBrightness = 0.0f, const float lightBrightness = 0.0f, const float fadeSpeed = 0.02f);
 		~LedDriver();
 
 		TesLight::Pixel *getPixels();
@@ -37,7 +37,14 @@ namespace TesLight
 		void setPixel(const uint16_t index, const TesLight::Pixel pixel);
 		TesLight::Pixel getPixel(const uint16_t index);
 
-		void setActive(const bool active);
+		float getAnimationBrightness();
+		void setAnimationBrightness(const float animationBrightness);
+
+		float getLightBrightness();
+		void setLightBrightness(const float lightBrightness);
+
+		float getFadeSpeed();
+		void setFadeSpeed(const float fadeSpeed);
 
 		bool begin();
 		bool end();
@@ -46,10 +53,14 @@ namespace TesLight
 	private:
 		uint8_t pin;
 		uint8_t channel;
-		bool active;
-		bool driverInstalled;
 		uint16_t pixelCount;
+		float animationBrightness;
+		float lightBrightness;
+		float fadeSpeed;
+
+		bool driverInstalled;
 		TesLight::Pixel *pixels;
+		float smoothedBrightness;
 
 		rmt_config_t getRmtConfig();
 

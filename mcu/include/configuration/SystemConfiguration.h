@@ -17,7 +17,6 @@
 // Logging configuration
 #define SERIAL_BAUD_RATE 460800
 #define LOG_FILE_NAME "/system_log.txt"
-#define MIN_LOG_LEVEl TesLight::Logger::LogLevel::INFO
 
 // Configuration of the runtime configuration
 #define CONFIGURATION_FILE_NAME "/config.tli"
@@ -32,9 +31,9 @@
 #define SDA_PIN 32
 #define SCL_PIN 33
 
-// Switch sensor configuration
-#define SWITCH_SENSOR_PIN 35
-#define SWITCH_SENSOR_THRESHOLD 75
+// Light sensor configuration
+#define LIGHT_SENSOR_PIN 35
+#define LIGHT_SENSOR_BUFFER_SIZE 10
 
 // Motion sensor configuration
 #define MOTION_SENSOR_I2C_ADDRESS 0x68
@@ -46,7 +45,7 @@
 
 // Timer configuration
 #define LED_CYCLE_TIME 16300
-#define SWITCH_SENSOR_CYCLE_TIME 20000
+#define LIGHT_SENSOR_CYCLE_TIME 20000
 #define MOTION_SENSOR_CYCLE_TIME 50000
 #define FPS_CYCLE_TIME 10000000
 
