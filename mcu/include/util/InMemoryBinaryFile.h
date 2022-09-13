@@ -2,8 +2,6 @@
  * @file InMemoryBinaryFile.h
  * @author TheRealKasumi
  * @brief Class to read and write data in binary format in memory.
- * @version 0.0.1
- * @date 2022-07-28
  *
  * @copyright Copyright (c) 2022
  *

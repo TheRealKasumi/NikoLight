@@ -2,8 +2,6 @@
  * @file LedDriver.h
  * @author TheRealKasumi
  * @brief Contains a class to drive WS2812 series LEDs using the ESP32 rmt lib.
- * @version 0.0.1
- * @date 2022-06-28
  *
  * @copyright Copyright (c) 2022
  *

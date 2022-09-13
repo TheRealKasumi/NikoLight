@@ -2,8 +2,6 @@
  * @file ConnectionTestEndpoint.h
  * @author TheRealKasumi
  * @brief Contains a REST endpoint to test the connection to the controller.
- * @version 0.0.1
- * @date 2022-07-07
  *
  * @copyright Copyright (c) 2022
  *

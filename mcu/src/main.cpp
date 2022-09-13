@@ -2,8 +2,6 @@
  * @file main.cpp
  * @author TheRealKasumi
  * @brief Entry point, initialization and main loop of the program.
- * @version 0.0.1
- * @date 2022-09-06
  *
  * @copyright Copyright (c) 2022
  *

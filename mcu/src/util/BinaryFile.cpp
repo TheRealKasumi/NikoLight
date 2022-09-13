@@ -2,8 +2,6 @@
  * @file BinaryFile.cpp
  * @author TheRealKasumi
  * @brief Implementation of the {@link TesLight::BianryFile}.
- * @version 0.0.1
- * @date 2022-07-28
  *
  * @copyright Copyright (c) 2022
  *

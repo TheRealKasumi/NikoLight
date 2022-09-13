@@ -2,8 +2,6 @@
  * @file RestEndpoint.h
  * @author TheRealKasumi
  * @brief Contains a base class to model a single REST endpoint.
- * @version 0.0.1
- * @date 2022-07-07
  *
  * @copyright Copyright (c) 2022
  *

@@ -2,8 +2,6 @@
  * @file Logger.cpp
  * @author TheRealKasumi
  * @brief Implementation of {@link TesLight::Logger}.
- * @version 0.0.1
- * @date 2022-07-05
  *
  * @copyright Copyright (c) 2022
  *

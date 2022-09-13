@@ -2,8 +2,6 @@
  * @file LedAnimator.cpp
  * @author TheRealKasumi
  * @brief Contains the implementation of {@link TesLight::LedAnimator}.
- * @version 0.0.1
- * @date 2022-09-06
  *
  * @copyright Copyright (c) 2022
  *

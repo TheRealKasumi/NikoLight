@@ -2,8 +2,6 @@
  * @file MotionSensor.cpp
  * @author TheRealKasumi
  * @brief implementation of the {@link TesLight::MotionSensor}.
- * @version 0.0.1
- * @date 2022-06-22
  *
  * @copyright Copyright (c) 2022
  *
