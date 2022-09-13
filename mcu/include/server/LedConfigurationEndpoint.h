@@ -2,8 +2,6 @@
  * @file LedConfigurationEndpoint.h
  * @author TheRealKasumi
  * @brief Contains a REST endpoint to configure the LED settings.
- * @version 0.0.1
- * @date 2022-07-28
  *
  * @copyright Copyright (c) 2022
  *

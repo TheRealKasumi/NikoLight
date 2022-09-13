@@ -2,8 +2,6 @@
  * @file LightSensor.h
  * @author TheRealKasumi
  * @brief Contains a class for reading the light input, connected to the cars ambient light.
- * @version 0.0.1
- * @date 2022-08-19
  *
  * @copyright Copyright (c) 2022
  *

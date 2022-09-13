@@ -2,8 +2,6 @@
  * @file SettingsController.js
  * @author TheRealKasumi
  * @brief Controller for the settings tab of the TesLight UI.
- * @version 0.0.1
- * @date 2022-08-18
  *
  * @copyright Copyright (c) 2022
  *

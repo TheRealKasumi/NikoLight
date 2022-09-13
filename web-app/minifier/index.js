@@ -2,8 +2,6 @@
  * @file index.js
  * @author TheRealKasumi
  * @brief Tool to minify/uglify the TesLight frontend files.
- * @version 0.0.1
- * @date 2022-07-19
  *
  * @copyright Copyright (c) 2022
  *

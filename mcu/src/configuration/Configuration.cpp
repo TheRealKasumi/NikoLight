@@ -2,8 +2,6 @@
  * @file Configuration.cpp
  * @author TheRealKasumi
  * @brief Contains the implementation of {@link TesLight::Configuration}.
- * @version 0.0.1
- * @date 2022-07-28
  *
  * @copyright Copyright (c) 2022
  *

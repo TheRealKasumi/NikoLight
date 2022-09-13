@@ -2,8 +2,6 @@
  * @file LedService.js
  * @author TheRealKasumi
  * @brief Service for accessing the LED api of the TesLight controller.
- * @version 0.0.1
- * @date 2022-07-22
  *
  * @copyright Copyright (c) 2022
  *

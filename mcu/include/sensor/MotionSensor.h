@@ -2,8 +2,6 @@
  * @file MotionSensor.h
  * @author TheRealKasumi
  * @brief Contains a class for reading motion data from the MPU6050.
- * @version 0.0.1
- * @date 2022-06-22
  *
  * @copyright Copyright (c) 2022
  *

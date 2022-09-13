@@ -2,8 +2,6 @@
  * @file SystemService.js
  * @author TheRealKasumi
  * @brief Service for accessing the system settings api of the TesLight controller.
- * @version 0.0.1
- * @date 2022-07-22
  *
  * @copyright Copyright (c) 2022
  *
