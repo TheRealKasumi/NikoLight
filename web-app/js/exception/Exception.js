@@ -43,6 +43,15 @@ class Exception {
 }
 
 /**
+ * Exception thrown by the {@link SystemSerive}.
+ */
+ class SystemServiceException extends Exception {
+	getName = () => {
+		return "SystemServiceException";
+	};
+}
+
+/**
  * Exception thrown by the {@link LedService}.
  */
 class LedServiceException extends Exception {

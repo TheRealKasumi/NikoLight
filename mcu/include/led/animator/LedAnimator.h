@@ -36,9 +36,6 @@ namespace TesLight
 		void setOffset(const uint16_t offset);
 		uint16_t getOffset();
 
-		void setBrightness(const float brightness);
-		float getBrightness();
-
 		void setReverse(const bool reverse);
 		bool getReverse();
 
@@ -50,7 +47,6 @@ namespace TesLight
 		uint16_t pixelCount;
 		uint8_t speed;
 		uint16_t offset;
-		float brightness;
 		bool reverse;
 
 		static float trapezoid(float angle);

@@ -31,8 +31,20 @@ class MainController {
 		this.attachUiEvents();
 
 		// Create the LED and WiFi service
+		this.systemService = new SystemService("/api/");
 		this.ledService = new LedService("/api/");
 		this.wifiService = new WiFiService("/api/");
+
+		// Get the system configuration from the TesLigth controller
+		let systemConfig;
+		try {
+			systemConfig = await this.systemService.getSystemConfiguration();
+		} catch (ex) {
+			this.showMessageBox("Verbindung zum TesLight Controller fehlgeschlagen.", "error");
+			this.showUiElement(this.uiElements.loader, false);
+			console.log(ex.toString());
+			return;
+		}
 
 		// Get the LED configuration from the TesLigth controller
 		let ledConfig;
@@ -58,10 +70,14 @@ class MainController {
 
 		// Create the frontend model
 		this.model = {
+			systemConfig: systemConfig,
 			ledConfig: ledConfig,
 			wifiConfig: wifiConfig,
+			getSystemConfig: () => {
+				return this.model.systemConfig;
+			},
 			getLedConfig: (selectedZone) => {
-				return this.model.ledConfig[selectedZone];
+				return typeof selectedZone === "number" ? this.model.ledConfig[selectedZone] : this.model.ledConfig;
 			},
 			getWiFiConfig: () => {
 				return this.model.wifiConfig;
@@ -159,6 +175,14 @@ class MainController {
 				this.uiElements.messageBox.classList.add("hidden");
 			}, duration);
 		}
+	};
+
+	/**
+	 * Get the {@link SystemService}.
+	 * @returns {@link SystemService} instance
+	 */
+	getSystemService = () => {
+		return this.systemService;
 	};
 
 	/**

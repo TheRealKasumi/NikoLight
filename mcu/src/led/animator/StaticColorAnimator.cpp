@@ -45,9 +45,9 @@ void TesLight::StaticColorAnimator::render()
 {
 	for (uint16_t i = 0; i < this->pixelCount; i++)
 	{
-		this->pixels[i].setRed(this->red * this->brightness);
-		this->pixels[i].setGreen(this->green * this->brightness);
-		this->pixels[i].setBlue(this->blue * this->brightness);
+		this->pixels[i].setRed(this->red);
+		this->pixels[i].setGreen(this->green);
+		this->pixels[i].setBlue(this->blue);
 	}
 }
 

@@ -21,8 +21,8 @@ void TesLight::WiFiConfigurationEndpoint::begin(TesLight::Configuration *_config
 {
 	configuration = _configuration;
 	configChangedCallback = _configChangedCallback;
-	getWebServer()->addRequestHandler((getBaseUri() + F("wifi")).c_str(), http_method::HTTP_GET, TesLight::WiFiConfigurationEndpoint::getWiFiConfig);
-	getWebServer()->addRequestHandler((getBaseUri() + F("wifi")).c_str(), http_method::HTTP_POST, TesLight::WiFiConfigurationEndpoint::postWiFiConfig);
+	getWebServer()->addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_GET, TesLight::WiFiConfigurationEndpoint::getWiFiConfig);
+	getWebServer()->addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_POST, TesLight::WiFiConfigurationEndpoint::postWiFiConfig);
 }
 
 /**
