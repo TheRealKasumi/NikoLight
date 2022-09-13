@@ -2,8 +2,6 @@
  * @file MainController.js
  * @author TheRealKasumi
  * @brief Main controller for the TesLight UI.
- * @version 0.0.1
- * @date 2022-08-12
  *
  * @copyright Copyright (c) 2022
  *

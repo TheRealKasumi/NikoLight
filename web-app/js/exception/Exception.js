@@ -2,8 +2,6 @@
  * @file Exception.js
  * @author TheRealKasumi
  * @brief Contains exceptions.
- * @version 0.0.1
- * @date 2022-07-22
  *
  * @copyright Copyright (c) 2022
  *

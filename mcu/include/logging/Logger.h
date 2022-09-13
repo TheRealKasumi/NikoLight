@@ -2,8 +2,6 @@
  * @file Logger.h
  * @author TheRealKasumi
  * @brief Static class containing the {@link TesLight::Logger}.
- * @version 0.0.1
- * @date 2022-07-05
  *
  * @copyright Copyright (c) 2022
  *

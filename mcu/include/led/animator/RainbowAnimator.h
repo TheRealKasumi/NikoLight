@@ -2,8 +2,6 @@
  * @file RainbowAnimator.h
  * @author TheRealKasumi
  * @brief Contains a class to render a rainbow.
- * @version 0.0.1
- * @date 2022-09-06
  *
  * @copyright Copyright (c) 2022
  *

@@ -2,8 +2,6 @@
  * @file WiFiConfigurationEndpoint.h
  * @author TheRealKasumi
  * @brief Contains a REST endpoint to configure the WiFi settings.
- * @version 0.0.1
- * @date 2022-07-07
  *
  * @copyright Copyright (c) 2022
  *

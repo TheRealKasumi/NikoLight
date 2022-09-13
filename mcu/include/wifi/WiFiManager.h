@@ -2,8 +2,6 @@
  * @file WiFiManager.h
  * @author TheRealKasumi
  * @brief Contains a simple WiFi manager.
- * @version 0.0.1
- * @date 2022-06-28
  *
  * @copyright Copyright (c) 2022
  *

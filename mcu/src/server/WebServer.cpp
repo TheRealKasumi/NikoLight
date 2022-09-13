@@ -2,8 +2,6 @@
  * @file WebServer.cpp
  * @author TheRealKasumi
  * @brief Implementation of the {@link WebServer}.
- * @version 0.0.1
- * @date 2022-06-27
  *
  * @copyright Copyright (c) 2022
  *

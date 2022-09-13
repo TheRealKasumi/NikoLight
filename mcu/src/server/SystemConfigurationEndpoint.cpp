@@ -2,8 +2,6 @@
  * @file SystemConfigurationEndpoint.cpp
  * @author TheRealKasumi
  * @brief Implementation of a REST endpoint to configure the system settings.
- * @version 0.0.1
- * @date 2022-07-07
  *
  * @copyright Copyright (c) 2022
  *

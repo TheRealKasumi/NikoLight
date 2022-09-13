@@ -2,8 +2,6 @@
  * @file Pixel.cpp
  * @author TheRealKasumi
  * @brief Implementation of the {@link TesLight::Pixel}.
- * @version 0.0.1
- * @date 2022-06-28
  *
  * @copyright Copyright (c) 2022
  *
