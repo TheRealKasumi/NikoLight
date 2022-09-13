@@ -33,7 +33,7 @@ void TesLight::LedConfigurationEndpoint::getLedConfig(AsyncWebServerRequest *req
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("LedConfigurationEndpoint.cpp:getLedConfig"), F("Received request to get the LED configuration..."));
 
-	TesLight::InMemoryBinaryFile binary(256);
+	TesLight::InMemoryBinaryFile binary(120);
 	for (uint8_t i = 0; i < NUM_LED_DRIVERS; i++)
 	{
 		binary.writeByte(configuration->getLedConfig(i).ledPin);
@@ -43,6 +43,7 @@ void TesLight::LedConfigurationEndpoint::getLedConfig(AsyncWebServerRequest *req
 		binary.writeWord(configuration->getLedConfig(i).offset);
 		binary.writeByte(configuration->getLedConfig(i).brightness);
 		binary.writeByte(configuration->getLedConfig(i).reverse);
+		binary.writeByte(configuration->getLedConfig(i).fadeSpeed);
 		for (uint8_t j = 0; j < NUM_ANIMATOR_CUSTOM_FIELDS; j++)
 		{
 			binary.writeByte(configuration->getLedConfig(i).customField[j]);
@@ -119,6 +120,7 @@ void TesLight::LedConfigurationEndpoint::postLedConfig(AsyncWebServerRequest *re
 		config[i].offset = binary.readWord();
 		config[i].brightness = binary.readByte();
 		config[i].reverse = binary.readByte();
+		config[i].fadeSpeed = binary.readByte();
 		for (uint8_t j = 0; j < NUM_ANIMATOR_CUSTOM_FIELDS; j++)
 		{
 			config[i].customField[j] = binary.readByte();

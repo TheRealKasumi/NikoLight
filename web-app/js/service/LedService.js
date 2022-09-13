@@ -1,7 +1,7 @@
 /**
  * @file LedService.js
  * @author TheRealKasumi
- * @brief Service for accessign the LED api of the TesLight controller.
+ * @brief Service for accessing the LED api of the TesLight controller.
  * @version 0.0.1
  * @date 2022-07-22
  *
@@ -43,6 +43,7 @@ class LedService {
 					offset: this.bytesToWord(binConfig[j++], binConfig[j++]),
 					brightness: binConfig[j++],
 					reverse: binConfig[j++],
+					fadingSpeed: binConfig[j++],
 					hue1: 0,
 					satturation1: 0,
 					hue2: 0,
@@ -97,7 +98,7 @@ class LedService {
 	 */
 	postLedConfiguration = (configuration) => {
 		return new Promise(async (resolve, reject) => {
-			const binConfig = new Uint8Array(19 * configuration.length);
+			const binConfig = new Uint8Array(20 * configuration.length);
 			for (let i = 0, j = 0; i < configuration.length; i++) {
 				binConfig[j++] = configuration[i].outputPin;
 				binConfig[j++] = this.wordToBytes(configuration[i].ledCount).first;
@@ -108,6 +109,7 @@ class LedService {
 				binConfig[j++] = this.wordToBytes(configuration[i].offset).second;
 				binConfig[j++] = configuration[i].brightness;
 				binConfig[j++] = configuration[i].reverse;
+				binConfig[j++] = configuration[i].fadingSpeed;
 
 				switch (configuration[i].animatorType) {
 					// Rainbow
@@ -147,7 +149,6 @@ class LedService {
 			}
 
 			const base64 = this.byteArrayToBase64(binConfig);
-
 			try {
 				resolve(this.postTeslightLedConfiguration(base64));
 			} catch (ex) {
