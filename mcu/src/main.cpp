@@ -199,11 +199,11 @@ void initializeRestApi()
 {
 	TesLight::ConnectionTestEndpoint::init(webServer, "/api/");
 	TesLight::ConnectionTestEndpoint::begin();
-	TesLight::SystemConfigurationEndpoint::init(webServer, "/api/config/");
+	TesLight::SystemConfigurationEndpoint::init(webServer, "/api/");
 	TesLight::SystemConfigurationEndpoint::begin(configuration, systemConfigChanged);
-	TesLight::LedConfigurationEndpoint::init(webServer, "/api/config/");
+	TesLight::LedConfigurationEndpoint::init(webServer, "/api/");
 	TesLight::LedConfigurationEndpoint::begin(configuration, ledConfigChanged);
-	TesLight::WiFiConfigurationEndpoint::init(webServer, "/api/config/");
+	TesLight::WiFiConfigurationEndpoint::init(webServer, "/api/");
 	TesLight::WiFiConfigurationEndpoint::begin(configuration, wifiConfigChanged);
 }
 

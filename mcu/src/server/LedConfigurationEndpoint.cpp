@@ -21,8 +21,8 @@ void TesLight::LedConfigurationEndpoint::begin(TesLight::Configuration *_configu
 {
 	configuration = _configuration;
 	configChangedCallback = _configChangedCallback;
-	getWebServer()->addRequestHandler((getBaseUri() + F("led")).c_str(), http_method::HTTP_GET, TesLight::LedConfigurationEndpoint::getLedConfig);
-	getWebServer()->addRequestHandler((getBaseUri() + F("led")).c_str(), http_method::HTTP_POST, TesLight::LedConfigurationEndpoint::postLedConfig);
+	getWebServer()->addRequestHandler((getBaseUri() + F("config/led")).c_str(), http_method::HTTP_GET, TesLight::LedConfigurationEndpoint::getLedConfig);
+	getWebServer()->addRequestHandler((getBaseUri() + F("config/led")).c_str(), http_method::HTTP_POST, TesLight::LedConfigurationEndpoint::postLedConfig);
 }
 
 /**

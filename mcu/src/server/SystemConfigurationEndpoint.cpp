@@ -21,8 +21,8 @@ void TesLight::SystemConfigurationEndpoint::begin(TesLight::Configuration *_conf
 {
 	configuration = _configuration;
 	configChangedCallback = _configChangedCallback;
-	getWebServer()->addRequestHandler((getBaseUri() + F("system")).c_str(), http_method::HTTP_GET, TesLight::SystemConfigurationEndpoint::getSystemConfig);
-	getWebServer()->addRequestHandler((getBaseUri() + F("system")).c_str(), http_method::HTTP_POST, TesLight::SystemConfigurationEndpoint::postSystemConfig);
+	getWebServer()->addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_GET, TesLight::SystemConfigurationEndpoint::getSystemConfig);
+	getWebServer()->addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_POST, TesLight::SystemConfigurationEndpoint::postSystemConfig);
 }
 
 /**
