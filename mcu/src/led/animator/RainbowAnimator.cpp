@@ -2,8 +2,6 @@
  * @file RainbowAnimator.cpp
  * @author TheRealKasumi
  * @brief Implementation of the {@TesLight::RainbowAnimator}.
- * @version 0.0.1
- * @date 2022-09-06
  *
  * @copyright Copyright (c) 2022
  *
@@ -70,9 +68,9 @@ void TesLight::RainbowAnimator::render()
 			blueAngle = i < middle ? (this->angle + 240.0f) + i * this->offset : (this->angle + 240.0f) + (this->pixelCount - i) * this->offset;
 		}
 
-		this->pixels[i].setRed(this->trapezoid(redAngle) * 255.0f * this->brightness);
-		this->pixels[i].setGreen(this->trapezoid(greenAngle) * 255.0f * this->brightness);
-		this->pixels[i].setBlue(this->trapezoid(blueAngle) * 255.0f * this->brightness);
+		this->pixels[i].setRed(this->trapezoid(redAngle) * 255.0f);
+		this->pixels[i].setGreen(this->trapezoid(greenAngle) * 255.0f);
+		this->pixels[i].setBlue(this->trapezoid(blueAngle) * 255.0f);
 	}
 
 	if (this->reverse)

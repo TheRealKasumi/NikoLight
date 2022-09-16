@@ -2,8 +2,6 @@
  * @file StaticColorAnimator.cpp
  * @author TheRealKasumi
  * @brief Implementation of the {@link StaticColorAnimator}.
- * @version 0.0.1
- * @date 2022-06-28
  *
  * @copyright Copyright (c) 2022
  *
@@ -45,9 +43,9 @@ void TesLight::StaticColorAnimator::render()
 {
 	for (uint16_t i = 0; i < this->pixelCount; i++)
 	{
-		this->pixels[i].setRed(this->red * this->brightness);
-		this->pixels[i].setGreen(this->green * this->brightness);
-		this->pixels[i].setBlue(this->blue * this->brightness);
+		this->pixels[i].setRed(this->red);
+		this->pixels[i].setGreen(this->green);
+		this->pixels[i].setBlue(this->blue);
 	}
 }
 

@@ -2,8 +2,6 @@
  * @file LedDriver.cpp
  * @author TheRealKasumi
  * @brief Implementation of the {@link TesLight::LedDriver}.
- * @version 0.0.1
- * @date 2022-06-28
  *
  * @copyright Copyright (c) 2022
  *
@@ -15,15 +13,21 @@
  * @param pin ESP32 pin
  * @param channel rmt lib channel to use for the output. Valid range is 0 to 7.
  * @param pixelCount number of pixels
+ * @param animationBrightness brightness of the displayed LED animation from 0.0 to 1.0
+ * @param lightBrightness brightness of the cars ambient light from 0.0 to 1.0
  */
-TesLight::LedDriver::LedDriver(const uint8_t pin, const uint8_t channel, const uint8_t pixelCount)
+TesLight::LedDriver::LedDriver(const uint8_t pin, const uint8_t channel, const uint8_t pixelCount, const float animationBrightness, const float lightBrightness, const float fadeSpeed)
 {
 	this->pin = pin;
 	this->channel = channel;
-	this->active = false;
-	this->driverInstalled = false;
 	this->pixelCount = pixelCount;
+	this->animationBrightness = animationBrightness;
+	this->lightBrightness = lightBrightness;
+	this->fadeSpeed = fadeSpeed;
+
+	this->driverInstalled = false;
 	this->pixels = nullptr;
+	this->smoothedBrightness = 0.0f;
 }
 
 /**
@@ -73,12 +77,81 @@ TesLight::Pixel TesLight::LedDriver::getPixel(const uint16_t index)
 }
 
 /**
- * @brief Set the LED's active/inactive
- * @param active LED's on/off
+ * @brief Get the animation brightness of the LED's.
+ * @return brightness value between 0.0 and 1.0
  */
-void TesLight::LedDriver::setActive(const bool active)
+float TesLight::LedDriver::getAnimationBrightness()
 {
-	this->active = active;
+	return this->animationBrightness;
+}
+
+/**
+ * @brief Set the animation brightness of the LED's.
+ * @param brightness brightness value between 0.0 and 1.0
+ */
+void TesLight::LedDriver::setAnimationBrightness(const float animationBrightness)
+{
+	this->animationBrightness = animationBrightness;
+	if (this->animationBrightness < 0.0f)
+	{
+		this->animationBrightness = 0.0f;
+	}
+	else if (this->animationBrightness > 1.0f)
+	{
+		this->animationBrightness = 1.0f;
+	}
+}
+
+/**
+ * @brief Get the brightness of the LED's.
+ * @return brightness value between 0.0 and 1.0
+ */
+float TesLight::LedDriver::getLightBrightness()
+{
+	return this->lightBrightness;
+}
+
+/**
+ * @brief Set the brightness of the LED's.
+ * @param brightness brightness value between 0.0 and 1.0
+ */
+void TesLight::LedDriver::setLightBrightness(const float lightBrightness)
+{
+	this->lightBrightness = lightBrightness;
+	if (this->lightBrightness < 0.0f)
+	{
+		this->lightBrightness = 0.0f;
+	}
+	else if (this->lightBrightness > 1.0f)
+	{
+		this->lightBrightness = 1.0f;
+	}
+}
+
+/**
+ * @brief Get the speed for the fading when tunring on/off the LED's.
+ * @return fade speed in units per frame
+ */
+float TesLight::LedDriver::getFadeSpeed()
+{
+	return this->fadeSpeed;
+}
+
+/**
+ * @brief Set the speed for the fading when tunring on/off the LED's.
+ * @param fadeSpeed fade speed in units per frame. Should be between 0.0 and 1.0
+ */
+void TesLight::LedDriver::setFadeSpeed(const float fadeSpeed)
+{
+	this->fadeSpeed = fadeSpeed;
+	if (this->fadeSpeed < 0.0f)
+	{
+		this->fadeSpeed = 0.0f;
+	}
+	else if (this->fadeSpeed > 1.0f)
+	{
+		this->fadeSpeed = 1.0f;
+	}
 }
 
 /**
@@ -156,12 +229,30 @@ bool TesLight::LedDriver::end()
  */
 bool TesLight::LedDriver::show()
 {
+	const float totalBrightness = this->animationBrightness * this->lightBrightness;
+	if (this->smoothedBrightness < totalBrightness)
+	{
+		this->smoothedBrightness += this->fadeSpeed;
+		if (this->smoothedBrightness > totalBrightness)
+		{
+			this->smoothedBrightness = totalBrightness;
+		}
+	}
+	else if (this->smoothedBrightness > totalBrightness)
+	{
+		this->smoothedBrightness -= this->fadeSpeed;
+		if (this->smoothedBrightness < totalBrightness)
+		{
+			this->smoothedBrightness = totalBrightness;
+		}
+	}
+
 	rmt_config_t rmtConfig = this->getRmtConfig();
-	rmt_item32_t *ledDataBuffer = new rmt_item32_t[this->pixelCount * BITS_PER_LED_CMD];
+	rmt_item32_t *ledDataBuffer = new rmt_item32_t[this->pixelCount * BITS_PER_LED];
 	this->prepareLedDataBuffer(ledDataBuffer);
 
 	bool error = false;
-	if (rmt_write_items(rmtConfig.channel, ledDataBuffer, this->pixelCount * BITS_PER_LED_CMD, false) != ESP_OK)
+	if (rmt_write_items(rmtConfig.channel, ledDataBuffer, this->pixelCount * BITS_PER_LED, false) != ESP_OK)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("LedDriver.cpp:show"), F("Failed to write led data via rmt driver."));
 		error = true;
@@ -226,11 +317,16 @@ void TesLight::LedDriver::prepareLedDataBuffer(rmt_item32_t *ledDataBuffer)
 {
 	for (uint16_t i = 0; i < this->pixelCount; i++)
 	{
-		uint32_t mask = 1 << (BITS_PER_LED_CMD - 1);
-		for (uint8_t j = 0; j < BITS_PER_LED_CMD; j++)
+		TesLight::Pixel pixel = this->pixels[i];
+		pixel.setRed(pixel.getRed() * this->smoothedBrightness);
+		pixel.setGreen(pixel.getGreen() * this->smoothedBrightness);
+		pixel.setBlue(pixel.getBlue() * this->smoothedBrightness);
+
+		uint32_t mask = 1 << (BITS_PER_LED - 1);
+		for (uint8_t j = 0; j < BITS_PER_LED; j++)
 		{
-			uint32_t bit = this->active ? this->pixels[i].getColor() & mask : 0;
-			ledDataBuffer[i * BITS_PER_LED_CMD + j] = bit ? (rmt_item32_t){{{T1H, 1, TL, 0}}} : (rmt_item32_t){{{T0H, 1, TL, 0}}};
+			uint32_t bit = pixel.getColor() & mask;
+			ledDataBuffer[i * BITS_PER_LED + j] = bit ? (rmt_item32_t){{{T1H, 1, TL, 0}}} : (rmt_item32_t){{{T0H, 1, TL, 0}}};
 			mask >>= 1;
 		}
 	}

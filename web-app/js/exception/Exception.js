@@ -2,8 +2,6 @@
  * @file Exception.js
  * @author TheRealKasumi
  * @brief Contains exceptions.
- * @version 0.0.1
- * @date 2022-07-22
  *
  * @copyright Copyright (c) 2022
  *
@@ -39,6 +37,15 @@ class Exception {
 
 	getName = () => {
 		return "Exception";
+	};
+}
+
+/**
+ * Exception thrown by the {@link SystemSerive}.
+ */
+ class SystemServiceException extends Exception {
+	getName = () => {
+		return "SystemServiceException";
 	};
 }
 

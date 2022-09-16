@@ -2,8 +2,6 @@
  * @file LedAnimator.cpp
  * @author TheRealKasumi
  * @brief Contains the implementation of {@link TesLight::LedAnimator}.
- * @version 0.0.1
- * @date 2022-09-06
  *
  * @copyright Copyright (c) 2022
  *
@@ -99,33 +97,6 @@ void TesLight::LedAnimator::setOffset(const uint16_t offset)
 uint16_t TesLight::LedAnimator::getOffset()
 {
 	return this->offset;
-}
-
-/**
- * @brief Set the brightness of the animation. Valid range is 0.0 to 1.0.
- * @param brightness animation brightness
- */
-void TesLight::LedAnimator::setBrightness(const float brightness)
-{
-	this->brightness = brightness;
-
-	if (this->brightness < 0.0f)
-	{
-		this->brightness = 0.0f;
-	}
-	else if (this->brightness > 1.0f)
-	{
-		this->brightness = 1.0f;
-	}
-}
-
-/**
- * @brief Get the brightness of the animation.
- * @return float animation brightness
- */
-float TesLight::LedAnimator::getBrightness()
-{
-	return this->brightness;
 }
 
 /**

@@ -2,8 +2,6 @@
  * @file WiFiService.js
  * @author TheRealKasumi
  * @brief Service for accessign the WiFi api of the TesLight controller.
- * @version 0.0.1
- * @date 2022-08-18
  *
  * @copyright Copyright (c) 2022
  *

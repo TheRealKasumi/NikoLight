@@ -2,8 +2,6 @@
  * @file LedAnimator.h
  * @author TheRealKasumi
  * @brief Contains a base class for all led animators.
- * @version 0.0.1
- * @date 2022-09-06
  *
  * @copyright Copyright (c) 2022
  *
@@ -36,9 +34,6 @@ namespace TesLight
 		void setOffset(const uint16_t offset);
 		uint16_t getOffset();
 
-		void setBrightness(const float brightness);
-		float getBrightness();
-
 		void setReverse(const bool reverse);
 		bool getReverse();
 
@@ -50,7 +45,6 @@ namespace TesLight
 		uint16_t pixelCount;
 		uint8_t speed;
 		uint16_t offset;
-		float brightness;
 		bool reverse;
 
 		static float trapezoid(float angle);

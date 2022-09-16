@@ -2,8 +2,6 @@
  * @file LedController.js
  * @author TheRealKasumi
  * @brief Controller for the LED tab of the TesLight UI.
- * @version 0.0.1
- * @date 2022-08-18
  *
  * @copyright Copyright (c) 2022
  *
@@ -24,6 +22,9 @@ class LedController {
 
 		// Display the current LED configuration of the selected zone in the UI
 		this.displayLedConfiguration();
+
+		// Set the model as unchanged
+		this.mainController.getModel().getLedConfig().changed = false;
 	}
 
 	/**
@@ -41,6 +42,7 @@ class LedController {
 			satturationSlider2: document.getElementById("satturation-slider-2"),
 			speedSlider: document.getElementById("speed-slider"),
 			distanceSlider: document.getElementById("distance-slider"),
+			fadingSlider: document.getElementById("fading-slider"),
 			reverseCheck: document.getElementById("reverse-check"),
 			applyButton: document.getElementById("apply-led-button"),
 		};
@@ -52,6 +54,7 @@ class LedController {
 		elements.satturationSliderInput2 = elements.satturationSlider2.getElementsByTagName("input")[0];
 		elements.speedSliderInput = elements.speedSlider.getElementsByTagName("input")[0];
 		elements.distanceSliderInput = elements.distanceSlider.getElementsByTagName("input")[0];
+		elements.fadingSliderInput = elements.fadingSlider.getElementsByTagName("input")[0];
 		elements.reverseCheckInput = elements.reverseCheck.getElementsByTagName("input")[0];
 
 		return elements;
@@ -70,6 +73,7 @@ class LedController {
 		this.uiElements.satturationSliderInput2.addEventListener("input", this.onSatturationSliderChanged2);
 		this.uiElements.speedSliderInput.addEventListener("input", this.onSpeedSliderChanged);
 		this.uiElements.distanceSliderInput.addEventListener("input", this.onDistanceSliderChanged);
+		this.uiElements.fadingSliderInput.addEventListener("input", this.onFadingSliderChanged);
 		this.uiElements.reverseCheckInput.addEventListener("input", this.onReverseCheckChanged);
 		this.uiElements.applyButton.addEventListener("click", this.onLedButtonClick);
 	};
@@ -103,24 +107,28 @@ class LedController {
 		this.mainController.showUiElement(this.uiElements.satturationSlider2, false);
 		this.mainController.showUiElement(this.uiElements.speedSlider, false);
 		this.mainController.showUiElement(this.uiElements.distanceSlider, false);
+		this.mainController.showUiElement(this.uiElements.fadingSlider, false);
 		this.mainController.showUiElement(this.uiElements.reverseCheck, false);
 
 		switch (animatorType) {
 			case "Rainbow":
 				this.mainController.showUiElement(this.uiElements.brightnessSlider, true);
 				this.mainController.showUiElement(this.uiElements.speedSlider, true);
+				this.mainController.showUiElement(this.uiElements.fadingSlider, true);
 				this.mainController.showUiElement(this.uiElements.reverseCheck, true);
 				break;
 			case "Rainbow Linear":
 				this.mainController.showUiElement(this.uiElements.brightnessSlider, true);
 				this.mainController.showUiElement(this.uiElements.speedSlider, true);
 				this.mainController.showUiElement(this.uiElements.distanceSlider, true);
+				this.mainController.showUiElement(this.uiElements.fadingSlider, true);
 				this.mainController.showUiElement(this.uiElements.reverseCheck, true);
 				break;
 			case "Rainbow Middle":
 				this.mainController.showUiElement(this.uiElements.brightnessSlider, true);
 				this.mainController.showUiElement(this.uiElements.speedSlider, true);
 				this.mainController.showUiElement(this.uiElements.distanceSlider, true);
+				this.mainController.showUiElement(this.uiElements.fadingSlider, true);
 				this.mainController.showUiElement(this.uiElements.reverseCheck, true);
 				break;
 			case "Gradient":
@@ -129,13 +137,14 @@ class LedController {
 				this.mainController.showUiElement(this.uiElements.satturationSlider1, true);
 				this.mainController.showUiElement(this.uiElements.colorSlider2, true);
 				this.mainController.showUiElement(this.uiElements.satturationSlider2, true);
-
+				this.mainController.showUiElement(this.uiElements.fadingSlider, true);
 				this.mainController.showUiElement(this.uiElements.reverseCheck, true);
 				break;
 			case "Static":
 				this.mainController.showUiElement(this.uiElements.brightnessSlider, true);
 				this.mainController.showUiElement(this.uiElements.colorSlider1, true);
 				this.mainController.showUiElement(this.uiElements.satturationSlider1, true);
+				this.mainController.showUiElement(this.uiElements.fadingSlider, true);
 				break;
 		}
 	};
@@ -153,8 +162,9 @@ class LedController {
 	 * @param event event context
 	 */
 	onAnimatorChanged = (event) => {
-		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).animatorType =
-			event.target.selectedIndex;
+		const ledConfig = this.mainController.getModel().getLedConfig();
+		ledConfig[this.uiElements.zoneSelect.selectedIndex].animatorType = event.target.selectedIndex;
+		ledConfig.changed = true;
 		this.showAnimatorProperties(event.target.value);
 	};
 
@@ -163,8 +173,9 @@ class LedController {
 	 * @param event event context
 	 */
 	onBrightnessSliderChanged = (event) => {
-		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).brightness =
-			event.target.value;
+		const ledConfig = this.mainController.getModel().getLedConfig();
+		ledConfig[this.uiElements.zoneSelect.selectedIndex].brightness = event.target.value;
+		ledConfig.changed = true;
 	};
 
 	/**
@@ -172,7 +183,9 @@ class LedController {
 	 * @param event event context
 	 */
 	onColorSliderChanged1 = (event) => {
-		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).hue1 = event.target.value;
+		const ledConfig = this.mainController.getModel().getLedConfig();
+		ledConfig[this.uiElements.zoneSelect.selectedIndex].hue1 = event.target.value;
+		ledConfig.changed = true;
 	};
 
 	/**
@@ -180,8 +193,9 @@ class LedController {
 	 * @param event event context
 	 */
 	onSatturationSliderChanged1 = (event) => {
-		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).satturation1 =
-			event.target.value;
+		const ledConfig = this.mainController.getModel().getLedConfig();
+		ledConfig[this.uiElements.zoneSelect.selectedIndex].satturation1 = event.target.value;
+		ledConfig.changed = true;
 	};
 
 	/**
@@ -189,7 +203,9 @@ class LedController {
 	 * @param event event context
 	 */
 	onColorSliderChanged2 = (event) => {
-		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).hue2 = event.target.value;
+		const ledConfig = this.mainController.getModel().getLedConfig();
+		ledConfig[this.uiElements.zoneSelect.selectedIndex].hue2 = event.target.value;
+		ledConfig.changed = true;
 	};
 
 	/**
@@ -197,8 +213,9 @@ class LedController {
 	 * @param event event context
 	 */
 	onSatturationSliderChanged2 = (event) => {
-		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).satturation2 =
-			event.target.value;
+		const ledConfig = this.mainController.getModel().getLedConfig();
+		ledConfig[this.uiElements.zoneSelect.selectedIndex].satturation2 = event.target.value;
+		ledConfig.changed = true;
 	};
 
 	/**
@@ -206,7 +223,9 @@ class LedController {
 	 * @param event event context
 	 */
 	onSpeedSliderChanged = (event) => {
-		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).speed = event.target.value;
+		const ledConfig = this.mainController.getModel().getLedConfig();
+		ledConfig[this.uiElements.zoneSelect.selectedIndex].speed = event.target.value;
+		ledConfig.changed = true;
 	};
 
 	/**
@@ -214,7 +233,19 @@ class LedController {
 	 * @param event event context
 	 */
 	onDistanceSliderChanged = (event) => {
-		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).offset = event.target.value;
+		const ledConfig = this.mainController.getModel().getLedConfig();
+		ledConfig[this.uiElements.zoneSelect.selectedIndex].offset = event.target.value;
+		ledConfig.changed = true;
+	};
+
+	/**
+	 * Is called when the fading slider was changed.
+	 * @param event event context
+	 */
+	onFadingSliderChanged = (event) => {
+		const ledConfig = this.mainController.getModel().getLedConfig();
+		ledConfig[this.uiElements.zoneSelect.selectedIndex].fadingSpeed = event.target.value;
+		ledConfig.changed = true;
 	};
 
 	/**
@@ -222,8 +253,9 @@ class LedController {
 	 * @param event event context
 	 */
 	onReverseCheckChanged = (event) => {
-		this.mainController.getModel().getLedConfig(this.uiElements.zoneSelect.selectedIndex).reverse =
-			event.target.checked;
+		const ledConfig = this.mainController.getModel().getLedConfig();
+		ledConfig[this.uiElements.zoneSelect.selectedIndex].reverse = event.target.checked;
+		ledConfig.changed = true;
 	};
 
 	/**
@@ -232,7 +264,11 @@ class LedController {
 	 */
 	onLedButtonClick = async (event) => {
 		try {
-			await this.mainController.getLedService().postLedConfiguration(this.mainController.getModel().ledConfig);
+			const ledConfig = this.mainController.getModel().ledConfig;
+			if (ledConfig.changed === true) {
+				await this.mainController.getLedService().postLedConfiguration(ledConfig);
+			}
+			ledConfig.changed = false;
 			this.mainController.showMessageBox("Farbschema aktualisiert.", "success", 5000);
 		} catch (ex) {
 			this.mainController.showMessageBox("Verbindung zum TesLight Controller fehlgeschlagen.", "error", 5000);

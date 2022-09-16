@@ -1,13 +1,13 @@
 /**
- * @file LedConfigurationEndpoint.h
+ * @file SystemConfigurationEndpoint.h
  * @author TheRealKasumi
- * @brief Contains a REST endpoint to configure the LED settings.
+ * @brief Contains a REST endpoint to configure the system settings.
  *
  * @copyright Copyright (c) 2022
  *
  */
-#ifndef LED_CONFIGURATION_ENDPOINT_H
-#define LED_CONFIGURATION_ENDPOINT_H
+#ifndef SYSTEM_CONFIGURATION_ENDPOINT_H
+#define SYSTEM_CONFIGURATION_ENDPOINT_H
 
 #include <functional>
 
@@ -24,23 +24,19 @@ extern "C"
 
 namespace TesLight
 {
-	class LedConfigurationEndpoint : public RestEndpoint
+	class SystemConfigurationEndpoint : public RestEndpoint
 	{
 	public:
 		static void begin(TesLight::Configuration *_configuration, std::function<void()> _configChangedCallback);
 
 	private:
-		LedConfigurationEndpoint();
+		SystemConfigurationEndpoint();
 
 		static TesLight::Configuration *configuration;
 		static std::function<void()> configChangedCallback;
 
-		static void getLedConfig(AsyncWebServerRequest *request);
-		static void postLedConfig(AsyncWebServerRequest *request);
-
-		static bool validateLedPin(const int ledPin);
-		static bool validateLedCount(const int ledCount);
-		static bool validateAnimatorType(const int animatorType);
+		static void getSystemConfig(AsyncWebServerRequest *request);
+		static void postSystemConfig(AsyncWebServerRequest *request);
 	};
 }
 

@@ -2,8 +2,6 @@
  * @file ColorSpaceConverter.js
  * @author TheRealKasumi
  * @brief Utility to convert between the HSV and RGB color space.
- * @version 0.0.1
- * @date 2022-07-18
  *
  * @copyright Copyright (c) 2022
  *

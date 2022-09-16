@@ -2,8 +2,6 @@
  * @file WebServer.h
  * @author TheRealKasumi
  * @brief Contains a class that handles the webserver and rest api.
- * @version 0.0.1
- * @date 2022-06-27
  *
  * @copyright Copyright (c) 2022
  *

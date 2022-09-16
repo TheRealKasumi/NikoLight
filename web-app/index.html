@@ -62,7 +62,11 @@
 					</div>
 					<div class="container slider" id="distance-slider">
 						<img src="assets/img/distance_icon.png" />
-						<input class="brightness" type="range" min="0" max="255" value="20" />
+						<input class="brightness" type="range" min="1" max="50" value="20" />
+					</div>
+					<div class="container slider" id="fading-slider">
+						<img src="assets/img/fading_icon.png" />
+						<input class="brightness" type="range" min="1" max="100" value="5" />
 					</div>
 					<div class="container check" id="reverse-check">
 						<img src="assets/img/reverse_icon.png" />
@@ -78,6 +82,30 @@
 			<div class="header"><p class="title">System Konfiguration</p></div>
 			<div class="message center warn" style="margin-top: -10px; margin-bottom: 30px">
 				<p>Ändere diese Konfiguration nur, wenn du dir wirklich sicher bist.</p>
+			</div>
+			<div class="control center setting">
+				<div class="container center">
+					<p>Logging Level:</p>
+					<select class="combo" id="loging-level-select">
+						<option value="Debug">Debug</option>
+						<option value="Info">Info</option>
+						<option value="Warning">Warning</option>
+						<option value="Error">Error</option>
+					</select>
+					<p>Licht Sensor Modus:</p>
+					<select class="combo" id="light-sensor-mode-select">
+						<option value="AlwaysOn">Immer aus</option>
+						<option value="AlwaysOff">Immer an</option>
+						<option value="AutoOnOff">Automatisch an/aus</option>
+						<option value="AutoBrightness">Automatische Helligkeit</option>
+					</select>
+					<p>Schwellwert an/aus:</p>
+					<input class="number" type="number" placeholder="75" min="1" max="4095" id="light-sensor-threshold" />
+					<p>Schwellwert minimale Helligkeit:</p>
+					<input class="number" type="number" placeholder="75" min="1" max="4095" id="light-sensor-min" />
+					<p>Schwellwert maximale Helligkeit:</p>
+					<input class="number" type="number" placeholder="2048" min="1" max="4095" id="light-sensor-max" />
+				</div>
 			</div>
 			<div class="control center setting">
 				<div class="container center">
@@ -100,15 +128,7 @@
 						<option value="21">21</option>
 					</select>
 					<p>LED Anzahl:</p>
-					<input
-						class="ledcount"
-						type="number"
-						name="led-count"
-						placeholder="5"
-						min="1"
-						max="100"
-						id="led-count-input"
-					/>
+					<input class="number" type="number" placeholder="5" min="1" max="100" id="led-count-input" />
 				</div>
 			</div>
 			<div class="control center setting">
@@ -135,6 +155,7 @@
 		<script src="js/lib/particles.min.js"></script>
 		<script src="js/effects/particles.js"></script>
 		<script src="js/exception/Exception.js"></script>
+		<script src="js/service/SystemService.js"></script>
 		<script src="js/service/LedService.js"></script>
 		<script src="js/service/WiFiService.js"></script>
 		<script src="js/util/ColorSpaceConverter.js"></script>

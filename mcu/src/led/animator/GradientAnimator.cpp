@@ -2,8 +2,6 @@
  * @file GradientAnimator.cpp
  * @author TheRealKasumi
  * @brief Implementation of the {@link TesLight::GradientAnimator}.
- * @version 0.0.1
- * @date 2022-06-28
  *
  * @copyright Copyright (c) 2022
  *
@@ -49,9 +47,9 @@ void TesLight::GradientAnimator::render()
 	for (uint16_t i = 0; i < this->pixelCount; i++)
 	{
 		const float position = (float)i / this->pixelCount;
-		this->pixels[i].setRed((position * this->red[this->reverse ? 0 : 1] + (1 - position) * red[this->reverse ? 1 : 0]) * this->brightness);
-		this->pixels[i].setGreen((position * this->green[this->reverse ? 0 : 1] + (1 - position) * green[this->reverse ? 1 : 0]) * this->brightness);
-		this->pixels[i].setBlue((position * this->blue[this->reverse ? 0 : 1] + (1 - position) * blue[this->reverse ? 1 : 0]) * this->brightness);
+		this->pixels[i].setRed((position * this->red[this->reverse ? 0 : 1] + (1 - position) * red[this->reverse ? 1 : 0]));
+		this->pixels[i].setGreen((position * this->green[this->reverse ? 0 : 1] + (1 - position) * green[this->reverse ? 1 : 0]));
+		this->pixels[i].setBlue((position * this->blue[this->reverse ? 0 : 1] + (1 - position) * blue[this->reverse ? 1 : 0]));
 	}
 }
 

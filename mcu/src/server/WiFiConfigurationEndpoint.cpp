@@ -2,8 +2,6 @@
  * @file WiFiConfigurationEndpoint.cpp
  * @author TheRealKasumi
  * @brief Implementation of a REST endpoint to configure the WiFi settings.
- * @version 0.0.1
- * @date 2022-07-07
  *
  * @copyright Copyright (c) 2022
  *
@@ -21,8 +19,8 @@ void TesLight::WiFiConfigurationEndpoint::begin(TesLight::Configuration *_config
 {
 	configuration = _configuration;
 	configChangedCallback = _configChangedCallback;
-	getWebServer()->addRequestHandler((getBaseUri() + F("wifi")).c_str(), http_method::HTTP_GET, TesLight::WiFiConfigurationEndpoint::getWiFiConfig);
-	getWebServer()->addRequestHandler((getBaseUri() + F("wifi")).c_str(), http_method::HTTP_POST, TesLight::WiFiConfigurationEndpoint::postWiFiConfig);
+	getWebServer()->addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_GET, TesLight::WiFiConfigurationEndpoint::getWiFiConfig);
+	getWebServer()->addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_POST, TesLight::WiFiConfigurationEndpoint::postWiFiConfig);
 }
 
 /**
