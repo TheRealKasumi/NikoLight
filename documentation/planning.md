@@ -84,6 +84,12 @@ In practice, these loads are only reached when the LED's are set to full brightn
 If you are planing to do so, you should go with an external regulator with a higher power limit.
 Otherwise when using the rainbow effects or lower brighness, these limits will not be reached.
 
+The PCB should be good for around 8-10A.
+However make sure that your connectors are high quality and can deal with the current.
+It's recommended to never exceed 3A on a single LED port of the PCB.
+If even higher currents are required, please bypass the PCB and connect the LED's directly to your regulator.
+However dont forget to provide 5V to the TesLight controller and have a shared ground connection.
+
 > What happens when I exceed the power limit of the regulator permanently?
 
 When using a proper LM2596 (not faked ones), it will shut down as soon as a critical current or temperature is reached.

@@ -6,9 +6,86 @@ If you start to build the project blindly, you might run into issues later.
 
 ## General Knowledge about the Hardware
 
-Todo
+Let's start with some general knowledge about the hardware.
 
-- insert pcb with pinout
+At first the TesLight controller is based on a ESP32 microcontroller board, which is placed on a custom PCB.
+The ESP32 contains two Tensilica-LX6 cores, running at 80MHz or 240MHz.
+They come with 512kB of SRAM and 4MB of flash memory.
+Also they have onboard WiFi (802.11bgn) as well as Bluetooth (classic an LE) and hardware support for SPI, I2C, CAN, UART, ect. which could be used in the future.
+Generelly the board operates at the 3.3V level.
+It has a onboard voltage regulator which will provide these 3.3V from the 5V, provided by the TesLight PCB.
+If you are planing to do customizations please keep in mind that all pin can only handle 3.3V and a very limited current of a few milliamps.
+
+The TesLight PCB contains a few active and passice components.
+In the first place it _can_ have a voltage regulator, providing stable 5V at max 3A to the ESP32 and your LEDs.
+It can handle a input voltage of up to 45V according to the [specs](https://www.ti.com/lit/ds/symlink/lm2596.pdf?ts=1663311548260&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FLM2596) of the regulator.
+But keep in mind that this is a absolute maximum rating which should never be reached.
+
+Also the PCB contains a MPU6050 motion sensor, right under the ESP32 board.
+This will later be used to build animations depending on accelleration and rotation data.
+It is suitable for up to 16g's but TesLight is using a limit of 2g's currently.
+If someone can prove to me that 2g's are not enought in a Tesla, then I will congratulate this person and we can talk about setting it to 4g in the software😋.
+Hidden challenge?
+I... I would never challenge you to do stupid things...
+
+![Girl Shy](media/fun/girl-shy.gif)
+
+Uhm... we better continue... So... where did we stop?
+
+There also is a voltage divider, used to lower the voltage of the sensor pin to a level the ESP32 can handle.
+This pin can be connected to your cars existing ambient light to give TesLight a signal when to turn on or off.
+Last there are some resistors to properly drive the WS2812 type LEDs and protect the ESP32 board.
+
+Like mentioned the used LED type is WS2812 or compatible.
+These are LED chips with an on board controller capable of receiving a digital, 24 bits color value.
+When they are put in series, they operate as a shif register.
+TesLight is able to drive a variable number of LEDs in series (up to a few hundred).
+The LEDs operate at 5V and **only 5V**.
+Never connect them directly to the 12V of your car.
+If the onboard voltage regulator can not delvier enough current, you need to use an external 5V regulator.
+
+The following picture shows the pinout of the finished board.
+
+![Teslight Pinout](media/build/testlight-pinout.png)
+
+As you can see there are 6 connectors for the LEDs.
+These output a regulated 5V and data signal suitable for the WS2812 type LEDs.
+Canncel 1 is the left, bottom connector.
+Channel 2, 3, 4 are in the upward direction.
+Channel 5 and 6 ar on the right from top to bottom.
+
+| Channel   | Mapped to         |
+| --------- | ----------------- |
+| Channel 1 | Dash              |
+| Channel 2 | Center console    |
+| Channel 3 | Front, left door  |
+| Channel 4 | Front, right door |
+| Channel 5 | Rear, left door   |
+| Channel 6 | Rear, right door  |
+
+At the bottom of the PCB there are 2 connectors, a micro USB port and a micros SD card slot.
+
+The 4 pin XH connector is for powering the board.
+When you use the onboard regulator, this can be up to 45V (absolute maximum rating).
+When an external regulator is used, the jumper J1 has to be bridged and the input voltage must be stable 5V.
+Never bridge J1 when the onboard regulator is used.
+This will destroy your hardware.
+
+The 3 pin XH connector can be used as voltage sensor.
+It can be used to measure the voltage of your cars ambient light and give TesLight a signal to turn on or off.
+The pin can be used for analog voltages and also PWM signal with a relatively high frequency.
+Low frequency PWM signals can lead to measurement errors.
+It is recommended to not measure voltages above 20V.
+However due to the over voltage protection it's safe to exceed this limit for a short amount of time if really neccessary.
+Keep in mind that according to the diagram above, the right pin is connected to ground.
+Never connect it to the positive wire of your ambient light.
+If you are sure that there is a good ground connection, which is usually the case, there is no need to use it.
+One last thing to keep in mind is that only positive voltages can be measured.
+
+Also there is a micro USB port on the ESP32 board.
+This one will later be used to upload the software.
+The micro SD card slot is used for a mandatory micro SD card.
+It's used to save data and UI files, required by TesLight.
 
 ## Clone or Download the Project Files
 
@@ -20,14 +97,14 @@ You can then decide if you want to clone the repository using [Git](https://git-
 
 ### Using Git
 
-- Open a terminal in your destination folder
-- Run `git clone https://github.com/TheRealKasumi/TesLight.git`
-- A folder `TesLight` should be created, containing all project files
+-  Open a terminal in your destination folder
+-  Run `git clone https://github.com/TheRealKasumi/TesLight.git`
+-  A folder `TesLight` should be created, containing all project files
 
 ### Download as Zip
 
-- Click the [download link](https://github.com/TheRealKasumi/TesLight/archive/refs/heads/main.zip)
-- Extract the TesLight folder
+-  Click the [download link](https://github.com/TheRealKasumi/TesLight/archive/refs/heads/main.zip)
+-  Extract the TesLight folder
 
 ## Order the PCB and 3D Printed Parts
 
@@ -102,46 +179,46 @@ This allows you to test it properly afterwards without destroying other componen
 **Never bridge the jumper `J1` when using the internal regulator!**
 
 1. As a first step its's recommended to put the inductor `I1` in place and solder it to the PCB.
-For this put a thin layer of solder on the pads and the legs of the inductor.
-Position the inductor and heat up the solder pads.
-Feed it with some more solder and press down the inductor until it soldered together.
-Repeat the same for the pad on the other side.
+   For this put a thin layer of solder on the pads and the legs of the inductor.
+   Position the inductor and heat up the solder pads.
+   Feed it with some more solder and press down the inductor until it soldered together.
+   Repeat the same for the pad on the other side.
 
 2. Place the diode on the spot marked with `D2`.
-Proceed in the same way as above.
-Since it's a diode, the polarity matters.
-Make sure to put it in the right direction.
-You should be able to see a white line on the diode.
-It must be aligned with the white line on the PCB.
+   Proceed in the same way as above.
+   Since it's a diode, the polarity matters.
+   Make sure to put it in the right direction.
+   You should be able to see a white line on the diode.
+   It must be aligned with the white line on the PCB.
 
 3. Continue by inserting the capacitor into `C1`.
-Here it's importatnt to check the polarity as well.
-Otherwise the capacitor might explode.
-You definitely don't want this to happen to prodect your eyes and ears.
-If it's inserted correctly, cut it's legs as short as possible on the backside.
-Use some solder to connect it properly.
+   Here it's importatnt to check the polarity as well.
+   Otherwise the capacitor might explode.
+   You definitely don't want this to happen to prodect your eyes and ears.
+   If it's inserted correctly, cut it's legs as short as possible on the backside.
+   Use some solder to connect it properly.
 
 4. Next is the `LM2596`, right next the inductor.
-Obviously polarity matters again.
-Make sure to have the metal part pointing to the right/ESP32/SD/MPU6050.
-It's allso marked on the PCB.
-Push all 5 legs through the holes and cut them as short as possible on the backside.
-Solder them all in place.
-Make sure to have good connections and not bridge the contacts.
-They are close to each other, so pay attention.
+   Obviously polarity matters again.
+   Make sure to have the metal part pointing to the right/ESP32/SD/MPU6050.
+   It's allso marked on the PCB.
+   Push all 5 legs through the holes and cut them as short as possible on the backside.
+   Solder them all in place.
+   Make sure to have good connections and not bridge the contacts.
+   They are close to each other, so pay attention.
 
 5. As a last step it's time to solder the fuse to the PCB.
-Ideally using a fuse holder.
-It's for your own safety and to avoid a fire in case of issues and faults.
-So I don't want you do to anything stupid like this: <br> ![Fuse Replacement](media/build/fuse-replacement.jpg)<br>
-You have been warned.
-For the internal regulator please use a fuse with a maximum current of 2A.
-When using external regulators make sure to pick a suitable one.
-If your regulator doesn't come with a fuse on the 12V side, you should definitely add one.
-The PCB should be good for around 8-10A.
-However make sure that your connectors are high quality and can deal with the current.
-If even higher currents are required, please bypass the PCB and connect the LED's directly to your regulator.
-However dont forget to provide 5V to the TesLight controller and have a shared ground connection.
+   Ideally using a fuse holder.
+   It's for your own safety and to avoid a fire in case of issues and faults.
+   So I don't want you do to anything stupid like this: <br> ![Fuse Replacement](media/build/fuse-replacement.jpg)<br>
+   You have been warned.
+   For the internal regulator please use a fuse with a maximum current of 2A.
+   When using external regulators make sure to pick a suitable one.
+   If your regulator doesn't come with a fuse on the 12V side, you should definitely add one.
+   The PCB should be good for around 8-10A.
+   However make sure that your connectors are high quality and can deal with the current.
+   If even higher currents are required, please bypass the PCB and connect the LED's directly to your regulator.
+   However dont forget to provide 5V to the TesLight controller and have a shared ground connection.
 
 #### Test the Voltage Regulator
 
@@ -246,17 +323,44 @@ When you are done, the TesLight controller should look similar to this (some com
 
 ## Assemble the LEDs
 
-todo
+First of all you should make sure to have the correct number of cases and LEDs.
+Also it's recommended that you have a exact plan where you want to place the LEDs, how many of them and what the wire lengths are.
+It will save a lot of trouble to do a good planing beforehand.
+
+Building the "light injectors" is pretty straightforward.
+All you need to do is to connect the LEDs with the wires, pay attention to the wire lengths and then push them into their case.
+The LED's are connected like shown in the following picture.
+Pay attention to the polarity and everything will work out fine.
+
+![LED Connection](media/planning/led-chain.png)
+
+If you are done building the chains and inserting the LEDs into their case, it's recommended to apply some glue so they cant slip out again.
+Fabric tape can also be used to fix them in place.
+Also you can use it to wrap the wires and avoid unwanted noises when driving.
+Last step is to solder or crimp the XH 3 pin male connector to the first LED.
+The following picture shows the pinout.
+
+![LED XH Pinout](media/build/led-pinout.jpg)
+
+When one "injector chain" is done, it could look like this.
+
+![LED Injector Chain](media/build/injector-chain.jpg)
+
+As you can see it's also possible to solder a female connector to the first LED and then use a extension cable.
+This allows to easily replace the LEDs in case one dies at some point in the future.
+But this is fully optional.
+
+![Extension Cable](media/build/extension-cable.jpg)
 
 ## Upload the Software
 
-### TesLight Controller 
+### TesLight Controller
 
 Uploading the software is the final step before you can finally test your work.
 Please install the following software and extension for the upload procedure:
 
-- [VS Code](https://code.visualstudio.com/download)
-- [PlatformIO](https://platformio.org/install/ide?install=vscode)
+-  [VS Code](https://code.visualstudio.com/download)
+-  [PlatformIO](https://platformio.org/install/ide?install=vscode)
 
 Start VS Code and then open the [mcu](/mcu/) folder of the project.
 You can do so by clicking `File` -> `Open Folder...`.
@@ -290,12 +394,12 @@ You should see the TesLight controller starting up but then stopping with `Faile
 ████████╗███████╗███████╗██╗     ██╗ ██████╗ ██╗  ██╗████████╗
 ╚══██╔══╝██╔════╝██╔════╝██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
    ██║   █████╗  ███████╗██║     ██║██║  ███╗███████║   ██║
-   ██║   ██╔══╝  ╚════██║██║     ██║██║   ██║██╔══██║   ██║   
-   ██║   ███████╗███████║███████╗██║╚██████╔╝██║  ██║   ██║   
-   ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   
+   ██║   ██╔══╝  ╚════██║██║     ██║██║   ██║██╔══██║   ██║
+   ██║   ███████╗███████║███████╗██║╚██████╔╝██║  ██║   ██║
+   ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
 Firmware version 0.0.1 (beta)
 
-00:00:00:049 [INFO] (main.cpp:setup): Initialize SD card...   
+00:00:00:049 [INFO] (main.cpp:setup): Initialize SD card...
 [E][sd_diskio.cpp:194] sdCommand(): Card Failed! cmd: 0x00
 [E][sd_diskio.cpp:775] sdcard_mount(): f_mount failed: (3) The physical drive cannot work
 [E][sd_diskio.cpp:194] sdCommand(): Card Failed! cmd: 0x00
@@ -327,8 +431,8 @@ If everything works, you should see the following (or similar) output:
 ████████╗███████╗███████╗██╗     ██╗ ██████╗ ██╗  ██╗████████╗
 ╚══██╔══╝██╔════╝██╔════╝██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
    ██║   █████╗  ███████╗██║     ██║██║  ███╗███████║   ██║
-   ██║   ██╔══╝  ╚════██║██║     ██║██║   ██║██╔══██║   ██║   
-   ██║   ███████╗███████║███████╗██║╚██████╔╝██║  ██║   ██║   
+   ██║   ██╔══╝  ╚════██║██║     ██║██║   ██║██╔══██║   ██║
+   ██║   ███████╗███████║███████╗██║╚██████╔╝██║  ██║   ██║
    ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
 Firmware version 0.0.1 (beta)
 
