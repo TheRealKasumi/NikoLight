@@ -143,7 +143,7 @@ When you are done, add the PCB to the shopping cart.
 This works very similar to the steps described above.
 Go back to the [order page](https://cart.jlcpcb.com/quote) and select `3D-Printing` at the top of the page.
 The 3D files can be found in the [/models](/models/) folder of the project.
-You will need one print of the [mcu_case_all.stl](/models/mcu_case_all.stl) which is the case for the TesLight controller.
+You will need one print of the [mcu_case_all.stl](/models/mcu_case.stl) which is the case for the TesLight controller.
 Also, depending on the number of light injectors for the fibre tubes, you will need the [led-case.stl](/models/led-case.stl).
 The material choice is fully up to you.
 But it shouldn't be metal so that it is **NOT** electrically conductive.
