@@ -99,8 +99,8 @@ void TesLight::Configuration::loadDefaults()
 	// System config
 	this->systemConfig.logLevel = TesLight::Logger::LogLevel::INFO;
 	this->systemConfig.lightSensorMode = TesLight::LightSensor::LightSensorMode::ALWAYS_ON;
-	this->systemConfig.lightSensorThreshold = 75;
-	this->systemConfig.lightSensorMinValue = 75;
+	this->systemConfig.lightSensorThreshold = 30;
+	this->systemConfig.lightSensorMinValue = 30;
 	this->systemConfig.lightSensorMaxValue = 2048;
 
 	// LED config
