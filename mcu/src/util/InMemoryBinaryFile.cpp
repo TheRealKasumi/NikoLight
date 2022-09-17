@@ -129,7 +129,7 @@ bool TesLight::InMemoryBinaryFile::writeWord(const uint16_t word)
  */
 uint16_t TesLight::InMemoryBinaryFile::readWord()
 {
-	if (this->index + sizeof(word) - 1 >= this->size)
+	if (this->index + sizeof(uint16_t) - 1 >= this->size)
 	{
 		return 0;
 	}
@@ -148,7 +148,7 @@ uint16_t TesLight::InMemoryBinaryFile::readWord()
 bool TesLight::InMemoryBinaryFile::writeString(const String string)
 {
 	const uint16_t length = string.length();
-	if (this->index + sizeof(word) + length - 1 >= this->size)
+	if (this->index + sizeof(uint16_t) + length - 1 >= this->size)
 	{
 		return false;
 	}
@@ -168,7 +168,7 @@ bool TesLight::InMemoryBinaryFile::writeString(const String string)
  */
 String TesLight::InMemoryBinaryFile::readString()
 {
-	if (this->index + sizeof(word) >= this->size)
+	if (this->index + sizeof(uint16_t) >= this->size)
 	{
 		return "";
 	}

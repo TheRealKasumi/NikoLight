@@ -58,7 +58,8 @@ namespace TesLight
 
 		bool driverInstalled;
 		TesLight::Pixel *pixels;
-		float smoothedBrightness;
+		float smoothedLightBrightness;
+		float totalBrightness;
 
 		rmt_config_t getRmtConfig();
 

@@ -7,12 +7,12 @@ By connecting a device (computer, laptop, smartphone, ...) to the TesLight contr
 
 ## Usage
 
-Generally the frontend files only need to be copied to the microSD card, which is plugged into the TesLight controller.
+Generally the frontend files only need to be copied to the MicroSD card, which is plugged into the TesLight controller.
 There is no build step necessary.
-However due to hardware limitations the frontend should be minified beforhand to avoid stability issues.
+However, due to hardware limitations the frontend should be minified beforhand to avoid stability issues.
 The topic is described in more detail in the [ReadMe](minifier/ReadMe.md) of the minifier.
 
-After the frontend was minified, the minified frontend files can be copied to the `web-app` folder on the microSD card.
+After the frontend was minified, the minified frontend files can be copied to the `web-app` folder on the MicroSD card.
 
 Next a connection the the TesLight controller can be established.
 The TesLight controller is acting as a WiFi access point so that all WiFi capable devices (computer, laptop, smartphone, ...) can connect to it.
