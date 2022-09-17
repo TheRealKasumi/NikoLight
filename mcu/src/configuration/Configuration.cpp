@@ -209,8 +209,8 @@ bool TesLight::Configuration::save()
 	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:save"), F("Configuration file opened. Writing configuration to file..."));
 
 	// System cofiguration
-	file.writeByte(this->systemConfig.logLevel);
-	file.writeByte(this->systemConfig.lightSensorMode);
+	file.writeByte((uint8_t)this->systemConfig.logLevel);
+	file.writeByte((uint8_t)this->systemConfig.lightSensorMode);
 	file.writeWord(this->systemConfig.lightSensorThreshold);
 	file.writeWord(this->systemConfig.lightSensorMinValue);
 	file.writeWord(this->systemConfig.lightSensorMaxValue);

@@ -32,11 +32,13 @@ void TesLight::SystemConfigurationEndpoint::getSystemConfig(AsyncWebServerReques
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("SystemConfigurationEndpoint.cpp:getSystemConfig"), F("Received request to get the system configuration..."));
 
 	TesLight::InMemoryBinaryFile binary(8);
-	binary.writeByte(configuration->getSystemConfig().logLevel);
-	binary.writeByte(configuration->getSystemConfig().lightSensorMode);
+	binary.writeByte((uint8_t)configuration->getSystemConfig().logLevel);
+	binary.writeByte((uint8_t)configuration->getSystemConfig().lightSensorMode);
 	binary.writeWord(configuration->getSystemConfig().lightSensorThreshold);
 	binary.writeWord(configuration->getSystemConfig().lightSensorMinValue);
 	binary.writeWord(configuration->getSystemConfig().lightSensorMaxValue);
+
+	Serial.println(configuration->getSystemConfig().lightSensorMaxValue);
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("SystemConfigurationEndpoint.cpp:getSystemConfig"), F("Preparing base64 response..."));
 
