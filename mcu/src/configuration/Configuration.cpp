@@ -105,7 +105,7 @@ void TesLight::Configuration::loadDefaults()
 
 	// LED config
 	const uint8_t ledPins[NUM_LED_DRIVERS] = {13, 14, 15, 16, 17, 21};
-	const uint8_t ledCounts[NUM_LED_DRIVERS] = {70, 4, 2, 4, 4, 4};
+	const uint8_t ledCounts[NUM_LED_DRIVERS] = {70, 2, 4, 4, 4, 4};
 	for (uint8_t i = 0; i < NUM_LED_DRIVERS; i++)
 	{
 		this->ledConfig[i].ledPin = ledPins[i];
