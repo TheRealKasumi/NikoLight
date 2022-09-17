@@ -99,13 +99,13 @@ void TesLight::Configuration::loadDefaults()
 	// System config
 	this->systemConfig.logLevel = TesLight::Logger::LogLevel::INFO;
 	this->systemConfig.lightSensorMode = TesLight::LightSensor::LightSensorMode::ALWAYS_ON;
-	this->systemConfig.lightSensorThreshold = 75;
-	this->systemConfig.lightSensorMinValue = 75;
+	this->systemConfig.lightSensorThreshold = 30;
+	this->systemConfig.lightSensorMinValue = 30;
 	this->systemConfig.lightSensorMaxValue = 2048;
 
 	// LED config
 	const uint8_t ledPins[NUM_LED_DRIVERS] = {13, 14, 15, 16, 17, 21};
-	const uint8_t ledCounts[NUM_LED_DRIVERS] = {70, 4, 2, 4, 4, 4};
+	const uint8_t ledCounts[NUM_LED_DRIVERS] = {70, 2, 4, 4, 4, 4};
 	for (uint8_t i = 0; i < NUM_LED_DRIVERS; i++)
 	{
 		this->ledConfig[i].ledPin = ledPins[i];
@@ -209,8 +209,8 @@ bool TesLight::Configuration::save()
 	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:save"), F("Configuration file opened. Writing configuration to file..."));
 
 	// System cofiguration
-	file.writeByte(this->systemConfig.logLevel);
-	file.writeByte(this->systemConfig.lightSensorMode);
+	file.writeByte((uint8_t)this->systemConfig.logLevel);
+	file.writeByte((uint8_t)this->systemConfig.lightSensorMode);
 	file.writeWord(this->systemConfig.lightSensorThreshold);
 	file.writeWord(this->systemConfig.lightSensorMinValue);
 	file.writeWord(this->systemConfig.lightSensorMaxValue);

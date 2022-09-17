@@ -83,7 +83,7 @@ void printLogo()
 	Serial.println(F("   ██║   ██╔══╝  ╚════██║██║     ██║██║   ██║██╔══██║   ██║   "));
 	Serial.println(F("   ██║   ███████╗███████║███████╗██║╚██████╔╝██║  ██║   ██║   "));
 	Serial.println(F("   ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   "));
-	Serial.println(F("Firmware version 0.9.0 (beta)"));
+	Serial.println(F("Firmware version 0.9.1 (beta)"));
 	Serial.println();
 }
 

@@ -132,7 +132,7 @@ class SettingsController {
 	 */
 	onLightSensorThresholdChanged = (event) => {
 		const systemConfig = this.mainController.getModel().getSystemConfig();
-		systemConfig.lightSensorThreshold = this.uiElements.lightSensorThresholdInput.value;
+		systemConfig.lightSensorThreshold = parseInt(this.uiElements.lightSensorThresholdInput.value);
 		systemConfig.changed = true;
 	};
 
@@ -142,7 +142,7 @@ class SettingsController {
 	 */
 	onLightSensorMinValueChanged = (event) => {
 		const systemConfig = this.mainController.getModel().getSystemConfig();
-		systemConfig.lightSensorMinValue = this.uiElements.lightSensorMinValueInput.value;
+		systemConfig.lightSensorMinValue = parseInt(this.uiElements.lightSensorMinValueInput.value);
 		systemConfig.changed = true;
 	};
 
@@ -152,7 +152,7 @@ class SettingsController {
 	 */
 	onLightSensorMaxValueChanged = (event) => {
 		const systemConfig = this.mainController.getModel().getSystemConfig();
-		systemConfig.lightSensorMaxValue = this.uiElements.lightSensorMaxValueInput.value;
+		systemConfig.lightSensorMaxValue = parseInt(this.uiElements.lightSensorMaxValueInput.value);
 		systemConfig.changed = true;
 	};
 
