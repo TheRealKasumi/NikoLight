@@ -27,7 +27,8 @@ TesLight::LedDriver::LedDriver(const uint8_t pin, const uint8_t channel, const u
 
 	this->driverInstalled = false;
 	this->pixels = nullptr;
-	this->smoothedBrightness = 0.0f;
+	this->smoothedLightBrightness = 0.0f;
+	this->totalBrightness = 0.0f;
 }
 
 /**
@@ -229,23 +230,23 @@ bool TesLight::LedDriver::end()
  */
 bool TesLight::LedDriver::show()
 {
-	const float totalBrightness = this->animationBrightness * this->lightBrightness;
-	if (this->smoothedBrightness < totalBrightness)
+	if (this->smoothedLightBrightness < this->lightBrightness)
 	{
-		this->smoothedBrightness += this->fadeSpeed;
-		if (this->smoothedBrightness > totalBrightness)
+		this->smoothedLightBrightness += this->fadeSpeed;
+		if (this->smoothedLightBrightness > this->lightBrightness)
 		{
-			this->smoothedBrightness = totalBrightness;
+			this->smoothedLightBrightness = this->lightBrightness;
 		}
 	}
-	else if (this->smoothedBrightness > totalBrightness)
+	else if (this->smoothedLightBrightness > this->lightBrightness)
 	{
-		this->smoothedBrightness -= this->fadeSpeed;
-		if (this->smoothedBrightness < totalBrightness)
+		this->smoothedLightBrightness -= this->fadeSpeed;
+		if (this->smoothedLightBrightness < this->lightBrightness)
 		{
-			this->smoothedBrightness = totalBrightness;
+			this->smoothedLightBrightness = this->lightBrightness;
 		}
 	}
+	this->totalBrightness = this->animationBrightness * this->smoothedLightBrightness;
 
 	rmt_config_t rmtConfig = this->getRmtConfig();
 	rmt_item32_t *ledDataBuffer = new rmt_item32_t[this->pixelCount * BITS_PER_LED];
@@ -318,9 +319,9 @@ void TesLight::LedDriver::prepareLedDataBuffer(rmt_item32_t *ledDataBuffer)
 	for (uint16_t i = 0; i < this->pixelCount; i++)
 	{
 		TesLight::Pixel pixel = this->pixels[i];
-		pixel.setRed(pixel.getRed() * this->smoothedBrightness);
-		pixel.setGreen(pixel.getGreen() * this->smoothedBrightness);
-		pixel.setBlue(pixel.getBlue() * this->smoothedBrightness);
+		pixel.setRed(pixel.getRed() * this->totalBrightness);
+		pixel.setGreen(pixel.getGreen() * this->totalBrightness);
+		pixel.setBlue(pixel.getBlue() * this->totalBrightness);
 
 		uint32_t mask = 1 << (BITS_PER_LED - 1);
 		for (uint8_t j = 0; j < BITS_PER_LED; j++)

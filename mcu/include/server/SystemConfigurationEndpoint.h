@@ -37,6 +37,9 @@ namespace TesLight
 
 		static void getSystemConfig(AsyncWebServerRequest *request);
 		static void postSystemConfig(AsyncWebServerRequest *request);
+		static bool validateLogLevel(const uint8_t logLevel);
+		static bool validateLightSensorMode(const uint8_t lightSensorMode);
+		static bool validateMinMax(const uint8_t min, const uint8_t max);
 	};
 }
 

@@ -38,8 +38,6 @@ void TesLight::SystemConfigurationEndpoint::getSystemConfig(AsyncWebServerReques
 	binary.writeWord(configuration->getSystemConfig().lightSensorMinValue);
 	binary.writeWord(configuration->getSystemConfig().lightSensorMaxValue);
 
-	Serial.println(configuration->getSystemConfig().lightSensorMaxValue);
-
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("SystemConfigurationEndpoint.cpp:getSystemConfig"), F("Preparing base64 response..."));
 
 	size_t base64Length;
@@ -76,13 +74,13 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig(AsyncWebServerReque
 	else if (request->contentType() != F("application/x-www-form-urlencoded"))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, F("SystemConfigurationEndpoint.cpp::postSystemConfigRequest"), F("The content type must be \"application/x-www-form-urlencoded\"."));
-		request->send(400, F("text/plain"), (String)F("The content type must be \"application/x-www-form-urlencoded\"."));
+		request->send(400, F("text/plain"), F("The content type must be \"application/x-www-form-urlencoded\"."));
 		return;
 	}
 	else if (request->arg("data").length() == 0)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, F("SystemConfigurationEndpoint.cpp::postSystemConfig"), F("There must be a body parameter \"data\" with the base64 encoded system data."));
-		request->send(400, F("text/plain"), (String)F("There must be a body parameter \"data\" with the base64 encoded system data."));
+		request->send(400, F("text/plain"), F("There must be a body parameter \"data\" with the base64 encoded system data."));
 		return;
 	}
 
@@ -107,6 +105,25 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig(AsyncWebServerReque
 	config.lightSensorMinValue = binary.readWord();
 	config.lightSensorMaxValue = binary.readWord();
 
+	if (!validateLogLevel((uint8_t)config.logLevel))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, F("SystemConfigurationEndpoint.cpp::postSystemConfig"), F("The received log level is invalid."));
+		request->send(400, F("text/plain"), F("The received log level is invalid."));
+		return;
+	}
+	if (!validateLightSensorMode((uint8_t)config.lightSensorMode))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, F("SystemConfigurationEndpoint.cpp::postSystemConfig"), F("The received light sensor mode is invalid."));
+		request->send(400, F("text/plain"), F("The received light sensor mode is invalid."));
+		return;
+	}
+	if (!validateMinMax(config.lightSensorMinValue, config.lightSensorMaxValue))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, F("SystemConfigurationEndpoint.cpp::postSystemConfig"), F("The light sensor min value must be smaller than the max value."));
+		request->send(400, F("text/plain"), F("The light sensor min value must be smaller than the max value."));
+		return;
+	}
+
 	configuration->setSystemConfig(config);
 	if (configuration->save())
 	{
@@ -125,4 +142,38 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig(AsyncWebServerReque
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("SystemConfigurationEndpoint.cpp::postSystemConfig"), F("System configuration saved. Sending the response."));
 	request->send(202);
+}
+
+/**
+ * @brief Validate if the log level is valid.
+ * @param logLevel received log level
+ * @return true when valid
+ * @return false when invalid
+ */
+bool TesLight::SystemConfigurationEndpoint::validateLogLevel(const uint8_t logLevel)
+{
+	return logLevel <= 3;
+}
+
+/**
+ * @brief Validate if the light sensor mode is valid.
+ * @param lightSensorMode received light sensor mode
+ * @return true when valid
+ * @return false when invalid
+ */
+bool TesLight::SystemConfigurationEndpoint::validateLightSensorMode(const uint8_t lightSensorMode)
+{
+	return lightSensorMode <= 3;
+}
+
+/**
+ * @brief Validate if the min is smaller than the max value.
+ * @param min received min value
+ * @param max received max value
+ * @return true when valid
+ * @return false when invalid
+ */
+bool TesLight::SystemConfigurationEndpoint::validateMinMax(const uint8_t min, const uint8_t max)
+{
+	return max > min;
 }

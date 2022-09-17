@@ -75,13 +75,13 @@ void TesLight::WiFiConfigurationEndpoint::postWiFiConfig(AsyncWebServerRequest *
 	else if (request->contentType() != F("application/x-www-form-urlencoded"))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, F("WiFiConfigurationEndpoint::postWiFiConfigRequest"), F("The content type must be \"application/x-www-form-urlencoded\"."));
-		request->send(400, F("text/plain"), (String)F("The content type must be \"application/x-www-form-urlencoded\"."));
+		request->send(400, F("text/plain"), F("The content type must be \"application/x-www-form-urlencoded\"."));
 		return;
 	}
 	else if (request->arg("data").length() == 0)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, F("WiFiConfigurationEndpoint:postWiFiConfig"), F("There must be a body parameter \"data\" with the base64 encoded WiFi data."));
-		request->send(400, F("text/plain"), (String)F("There must be a body parameter \"data\" with the base64 encoded WiFi data."));
+		request->send(400, F("text/plain"), F("There must be a body parameter \"data\" with the base64 encoded WiFi data."));
 		return;
 	}
 
