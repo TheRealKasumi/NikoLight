@@ -69,4 +69,4 @@ A list of required parts can be found [here](documentation/part-list.md).
 
 ## Build Guide
 
-Todo :(
+The build guide can be found [here](documentation/build.md). 
