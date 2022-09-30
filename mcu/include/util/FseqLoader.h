@@ -14,6 +14,8 @@
 
 #include "logging/Logger.h"
 
+#include "FastLED.h"
+
 namespace TesLight
 {
 	class FseqLoader
@@ -37,23 +39,17 @@ namespace TesLight
 			uint16_t reserved;
 		};
 
-		struct FseqPixel
-		{
-			uint8_t red;
-			uint8_t green;
-			uint8_t blue;
-		};
-
 		FseqLoader(FS *fileSystem);
 		~FseqLoader();
 
 		bool loadFromFile(const String fileName);
-		bool hasNextPixel();
+
+		size_t available();
 		void moveToStart();
 		void close();
 
 		FseqHeader getHeader();
-		FseqPixel getNextPixelFromStream();
+		bool readPixelbuffer(CRGB *pixelBuffer, const size_t bufferSize);
 
 	private:
 		FS *fileSystem;
