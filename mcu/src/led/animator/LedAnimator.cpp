@@ -17,6 +17,10 @@ TesLight::LedAnimator::LedAnimator()
 	this->pixelCount = 0;
 	this->speed = 0;
 	this->offset = 0;
+	this->animationBrightness = 0.0f;
+	this->ambientBrightness = 0.0f;
+	this->smoothedAmbBrightness = 0.0f;
+	this->fadeSpeed = 1.0f;
 	this->reverse = false;
 }
 
@@ -28,19 +32,19 @@ TesLight::LedAnimator::~LedAnimator()
 }
 
 /**
- * @brief Set the {@link TesLight::Pixel} array reference for the {@link LedAnimator}.
- * @param pixels reference to the {@link TesLight::Pixel} array
+ * @brief Set the {@link CRGB} array reference for the {@link LedAnimator}.
+ * @param pixels reference to the {@link CRGB} array
  */
-void TesLight::LedAnimator::setPixels(TesLight::Pixel *pixels)
+void TesLight::LedAnimator::setPixels(CRGB *pixels)
 {
 	this->pixels = pixels;
 }
 
 /**
- * @brief Get the reference to the {@link TesLight::Pixel} array.
- * @return Reference to the {@link TesLight::Pixel} array
+ * @brief Get the reference to the {@link CRGB} array.
+ * @return Reference to the {@link CRGB} array
  */
-TesLight::Pixel *TesLight::LedAnimator::getPixels()
+CRGB *TesLight::LedAnimator::getPixels()
 {
 	return this->pixels;
 }
@@ -55,8 +59,8 @@ void TesLight::LedAnimator::setPixelCount(const uint16_t pixelCount)
 }
 
 /**
- * @brief Get the number of {@link TesLight::Pixel} that are used by the {@link LedAnimator}.
- * @return uint16_t number of {@link TesLight::Pixel}
+ * @brief Get the number of {@link CRGB} that are used by the {@link LedAnimator}.
+ * @return uint16_t number of {@link CRGB}
  */
 uint16_t TesLight::LedAnimator::getPixelCount()
 {
@@ -100,6 +104,84 @@ uint16_t TesLight::LedAnimator::getOffset()
 }
 
 /**
+ * @brief Set the animation brightness.
+ * @param animationBrightness brightness of the animation from 0.0 to 1.0
+ */
+void TesLight::LedAnimator::setAnimationBrightness(const float animationBrightness)
+{
+	this->animationBrightness = animationBrightness;
+	if (this->animationBrightness < 0.0f)
+	{
+		this->animationBrightness = 0.0f;
+	}
+	else if (this->animationBrightness > 1.0f)
+	{
+		this->animationBrightness = 1.0f;
+	}
+}
+
+/**
+ * @brief Get the animation brightness.
+ * @return float animation brightness from 0.0 to 1.0
+ */
+float TesLight::LedAnimator::getAnimationBrightness()
+{
+	return this->animationBrightness;
+}
+
+/**
+ * @brief Set the ambient brightness.
+ * @param ambientBrightness ambient brightness from 0.0 to 1.0
+ */
+void TesLight::LedAnimator::setAmbientBrightness(const float ambientBrightness)
+{
+	this->ambientBrightness = ambientBrightness;
+	if (this->ambientBrightness < 0.0f)
+	{
+		this->ambientBrightness = 0.0f;
+	}
+	else if (this->ambientBrightness > 1.0f)
+	{
+		this->ambientBrightness = 1.0f;
+	}
+}
+
+/**
+ * @brief Get the ambient brightness.
+ * @return float ambient brightness from 0.0 to 1.0
+ */
+float TesLight::LedAnimator::getAmbientBrightness()
+{
+	return this->ambientBrightness;
+}
+
+/**
+ * @brief Set the fading speed.
+ * @param fadeSpeed fading speed from 0.0 to 1.0
+ */
+void TesLight::LedAnimator::setFadeSpeed(const float fadeSpeed)
+{
+	this->fadeSpeed = fadeSpeed;
+	if (this->fadeSpeed < 0.0f)
+	{
+		this->fadeSpeed = 0.0f;
+	}
+	else if (this->fadeSpeed > 1.0f)
+	{
+		this->fadeSpeed = 1.0f;
+	}
+}
+
+/**
+ * @brief Get the fading speed.
+ * @return float fading speed from 0.0 to 1.0
+ */
+float TesLight::LedAnimator::getFadeSpeed()
+{
+	return this->fadeSpeed;
+}
+
+/**
  * @brief Reverse the animation.
  * @param reverse {@code true} to reverse, {@code false} to not reverse
  */
@@ -116,6 +198,35 @@ void TesLight::LedAnimator::setReverse(const bool reverse)
 bool TesLight::LedAnimator::getReverse()
 {
 	return this->reverse;
+}
+
+/**
+ * @brief Apply the brightness settings to all pixels.
+ */
+void TesLight::LedAnimator::applyBrightness()
+{
+	if (this->smoothedAmbBrightness < this->ambientBrightness)
+	{
+		this->smoothedAmbBrightness += this->fadeSpeed;
+		if (this->smoothedAmbBrightness > this->ambientBrightness)
+		{
+			this->smoothedAmbBrightness = this->ambientBrightness;
+		}
+	}
+	else if (this->smoothedAmbBrightness > this->ambientBrightness)
+	{
+		this->smoothedAmbBrightness -= this->fadeSpeed;
+		if (this->smoothedAmbBrightness < this->ambientBrightness)
+		{
+			this->smoothedAmbBrightness = this->ambientBrightness;
+		}
+	}
+
+	const float totalBrightness = this->animationBrightness * this->smoothedAmbBrightness;
+	for (uint16_t i = 0; i < this->pixelCount; i++)
+	{
+		this->pixels[i].setRGB(this->pixels[i].r * totalBrightness, this->pixels[i].g * totalBrightness, this->pixels[i].b * totalBrightness);
+	}
 }
 
 /**

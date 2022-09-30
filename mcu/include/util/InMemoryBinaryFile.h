@@ -6,10 +6,12 @@
  * @copyright Copyright (c) 2022
  *
  */
-#ifndef IN_MEMORY_BINARY_FILE
-#define IN_MEMORY_BINARY_FILE
+#ifndef IN_MEMORY_BINARY_FILE_H
+#define IN_MEMORY_BINARY_FILE_H
 
 #include <Arduino.h>
+
+#include "logging/Logger.h"
 
 namespace TesLight
 {

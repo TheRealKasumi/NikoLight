@@ -18,6 +18,7 @@ namespace TesLight
 	{
 	public:
 		StaticColorAnimator();
+		StaticColorAnimator(const uint8_t red, const uint8_t green, const uint8_t blue);
 		~StaticColorAnimator();
 
 		void init();

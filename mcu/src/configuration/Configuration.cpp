@@ -15,13 +15,14 @@
  */
 TesLight::Configuration::Configuration(FS *fileSystem, const String fileName)
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:Configuration"), F("Initialize configuration..."));
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Initialize configuration."));
 
 	this->fileSystem = fileSystem;
 	this->fileName = fileName;
+	this->configurationVersion = 1;
 	this->loadDefaults();
 
-	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:Configuration"), F("Configuration initialized."));
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Configuration initialized."));
 }
 
 /**
@@ -32,21 +33,23 @@ TesLight::Configuration::~Configuration()
 }
 
 /**
- * @brief Set the WiFi config.
- * @param wifionfig config to set
- */
-void TesLight::Configuration::setWiFiConfig(TesLight::Configuration::WiFiConfig wifiConfig)
-{
-	this->wifiConfig = wifiConfig;
-}
-
-/**
  * @brief Get the System config.
  * @return instance of {@link TesLight::Configuration::SystemConfig}
  */
 TesLight::Configuration::SystemConfig TesLight::Configuration::getSystemConfig()
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Get system configuration."));
 	return this->systemConfig;
+}
+
+/**
+ * @brief Set the System config.
+ * @param SystemConfig config to set
+ */
+void TesLight::Configuration::setSystemConfig(TesLight::Configuration::SystemConfig systemConfig)
+{
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Set system configuration."));
+	this->systemConfig = systemConfig;
 }
 
 /**
@@ -56,7 +59,7 @@ TesLight::Configuration::SystemConfig TesLight::Configuration::getSystemConfig()
  */
 TesLight::Configuration::LedConfig TesLight::Configuration::getLedConfig(const uint8_t index)
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:getLedConfig"), (String)F("Get LED configuration with index: ") + String(index));
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, (String)F("Get LED configuration with index: ") + String(index));
 	return this->ledConfig[index];
 }
 
@@ -67,7 +70,7 @@ TesLight::Configuration::LedConfig TesLight::Configuration::getLedConfig(const u
  */
 void TesLight::Configuration::setLedConfig(const TesLight::Configuration::LedConfig ledConfig, const uint8_t index)
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:setLedConfig"), (String)F("Set LED configuration with index: ") + String(index));
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, (String)F("Set LED configuration with index: ") + String(index));
 	this->ledConfig[index] = ledConfig;
 }
 
@@ -77,16 +80,18 @@ void TesLight::Configuration::setLedConfig(const TesLight::Configuration::LedCon
  */
 TesLight::Configuration::WiFiConfig TesLight::Configuration::getWiFiConfig()
 {
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Get WiFi configuration."));
 	return this->wifiConfig;
 }
 
 /**
- * @brief Set the System config.
- * @param SystemConfig config to set
+ * @brief Set the WiFi config.
+ * @param wifionfig config to set
  */
-void TesLight::Configuration::setSystemConfig(TesLight::Configuration::SystemConfig systemConfig)
+void TesLight::Configuration::setWiFiConfig(TesLight::Configuration::WiFiConfig wifiConfig)
 {
-	this->systemConfig = systemConfig;
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Set WiFi configuration."));
+	this->wifiConfig = wifiConfig;
 }
 
 /**
@@ -94,7 +99,7 @@ void TesLight::Configuration::setSystemConfig(TesLight::Configuration::SystemCon
  */
 void TesLight::Configuration::loadDefaults()
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:loadDefaults"), F("Loading default configuration."));
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Loading default configuration."));
 
 	// System config
 	this->systemConfig.logLevel = TesLight::Logger::LogLevel::INFO;
@@ -104,9 +109,9 @@ void TesLight::Configuration::loadDefaults()
 	this->systemConfig.lightSensorMaxValue = 2048;
 
 	// LED config
-	const uint8_t ledPins[NUM_LED_DRIVERS] = {13, 14, 15, 16, 17, 21};
-	const uint8_t ledCounts[NUM_LED_DRIVERS] = {70, 2, 4, 4, 4, 4};
-	for (uint8_t i = 0; i < NUM_LED_DRIVERS; i++)
+	const uint8_t ledPins[NUM_LED_STRIPS] = {13, 14, 15, 16, 17, 21};
+	const uint8_t ledCounts[NUM_LED_STRIPS] = {70, 2, 4, 4, 4, 4};
+	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
 	{
 		this->ledConfig[i].ledPin = ledPins[i];
 		this->ledConfig[i].ledCount = ledCounts[i];
@@ -124,7 +129,7 @@ void TesLight::Configuration::loadDefaults()
 
 	// WiFi config
 	this->wifiConfig.accessPointSsid = F("TesLight");
-	this->wifiConfig.accessPointPassword = F("TesLight");
+	this->wifiConfig.accessPointPassword = F("TesLightPW");
 	this->wifiConfig.accessPointChannel = 1;
 	this->wifiConfig.accessPointHidden = false;
 	this->wifiConfig.accessPointMaxConnections = 1;
@@ -140,16 +145,26 @@ void TesLight::Configuration::loadDefaults()
  */
 bool TesLight::Configuration::load()
 {
-	TesLight::Logger::log(TesLight::Logger::INFO, F("Configuration.cpp:load"), (String)F("Loading configuration from file \"") + this->fileName + F("\"..."));
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, (String)F("Loading configuration from file \"") + this->fileName + F("\"."));
 
 	TesLight::BinaryFile file(this->fileSystem);
 	if (!file.open(this->fileName, FILE_READ))
 	{
-		TesLight::Logger::log(TesLight::Logger::WARN, F("Configuration.cpp:load"), F("Failed to load configuration file."));
+		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, (String)F("Failed to load configuration file: ") + fileName);
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:load"), F("Configuration file loaded. Parsing configuration from file..."));
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Configuration file loaded. Parsing configuration from file."));
+
+	// Check the configuration file version
+	if (file.readWord() != this->configurationVersion)
+	{
+		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, F("Configuration file version does not match."));
+		file.close();
+		return false;
+	}
+
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Reading binary data."));
 
 	// System config
 	this->systemConfig.logLevel = (TesLight::Logger::LogLevel)file.readByte();
@@ -159,7 +174,7 @@ bool TesLight::Configuration::load()
 	this->systemConfig.lightSensorMaxValue = file.readWord();
 
 	// LED config
-	for (uint8_t i = 0; i < NUM_LED_DRIVERS; i++)
+	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
 	{
 		this->ledConfig[i].ledPin = file.readByte();
 		this->ledConfig[i].ledCount = file.readWord();
@@ -184,9 +199,17 @@ bool TesLight::Configuration::load()
 	this->wifiConfig.wifiSsid = file.readString();
 	this->wifiConfig.wifiPassword = file.readString();
 
+	// Check the hash
+	if (file.readWord() != this->getSimpleHash())
+	{
+		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, F("Configuration file hash does not match."));
+		file.close();
+		return false;
+	}
+
 	file.close();
 
-	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:load"), F("Configuration parsed."));
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Configuration parsed."));
 	return true;
 }
 
@@ -197,16 +220,19 @@ bool TesLight::Configuration::load()
  */
 bool TesLight::Configuration::save()
 {
-	TesLight::Logger::log(TesLight::Logger::INFO, F("Configuration.cpp:save"), (String)F("Saving configuration to file \"") + this->fileName + F("\"..."));
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, (String)F("Saving configuration to file \"") + this->fileName + F("\"."));
 
 	TesLight::BinaryFile file(this->fileSystem);
 	if (!file.open(this->fileName, FILE_WRITE))
 	{
-		TesLight::Logger::log(TesLight::Logger::WARN, F("Configuration.cpp:save"), F("Failed to open configuration file."));
+		TesLight::Logger::log(TesLight::Logger::WARN, SOURCE_LOCATION, F("Failed to open configuration file."));
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::DEBUG, F("Configuration.cpp:save"), F("Configuration file opened. Writing configuration to file..."));
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Configuration file opened. Writing configuration to file."));
+
+	// Write the configuration file version
+	file.writeWord(this->configurationVersion);
 
 	// System cofiguration
 	file.writeByte((uint8_t)this->systemConfig.logLevel);
@@ -216,7 +242,7 @@ bool TesLight::Configuration::save()
 	file.writeWord(this->systemConfig.lightSensorMaxValue);
 
 	// LED configuration
-	for (uint8_t i = 0; i < NUM_LED_DRIVERS; i++)
+	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
 	{
 		file.writeByte(this->ledConfig[i].ledPin);
 		file.writeWord(this->ledConfig[i].ledCount);
@@ -241,8 +267,66 @@ bool TesLight::Configuration::save()
 	file.writeString(this->wifiConfig.wifiSsid);
 	file.writeString(this->wifiConfig.wifiPassword);
 
+	// Write the hash
+	file.writeWord(this->getSimpleHash());
+
 	file.close();
 
-	TesLight::Logger::log(TesLight::Logger::INFO, F("Configuration.cpp:save"), F("Configuration saved."));
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Configuration saved."));
 	return true;
+}
+
+/**
+ * @brief Calculate a very simple hash to check the config file.
+ * @return uint16_t 2 byte hash
+ */
+uint16_t TesLight::Configuration::getSimpleHash()
+{
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Calculate hash of the configuration."));
+	uint16_t hash = 7;
+	hash = hash * 31 + this->configurationVersion;
+	hash = hash * 31 + this->systemConfig.logLevel;
+	hash = hash * 31 + this->systemConfig.lightSensorMode;
+	hash = hash * 31 + this->systemConfig.lightSensorThreshold;
+	hash = hash * 31 + this->systemConfig.lightSensorMinValue;
+	hash = hash * 31 + this->systemConfig.lightSensorMaxValue;
+	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	{
+		hash = hash * 31 + this->ledConfig[i].ledPin;
+		hash = hash * 31 + this->ledConfig[i].ledCount;
+		hash = hash * 31 + this->ledConfig[i].type;
+		hash = hash * 31 + this->ledConfig[i].speed;
+		hash = hash * 31 + this->ledConfig[i].offset;
+		hash = hash * 31 + this->ledConfig[i].brightness;
+		hash = hash * 31 + this->ledConfig[i].reverse;
+		hash = hash * 31 + this->ledConfig[i].fadeSpeed;
+		for (uint8_t j = 0; j < NUM_ANIMATOR_CUSTOM_FIELDS; j++)
+		{
+			hash = hash * 31 + this->ledConfig[i].customField[j];
+		}
+	}
+	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.accessPointSsid);
+	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.accessPointPassword);
+	hash = hash * 31 + this->wifiConfig.accessPointChannel;
+	hash = hash * 31 + this->wifiConfig.accessPointHidden;
+	hash = hash * 31 + this->wifiConfig.accessPointMaxConnections;
+	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.wifiSsid);
+	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.wifiPassword);
+	return hash;
+}
+
+/**
+ * @brief Create a very simple hash based on a string.
+ * @param input input string
+ * @return uint16_t 2 byte hash
+ */
+uint16_t TesLight::Configuration::getSimpleStringHash(const String input)
+{
+	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Calculate hash of the string."));
+	uint16_t hash = 7;
+	for (uint16_t i = 0; i < input.length(); i++)
+	{
+		hash = hash * 31 + input.charAt(i);
+	}
+	return hash;
 }

@@ -18,6 +18,7 @@ namespace TesLight
 	{
 	public:
 		GradientAnimator();
+		GradientAnimator(const uint8_t red1, const uint8_t green1, const uint8_t blue1, const uint8_t red2, const uint8_t green2, const uint8_t blue2);
 		~GradientAnimator();
 
 		void init();

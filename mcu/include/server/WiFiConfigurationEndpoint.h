@@ -17,11 +17,6 @@
 #include "logging/Logger.h"
 #include "util/InMemoryBinaryFile.h"
 
-extern "C"
-{
-#include "crypto/base64.h"
-}
-
 namespace TesLight
 {
 	class WiFiConfigurationEndpoint : public RestEndpoint

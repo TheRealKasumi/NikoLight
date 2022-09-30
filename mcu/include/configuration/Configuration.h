@@ -77,10 +77,14 @@ namespace TesLight
 	private:
 		FS *fileSystem;
 		String fileName;
-
+		uint16_t configurationVersion;
+		
 		TesLight::Configuration::SystemConfig systemConfig;
-		TesLight::Configuration::LedConfig ledConfig[NUM_LED_DRIVERS];
+		TesLight::Configuration::LedConfig ledConfig[NUM_LED_STRIPS];
 		TesLight::Configuration::WiFiConfig wifiConfig;
+
+		uint16_t getSimpleHash();
+		uint16_t getSimpleStringHash(const String input);
 	};
 }
 

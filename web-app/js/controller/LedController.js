@@ -92,6 +92,7 @@ class LedController {
 		this.uiElements.speedSliderInput.value = config.speed;
 		this.uiElements.distanceSliderInput.value = config.offset;
 		this.uiElements.reverseCheckInput.checked = config.reverse;
+		this.uiElements.fadingSliderInput.value = config.fadingSpeed;
 		this.onAnimatorChanged({ target: this.uiElements.animatorTypeSelect });
 	};
 

@@ -19,7 +19,7 @@
  */
 TesLight::LightSensor::LightSensor(const uint8_t inputPin, const uint16_t bufferSize, const TesLight::LightSensor::LightSensorMode lightSensorMode, const uint16_t threshold, const uint16_t minValue, const uint16_t maxValue)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("LightSensor.cpp:LightSensor"), F("Initializing Light Sensor."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Initialize Light Sensor at pin ") + String(this->inputPin) + F("."));
 	this->inputPin = inputPin;
 	this->bufferSize = bufferSize;
 
@@ -28,6 +28,7 @@ TesLight::LightSensor::LightSensor(const uint8_t inputPin, const uint16_t buffer
 	this->minValue = minValue;
 	this->maxValue = maxValue;
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Initialize light sensor buffer with size ") + String(this->bufferSize) + F("."));
 	this->buffer = new uint16_t[this->bufferSize];
 	for (uint16_t i = 0; i < this->bufferSize; i++)
 	{
@@ -43,6 +44,7 @@ TesLight::LightSensor::LightSensor(const uint8_t inputPin, const uint16_t buffer
  */
 TesLight::LightSensor::~LightSensor()
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Deleting Light Sensor instance."));
 	delete[] this->buffer;
 	this->buffer = nullptr;
 }
@@ -53,6 +55,7 @@ TesLight::LightSensor::~LightSensor()
  */
 TesLight::LightSensor::LightSensorMode TesLight::LightSensor::getLightSensorMode()
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get Light Sensor mode."));
 	return this->lightSensorMode;
 }
 
@@ -62,6 +65,7 @@ TesLight::LightSensor::LightSensorMode TesLight::LightSensor::getLightSensorMode
  */
 void TesLight::LightSensor::setLightSensorMode(const TesLight::LightSensor::LightSensorMode lightSensorMode)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Set Light Sensor mode to ") + String(lightSensorMode) + F("."));
 	this->lightSensorMode = lightSensorMode;
 }
 
@@ -71,6 +75,7 @@ void TesLight::LightSensor::setLightSensorMode(const TesLight::LightSensor::Ligh
  */
 uint16_t TesLight::LightSensor::getThreshold()
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get Light Sensor threshold."));
 	return this->threshold;
 }
 
@@ -80,6 +85,7 @@ uint16_t TesLight::LightSensor::getThreshold()
  */
 void TesLight::LightSensor::setThreshold(const uint16_t threshold)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Get Light Sensor threshold to ") + String(threshold) + F("."));
 	this->threshold = threshold;
 }
 
@@ -89,6 +95,7 @@ void TesLight::LightSensor::setThreshold(const uint16_t threshold)
  */
 uint16_t TesLight::LightSensor::getMinValue()
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get Light Sensor min value."));
 	return this->minValue;
 }
 
@@ -98,6 +105,7 @@ uint16_t TesLight::LightSensor::getMinValue()
  */
 void TesLight::LightSensor::setMinValue(const uint16_t minValue)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Set Light Sensor min value to ") + String(minValue) + F("."));
 	this->minValue = minValue;
 }
 
@@ -107,6 +115,7 @@ void TesLight::LightSensor::setMinValue(const uint16_t minValue)
  */
 uint16_t TesLight::LightSensor::getMaxValue()
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get Light Sensor max value."));
 	return this->maxValue;
 }
 
@@ -116,6 +125,7 @@ uint16_t TesLight::LightSensor::getMaxValue()
  */
 void TesLight::LightSensor::setMaxValue(const uint16_t maxValue)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Set Light Sensor max value to ") + String(maxValue) + F("."));
 	this->maxValue = maxValue;
 }
 
@@ -125,25 +135,28 @@ void TesLight::LightSensor::setMaxValue(const uint16_t maxValue)
  */
 float TesLight::LightSensor::getBrightness()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("LightSensor.cpp:getBrightness"), F("Reading light brightness."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Reading Light Sensor average value."));
 	const uint16_t rawValue = this->getAnalogeValue();
 
 	// Always off
 	if (this->lightSensorMode == TesLight::LightSensor::LightSensorMode::ALWAYS_OFF)
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Light Sensor mode is ALWAYS_OFF. The resulting value is 0.0."));
 		return 0.0f;
 	}
 
 	// Always on
 	else if (this->lightSensorMode == TesLight::LightSensor::LightSensorMode::ALWAYS_ON)
 	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Light Sensor mode is ALWAYS_ON. The resulting value is 1.0."));
 		return 1.0f;
 	}
 
 	// Auto on/off
 	else if (this->lightSensorMode == TesLight::LightSensor::LightSensorMode::AUTO_ON_OFF)
 	{
-		return rawValue > this->threshold;
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Light Sensor mode is AUTO_ON_OFF. The resulting value is ") + String(rawValue > this->threshold ? 1.0f : 0.0f) + F("."));
+		return rawValue > this->threshold ? 1.0f : 0.0f;
 	}
 
 	// Auto brightness
@@ -158,9 +171,12 @@ float TesLight::LightSensor::getBrightness()
 		{
 			brightness = 1.0f;
 		}
+
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Light Sensor mode is AUTO_BRIGHTNESS. The resulting value is ") + String(brightness) + F("."));
 		return brightness;
 	}
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Light Sensor mode is unknown. The resulting value is 0.0."));
 	return 0.0f;
 }
 
@@ -170,16 +186,21 @@ float TesLight::LightSensor::getBrightness()
  */
 uint16_t TesLight::LightSensor::getAnalogeValue()
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Reading Light Sensor analog value and adding it to the buffer."));
 	this->buffer[this->bufferIndex++] = analogRead(this->inputPin);
 	if (this->bufferIndex == this->bufferSize)
 	{
 		this->bufferIndex = 0;
 	}
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calculating average value based on buffered values."));
 	float average = 0.0f;
 	for (uint16_t i = 0; i < this->bufferSize; i++)
 	{
 		average += buffer[i];
 	}
-	return average / this->bufferSize;
+	average /= this->bufferSize;
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Average value is ") + String(average) + F("."));
+	return average;
 }
