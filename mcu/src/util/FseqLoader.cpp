@@ -88,14 +88,13 @@ bool TesLight::FseqLoader::loadFromFile(const String fileName)
 }
 
 /**
- * @brief Return if there is another pixel available.
- * @return true when data is available
- * @return false when the end of the file is reached
+ * @brief Return the number of remaining pixels in the file.
+ * @return size_t number of pixels available to read
  */
-bool TesLight::FseqLoader::hasNextPixel()
+size_t TesLight::FseqLoader::available()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Check if there is another pixel available in the fseq file."));
-	return this->file ? this->file.available() >= 3 : false;
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get number of pixels available in fseq animation file."));
+	return this->file ? this->file.available() / 3 : 0;
 }
 
 /**
@@ -137,28 +136,26 @@ TesLight::FseqLoader::FseqHeader TesLight::FseqLoader::getHeader()
 }
 
 /**
- * @brief Read the next pixel from the stream.
- * @return {@link TesLight::FseqLoader::FseqPixel} containing the next color value
+ * @brief Read a buffer of pixels from the stream.
+ * @param pixelBuffer pointer to a {@link CRGB buffer} for the pixel data
+ * @param bufferSize number of pixels in the buffer/number of pixels to be read from the stream
+ * @return true when read successfully
+ * @return false when there was an error
  */
-TesLight::FseqLoader::FseqPixel TesLight::FseqLoader::getNextPixelFromStream()
+bool TesLight::FseqLoader::readPixelbuffer(CRGB *pixelBuffer, const size_t bufferSize)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read next pixel from the fseq file."));
-	TesLight::FseqLoader::FseqPixel pixel;
-	if (this->file && this->file.available() >= 3)
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read pixel buffer from the fseq file."));
+	if (this->file && this->available() >= bufferSize)
 	{
-		this->file.readBytes((char *)&pixel.red, 1);
-		this->file.readBytes((char *)&pixel.green, 1);
-		this->file.readBytes((char *)&pixel.blue, 1);
-	}
-	else
-	{
-		pixel.red = 0;
-		pixel.green = 0;
-		pixel.blue = 0;
+		if (this->file.read((uint8_t *)pixelBuffer, bufferSize * 3) == bufferSize * 3)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Pixel read from the fseq file."));
+			return true;
+		}
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Pixel read from the fseq file."));
-	return pixel;
+	TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to read pixel buffer from fseq file."));
+	return false;
 }
 
 /**

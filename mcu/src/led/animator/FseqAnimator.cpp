@@ -74,21 +74,34 @@ void TesLight::FseqAnimator::render()
 		return;
 	}
 
-	for (uint16_t i = 0; i < this->pixelCount; i++)
+	if (this->fseqLoader->available() < this->pixelCount)
 	{
-		if (!this->fseqLoader->hasNextPixel() && this->loop)
+		if (this->loop)
 		{
 			this->fseqLoader->moveToStart();
 		}
-
-		const TesLight::FseqLoader::FseqPixel fseqPixel = this->fseqLoader->getNextPixelFromStream();
-		if (!this->reverse)
-		{
-			this->pixels[i].setRGB(fseqPixel.red, fseqPixel.green, fseqPixel.blue);
-		}
 		else
 		{
-			this->pixels[(this->pixelCount - 1) - i].setRGB(fseqPixel.red, fseqPixel.green, fseqPixel.blue);
+			return;
+		}
+	}
+
+	if (!this->fseqLoader->readPixelbuffer(this->pixels, this->pixelCount))
+	{
+		for (uint16_t i = 0; i < this->pixelCount; i++)
+		{
+			this->pixels[i] = CRGB::Black;
+		}
+	}
+
+	if (this->reverse)
+	{
+
+		for (uint16_t i = 0, j = this->pixelCount - 1; i < j; i++, j--)
+		{
+			CRGB temp = this->pixels[i];
+			this->pixels[i] = this->pixels[j];
+			this->pixels[j] = temp;
 		}
 	}
 
