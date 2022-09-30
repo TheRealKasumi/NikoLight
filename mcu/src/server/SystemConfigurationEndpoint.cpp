@@ -29,8 +29,7 @@ void TesLight::SystemConfigurationEndpoint::begin(TesLight::Configuration *_conf
  */
 void TesLight::SystemConfigurationEndpoint::getSystemConfig(AsyncWebServerRequest *request)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("SystemConfigurationEndpoint.cpp:getSystemConfig"), F("Received request to get the system configuration..."));
-
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the system configuration."));
 	TesLight::InMemoryBinaryFile binary(8);
 	binary.writeByte((uint8_t)configuration->getSystemConfig().logLevel);
 	binary.writeByte((uint8_t)configuration->getSystemConfig().lightSensorMode);
@@ -38,22 +37,18 @@ void TesLight::SystemConfigurationEndpoint::getSystemConfig(AsyncWebServerReques
 	binary.writeWord(configuration->getSystemConfig().lightSensorMinValue);
 	binary.writeWord(configuration->getSystemConfig().lightSensorMaxValue);
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("SystemConfigurationEndpoint.cpp:getSystemConfig"), F("Preparing base64 response..."));
-
-	size_t base64Length;
-	unsigned char *base64 = base64_encode((unsigned char *)binary.getData(), binary.getBytesWritten(), &base64Length);
-
-	String base64String;
-	base64String.reserve(base64Length);
-	for (size_t i = 0; i < base64Length; i++)
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Preparing base64 response."));
+	String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
+	if (encoded == F("BASE64_ERROR"))
 	{
-		base64String += (char)base64[i];
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to encode response."));
+		request->send(500, F("application/octet-stream"), F("Failed to encode response."));
+		return;
 	}
-	free(base64);
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Base64 response prepared."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("SystemConfigurationEndpoint.cpp:getSystemConfig"), F("Sending the response."));
-
-	request->send(200, "application/octet-stream", base64String);
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Sending the response."));
+	request->send(200, "application/octet-stream", encoded);
 }
 
 /**
@@ -62,42 +57,44 @@ void TesLight::SystemConfigurationEndpoint::getSystemConfig(AsyncWebServerReques
  */
 void TesLight::SystemConfigurationEndpoint::postSystemConfig(AsyncWebServerRequest *request)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("SystemConfigurationEndpoint.cpp::postSystemConfig"), F("Received request to update the system configuration..."));
-
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("SystemConfigurationEndpoint.cpp::postSystemConfig"), F("Checking content-length..."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the system configuration."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking content-length."));
 	if (request->contentLength() == 0)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, F("SystemConfigurationEndpoint.cpp::postSystemConfig"), F("Content-length must not be null. The request could not be processed because it's empty."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Content-length must not be null. The request could not be processed because it's empty."));
 		request->send(400, F("text/plain"), F("A request body must be provided and the content-length must not be null."));
 		return;
 	}
 	else if (request->contentType() != F("application/x-www-form-urlencoded"))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, F("SystemConfigurationEndpoint.cpp::postSystemConfigRequest"), F("The content type must be \"application/x-www-form-urlencoded\"."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/x-www-form-urlencoded\"."));
 		request->send(400, F("text/plain"), F("The content type must be \"application/x-www-form-urlencoded\"."));
 		return;
 	}
 	else if (request->arg("data").length() == 0)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, F("SystemConfigurationEndpoint.cpp::postSystemConfig"), F("There must be a body parameter \"data\" with the base64 encoded system data."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a body parameter \"data\" with the base64 encoded system data."));
 		request->send(400, F("text/plain"), F("There must be a body parameter \"data\" with the base64 encoded system data."));
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("SystemConfigurationEndpoint.cpp:postSystemConfig"), F("Decoding base64 request..."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Decoding base64 request."));
+	const String encoded = request->arg("data");
+	size_t length;
+	uint8_t *decoded = TesLight::Base64Util::decode(encoded, length);
+	if (decoded == nullptr)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to decode request."));
+		request->send(500, F("application/octet-stream"), F("Failed to decode request."));
+		return;
+	}
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Request decoded."));
 
-	const String base64String = request->arg("data");
-	const char *base64 = base64String.c_str();
+	TesLight::InMemoryBinaryFile binary(length);
+	binary.loadFrom(decoded, length);
+	delete[] decoded;
 
-	size_t dataLength;
-	unsigned char *data = base64_decode((unsigned char *)base64, base64String.length(), &dataLength);
-
-	TesLight::InMemoryBinaryFile binary(dataLength);
-	binary.loadFrom(data, dataLength);
-	free(data);
-
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("SystemConfigurationEndpoint.cpp:postSystemConfig"), F("Parsing new system configuration..."));
-
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Parsing new system configuration."));
 	TesLight::Configuration::SystemConfig config;
 	config.logLevel = (TesLight::Logger::LogLevel)binary.readByte();
 	config.lightSensorMode = (TesLight::LightSensor::LightSensorMode)binary.readByte();
@@ -105,29 +102,31 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig(AsyncWebServerReque
 	config.lightSensorMinValue = binary.readWord();
 	config.lightSensorMaxValue = binary.readWord();
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Validating system configuration."));
 	if (!validateLogLevel((uint8_t)config.logLevel))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, F("SystemConfigurationEndpoint.cpp::postSystemConfig"), F("The received log level is invalid."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The received log level is invalid."));
 		request->send(400, F("text/plain"), F("The received log level is invalid."));
 		return;
 	}
 	if (!validateLightSensorMode((uint8_t)config.lightSensorMode))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, F("SystemConfigurationEndpoint.cpp::postSystemConfig"), F("The received light sensor mode is invalid."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The received light sensor mode is invalid."));
 		request->send(400, F("text/plain"), F("The received light sensor mode is invalid."));
 		return;
 	}
 	if (!validateMinMax(config.lightSensorMinValue, config.lightSensorMaxValue))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, F("SystemConfigurationEndpoint.cpp::postSystemConfig"), F("The light sensor min value must be smaller than the max value."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The light sensor min value must be smaller than the max value."));
 		request->send(400, F("text/plain"), F("The light sensor min value must be smaller than the max value."));
 		return;
 	}
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Saving system configuration."));
 	configuration->setSystemConfig(config);
 	if (configuration->save())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("SystemConfigurationEndpoint.cpp:postSystemConfig"), F("System configuration saved. Executing callback function..."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("System configuration saved. Executing callback function."));
 		if (configChangedCallback)
 		{
 			configChangedCallback();
@@ -135,12 +134,12 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig(AsyncWebServerReque
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("SystemConfigurationEndpoint.cpp:postSystemConfig"), F("Failed to save system configuration..."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save system configuration."));
 		request->send(500, F("text/plain"), (String)F("Failed to save system configuration."));
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("SystemConfigurationEndpoint.cpp::postSystemConfig"), F("System configuration saved. Sending the response."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("System configuration saved. Sending the response."));
 	request->send(202);
 }
 
@@ -173,7 +172,7 @@ bool TesLight::SystemConfigurationEndpoint::validateLightSensorMode(const uint8_
  * @return true when valid
  * @return false when invalid
  */
-bool TesLight::SystemConfigurationEndpoint::validateMinMax(const uint8_t min, const uint8_t max)
+bool TesLight::SystemConfigurationEndpoint::validateMinMax(const uint16_t min, const uint16_t max)
 {
-	return max > min;
+	return min < max;
 }

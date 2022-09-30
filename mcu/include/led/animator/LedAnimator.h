@@ -12,7 +12,7 @@
 #include <stdint.h>
 #include <math.h>
 
-#include "led/driver/Pixel.h"
+#include "FastLED.h"
 
 namespace TesLight
 {
@@ -22,8 +22,8 @@ namespace TesLight
 		LedAnimator();
 		virtual ~LedAnimator() = 0;
 
-		void setPixels(TesLight::Pixel *pixels);
-		TesLight::Pixel *getPixels();
+		void setPixels(CRGB *pixels);
+		CRGB *getPixels();
 
 		void setPixelCount(const uint16_t pixelCount);
 		uint16_t getPixelCount();
@@ -34,6 +34,15 @@ namespace TesLight
 		void setOffset(const uint16_t offset);
 		uint16_t getOffset();
 
+		void setAnimationBrightness(const float animationBrightness);
+		float getAnimationBrightness();
+
+		void setAmbientBrightness(const float ambientBrightness);
+		float getAmbientBrightness();
+
+		void setFadeSpeed(const float fadeSpeed);
+		float getFadeSpeed();
+
 		void setReverse(const bool reverse);
 		bool getReverse();
 
@@ -41,12 +50,17 @@ namespace TesLight
 		virtual void render() = 0;
 
 	protected:
-		TesLight::Pixel *pixels;
+		CRGB *pixels;
 		uint16_t pixelCount;
 		uint8_t speed;
 		uint16_t offset;
+		float animationBrightness;
+		float ambientBrightness;
+		float smoothedAmbBrightness;
+		float fadeSpeed;
 		bool reverse;
 
+		void applyBrightness();
 		static float trapezoid(float angle);
 	};
 }

@@ -19,10 +19,10 @@
 // Configuration of the runtime configuration
 #define CONFIGURATION_FILE_NAME "/config.tli"
 
-// LED driver and animator configuration
-// When changing the driver number make sure
+// LED and animator configuration
+// When changing the strip number make sure
 // to also adjust the default values in {@link TesLight::Configuration}
-#define NUM_LED_DRIVERS 6
+#define NUM_LED_STRIPS 6
 #define NUM_ANIMATOR_CUSTOM_FIELDS 10
 
 // I2C configuration
@@ -42,9 +42,12 @@
 #define WEB_SERVER_STATIC_CONTENT "/web-app"
 
 // Timer configuration
-#define LED_CYCLE_TIME 16300
+#define LED_CYCLE_TIME 16666
 #define LIGHT_SENSOR_CYCLE_TIME 20000
-#define MOTION_SENSOR_CYCLE_TIME 50000
+#define MOTION_SENSOR_CYCLE_TIME 20000
 #define FPS_CYCLE_TIME 10000000
+
+// FSEQ configuration
+#define FSEQ_DIRECTORY "/fseq"
 
 #endif

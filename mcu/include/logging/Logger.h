@@ -12,6 +12,8 @@
 #include <Arduino.h>
 #include <FS.h>
 
+#define SOURCE_LOCATION __FILE__, __func__, __LINE__
+
 namespace TesLight
 {
 
@@ -33,8 +35,7 @@ namespace TesLight
 
 		static void setMinLogLevel(const TesLight::Logger::LogLevel logLevel);
 
-		static void log(const TesLight::Logger::LogLevel logLevel, const String source, const String message);
-		static void logLn(const TesLight::Logger::LogLevel logLevel, const String source, const String message);
+		static void log(const TesLight::Logger::LogLevel logLevel, const char *file, const char *function, const int line, const String message);
 
 		static size_t getLogSize();
 		static void readLog(uint8_t *buffer, const size_t start, const size_t bufferSize);

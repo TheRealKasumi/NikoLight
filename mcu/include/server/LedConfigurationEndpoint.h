@@ -17,11 +17,6 @@
 #include "util/InMemoryBinaryFile.h"
 #include "logging/Logger.h"
 
-extern "C"
-{
-#include "crypto/base64.h"
-}
-
 namespace TesLight
 {
 	class LedConfigurationEndpoint : public RestEndpoint

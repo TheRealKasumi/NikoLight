@@ -17,7 +17,7 @@
  */
 TesLight::WebServer::WebServer(const uint16_t port, FS *fileSystem, const String staticContentLocation)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("WebServer.cpp:WebServer"), (String)F("Starting webserver on port ") + String(port) + F("."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Starting webserver on port ") + String(port) + F("."));
 
 	this->server = new AsyncWebServer(port);
 	this->fileSystem = fileSystem;
@@ -27,7 +27,7 @@ TesLight::WebServer::WebServer(const uint16_t port, FS *fileSystem, const String
 
 	this->server->begin();
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("WebServer.cpp:WebServer"), F("Webserver running."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Webserver running."));
 }
 
 /**
@@ -46,7 +46,7 @@ TesLight::WebServer::~WebServer()
  */
 void TesLight::WebServer::addRequestHandler(const char *uri, http_method method, ArRequestHandlerFunction handler)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("WebServer.cpp:addRequestHandler"), (String)F("Adding request handler for \"") + uri + F("\"."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Adding request handler for \"") + uri + F("\"."));
 	server->on(uri, method, handler);
 }
 
@@ -54,12 +54,12 @@ void TesLight::WebServer::addRequestHandler(const char *uri, http_method method,
  * @brief Add a request handler with a body handler for a speciffic uri.
  *
  * @param uri uri of the endpoint
- * @param requestHandler handler function for the request, used for first validation
+ * @param requestHandler handler function for the request, in case no body is provided
  * @param bodyHandler handler function for receiving body data
  */
 void TesLight::WebServer::addRequestBodyHandler(const char *uri, http_method method, ArRequestHandlerFunction requestHandler, ArBodyHandlerFunction bodyHandler)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("WebServer.cpp:addRequestBodyHandler"), (String)F("Adding request body handler for \"") + uri + F("\"."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Adding request body handler for \"") + uri + F("\"."));
 	server->on(uri, method, requestHandler, nullptr, bodyHandler);
 }
 
@@ -68,11 +68,11 @@ void TesLight::WebServer::addRequestBodyHandler(const char *uri, http_method met
  */
 void TesLight::WebServer::init()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("WebServer.cpp:init"), F("Setting handler for not found error."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Setting handler for not found error."));
 	this->server->onNotFound([this](AsyncWebServerRequest *request)
 							 { this->handleNotFound(request); });
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("WebServer.cpp:init"), (String)F("Serving static files from: ") + this->staticContentLocation);
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Serving static files from: ") + this->staticContentLocation);
 	this->server->serveStatic("/", *this->fileSystem, this->staticContentLocation.c_str())
 		.setDefaultFile("index.html")
 		.setCacheControl("max-age=10");

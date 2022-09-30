@@ -17,11 +17,6 @@
 #include "util/InMemoryBinaryFile.h"
 #include "logging/Logger.h"
 
-extern "C"
-{
-#include "crypto/base64.h"
-}
-
 namespace TesLight
 {
 	class SystemConfigurationEndpoint : public RestEndpoint
@@ -39,7 +34,7 @@ namespace TesLight
 		static void postSystemConfig(AsyncWebServerRequest *request);
 		static bool validateLogLevel(const uint8_t logLevel);
 		static bool validateLightSensorMode(const uint8_t lightSensorMode);
-		static bool validateMinMax(const uint8_t min, const uint8_t max);
+		static bool validateMinMax(const uint16_t min, const uint16_t max);
 	};
 }
 

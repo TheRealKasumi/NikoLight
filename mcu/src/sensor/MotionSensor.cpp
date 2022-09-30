@@ -17,7 +17,7 @@
  */
 TesLight::MotionSensor::MotionSensor(const uint8_t deviceAddress, const uint8_t sdaPin, const uint8_t sclPin, const uint8_t bufferSize)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("MotionSensor.cpp:MotionSensor"), F("Initializing Motion Sensor properties."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Initializing Motion Sensor at") + String(deviceAddress) + F("."));
 	this->deviceAddress = deviceAddress;
 	this->sdaPin = sdaPin;
 	this->sclPin = sclPin;
@@ -25,9 +25,11 @@ TesLight::MotionSensor::MotionSensor(const uint8_t deviceAddress, const uint8_t 
 	this->bufferIndex = 0;
 	this->motionData = new TesLight::MotionSensorData[this->bufferSize];
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("MotionSensor.cpp:MotionSensor"), F("Initializing buffers."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initializing buffers."));
 	this->initializeMotionSensorData(this->motionData, this->bufferSize);
 	this->initializeMotionSensorData(&this->offsetData, 1);
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Motion Sensor initialized."));
 }
 
 /**
@@ -35,6 +37,7 @@ TesLight::MotionSensor::MotionSensor(const uint8_t deviceAddress, const uint8_t 
  */
 TesLight::MotionSensor::~MotionSensor()
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Delete Motion Sensor and free memory."));
 	delete[] this->motionData;
 }
 
@@ -46,61 +49,61 @@ TesLight::MotionSensor::~MotionSensor()
  */
 bool TesLight::MotionSensor::begin(const bool autoCalibrate)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("MotionSensor.cpp:begin"), F("Initializing Initializing Motion Sensor."));
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("MotionSensor.cpp:begin"), F("Initializing I2C communication."));
-	Wire.begin(this->sdaPin, this->sclPin);
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initializing Initializing Motion Sensor."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initializing I2C communication."));
+	Wire.begin((int)this->sdaPin, (int)this->sclPin);
 
 	// Wake up
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("MotionSensor.cpp:begin"), F("Waking up motion sensor."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Waking up motion sensor."));
 	Wire.beginTransmission(this->deviceAddress);
 	Wire.write(0x6B);
 	Wire.write(0);
 	if (Wire.endTransmission(true) != 0)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("MotionSensor.cpp:begin"), F("Communication error. Failed to wake motion sensor."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Communication error. Failed to wake motion sensor."));
 		return false;
 	}
 
 	// Set acc to +/- 2G
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("MotionSensor.cpp:begin"), F("Setting acceleration scale to +/- 2G."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Setting acceleration scale to +/- 2G."));
 	Wire.beginTransmission(this->deviceAddress);
 	Wire.write(0x1C);
 	Wire.write(0x00);
 	if (Wire.endTransmission(true) != 0)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("MotionSensor.cpp:begin"), F("Communication error. Failed to set acceleration scale."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Communication error. Failed to set acceleration scale."));
 		return false;
 	}
 
 	// Set Gyro to +/- 250°/s
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, F("MotionSensor.cpp:begin"), F("Setting rotation scale to +/- 250°/s."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Setting rotation scale to +/- 250°/s."));
 	Wire.beginTransmission(this->deviceAddress);
 	Wire.write(0x1B);
 	Wire.write(0x00);
 	if (Wire.endTransmission(true) != 0)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("MotionSensor.cpp:begin"), F("Communication error. Failed to set rotation scale."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Communication error. Failed to set rotation scale."));
 		return false;
 	}
 
 	// Initially fill the buffer
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("MotionSensor.cpp:begin"), F("Initially filling buffer."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initially filling buffer."));
 	if (!this->readData(false))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("MotionSensor.cpp:begin"), F("Communication error. Failed to read motion data."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Communication error. Failed to read motion data."));
 		return false;
 	}
 
 	// Set the offset for calibration
 	if (autoCalibrate)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("MotionSensor.cpp:begin"), F("Calculating sensor offsets."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calculating sensor offsets."));
 		this->offsetData = this->getData();
 		this->offsetData.accZRaw -= 16384;
 		this->offsetData.accZG -= 1.0;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, F("MotionSensor.cpp:begin"), F("Motion sensor initialized successfully."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Motion sensor initialized successfully."));
 	return true;
 }
 
@@ -112,6 +115,7 @@ bool TesLight::MotionSensor::begin(const bool autoCalibrate)
  */
 bool TesLight::MotionSensor::readData(const bool asRingBuffer)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Reading Motion Sensor data."));
 	for (uint8_t i = 0; i < this->bufferSize; i++)
 	{
 		// Read the 6 acc registers
@@ -120,7 +124,7 @@ bool TesLight::MotionSensor::readData(const bool asRingBuffer)
 		Wire.endTransmission(false);
 		if (Wire.requestFrom(this->deviceAddress, 6, true) != 6)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("MotionSensor.cpp:readData"), F("Communication error. Failed to read acceleration registers."));
+			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Communication error. Failed to read acceleration registers."));
 			return false;
 		}
 
@@ -138,7 +142,7 @@ bool TesLight::MotionSensor::readData(const bool asRingBuffer)
 		Wire.endTransmission(false);
 		if (Wire.requestFrom(this->deviceAddress, 6, true) != 6)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, F("MotionSensor.cpp:readData"), F("Communication error. Failed to read rotation registers."));
+			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Communication error. Failed to read rotation registers."));
 			return false;
 		}
 
@@ -173,6 +177,7 @@ bool TesLight::MotionSensor::readData(const bool asRingBuffer)
  */
 TesLight::MotionSensorData TesLight::MotionSensor::getData()
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get (compensated) Motion Sensor data."));
 	TesLight::MotionSensorData data = this->average(this->motionData, this->bufferSize);
 	data.accXRaw -= this->offsetData.accXRaw;
 	data.accYRaw -= this->offsetData.accYRaw;
@@ -195,6 +200,7 @@ TesLight::MotionSensorData TesLight::MotionSensor::getData()
  */
 void TesLight::MotionSensor::setOffsetData(TesLight::MotionSensorData offsetData)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set Motion Sensor offset data."));
 	this->offsetData = offsetData;
 }
 
@@ -204,6 +210,7 @@ void TesLight::MotionSensor::setOffsetData(TesLight::MotionSensorData offsetData
  */
 TesLight::MotionSensorData TesLight::MotionSensor::getOffsetData()
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get Motion Sensor offset data."));
 	return this->offsetData;
 }
 
@@ -214,6 +221,7 @@ TesLight::MotionSensorData TesLight::MotionSensor::getOffsetData()
  */
 void TesLight::MotionSensor::initializeMotionSensorData(TesLight::MotionSensorData *data, const uint8_t sampleSize)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize Motion Sensor data to 0."));
 	for (uint8_t i = 0; i < sampleSize; i++)
 	{
 		data[i].accXRaw = 0;
@@ -229,6 +237,7 @@ void TesLight::MotionSensor::initializeMotionSensorData(TesLight::MotionSensorDa
 		data[i].gyroYDeg = 0.0;
 		data[i].gyroZDeg = 0.0;
 	}
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Motion Sensor data initialized."));
 }
 
 /**
@@ -239,6 +248,7 @@ void TesLight::MotionSensor::initializeMotionSensorData(TesLight::MotionSensorDa
  */
 TesLight::MotionSensorData TesLight::MotionSensor::average(TesLight::MotionSensorData *data, const uint8_t sampleSize)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calculcate the average Motion Sensor data based on buffer."));
 	double accXRaw = 0.0;
 	double accYRaw = 0.0;
 	double accZRaw = 0.0;
@@ -282,5 +292,6 @@ TesLight::MotionSensorData TesLight::MotionSensor::average(TesLight::MotionSenso
 	averageData.gyroYDeg = gyroYDeg;
 	averageData.gyroZDeg = gyroZDeg;
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Average Motion Sensor data calculated."));
 	return averageData;
 }

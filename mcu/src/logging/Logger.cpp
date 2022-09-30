@@ -81,12 +81,14 @@ void TesLight::Logger::setMinLogLevel(const TesLight::Logger::LogLevel logLevel)
 /**
  * @brief Log a message depending on the log level, source and message.
  * @param logLevel log level for the message
- * @param source source of the message
+ * @param file path and name of the source file
+ * @param function name of the function
+ * @param current line in code
  * @param message message text
  */
-void TesLight::Logger::log(const TesLight::Logger::LogLevel logLevel, const String source, const String message)
+void TesLight::Logger::log(const TesLight::Logger::LogLevel logLevel, const char *file, const char *function, const int line, const String message)
 {
-	const String logString = getTimeString() + F(" [") + getLogLevelString(logLevel) + F("] (") + source + F("): ") + message + F("\r\n");
+	const String logString = getTimeString() + F(" [") + getLogLevelString(logLevel) + F("] (") + String(file) + F(") (") + String(function) + F(") (") + String(line) + F("): ") + message + F("\r\n");
 
 	if (logLevel < minLogLevel)
 	{

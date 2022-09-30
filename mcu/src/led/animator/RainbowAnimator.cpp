@@ -14,6 +14,17 @@
 TesLight::RainbowAnimator::RainbowAnimator()
 {
 	this->angle = 0.0f;
+	this->rainbowMode = TesLight::RainbowAnimator::RainbowMode::RAINBOW_SOLID;
+}
+
+/**
+ * @brief Construct a new Tes Light:: Rainbow Animator:: Rainbow Animator object
+ *
+ * @param rainbowMode display mode of the rainbow
+ */
+TesLight::RainbowAnimator::RainbowAnimator(const TesLight::RainbowAnimator::RainbowMode rainbowMode)
+{
+	this->rainbowMode = rainbowMode;
 }
 
 /**
@@ -31,7 +42,7 @@ void TesLight::RainbowAnimator::init()
 	this->angle = 0.0f;
 	for (uint16_t i = 0; i < this->pixelCount; i++)
 	{
-		this->pixels[i].setColor(0);
+		this->pixels[i] = CRGB::Black;
 	}
 }
 
@@ -47,31 +58,31 @@ void TesLight::RainbowAnimator::render()
 		float greenAngle = 0.0f;
 		float blueAngle = 0.0f;
 
-		if (this->rainbowMode == TesLight::RainbowMode::RAINBOW_SOLID)
+		if (this->rainbowMode == TesLight::RainbowAnimator::RainbowMode::RAINBOW_SOLID)
 		{
 			redAngle = this->angle + 0.0f;
 			greenAngle = this->angle + 120.0f;
 			blueAngle = this->angle + 240.0f;
 		}
 
-		else if (this->rainbowMode == TesLight::RainbowMode::RAINBOW_LINEAR)
+		else if (this->rainbowMode == TesLight::RainbowAnimator::RainbowMode::RAINBOW_LINEAR)
 		{
 			redAngle = (this->angle + 0.0f) + i * this->offset;
 			greenAngle = (this->angle + 120.0f) + i * this->offset;
 			blueAngle = (this->angle + 240.0f) + i * this->offset;
 		}
 
-		else if (this->rainbowMode == TesLight::RainbowMode::RAINBOW_CENTER)
+		else if (this->rainbowMode == TesLight::RainbowAnimator::RainbowMode::RAINBOW_CENTER)
 		{
 			redAngle = i < middle ? (this->angle + 0.0f) + i * this->offset : (this->angle + 0.0f) + (this->pixelCount - i) * this->offset;
 			greenAngle = i < middle ? (this->angle + 120.0f) + i * this->offset : (this->angle + 120.0f) + (this->pixelCount - i) * this->offset;
 			blueAngle = i < middle ? (this->angle + 240.0f) + i * this->offset : (this->angle + 240.0f) + (this->pixelCount - i) * this->offset;
 		}
 
-		this->pixels[i].setRed(this->trapezoid(redAngle) * 255.0f);
-		this->pixels[i].setGreen(this->trapezoid(greenAngle) * 255.0f);
-		this->pixels[i].setBlue(this->trapezoid(blueAngle) * 255.0f);
+		this->pixels[i].setRGB(this->trapezoid(redAngle) * 255.0f, this->trapezoid(greenAngle) * 255.0f, this->trapezoid(blueAngle) * 255.0f);
 	}
+
+	this->applyBrightness();
 
 	if (this->reverse)
 	{
@@ -96,7 +107,7 @@ void TesLight::RainbowAnimator::render()
  * @brief Set the mode of the rainbow animation.
  * @param rainbowMode mode of the animation
  */
-void TesLight::RainbowAnimator::setRainbowMode(const TesLight::RainbowMode rainbowMode)
+void TesLight::RainbowAnimator::setRainbowMode(const TesLight::RainbowAnimator::RainbowMode rainbowMode)
 {
 	this->rainbowMode = rainbowMode;
 }

@@ -14,28 +14,29 @@
 
 namespace TesLight
 {
-	enum RainbowMode
-	{
-		RAINBOW_SOLID,
-		RAINBOW_LINEAR,
-		RAINBOW_CENTER,
-		RAINBOW_SLIDE
-	};
-
 	class RainbowAnimator : public LedAnimator
 	{
 	public:
+		enum RainbowMode
+		{
+			RAINBOW_SOLID,
+			RAINBOW_LINEAR,
+			RAINBOW_CENTER,
+			RAINBOW_SLIDE
+		};
+
 		RainbowAnimator();
+		RainbowAnimator(const TesLight::RainbowAnimator::RainbowMode rainbowMode);
 		~RainbowAnimator();
 
 		void init();
 		void render();
 
-		void setRainbowMode(const TesLight::RainbowMode rainbowMode);
+		void setRainbowMode(const TesLight::RainbowAnimator::RainbowMode rainbowMode);
 
 	private:
 		float angle;
-		TesLight::RainbowMode rainbowMode;
+		TesLight::RainbowAnimator::RainbowMode rainbowMode;
 	};
 }
 

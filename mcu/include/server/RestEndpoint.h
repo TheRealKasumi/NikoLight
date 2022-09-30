@@ -10,6 +10,7 @@
 #define REST_ENDPOINT_H
 
 #include "server/WebServer.h"
+#include "util/Base64Util.h"
 
 namespace TesLight
 {

@@ -6,11 +6,13 @@
  * @copyright Copyright (c) 2022
  *
  */
-#ifndef BINARY_FILE
-#define BINARY_FILE
+#ifndef BINARY_FILE_H
+#define BINARY_FILE_H
 
 #include <Arduino.h>
 #include <FS.h>
+
+#include "logging/Logger.h"
 
 namespace TesLight
 {
@@ -20,7 +22,7 @@ namespace TesLight
 		BinaryFile(FS *fileSystem);
 		~BinaryFile();
 
-		bool open(String fileName, const char *mode);
+		bool open(const String fileName, const char *mode);
 		void close();
 
 		bool writeByte(const uint8_t byte);
