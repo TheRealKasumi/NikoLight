@@ -118,7 +118,7 @@ void TesLight::Configuration::loadDefaults()
 		this->ledConfig[i].type = 0;
 		this->ledConfig[i].speed = 50;
 		this->ledConfig[i].offset = 10;
-		this->ledConfig[i].brightness = 25;
+		this->ledConfig[i].brightness = 50;
 		this->ledConfig[i].reverse = false;
 		this->ledConfig[i].fadeSpeed = 5;
 		for (uint8_t j = 0; j < NUM_ANIMATOR_CUSTOM_FIELDS; j++)
