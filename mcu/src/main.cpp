@@ -112,7 +112,7 @@ bool initializeLogger(bool sdLogging)
 bool initializeSdCard()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize MicroSD card."));
-	return SD.begin(SD_CS_PIN);
+	return SD.begin(SD_CS_PIN, SPI, SD_SPI_SPEED, SD_MOUNT_POINT, SD_MAX_FILES, false);
 }
 
 /**
@@ -375,9 +375,9 @@ void setup()
 void loop()
 {
 	// Handle the LEDs
-	if (micros() - ledTimer >= LED_CYCLE_TIME && ledTimer != MAX_ULONG_VALUE)
+	if (micros() - ledTimer >= ledManager->getTargetFrameTime() && ledTimer != MAX_ULONG_VALUE)
 	{
-		ledTimer = micros() - (micros() - ledTimer - LED_CYCLE_TIME);
+		ledTimer = micros() - (micros() - ledTimer - ledManager->getTargetFrameTime());
 		ledManager->render();
 		ledManager->show();
 		ledFrameCounter++;
@@ -434,6 +434,7 @@ void loop()
 			lightSensor->setLightSensorMode(systemConfig.lightSensorMode);
 		}
 		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System configuration updated."));
+		initializeTimers();
 	}
 
 	// Handle LED configuration updates when the flag is set
@@ -449,6 +450,7 @@ void loop()
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to reload LEDs and animators. Continue without rendering LEDs."));
 		}
+		initializeTimers();
 	}
 
 	// Handle WiFi configuration updates when the flag is set
@@ -464,6 +466,7 @@ void loop()
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to create WiFi network. Continuing without WiFi network. The REST API might be inaccessible."));
 		}
+		initializeTimers();
 	}
 }
 

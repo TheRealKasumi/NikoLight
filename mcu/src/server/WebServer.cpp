@@ -24,7 +24,6 @@ TesLight::WebServer::WebServer(const uint16_t port, FS *fileSystem, const String
 	this->staticContentLocation = staticContentLocation;
 
 	this->init();
-
 	this->server->begin();
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Webserver running."));

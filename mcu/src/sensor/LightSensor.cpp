@@ -85,7 +85,7 @@ uint16_t TesLight::LightSensor::getThreshold()
  */
 void TesLight::LightSensor::setThreshold(const uint16_t threshold)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Get Light Sensor threshold to ") + String(threshold) + F("."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Set Light Sensor threshold to ") + String(threshold) + F("."));
 	this->threshold = threshold;
 }
 
