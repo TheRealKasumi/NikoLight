@@ -11,6 +11,9 @@
 
 // SD configuration
 #define SD_CS_PIN 5
+#define SD_SPI_SPEED 4000000
+#define SD_MOUNT_POINT "/sd"
+#define SD_MAX_FILES 15
 
 // Logging configuration
 #define SERIAL_BAUD_RATE 460800
@@ -42,7 +45,7 @@
 #define WEB_SERVER_STATIC_CONTENT "/web-app"
 
 // Timer configuration
-#define LED_CYCLE_TIME 16666
+#define LED_FRAME_TIME 16666
 #define LIGHT_SENSOR_CYCLE_TIME 20000
 #define MOTION_SENSOR_CYCLE_TIME 20000
 #define FPS_CYCLE_TIME 10000000

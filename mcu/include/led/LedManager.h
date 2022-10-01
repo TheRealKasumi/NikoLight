@@ -35,6 +35,10 @@ namespace TesLight
 		void clear();
 
 		void setAmbientBrightness(const float ambientBrightness);
+
+		void setTargetFrameTime(const uint32_t targetFrameTime);
+		uint32_t getTargetFrameTime();
+
 		void render();
 		void show();
 
@@ -42,6 +46,7 @@ namespace TesLight
 		CRGB *ledData[NUM_LED_STRIPS];
 		TesLight::LedAnimator *ledAnimator[NUM_LED_STRIPS];
 		TesLight::FseqLoader *fseqLoader = nullptr;
+		uint32_t targetFrameTime;
 
 		bool createLedData(TesLight::Configuration *config);
 		bool createAnimators(TesLight::Configuration *config);

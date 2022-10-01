@@ -21,6 +21,7 @@ TesLight::LedManager::LedManager()
 		this->ledAnimator[i] = nullptr;
 	}
 	this->fseqLoader = nullptr;
+	this->setTargetFrameTime(LED_FRAME_TIME);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("LedMananger initialized."));
 }
 
@@ -112,6 +113,24 @@ void TesLight::LedManager::setAmbientBrightness(const float ambientBrightness)
 			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to set ambient brightness for animator ") + String(i) + F(" because the animator is null."));
 		}
 	}
+}
+
+/**
+ * @brief Set the targeted frame time for rendering the LEDs.
+ * @param targetFrameTime target frame time in microseconds
+ */
+void TesLight::LedManager::setTargetFrameTime(const uint32_t targetFrameTime)
+{
+	this->targetFrameTime = targetFrameTime;
+}
+
+/**
+ * @brief Get the targeted frame time for rendering the LEDs.
+ * @return uint16_t targeted frame time in microseconds
+ */
+uint32_t TesLight::LedManager::getTargetFrameTime()
+{
+	return this->targetFrameTime;
 }
 
 /**
@@ -208,6 +227,11 @@ bool TesLight::LedManager::createAnimators(TesLight::Configuration *config)
 	if (!customAnimation)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Using calculated animations."));
+
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Setting target frame time to ") + String(LED_FRAME_TIME) + F(" µs."));
+		this->setTargetFrameTime(LED_FRAME_TIME);
+
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Loading calculated animators."));
 		return this->loadCalculatedAnimations(config);
 	}
 	else
@@ -233,6 +257,10 @@ bool TesLight::LedManager::createAnimators(TesLight::Configuration *config)
 			return false;
 		}
 
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Setting target frame time to ") + String(this->fseqLoader->getHeader().stepTime * 1000) + F(" µs."));
+		this->setTargetFrameTime((uint32_t)this->fseqLoader->getHeader().stepTime * 1000);
+
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Loading custom animators."));
 		return this->loadCustomAnimation(config);
 	}
 

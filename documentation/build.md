@@ -415,10 +415,9 @@ In the future, it might be possible to create fully customized animations.
 These will also be stored on the SD card.
 
 Since the controller will create the settings and log data automatically, only the UI files must be copied to the SD card.
-The UI comes as a single html file with all required data embedded into it.
-It can be found in the [web-app](/web-app/) folder and is called [index.html.min.html](/web-app/index.html.min.html).
+These can be found in the [web-app](/web-app/) folder.
 Create a new folder called `web-app` in the root of your SD card.
-Copy the [index.html.min.html](/web-app/index.html.min.html) into the newly created folder and rename it to `index.html`.
+Copy the content of [web-app](/web-app/) into the newly created folder.
 Eject the SD card from your computer and insert it into the micros SD card slot of the TesLight controller.
 
 ## Let's test it!
@@ -473,7 +472,7 @@ Firmware version 0.0.1 (beta)
 00:00:01:516 [INFO] (WebServer.cpp:WebServer): WiFi manager initialized.
 00:00:01:539 [INFO] (main.cpp:setup): WiFi manager initialized.
 00:00:01:559 [INFO] (main.cpp:setup): Creating to WiFi network...
-00:00:01:580 [INFO] (WebServer.cpp:startAccessPoint): Starting WiFi access point with ssid 'TesLight' and password 'TesLight' on channel 1.
+00:00:01:580 [INFO] (WebServer.cpp:startAccessPoint): Starting WiFi access point with ssid 'TesLight' and password 'TesLightPW' on channel 1.
 00:00:01:608 [INFO] (WebServer.cpp:startAccessPoint): WiFi access point started. Listening on: 192.168.4.1
 00:00:01:629 [INFO] (main.cpp:setup): WiFi Network created.
 00:00:01:649 [INFO] (main.cpp:setup): Starting Webserver...
@@ -488,7 +487,7 @@ Firmware version 0.0.1 (beta)
 
 When this is the case, you successfully built the TesLight controller.
 Now search for a WiFi network called `TesLight`.
-Connect to it using the default password `TesLight` and open up `192.168.4.1` in your browser.
+Connect to it using the default password `TesLightPW` and open up `192.168.4.1` in your browser.
 Now the TesLight UI should show up.
 Bookmark this page so that you will not forget about it.
 From here you can control your LED's.
