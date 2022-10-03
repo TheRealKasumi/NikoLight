@@ -67,7 +67,7 @@ void TesLight::FseqEndpoint::postFseq(AsyncWebServerRequest *request)
  */
 void TesLight::FseqEndpoint::postFseqBody(AsyncWebServerRequest *request, uint8_t *data, const size_t len, const size_t index, const size_t total)
 {
-	const String fileName = request->arg("fileName");
+	const String fileName = request->arg(F("fileName"));
 	if (fileName.length() == 0)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Received request to upload a new fseq file but the fileName parameter is empty."));
@@ -119,7 +119,7 @@ void TesLight::FseqEndpoint::deleteFseq(AsyncWebServerRequest *request)
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to delete a fseq file."));
 
-	const String fileName = request->arg("fileName");
+	const String fileName = request->arg(F("fileName"));
 	if (fileName.length() == 0)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to delete file because fileName parameter is empty."));
@@ -129,14 +129,14 @@ void TesLight::FseqEndpoint::deleteFseq(AsyncWebServerRequest *request)
 
 	if (!fileSystem->exists(FSEQ_DIRECTORY + (String)F("/") + fileName))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("File ") + FSEQ_DIRECTORY + F("/") + fileName + F(" was not found."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("File ") + FSEQ_DIRECTORY + F("/") + fileName + F(" was not found."));
 		request->send(404, F("text/plain"), (String)F("File ") + FSEQ_DIRECTORY + F("/") + fileName + F(" was not found."));
 		return;
 	}
 
 	if (!fileSystem->remove(FSEQ_DIRECTORY + (String)F("/") + fileName))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Failed to delete file."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to delete file."));
 		request->send(500, F("text/plain"), F("Failed to delete file."));
 		return;
 	}

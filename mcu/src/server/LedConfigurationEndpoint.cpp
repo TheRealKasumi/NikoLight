@@ -82,7 +82,7 @@ void TesLight::LedConfigurationEndpoint::postLedConfig(AsyncWebServerRequest *re
 		request->send(400, F("text/plain"), F("The content type must be \"application/x-www-form-urlencoded\"."));
 		return;
 	}
-	else if (request->arg("data").length() == 0)
+	else if (request->arg(F("data")).length() == 0)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a body parameter \"data\" with the base64 encoded LED data."));
 		request->send(400, F("text/plain"), F("There must be a body parameter \"data\" with the base64 encoded LED data."));
@@ -90,7 +90,7 @@ void TesLight::LedConfigurationEndpoint::postLedConfig(AsyncWebServerRequest *re
 	}
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Decoding base64 request."));
-	const String encoded = request->arg("data");
+	const String encoded = request->arg(F("data"));
 	size_t length;
 	uint8_t *decoded = TesLight::Base64Util::decode(encoded, length);
 	if (decoded == nullptr)
