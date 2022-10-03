@@ -104,7 +104,7 @@ void TesLight::Logger::log(const TesLight::Logger::LogLevel logLevel, const char
 	{
 
 		File logFile = fileSystem->open(fileName, FILE_APPEND);
-		if (!logFile)
+		if (!logFile || logFile.isDirectory())
 		{
 			return;
 		}
@@ -170,6 +170,7 @@ void TesLight::Logger::clearLog()
 	}
 
 	fileSystem->remove(fileName);
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Log file was cleared."));
 }
 
 /**
