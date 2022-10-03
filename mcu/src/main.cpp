@@ -28,7 +28,7 @@
 #include "server/FseqEndpoint.h"
 #include "server/LogEndpoint.h"
 
-#define MAX_ULONG_VALUE 0xffffffffffffffff
+#define MAX_ULONG_VALUE 0xffffffff
 
 TesLight::Configuration *configuration = nullptr;
 TesLight::LedManager *ledManager = nullptr;
@@ -38,10 +38,10 @@ TesLight::WiFiManager *wifiManager = nullptr;
 TesLight::WebServer *webServer = nullptr;
 
 // Timer
-uint64_t ledTimer = 0;
-uint64_t lightSensorTimer = 0;
-uint64_t motionSensorTimer = 0;
-uint64_t fpsTimer = 0;
+unsigned long ledTimer = 0;
+unsigned long lightSensorTimer = 0;
+unsigned long motionSensorTimer = 0;
+unsigned long fpsTimer = 0;
 uint16_t ledFrameCounter = 0;
 
 // Flags
