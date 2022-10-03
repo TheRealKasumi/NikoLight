@@ -26,6 +26,7 @@
 #include "server/LedConfigurationEndpoint.h"
 #include "server/WiFiConfigurationEndpoint.h"
 #include "server/FseqEndpoint.h"
+#include "server/LogEndpoint.h"
 
 #define MAX_ULONG_VALUE 0xffffffffffffffff
 
@@ -206,16 +207,18 @@ void initializeWebServer()
 void initializeRestApi()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize REST API."));
-	TesLight::ConnectionTestEndpoint::init(webServer, "/api/");
+	TesLight::ConnectionTestEndpoint::init(webServer, F("/api/"));
 	TesLight::ConnectionTestEndpoint::begin();
-	TesLight::SystemConfigurationEndpoint::init(webServer, "/api/");
+	TesLight::SystemConfigurationEndpoint::init(webServer, F("/api/"));
 	TesLight::SystemConfigurationEndpoint::begin(configuration, systemConfigChanged);
-	TesLight::LedConfigurationEndpoint::init(webServer, "/api/");
+	TesLight::LedConfigurationEndpoint::init(webServer, F("/api/"));
 	TesLight::LedConfigurationEndpoint::begin(configuration, ledConfigChanged);
-	TesLight::WiFiConfigurationEndpoint::init(webServer, "/api/");
+	TesLight::WiFiConfigurationEndpoint::init(webServer, F("/api/"));
 	TesLight::WiFiConfigurationEndpoint::begin(configuration, wifiConfigChanged);
-	TesLight::FseqEndpoint::init(webServer, "/api/");
+	TesLight::FseqEndpoint::init(webServer, F("/api/"));
 	TesLight::FseqEndpoint::begin(&SD);
+	TesLight::LogEndpoint::init(webServer, F("/api/"));
+	TesLight::LogEndpoint::begin(&SD);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("REST API initialized."));
 }
 
