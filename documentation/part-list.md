@@ -23,7 +23,8 @@ Also the list assumes that you have all required tools and materials for buildin
 | SMD Resistor 4.7kΩ           | 1       | [Amazon][RESISTORS]   | Amazon set covers all values                                              |
 | SMD Capacitor 10µf           | 1       | [Reichelt][CAP10]     | 6.3-10V recommended                                                       |
 | Zener Diode 3.3V 1/2W        | 1       | [Reichelt][ZENER3.3]  |                                                                           |
-| Fuse + Socket 1-8A           | 1       | ?                     | Depends on the number of LED's                                            |
+| Fuse 1-8A                    | 1       | [Reichelt][FUSE]      | Depends on the number of LED's, size: 20mmx5mm                            |
+| Fuse Holder                  | 2       | [Reichelt][FHOLDER]   | Depends on the number of LED's, size: 20mmx5mm, holes(PCB): 20mm <->      |
 | JST-XH 3 Pin Male            | 7       | [Reichelt][JSTXH3M]   |                                                                           |
 | JST-XH 3 Pin Female          | 7       | [Reichelt][JSTXH3F]   |                                                                           |
 | JST-XH 4 Pin Male            | 1       | [Reichelt][JSTXH4M]   |                                                                           |
@@ -60,6 +61,8 @@ See [build guide](build.md#order-the-pcb-and-3d-printed-parts).
 [RESISTORS]: https://www.amazon.de/ARCELI-SMD-Widerst%C3%A4nde-Sortimentsatz-SMD-Widerstand-Insgesamt/dp/B07RTH6JHX/ref=sr_1_7?keywords=smd+widerstand+sortiment&qid=1661668614&sprefix=smd+widerstand+sor%2Caps%2C82&sr=8-7
 [CAP10]: https://www.reichelt.de/smd-tantal-kondensator-10-f-10v-tps-3216-10-10-p167046.html?&trstct=pos_1&nbc=1
 [ZENER3.3]: https://www.reichelt.de/zener-diode-3-3-v-0-5-w-5-sod-80-minimelf--tzmc3v3-p280026.html?&trstct=pos_0&nbc=1
+[FUSE]: https://www.reichelt.de/feinsicherung-5x20mm-traege-2-a-litt-0218002-mxp-p241972.html?&trstct=pos_0&nbc=1
+[FHOLDER]: https://www.reichelt.de/sicherungshalter-5x20mm-max-6-3a-500v-pl-120000-p14679.html?&trstct=pos_4&nbc=1
 [JSTXH3M]: https://www.reichelt.de/jst-buchsengehaeuse-1x3-polig-xh-jst-xh3p-bu-p185086.html?&trstct=pos_6&nbc=1
 [JSTXH3F]: https://www.reichelt.de/jst-stiftleiste-gerade-1x3-polig-xh-jst-xh3p-st-p185074.html?&trstct=pos_1&nbc=1
 [JSTXH4M]: https://www.reichelt.de/jst-buchsengehaeuse-1x4-polig-xh-jst-xh4p-bu-p185087.html?&trstct=pos_5&nbc=1
