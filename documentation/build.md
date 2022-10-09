@@ -360,6 +360,7 @@ Uploading the software is the final step before you can finally test your work.
 Please install the following software and extension for the upload procedure:
 
 -  [VS Code](https://code.visualstudio.com/download)
+-  [Git](https://git-scm.com/downloads)
 -  [PlatformIO](https://platformio.org/install/ide?install=vscode)
 
 Start VS Code and then open the [mcu](/mcu/) folder of the project.
