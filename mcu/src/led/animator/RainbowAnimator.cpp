@@ -57,6 +57,7 @@ void TesLight::RainbowAnimator::render()
 		float redAngle = 0.0f;
 		float greenAngle = 0.0f;
 		float blueAngle = 0.0f;
+		float offset = this->offset / 50.0f;
 
 		if (this->rainbowMode == TesLight::RainbowAnimator::RainbowMode::RAINBOW_SOLID)
 		{
@@ -67,16 +68,16 @@ void TesLight::RainbowAnimator::render()
 
 		else if (this->rainbowMode == TesLight::RainbowAnimator::RainbowMode::RAINBOW_LINEAR)
 		{
-			redAngle = (this->angle + 0.0f) + i * this->offset;
-			greenAngle = (this->angle + 120.0f) + i * this->offset;
-			blueAngle = (this->angle + 240.0f) + i * this->offset;
+			redAngle = (this->angle + 0.0f) + i * offset;
+			greenAngle = (this->angle + 120.0f) + i * offset;
+			blueAngle = (this->angle + 240.0f) + i * offset;
 		}
 
 		else if (this->rainbowMode == TesLight::RainbowAnimator::RainbowMode::RAINBOW_CENTER)
 		{
-			redAngle = i < middle ? (this->angle + 0.0f) + i * this->offset : (this->angle + 0.0f) + (this->pixelCount - i) * this->offset;
-			greenAngle = i < middle ? (this->angle + 120.0f) + i * this->offset : (this->angle + 120.0f) + (this->pixelCount - i) * this->offset;
-			blueAngle = i < middle ? (this->angle + 240.0f) + i * this->offset : (this->angle + 240.0f) + (this->pixelCount - i) * this->offset;
+			redAngle = i < middle ? (this->angle + 0.0f) + i * offset : (this->angle + 0.0f) + (this->pixelCount - i) * offset;
+			greenAngle = i < middle ? (this->angle + 120.0f) + i * offset : (this->angle + 120.0f) + (this->pixelCount - i) * offset;
+			blueAngle = i < middle ? (this->angle + 240.0f) + i * offset : (this->angle + 240.0f) + (this->pixelCount - i) * offset;
 		}
 
 		this->pixels[i].setRGB(this->trapezoid(redAngle) * 255.0f, this->trapezoid(greenAngle) * 255.0f, this->trapezoid(blueAngle) * 255.0f);

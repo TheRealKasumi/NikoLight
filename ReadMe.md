@@ -1,55 +1,49 @@
 # TesLight
 
-![Logo](web-app/assets/img/icon.png)
+![Logo](web-app/public/img/logo192.png)
 
 ## Important Notes
 
-Creating this project costs me a lot of time, work and money.
+Creating this project has taken a lot of my time, effort and money.
 Nevertheless, I share it publicly with you.
 You can use it for free, modify it and even sell it.
 But please **don't steal** my work, be a little **respectful** and **give credits**.
 
-Also keep in mind that you should be careful working on the project and especially your car.
-Use the project at own risk.
+Also, you should be careful when working on the project and especially your car.
+Use this project at your own risk.
 
-That said, I hope you have a lot of fun.
-Thank you💖.
+That said, I hope you have a lot of fun!
+Thank you💖
 
 ## Beta Warning
 
-Currently this project is in a very early beta stage.
-Some bugs are expected, the code is not polished and optimized, the documentation is incomplete.
-
-If you have some experience you can still build the project and use the basic features just like I do in my car.
-
-Due to private reasons I was not able to proceed with the development like planed.
-Nevertheless, I will slowly continue the development to hopefully reach a first stable version soon.
-For the same reason more advanced features like OTA updates, 3D visualisations, the usage of the motion sensor and the lightshow are on pause.
-I will hopefully come back to this in the future, when I feel better.
+Currently this project is still in a beta stage but we are slowly approaching a first release version.
+Some bugs, crashes and missing documentation are to be expected.
 
 ## Introduction
 
-TesLight is an open source ambient light system that you can build by yourself.
+TesLight is an open source ambient light system for cars that you can build by yourself.
 Like the name implies, it was developed to integrate with Tesla cars with a focus on the Model 3 and Model Y.
-Nevertheless, it can also be used for other cars since it should be easy to do some modifications.
+However, it can also be used for other cars with some modifications.
 
-The main feature of TesLight is to act as an ambient light system and give you control over multiple zones in your car.
-These zones are the 4 doors, the dashboard and the center console.
-Each zone can have a string of LED's which TesLight can individually address. 
-In total it can give you control over hundreds of LED's built into your car.
+The main feature of TesLight is to give zonal control over the ambient lighting in your car.
+The zones are: the 4 doors, the dashboard and the center console.
+Each zone can have a string of LEDs which TesLight can individually address.
+In total it can give you control over hundreds of LEDs installed in your car.
 
 You can choose between different algorithms to display static colors, gradients or even animations for each individual zone.
-These algorithms, or `animators`, can be further configured using the browser-based user interface.
+These animations, can be further configured using the browser-based user interface.
 
 When TesLight is powered up, it will create a WiFi access point which you can use to connect your mobile device to.
 Then you have access to the user interface via your browser to configure your ambient light.
-Depending on your wished this can be a one time setup or you can play with different colors every day.
+This can be a one-time setup or you can play with different colors every day if you desire.
 
-Of course TesLight is also able to automatically turn on and off the lights when you unlock or lock your car.
-This gives the whole system a more OEM like feeling.
+TesLight integrates seamlessly with OEM features and is capable of syncing system operation to locking/unlocking your car or adjusting the screen brightness.
 
-You think "Wtf is she talking about"?
-Maybe have a look at a few pictures.
+You think "Wtf is she talking about? This girl is a potato."
+And you would be right, I am a potato. But also maybe have a look at a few pictures.
+
+(Oh really friend? You were supposed to look for typos, not call me a potato... Ahhh what ever..)
 
 ![Teaser 1](documentation/media/teaser/teaser_1.jpeg)
 
@@ -59,14 +53,14 @@ Maybe have a look at a few pictures.
 
 ## Planning
 
-It is recommended to read the [planning](documentation/planning.md) document before you start with the project.
+It is recommended to read the [planning](documentation/planning.md) document before you start the project.
 There are some important considerations and decisions you have to make first.
 This will save you some trouble and makes it easier to buy the right parts.
 
 ## Part List
 
-A list of required parts can be found [here](documentation/part-list.md).  
+A list of required parts can be found [here](documentation/part-list.md).
 
 ## Build Guide
 
-The build guide can be found [here](documentation/build.md). 
+The build guide can be found [here](documentation/build.md).
