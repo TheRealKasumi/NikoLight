@@ -1,15 +1,15 @@
 # Planning
 
-It is recommended to read through this short document before you start with the project.
-There are some important considerations and decisions you have to make first.
-This will save you some trouble and makes it easier to buy the right parts.
-It will also help to build the project later.
+It is recommended to read through this short document before you start the project.
+There are some important considerations and decisions you need to make first.
+This will save you some trouble and make it easier to buy the right parts.
+It will also help when building the project later.
 
 ## LED Configuration
 
 The LED configuration is the most important step.
-Here you need to think about where, how and how many LEDs you want to install in your car.
-This highly depends on your wishes and will influence the part list and building steps.
+Here you need to consider where to place the LEDs, how they are attached and the number you want to install in your car.
+This is personal preference and will influence the part list and building steps.
 Also, it will affect how much work you have to put into the project.
 So let's start with some important information.
 
@@ -17,80 +17,79 @@ So let's start with some important information.
 
 TesLight currently has a total of **6 LED channels**.
 These channels are for the individual zones in your car.
-This means that **6 different zones** can be controlled individually.
-The used LED type is **WS2812** and compatible ones.
+This means that there are **6 different zones** that can be controlled independently.
+The LED type used is **WS2812** and compatible ones.
 
-Each zone can have a **variable number of LED's**.
+Each zone can have a **variable number of LEDs**.
 This number can reach from **0 up to a few hundreds**.
-It is mainly limited by the amount of memory and secondary by the processing power of the used Microcontroller.
+The two limiting factors for this (in order of importance) are: available memory and processing power of the microcontroller.
 
 Every single LED in a zone is **addressable**.
-This means that TesLight can "talk" to the individual LED's and set a 24 bit color and brightness value for each.
-This is achieved by **chaining the LED's** like it is done on LED strips.
-As a consequence you can obviously use **WS2812 compatible LED strips**. 
+This means that TesLight can "talk" to the individual LEDs and set a 24 bit color and brightness value for each.
+This is achieved by **chaining the LEDs** like it is done on LED strips.
+This means you can use **WS2812 compatible LED strips**.
 
 ![LED Chain](media/planning/led-chain.png)
 
 ### Zones
 
 As explained above, TesLight supports up to **6 different zones**.
-How you select these zones is up to you.
-But keep in mind that you have to be able to install and wire the LED's in these places.
-So they should be accessible in the car or you should know how the get access to them.
+How you select these zones is up to you, but keep in mind that you must be able to install and wire the LEDs in the zones.
+Ideally they should be easily accessible from within the car or you should know how to gain access them.
 
-Since TesLight was mainly designed for the Tesla Model 3 and Model Y there is a recommended configuration of the zones.
-The guide will focus on these.
-This is the same configuration shown in the teaser.
+Since TesLight was designed with the Tesla Model 3 and Model Y in mind, there is a recommended configuration of the zones.
+This is the same configuration as shown in the teaser image and what will be used for this guide.
 
 ![Teaser 1](media/teaser/teaser_1.jpeg)
 
-The following table assumes that the TesLight controller is placed below of the center console.
-This allows easy access and positions the controller centered in the car.
-As a consequence the wiring is relatively "easy".
-More about that at a later point in the build guide.
+The following table assumes that the TesLight controller is placed below the centre console for easy access.
+This makes wiring relatively "easy".
+More about that later in the build guide.
 
-| Zone            | LED's | Cable Length              | Physical Channel |
-|-----------------|-------|---------------------------|------------------|
-| Dash            | 34-72 | 150cm                     | 1                |
-| Center Console  | 2     | 100cm                     | 2                |
-| Front Doors     | 4     | 265cm + 8cm + 75cm + 90cm | 3, 4             |
-| Rear Doors      | 4     | 405cm + 8cm + 75cm + 75cm | 5, 6             |
+| Zone           | LEDs  | Cable Length              | Physical Channel |
+| -------------- | ----- | ------------------------- | ---------------- |
+| Dash           | 34-72 | 150cm                     | 1                |
+| Centre Console | 2     | 100cm                     | 2                |
+| Front Doors    | 4     | 265cm + 8cm + 75cm + 90cm | 3, 4             |
+| Rear Doors     | 4     | 405cm + 8cm + 75cm + 75cm | 5, 6             |
 
-So for this build we would need 44 to 82 LEDs and ~20m cable with 3 wires.
-Also 15m of the fiber "cable" was used around the doors and center console.
+So for this build we need between 44 and 82 LEDs plus ~20m cable with 3 wires.
+Also 15m of fibre cable was used around the doors and centre console.
 Make sure to measure the required length carefully for the build.
 
 # Power Consumption
 
-Since the WS2812 type LED's and the TesLight controller require a stable 5V power supply, the power consumption becomes relevant.
-TesLight can be built with an on-board 2-3A buck converter.
-This results in a power output of around 10-15W max for the LED's.
-If more power is required a external regulator is required.
+Since the WS2812 type LEDs and the TesLight controller require a stable 5V power supply, power consumption is important.
+TesLight can be built with an onboard 2-3A buck converter.
+This results in a power output of around 10-15W max for the LEDs.
+If more power is required then an external regulator is required.
 
 Assuming "standard" 5x5mm LED chips, each channel can draw around 15mA at 5V and maximum brightness.
 Since each LED has 3 channels (red, green, blue), a current draw of around 45mA has to be assumed.
-To calculate the total power draw, to following formula can be used:
+To calculate the total power draw, the following formula can be used:
 
 `power = led_count * 0.045 * 5`
 
-From the example configuration above we assume a total of 44 to 82 LED's.
+From the example configuration above we assume a total number of LEDs ranging from 44 and 82.
 
-In the first case this would result in a current draw of around 1.98A or a total power of 9.9W.
-The on board regulator is perfectly suitable for this kind of load.
+If the minimum number of LEDs were used this would result in a current draw of around 1.98A or a total power of 9.9W.
+The onboard regulator is perfectly suitable for this kind of load.
 
-Assuming the second case with 82 LED's, we have to expect a current draw of up to 3.69A or a total power of 18.45W.
+Assuming the second case with 82 LEDs, we expect a current draw of up to 3.69A or a total power of 18.45W.
 This could theoretically reach the limit of the onboard regulator.
-In practice, these loads are only reached when the LED's are set to full brightness at a constant white color.
-If you are planing to do so, you should go with an external regulator with a higher power limit.
-Otherwise when using the rainbow effects or lower brighness, these limits will not be reached.
+In practice, these loads are only reached when the LEDs are set to full brightness with constant white color.
+If you are plan to use the LEDs at max current draw, you should use an external regulator with a higher power limit.
+When using the rainbow effects or brighness is lowered then current limits are not reached.
+You can also configure a power limit in the UI later.
+TesLight will then automatically limit the brightness to not exceed this limit.
 
 The PCB should be good for around 8-10A.
-However make sure that your connectors are high quality and can deal with the current.
+However, make sure that your connectors are high quality and can handle this level of current.
 It's recommended to never exceed 3A on a single LED port of the PCB.
-If even higher currents are required, please bypass the PCB and connect the LED's directly to your regulator.
-However dont forget to provide 5V to the TesLight controller and have a shared ground connection.
+If even higher current is required, please bypass the PCB and connect the LEDs directly to your regulator.
+However, don't forget to provide 5V to the TesLight controller and have a shared ground connection.
 
 > What happens when I exceed the power limit of the regulator permanently?
 
-When using a proper LM2596 (not faked ones), it will shut down as soon as a critical current or temperature is reached.
-It's not recommended but it shouldn't destroy or burn anything.
+When using a proper LM2596 (not faked ones), it will shut down as soon as a critical current or temperature (105°C) is reached.
+It's not recommended but nothing should be burnt or damaged.

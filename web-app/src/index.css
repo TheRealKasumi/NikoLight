@@ -1,0 +1,29 @@
+:root {
+	--color-body: rgb(26, 26, 26);
+	--color-background-1: #4d103d;
+	--color-background-2: #5c1249;
+	--color-background-3: #8f1d72;
+	--color-text-light: white;
+	--color-text-dark: black;
+	--color-primary: rgba(50, 10, 40, 1);
+	--color-secondary: rgba(50, 10, 40, 0.7);
+	--color-hover: rgba(50, 10, 40, 0.85);
+	--colorGradientA: #ee7752;
+	--colorGradientB: #e73c7e;
+	--colorGradientC: #23a6d5;
+	--colorGradientD: #23d5ab;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html, body, body>div {
+	align-items: center;
+	background-color: var(--color-body);
+	display: flex;
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
+	width: 100%;
+}
