@@ -1,30 +1,31 @@
 # Build Guide
 
 Before starting with this guide, make sure to read the [planning](planning.md) document and [part list](part-list.md) first.
-They contain important information and consideration before building the project.
+They contain important information and any considerations before beginning the project.
 If you start to build the project blindly, you might run into issues later.
 
 ## General Knowledge about the Hardware
 
 Let's start with some general knowledge about the hardware.
+I know this might be boring , but I also have to cover people who want to know more about it.
 
-At first the TesLight controller is based on a ESP32 microcontroller board, which is placed on a custom PCB.
+At first the TesLight controller is based on an ESP32 microcontroller board, which is placed on a custom PCB.
 The ESP32 contains two Tensilica-LX6 cores, running at 80MHz or 240MHz.
 They come with 512kB of SRAM and 4MB of flash memory.
-Also, they have onboard WiFi (802.11bgn) as well as Bluetooth (classic an LE) and hardware support for SPI, I2C, CAN, UART, etc. could be used in the future.
+Also, they have onboard WiFi (802.11bgn) as well as Bluetooth (classic and LE).
+Hardware support for SPI, I2C, CAN, UART, etc. could be used in the future.
 Generally the board operates at the 3.3V level.
-It has an onboard voltage regulator which will provide these 3.3V from the 5V, provided by the TesLight PCB.
-If you are planing to do customizations please keep in mind that all pins can only handle 3.3V and a very limited current of a few milliamps.
+It has an onboard voltage regulator which will provide the 3.3V from the 5V, provided by the TesLight PCB.
+If you plan to do your own customisations please keep in mind that all IO pins can only handle 3.3V and a very limited current in the range of a few milliamps.
 
 The TesLight PCB contains a few active and passive components.
 In the first place it _can_ have a voltage regulator, providing stable 5V at max 3A to the ESP32 and your LEDs.
-It can handle an input voltage of up to 45V according to the [specs](https://www.ti.com/lit/ds/symlink/lm2596.pdf?ts=1663311548260&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FLM2596) of the regulator.
-But keep in mind that this is an absolute maximum rating, which should never be reached.
+It can handle an input voltage of up to 45V according to the [specs](https://www.ti.com/lit/ds/symlink/lm2596.pdf?ts=1663311548260&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FLM2596) of the regulator, but keep in mind that this is an absolute maximum rating, which should never be reached.
 
-Also the PCB contains a MPU6050 motion sensor, right under the ESP32 board.
-This will later be used to build animations depending on acceleration and rotation data.
+The PCB also contains a MPU6050 motion sensor, right under the ESP32 board.
+This will later be used to build animations using acceleration and rotation data.
 It is suitable for up to 16g's but TesLight is using a limit of 2g's currently.
-If someone can prove to me that 2g's are not enough in a Tesla, then I will congratulate this person and we can talk about setting it to 4g in the software😋.
+If anyone can prove to me that 2g's are not enough in a Tesla, then I will congratulate you and we can talk about setting it to 4g in the software😋.
 Hidden challenge?
 I... I would never challenge you to do stupid things...
 
@@ -32,15 +33,15 @@ I... I would never challenge you to do stupid things...
 
 Umm... we better continue... So... where did we stop?
 
-There also is a voltage divider, used to lower the voltage of the sensor pin to a level the ESP32 can handle.
-This pin can be connected to your cars existing ambient light to give TesLight a signal when to turn on or off.
-Last there are some resistors to properly drive the WS2812 type LEDs and protect the ESP32 board.
+There is also a voltage divider, used to lower the voltage of the sensor pin to a level the ESP32 can handle.
+This pin can be connected to your car's existing ambient light to give TesLight a signal when to turn on and off or to adjust the brightness automatically.
+Lastly, there are some resistors to safely drive the WS2812 type LEDs and protect the ESP32 board.
 
 Like mentioned the used LED type is WS2812 or compatible.
-These are LED chips with an on board controller capable of receiving a digital, 24 bits color value.
-When they are put in series, they operate as a shif register.
+The WS2812 or other compatible LEDs have onboard controller capable of receiving a digital 24 bit colour value.
+When connected in series they function as a shift register.
 TesLight is able to drive a variable number of LEDs in series (up to a few hundred).
-The LEDs operate at 5V and **only 5V**.
+The LEDs operate at 5V and **only 5V** (seriously I mean it xD).
 Never connect them directly to the 12V of your car.
 If the onboard voltage regulator can not deliver enough current, you need to use an external 5V regulator.
 
@@ -49,43 +50,49 @@ The following picture shows the pinout of the finished board.
 ![Teslight Pinout](media/build/testlight-pinout.png)
 
 As you can see there are 6 connectors for the LEDs.
-These outputs a regulated 5V and data signal suitable for the WS2812 type LEDs.
-Canncel 1 is the left, bottom connector.
-Channel 2, 3, 4 are in the upward direction.
+These output regulated 5V and a data signal suitable for the WS2812 type LEDs.
+Channel 1 is the bottom left connector.
+Channel 2, 3, 4 are above Channel 1 in ascending order, Channel 4 is the top left connector.
 Channel 5 and 6 are on the right from top to bottom.
+See diagram below.
 
-| Channel   | Mapped to         |
-| --------- | ----------------- |
-| Channel 1 | Dash              |
-| Channel 2 | Center console    |
-| Channel 3 | Front, left door  |
-| Channel 4 | Front, right door |
-| Channel 5 | Rear, left door   |
-| Channel 6 | Rear, right door  |
+| 4 | 5 |
+| 3 | 6 |
+| 2
+| 1
 
-At the bottom of the PCB there are 2 connectors, a micro USB port and a micros SD card slot.
+| Channel   | Mapped to        |
+| --------- | ---------------- |
+| Channel 1 | Dash             |
+| Channel 2 | Centre console   |
+| Channel 3 | Front left door  |
+| Channel 4 | Front right door |
+| Channel 5 | Rear left door   |
+| Channel 6 | Rear right door  |
+
+At the bottom of the PCB there are 2 connectors, a micro USB port and a micro SD card slot.
 
 The 4 pin XH connector is for powering the board.
 When you use the onboard regulator, this can be up to 45V (absolute maximum rating).
 When an external regulator is used, the jumper J1 has to be bridged and the input voltage must be stable 5V.
+In that case there should be no regulator on the TesLight board.
 Never bridge J1 when the onboard regulator is used.
-This will destroy your hardware.
+This will short the regulator and could destroy your hardware.
 
-The 3 pin XH connector can be used as voltage sensor.
-It can be used to measure the voltage of your cars ambient light and give TesLight a signal to turn on or off.
-The pin can be used for analog voltages and also PWM signal with a relatively high frequency.
-Low frequency PWM signals can lead to measurement errors.
-It is recommended to not measure voltages above 20V.
-However, due to the over voltage protection it's safe to exceed this limit for a short amount of time if really necessary.
-Keep in mind that according to the diagram above, the right pin is connected to ground.
-Never connect it to the positive wire of your ambient light.
+The 3 pin XH connector can be used as a sensor to measure the voltage of your car's ambient light and supply TesLight an on/off or brightness signal.
+The pin can be used with analog voltages and also PWM signals.
+It is recommended to not measure voltages above 20V with this controller.
+There is an overvoltage protection in place and exceeding this limit for a short period is possible but not recommended.
+Keep in mind that according to the picture diagram above, the right pin is connected to ground.
+Never connect it to the positive wire of your car lights.
 If you are sure that there is a good ground connection, which is usually the case, there is no need to use it.
-One last thing to keep in mind is that only positive voltages can be measured.
+One last thing to keep in mind is that only positive voltages can be measured, so avoid doing something crazy with this simple input.
 
-Also, there is a micro USB port on the ESP32 board.
-This one will later be used to upload the software.
-The micro SD card slot is used for a mandatory micro SD card.
-It's used to save data and UI files, required by TesLight.
+There is a micro USB port on the ESP32 board which will later be used to upload the software.
+The micro SD card slot is required by TesLight.
+It's used to save configuration data and UI files.
+
+Note: There is some development going on to make the micro SD card optional. But no promises since to on board memory is of very low capacity.
 
 ## Clone or Download the Project Files
 
@@ -99,7 +106,7 @@ You can then decide if you want to clone the repository using [Git](https://git-
 
 -  Open a terminal in your destination folder
 -  Run `git clone https://github.com/TheRealKasumi/TesLight.git`
--  A folder `TesLight` should be created, containing all project files
+-  A folder `TesLight` will be created, containing all project files
 
 ### Download as Zip
 
@@ -116,24 +123,23 @@ This should bring you to the configuration page where you can upload the files a
 
 ### Upload Gerber Files
 
-At first the so called `gerber files` should be uploaded.
+First, the so-called `gerber files` should be uploaded.
 These contain all the data required to produce the PCB.
 They can be found in the [/pcb/gerber](/pcb/gerber/) folder of the project.
 JLCPCB requires you to upload all of them as a zip file.
 Create a new zip file and put all files from the `gerber` folder into the root of the zip file.
 Click on `Add gerber file` on the configuration page and then upload the newly created zip file.
-Once the upload and processing is done, you will see a preview of the PCB. It should look like this:
+Once upload and processing is done, you will see a preview of the PCB. It should look like this:
 
 ![PCB](media/build/pcb.png)
 
 ### Configuration
 
-Generally, you should be fine with their default configuration.
-But you are free to modify it if you wish.
-However, keep in mind that this can have a big impact on the price.
+Generally, you should be fine with their default configuration but you are free to modify it if you wish.
+However, keep in mind that this can have a big effect on the price.
 Changing the number of layers and dimensions is not recommended and can lead to problems later.
 Also the PCB shouldn't be too thin.
-Here the default 1.6mm are just perfect.
+Here the default 1.6mm is just perfect.
 When you are done, add the PCB to the shopping cart.
 
 ![PCB Options](media/build/pcb-options.jpeg)
@@ -143,26 +149,25 @@ When you are done, add the PCB to the shopping cart.
 This works very similar to the steps described above.
 Go back to the [order page](https://cart.jlcpcb.com/quote) and select `3D-Printing` at the top of the page.
 The 3D files can be found in the [/models](/models/) folder of the project.
-You will need one print of the [mcu_case_all.stl](/models/mcu_case.stl) which is the case for the TesLight controller.
+You will need one print of the [mcu_case_all.stl](/models/mcu_case.stl) which will be the case for the TesLight controller.
 Also, depending on the number of light injectors for the fibre tubes, you will need the [led-case.stl](/models/led-case.stl).
-The material choice is fully up to you.
-But it shouldn't be metal so that it is **NOT** electrically conductive.
+The material choice shouldn't be a metal that is **NOT** electrically conductive but is otherwise up to you. \*\*\*
 When you are done, add the 3D prints to the shopping cart.
 
 ### Order
 
-Go to your shopping cart and make sure it contains all the items.
-Then continue their instructions to finish the order.
+Open your shopping cart and make sure it contains all required items.
+Then complete the order.
 
 ## Assemble the TesLight Controller
 
-First, make sure you got the correct and all required parts.
+First, make sure you have all required parts.
 Go back to the [part list](part-list.md) if you want to check it again.
-Prepare your tools, pre-heat the soldering station and the fun part can start😋.
+Prepare your tools, pre-heat the soldering station and then the "fun part" can start😋.
 
 ![pcb-parts](media/build/pcb-parts.jpeg)
 
-Don't worry, it's not as hard as it looks first.
+Don't worry, it's not as hard as it looks at first.
 
 ### Voltage Regulator
 
@@ -173,19 +178,20 @@ See [planning](planning.md#power-consumption) for more details or if you are uns
 If you want to use an external regulator, please bridge the jumper `J1` with a bit of solder.
 You can then skip to the last point.
 
-When using the integrated regulator, this should be the first step.
+When using the integrated regulator, you should start here and build it first.
 This allows you to test it properly afterwards without destroying other components when you make a mistake.
 
 **Never bridge the jumper `J1` when using the internal regulator!**
 
-1. As a first step its's recommended to put the inductor `I1` in place and solder it to the PCB.
+1. It's recommended to put inductor `I1` in place and solder it to the PCB first.
+   It should be a 33µH inductance which is capable of handling around 3-4A.
    For this put a thin layer of solder on the pads and the legs of the inductor.
    Position the inductor and heat up the solder pads.
    Feed it with some more solder and press down the inductor until it soldered together.
    Repeat the same for the pad on the other side.
 
 2. Place the diode on the spot marked with `D2`.
-   Proceed in the same way as above.
+   Solder in the same way as described above.
    Since it's a diode, the polarity matters.
    Make sure to put it in the right direction.
    You should be able to see a white line on the diode.
@@ -194,12 +200,12 @@ This allows you to test it properly afterwards without destroying other componen
 3. Continue by inserting the capacitor into `C1`.
    Here it's important to check the polarity as well.
    Otherwise the capacitor might explode.
-   You definitely don't want this to happen to protect your eyes and ears.
-   If it's inserted correctly, cut its legs as short as possible on the backside.
+   You definitely don't want this to happen.
+   If it's inserted correctly, cut its legs as short as possible on the underside.
    Use some solder to connect it properly.
 
 4. Next is the `LM2596`, right next the inductor.
-   Obviously polarity matters again.
+   Here polarity matters yet again.
    Make sure to have the metal part pointing to the right/ESP32/SD/MPU6050.
    It's also marked on the PCB.
    Push all 5 legs through the holes and cut them as short as possible on the backside.
@@ -207,7 +213,7 @@ This allows you to test it properly afterwards without destroying other componen
    Make sure to have good connections and not bridge the contacts.
    They are close to each other, so pay attention.
 
-5. As a last step it's time to solder the fuse to the PCB.
+5. As a final step it's time to solder the fuse to the PCB.
    Ideally using a fuse holder.
    It's for your own safety and to avoid a fire in case of issues and faults.
    So I don't want you do to anything stupid like this: <br> ![Fuse Replacement](media/build/fuse-replacement.jpg)<br>
@@ -217,8 +223,8 @@ This allows you to test it properly afterwards without destroying other componen
    If your regulator doesn't come with a fuse on the 12V side, you should definitely add one.
    The PCB should be good for around 8-10A.
    However, make sure that your connectors are high quality and can deal with the current.
-   If even higher currents are required, please bypass the PCB and connect the LED's directly to your regulator.
-   However, don't forget to provide 5V to the TesLight controller and have a shared ground connection.
+   If even higher currents are required, please bypass the PCB and connect the LEDs directly to your regulator.
+   Don't forget to provide 5V to the TesLight controller and have a shared ground connection.
 
 #### Test the Voltage Regulator
 
@@ -227,7 +233,7 @@ When you finished building the regulator, please take some time to test it.
 If there is a malfunction, it could damage all your parts.
 So it's definitely worth the time.
 
-To test the regulator power the PCB with a voltage above 6-7V.
+To test the regulator power the PCB with a voltage above 7V.
 The polarity and right connections were already shown at the beginning of the guide.
 You should then be able to measure a voltage of 5V at the marked connections:
 
@@ -238,7 +244,7 @@ The output voltage should stay stable at 5V.
 If you have the option to add a load to the 5V side, please test it out.
 1A of load is a good test.
 The voltage should stay at stable 5V.
-If that is the case, the build was successful.
+If that is the case, the build of the regulator was successful.
 
 ### MPU6050 (Motion Sensor)
 
@@ -253,28 +259,28 @@ The space is required later.
 
 ### Micro SD Card Holder
 
-At first make sure that you bought a fitting card holder by placing it on the PCB and trying to align the contacts.
-Some card holder has a tiny plastic pin at the bottom.
-These can simply be cut so it lays flat on the PBC.
-If everything seems to fit well, move the card holder aside.
+At first make sure that you bought a card holder that fits by placing it on the PCB and trying to align the contacts.
+Some card holders have a tiny plastic pin on the bottom.
+These can simply be cut so it lies flat on the PBC.
+If everything seems to fit well, place the card holder aside.
 Use your soldering station to put a **very thin** layer of solder onto the contact plates.
 This will make the soldering process easier.
 Don't forget the 4 ground contacts around the card holder.
 
-Bring the card holder back in place and make sure it's aligned precisely.
-Then start with the 4 ground contacts so that it can't move anymore.
-Now continue with the remaining contacs.
-It's recommended to heat them up and then do a stroking movement away from the card holder.
+Place the card holder back onto the board and make sure it's aligned precisely.
+Then start with soldering the 4 ground contacts so that it can't move anymore.
+Now solder the remaining contacts.
+It's recommended to heat them up and then do a stroking motion away from the card holder.
 This way you usually get nice and clean connections.
 Make sure there aren't any bridged or unconnected pins left.
-This step is very important because otherwise the controller might not work later and you have to decide the ESP32 board again.
+This step is very important because otherwise the controller might not work later and you have to remove the ESP32 board again.
 Save yourself some pain and make sure everything is fine.
 
 ### SMD Resistors
 
 Soldering the SMD resistors is the trickiest part.
 It requires a bit of patience and focus.
-A total of 8 resistors have to be soldered.
+A total of 8 resistors need to be soldered.
 Also, there are 4 optional ones which are not required unless you run into trouble.
 Start with the resistors R1 to R6.
 These should have a value between 220Ω and 330Ω.
@@ -286,9 +292,19 @@ Once it got hot enough, it should stick to the pad now.
 Continue the same way on the other side.
 Repeat until all resistors are placed.
 
-Then move on with the two missing resistors R7 and R8.
+Then move onto the two missing resistors, R7 and R8.
 These should have a value of 4.7kΩ for R7 and 1kΩ for R8.
 Proceed as previously.
+
+### SMD Caps 🧢
+
+There are 2 SMD capacitors that need to be soldered to C2 and C3.
+C2 is used to filter the input signal for the sensor pin.
+A capacity of around 10µF should be used here.
+Some SMD capacitors have a fixed polarity.
+Pay attention to install them the right way.
+C3 on the other side is used to delay the start of the controller for a short time.
+It is optional but recommended sice the voltage might rise a little too slow for the controller, making it crash.
 
 ### Zener Diode
 
@@ -300,7 +316,7 @@ Solder it in place and you are done.
 
 ### Connectors
 
-Same procedure once more.
+Same procedure once again.
 Put all connectors in place and cut the legs on the backside.
 Make sure to put them in the right way, it's marked on the PCB.
 Solder them in place.
@@ -315,7 +331,7 @@ Solder them to the PCB and you are done.
 > Just push all pins in the holes and let the ESP start up when you uploaded the software.
 > Desoldering the ESP32 board is no fun.
 > So it might be worth a test first.
-> It might be that you have bad contacts this way.
+> You may find you have bad contacts.
 > So it's recommended to push the board a little bit against the PCB to ensure good contact.
 
 When you are done, the TesLight controller should look similar to this (some components might look a little different):
@@ -324,12 +340,12 @@ When you are done, the TesLight controller should look similar to this (some com
 ## Assemble the LEDs
 
 First of all you should make sure to have the correct number of cases and LEDs.
-Also it's recommended that you have an exact plan where you want to place the LEDs, how many of them and what the wire lengths are.
-It will save a lot of trouble to do a good planing beforehand.
+Also it's recommended that you have an good idea of where you want to place the LEDs, how many and what the wire lengths are.
+It will save a lot of trouble to do good planning prior.
 
 Building the "light injectors" is pretty straightforward.
 All you need to do is to connect the LEDs with the wires, pay attention to the wire lengths and then push them into their case.
-The LED's are connected like shown in the following picture.
+The LEDs are connected like shown in the following picture.
 Pay attention to the polarity and everything will work out fine.
 
 ![LED Connection](media/planning/led-chain.png)
@@ -342,13 +358,13 @@ The following picture shows the pinout.
 
 ![LED XH Pinout](media/build/led-pinout.jpg)
 
-When one "injector chain" is done, it could look like this.
+When one "injector chain" is done, it should look something like this.
 
 ![LED Injector Chain](media/build/injector-chain.jpg)
 
 As you can see it's also possible to solder a female connector to the first LED and then use an extension cable.
 This allows to easily replace the LEDs in case one dies at some point in the future.
-But this is fully optional.
+But this is entirely optional.
 
 ![Extension Cable](media/build/extension-cable.jpg)
 
@@ -359,9 +375,11 @@ But this is fully optional.
 Uploading the software is the final step before you can finally test your work.
 Please install the following software and extension for the upload procedure:
 
--  [VS Code](https://code.visualstudio.com/download)
 -  [Git](https://git-scm.com/downloads)
+-  [VS Code](https://code.visualstudio.com/download)
 -  [PlatformIO](https://platformio.org/install/ide?install=vscode)
+-  [NodeJS](https://nodejs.org)
+-  [NPM (comes with NodeJS)](https://www.npmjs.com/)
 
 Start VS Code and then open the [mcu](/mcu/) folder of the project.
 You can do so by clicking `File` -> `Open Folder...`.
@@ -378,7 +396,9 @@ Press the Windows key + R and type `devmgmt.msc`.
 Then hit enter.
 The device manager will start up and you should be able to identify the port of the controller.
 Go back to the `platformio.ini` and adjust the port.
-Save the file and then click the upload button at the left, bottom.
+For Linux and Unix users I will not even explain this step.
+They should know how this works, right😛?
+Save the file and then click the upload button in the bottom left.
 
 ![Upload Button](media/build/upload-button.jpeg)
 
@@ -389,7 +409,7 @@ Now open the serial monitor by clicking the "plug" button, near to the upload bu
 
 ![Serial Button](media/build/monitor-button.jpeg)
 
-You should see the TesLight controller starting up, but then stopping with `Failed to initialize SD card`.
+You should see the TesLight controller starting up, but then stops with `Failed to initialize SD card`.
 
 ```
 ████████╗███████╗███████╗██╗     ██╗ ██████╗ ██╗  ██╗████████╗
@@ -410,21 +430,33 @@ Firmware version 0.0.1 (beta)
 ### Prepare and insert the Micro SD Card
 
 TesLight **requires** a `FAT` or `FAT32` formatted micro SD card.
-At least 512MB of storage is recommended for upcoming features.
+At least 128MB of storage is recommended for upcoming features.
+Well... it is at least 2022.
+So just throw a 8GB or something card inside.
 The SD card is used to store your settings, animations, logs and the browser based UI.
-In the future, it might be possible to create fully customized animations.
-These will also be stored on the SD card.
+Also, it can be used to save `fseq` files, with fully customized animations (just not official at this point😏).
 
 Since the controller will create the settings and log data automatically, only the UI files must be copied to the SD card.
 These can be found in the [web-app](/web-app/) folder.
+But not so fast, there is a mandatory build step first.
+Open a terminal of your choice and navigate to the mentioned folder.
+Once you are there, please run the following commands.
+
+```sh
+npm install
+npm run build
+```
+
+This can take a moment and should create a [build](/web-app/build/) folder.
 Create a new folder called `web-app` in the root of your SD card.
-Copy the content of [web-app](/web-app/) into the newly created folder.
-Eject the SD card from your computer and insert it into the micros SD card slot of the TesLight controller.
+Copy the content of [build](/web-app/build/) into the newly created folder.
+Eject the SD card from your computer and insert it into the micro SD card slot of the TesLight controller.
 
 ## Let's test it!
 
 Now that everything is ready, it's time for a short test.
 Connect the board back to your computer and fire up the serial monitor.
+If required, press the reset button on the ESP32 board.
 If everything works, you should see the following (or similar) output:
 
 ```
@@ -487,10 +519,15 @@ Firmware version 0.0.1 (beta)
 ```
 
 When this is the case, you successfully built the TesLight controller.
+Success!
 Now search for a WiFi network called `TesLight`.
 Connect to it using the default password `TesLightPW` and open up `192.168.4.1` in your browser.
 Now the TesLight UI should show up.
-Bookmark this page so that you will not forget about it.
-From here you can control your LED's.
+Bookmark this page so that you will not forget it.
+Alternatively, you can also try to "install" the UI on your device.
+Since it is a ReactJS based UI, some devices offer support for this.
+
+From here you can control your LEDs.
 But don't forget to connect to the `TesLight` WiFi first.
-The password can be changed in the settings.
+The ssid and password can be changed in the settings.
+I am sure you will figure out how the UI works :) .
