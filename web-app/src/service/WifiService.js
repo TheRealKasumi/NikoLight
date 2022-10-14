@@ -75,7 +75,6 @@ class WifiService {
 
 			try {
 				const result = await this.postEncodedWifiConfiguration(stream.saveToBase64());
-				console.log(result);
 				resolve(result);
 			} catch (ex) {
 				reject(new WifiServiceException("Failed to send WiFi configuration to the TesLight controller.", ex));

@@ -62,26 +62,29 @@ Make sure to measure the required length carefully for the build.
 Since the WS2812 type LEDs and the TesLight controller require a stable 5V power supply, power consumption is important.
 TesLight can be built with an onboard 2-3A buck converter.
 This results in a power output of around 10-15W max for the LEDs.
-If more power is required then an external regulator is required.
+If more power is needed then an external regulator is required.
 
-Assuming "standard" 5x5mm LED chips, each channel can draw around 15mA at 5V and maximum brightness.
-Since each LED has 3 channels (red, green, blue), a current draw of around 45mA has to be assumed.
+Assuming "standard" 5x5mm LED chips, each channel can draw around 12mA at 5V and maximum brightness.
+Since each LED has 3 channels (red, green, blue), a current draw of around 36mA has to be assumed.
 To calculate the total power draw, the following formula can be used:
 
-`power = led_count * 0.045 * 5`
+`power = led_count * 0.036 * 5`
 
 From the example configuration above we assume a total number of LEDs ranging from 44 and 82.
 
-If the minimum number of LEDs were used this would result in a current draw of around 1.98A or a total power of 9.9W.
+If the minimum number of LEDs were used this would result in a current draw of around 1.58A or a total power of 7.92W.
 The onboard regulator is perfectly suitable for this kind of load.
 
-Assuming the second case with 82 LEDs, we expect a current draw of up to 3.69A or a total power of 18.45W.
-This could theoretically reach the limit of the onboard regulator.
+Assuming the second case with 82 LEDs, we expect a current draw of up to 2.95A or a total power of 14.76W.
+This comes close to the limit of the onboard regulator.
 In practice, these loads are only reached when the LEDs are set to full brightness with constant white color.
-If you are plan to use the LEDs at max current draw, you should use an external regulator with a higher power limit.
+If you are plan to use the LEDs at max current draw, you should consider to use an external regulator with a higher power limit.
 When using the rainbow effects or brighness is lowered then current limits are not reached.
-You can also configure a power limit in the UI later.
+
+You can also configure a power limit in the UI.
 TesLight will then automatically limit the brightness to not exceed this limit.
+By default this limit is set to 10W to protect the onboard regulator.
+For this calculation to work properly, the LED voltage and current per channel must be configured correctly.
 
 The PCB should be good for around 8-10A.
 However, make sure that your connectors are high quality and can handle this level of current.
