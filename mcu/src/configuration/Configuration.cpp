@@ -104,9 +104,14 @@ void TesLight::Configuration::loadDefaults()
 	// System config
 	this->systemConfig.logLevel = TesLight::Logger::LogLevel::INFO;
 	this->systemConfig.lightSensorMode = TesLight::LightSensor::LightSensorMode::ALWAYS_ON;
-	this->systemConfig.lightSensorThreshold = 30;
-	this->systemConfig.lightSensorMinValue = 30;
-	this->systemConfig.lightSensorMaxValue = 2048;
+	this->systemConfig.lightSensorThreshold = 30;  // Analog value
+	this->systemConfig.lightSensorMinValue = 30;   // Analog value
+	this->systemConfig.lightSensorMaxValue = 2048; // Analog value
+	this->systemConfig.systemPowerLimit = 10;	   // W
+	this->systemConfig.ledVoltage = 50;			   // Voltage * 10
+	this->systemConfig.ledChannelCurrent[0] = 12;  // mA
+	this->systemConfig.ledChannelCurrent[1] = 12;  // mA
+	this->systemConfig.ledChannelCurrent[2] = 12;  // mA
 
 	// LED config
 	const uint8_t ledPins[NUM_LED_STRIPS] = {13, 14, 15, 16, 17, 21};
@@ -172,6 +177,11 @@ bool TesLight::Configuration::load()
 	this->systemConfig.lightSensorThreshold = file.readWord();
 	this->systemConfig.lightSensorMinValue = file.readWord();
 	this->systemConfig.lightSensorMaxValue = file.readWord();
+	this->systemConfig.systemPowerLimit = file.readByte();
+	this->systemConfig.ledVoltage = file.readByte();
+	this->systemConfig.ledChannelCurrent[0] = file.readByte();
+	this->systemConfig.ledChannelCurrent[1] = file.readByte();
+	this->systemConfig.ledChannelCurrent[2] = file.readByte();
 
 	// LED config
 	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
@@ -240,6 +250,11 @@ bool TesLight::Configuration::save()
 	file.writeWord(this->systemConfig.lightSensorThreshold);
 	file.writeWord(this->systemConfig.lightSensorMinValue);
 	file.writeWord(this->systemConfig.lightSensorMaxValue);
+	file.writeByte(this->systemConfig.systemPowerLimit);
+	file.writeByte(this->systemConfig.ledVoltage);
+	file.writeByte(this->systemConfig.ledChannelCurrent[0]);
+	file.writeByte(this->systemConfig.ledChannelCurrent[1]);
+	file.writeByte(this->systemConfig.ledChannelCurrent[2]);
 
 	// LED configuration
 	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
@@ -290,6 +305,11 @@ uint16_t TesLight::Configuration::getSimpleHash()
 	hash = hash * 31 + this->systemConfig.lightSensorThreshold;
 	hash = hash * 31 + this->systemConfig.lightSensorMinValue;
 	hash = hash * 31 + this->systemConfig.lightSensorMaxValue;
+	hash = hash * 31 + this->systemConfig.systemPowerLimit;
+	hash = hash * 31 + this->systemConfig.ledVoltage;
+	hash = hash * 31 + this->systemConfig.ledChannelCurrent[0];
+	hash = hash * 31 + this->systemConfig.ledChannelCurrent[1];
+	hash = hash * 31 + this->systemConfig.ledChannelCurrent[2];
 	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
 	{
 		hash = hash * 31 + this->ledConfig[i].ledPin;

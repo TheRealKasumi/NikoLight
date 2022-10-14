@@ -40,6 +40,9 @@ class SystemService {
 				systemConfig.setLightSensorThreshold(stream.readWord());
 				systemConfig.setLightSensorMinValue(stream.readWord());
 				systemConfig.setLightSensorMaxValue(stream.readWord());
+				systemConfig.setSystemPowerLimit(stream.readByte());
+				systemConfig.setLedVoltage(stream.readByte());
+				systemConfig.setLedChannelCurrent([stream.readByte(), stream.readByte(), stream.readByte()]);
 				systemConfig.hasChanged(true);
 				resolve(systemConfig);
 			} catch (ex) {
@@ -54,7 +57,7 @@ class SystemService {
 	 */
 	postSystemConfiguration = (systemConfiguration) => {
 		return new Promise(async (resolve, reject) => {
-			const stream = new BinaryStream(8);
+			const stream = new BinaryStream(13);
 
 			try {
 				stream.writeByte(systemConfiguration.getLogLevel());
@@ -62,6 +65,11 @@ class SystemService {
 				stream.writeWord(systemConfiguration.getLightSensorThreshold());
 				stream.writeWord(systemConfiguration.getLightSensorMinValue());
 				stream.writeWord(systemConfiguration.getLightSensorMaxValue());
+				stream.writeByte(systemConfiguration.getSystemPowerLimit());
+				stream.writeByte(systemConfiguration.getLedVoltage());
+				stream.writeByte(systemConfiguration.getLedChannelCurrent()[0]);
+				stream.writeByte(systemConfiguration.getLedChannelCurrent()[1]);
+				stream.writeByte(systemConfiguration.getLedChannelCurrent()[2]);
 			} catch (ex) {
 				reject(new SystemServiceException("Failed to write binary data to the stream."));
 				return;
@@ -69,7 +77,6 @@ class SystemService {
 
 			try {
 				const result = await this.postEncodedSystemConfiguration(stream.saveToBase64());
-				console.log(result);
 				resolve(result);
 			} catch (ex) {
 				reject(new SystemServiceException("Failed to send system configuration to the TesLight controller.", ex));

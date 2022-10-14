@@ -12,6 +12,9 @@ class SystemConfiguration {
 		this.lightSensorThreshold = 30;
 		this.lightSensorMinValue = 30;
 		this.lightSensorMaxValue = 2048;
+		this.systemPowerLimit = 10;
+		this.ledVoltage = 50;
+		this.ledChannelCurrent = [12, 12, 12];
 	}
 
 	/**
@@ -65,6 +68,30 @@ class SystemConfiguration {
 	 */
 	getLightSensorMaxValue = () => {
 		return this.lightSensorMaxValue;
+	};
+
+	/**
+	 * Get the system power limit in W.
+	 * @returns system power limit
+	 */
+	getSystemPowerLimit = () => {
+		return this.systemPowerLimit;
+	};
+
+	/**
+	 * Get the voltage used to run the LEDs.
+	 * @returns LED voltage
+	 */
+	getLedVoltage = () => {
+		return this.ledVoltage;
+	};
+
+	/**
+	 * Get the maxumum current of each channel per LED in mA.
+	 * @returns current per channel per LED in mA
+	 */
+	getLedChannelCurrent = () => {
+		return this.ledChannelCurrent;
 	};
 
 	/**
@@ -148,6 +175,58 @@ class SystemConfiguration {
 	};
 
 	/**
+	 * Set the system power limit in W.
+	 * @param systemPowerLimit system power limit in W
+	 * @returns true when valid, false when invalid
+	 */
+	setSystemPowerLimit = (systemPowerLimit) => {
+		if (typeof systemPowerLimit === "number" && systemPowerLimit >= 0 && systemPowerLimit < 256) {
+			this.systemPowerLimit = systemPowerLimit;
+			this.changed = true;
+			return true;
+		}
+		return false;
+	};
+
+	/**
+	 * Set the voltage used to run the LEDs.
+	 * @param ledVoltage LED voltage
+	 * @returns true when valid, false when invalid
+	 */
+	setLedVoltage = (ledVoltage) => {
+		if (typeof ledVoltage === "number" && ledVoltage >= 0 && ledVoltage < 256) {
+			this.ledVoltage = ledVoltage;
+			this.changed = true;
+			return true;
+		}
+		return false;
+	};
+
+	/**
+	 * Set the maxumum current of each channel per LED in mA.
+	 * @param ledChannelCurrent current per channel per LED in mA
+	 * @returns true when valid, false when invalid
+	 */
+	setLedChannelCurrent = (ledChannelCurrent) => {
+		if (
+			typeof ledChannelCurrent === "object" &&
+			Array.isArray(ledChannelCurrent) &&
+			ledChannelCurrent.length === 3 &&
+			ledChannelCurrent[0] >= 0 &&
+			ledChannelCurrent[0] < 256 &&
+			ledChannelCurrent[1] >= 0 &&
+			ledChannelCurrent[1] < 256 &&
+			ledChannelCurrent[2] >= 0 &&
+			ledChannelCurrent[2] < 256
+		) {
+			this.ledChannelCurrent = ledChannelCurrent;
+			this.changed = true;
+			return true;
+		}
+		return false;
+	};
+
+	/**
 	 * Copy the values from a {SystemConfiguration}.
 	 */
 	copyFrom = (systemConfiguration) => {
@@ -157,6 +236,9 @@ class SystemConfiguration {
 		this.lightSensorThreshold = systemConfiguration.lightSensorThreshold;
 		this.lightSensorMinValue = systemConfiguration.lightSensorMinValue;
 		this.lightSensorMaxValue = systemConfiguration.lightSensorMaxValue;
+		this.systemPowerLimit = systemConfiguration.systemPowerLimit;
+		this.ledVoltage = systemConfiguration.ledVoltage;
+		this.ledChannelCurrent = systemConfiguration.ledChannelCurrent;
 	};
 
 	/**
@@ -171,6 +253,9 @@ class SystemConfiguration {
 		clone.lightSensorThreshold = this.lightSensorThreshold;
 		clone.lightSensorMinValue = this.lightSensorMinValue;
 		clone.lightSensorMaxValue = this.lightSensorMaxValue;
+		clone.systemPowerLimit = this.systemPowerLimit;
+		clone.ledVoltage = this.ledVoltage;
+		clone.ledChannelCurrent = this.ledChannelCurrent;
 		return clone;
 	};
 }
