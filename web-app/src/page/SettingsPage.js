@@ -3,6 +3,7 @@ import Button from "../component/Button";
 import DropDown from "../component/DropDown";
 import Slider from "../component/Slider";
 import TextInput from "../component/TextInput";
+import VoltageSlider from "../component/VoltageSlider";
 
 /**
  * Component containing a setting page for the {LedConfiguration}.
@@ -87,6 +88,36 @@ class SettingsPage extends React.Component {
 	};
 
 	/**
+	 * Set the system power limit in watts.
+	 * @param {string} value value of the selection
+	 */
+	setSystemPowerLimit = (value) => {
+		const state = this.state;
+		state.systemConfigurationCopy.setSystemPowerLimit(value);
+		this.setState(state);
+	};
+
+	/**
+	 * Set the LED voltage multiplied by 10.
+	 * @param {string} value value of the selection
+	 */
+	setLedVoltage = (value) => {
+		const state = this.state;
+		state.systemConfigurationCopy.setLedVoltage(value);
+		this.setState(state);
+	};
+
+	/**
+	 * Set the LED current per channel in mA.
+	 * @param {string} value value of the selection
+	 */
+	setLedChannelCurrent = (value) => {
+		const state = this.state;
+		state.systemConfigurationCopy.setLedChannelCurrent([value, value, value]);
+		this.setState(state);
+	};
+
+	/**
 	 * Set the log level.
 	 * @param {string} value value of the selection
 	 * @param {number} selectedIndex index of the selection
@@ -96,6 +127,8 @@ class SettingsPage extends React.Component {
 		state.systemConfigurationCopy.setLogLevel(parseInt(value));
 		this.setState(state);
 	};
+
+	// Todo set power limit values
 
 	/**
 	 * Apply the settings and send them to the TesLight controller.
@@ -224,11 +257,50 @@ class SettingsPage extends React.Component {
 				/>
 				<div className="spacer2"></div>
 
+				<h2>Power Limit</h2>
+				<div className="spacer"></div>
+
+				<Slider
+					key={`settings-page-input-key-${this.state.inputKey + 6}`}
+					title="Power Limit (W)"
+					min={1}
+					max={100}
+					value={this.state.systemConfigurationCopy.getSystemPowerLimit()}
+					step={1}
+					icon="../../img/icon/brightness-min.svg"
+					onChange={this.setSystemPowerLimit}
+				/>
+				<div className="spacer"></div>
+
+				<VoltageSlider
+					key={`settings-page-input-key-${this.state.inputKey + 7}`}
+					title="LED Voltage"
+					min={40}
+					max={55}
+					value={this.state.systemConfigurationCopy.getLedVoltage()}
+					step={1}
+					icon="../../img/icon/brightness-min.svg"
+					onChange={this.setLedVoltage}
+				/>
+				<div className="spacer"></div>
+
+				<Slider
+					key={`settings-page-input-key-${this.state.inputKey + 8}`}
+					title="LED Current Per Channel (mA)"
+					min={1}
+					max={200}
+					value={this.state.systemConfigurationCopy.getLedChannelCurrent()[0]}
+					step={1}
+					icon="../../img/icon/brightness-min.svg"
+					onChange={this.setLedChannelCurrent}
+				/>
+				<div className="spacer2"></div>
+
 				<h2>Logging and Debugging</h2>
 				<div className="spacer"></div>
 
 				<DropDown
-					key={`settings-page-input-key-${this.state.inputKey + 6}`}
+					key={`settings-page-input-key-${this.state.inputKey + 9}`}
 					title="Log Level"
 					value={this.state.systemConfigurationCopy.getLogLevel()}
 					options={[

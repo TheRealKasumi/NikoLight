@@ -435,6 +435,9 @@ void loop()
 			lightSensor->setMinValue(systemConfig.lightSensorMinValue);
 			lightSensor->setMaxValue(systemConfig.lightSensorMaxValue);
 			lightSensor->setLightSensorMode(systemConfig.lightSensorMode);
+			ledManager->setSystemPowerLimit(systemConfig.systemPowerLimit);
+			ledManager->setLedVoltage(systemConfig.ledVoltage);
+			ledManager->setLedChannelCurrent(systemConfig.ledChannelCurrent[0], systemConfig.ledChannelCurrent[1], systemConfig.ledChannelCurrent[2]);
 		}
 		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System configuration updated."));
 		initializeTimers();

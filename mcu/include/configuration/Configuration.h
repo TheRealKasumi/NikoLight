@@ -32,6 +32,11 @@ namespace TesLight
 			uint16_t lightSensorThreshold;
 			uint16_t lightSensorMinValue;
 			uint16_t lightSensorMaxValue;
+
+			// Power config
+			uint8_t systemPowerLimit; // W
+			uint8_t ledVoltage; // Voltage * 10
+			uint8_t ledChannelCurrent[3]; // mA
 		};
 
 		struct LedConfig
@@ -78,7 +83,7 @@ namespace TesLight
 		FS *fileSystem;
 		String fileName;
 		uint16_t configurationVersion;
-		
+
 		TesLight::Configuration::SystemConfig systemConfig;
 		TesLight::Configuration::LedConfig ledConfig[NUM_LED_STRIPS];
 		TesLight::Configuration::WiFiConfig wifiConfig;

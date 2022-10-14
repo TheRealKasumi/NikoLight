@@ -21,7 +21,12 @@ TesLight::LedManager::LedManager()
 		this->ledAnimator[i] = nullptr;
 	}
 	this->fseqLoader = nullptr;
-	this->setTargetFrameTime(LED_FRAME_TIME);
+	this->targetFrameTime = LED_FRAME_TIME;
+	this->systemPowerLimit = 0;
+	this->ledVoltage = 0;
+	this->ledChannelCurrent[0] = 0;
+	this->ledChannelCurrent[1] = 0;
+	this->ledChannelCurrent[2] = 0;
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("LedMananger initialized."));
 }
 
@@ -45,6 +50,13 @@ bool TesLight::LedManager::loadFromConfiguration(TesLight::Configuration *config
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Load LEDs and animators from configuration."));
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Clear old LED data and animators."));
 	this->clear();
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Load power limit configuration."));
+	this->systemPowerLimit = config->getSystemConfig().systemPowerLimit;
+	this->ledVoltage = config->getSystemConfig().ledVoltage;
+	this->ledChannelCurrent[0] = config->getSystemConfig().ledChannelCurrent[0];
+	this->ledChannelCurrent[1] = config->getSystemConfig().ledChannelCurrent[1];
+	this->ledChannelCurrent[2] = config->getSystemConfig().ledChannelCurrent[2];
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Create new LED data."));
 	if (!this->createLedData(config))
@@ -102,6 +114,7 @@ void TesLight::LedManager::clear()
  */
 void TesLight::LedManager::setAmbientBrightness(const float ambientBrightness)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set ambient brightness."));
 	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
 	{
 		if (this->ledAnimator[i] != nullptr)
@@ -116,12 +129,24 @@ void TesLight::LedManager::setAmbientBrightness(const float ambientBrightness)
 }
 
 /**
+ * @brief Get the currently set ambient brightness.
+ * @return float ambient brightness from 0.0 to 1.0
+ */
+float TesLight::LedManager::getAmbientBrightness()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get ambient brightness."));
+	return this->ledAnimator[0] != nullptr ? this->ledAnimator[0]->getAmbientBrightness() : 0.0f;
+}
+
+/**
  * @brief Set the targeted frame time for rendering the LEDs.
+ * The minimum frame time is currently limited to 13ms.
  * @param targetFrameTime target frame time in microseconds
  */
 void TesLight::LedManager::setTargetFrameTime(const uint32_t targetFrameTime)
 {
-	this->targetFrameTime = targetFrameTime;
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set target frame time."));
+	this->targetFrameTime = targetFrameTime > 13 ? targetFrameTime : 13;
 }
 
 /**
@@ -130,7 +155,92 @@ void TesLight::LedManager::setTargetFrameTime(const uint32_t targetFrameTime)
  */
 uint32_t TesLight::LedManager::getTargetFrameTime()
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get target frame time."));
 	return this->targetFrameTime;
+}
+
+/**
+ * @brief Set the system power limit which should not be exceeded by the LEDs.
+ * @param systemPowerLimit system power limit in watts
+ */
+void TesLight::LedManager::setSystemPowerLimit(const uint8_t systemPowerLimit)
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set system power limit."));
+	this->systemPowerLimit = systemPowerLimit;
+}
+
+/**
+ * @brief Get the currently set system power limit.
+ * @return uint8_t power limit in watts
+ */
+uint8_t TesLight::LedManager::getSystemPowerLimit()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get system power limit."));
+	return this->systemPowerLimit;
+}
+
+/**
+ * @brief Set the voltage used for the LEDs.
+ * @param ledVoltage voltage of the LEDs multiplied by 10
+ */
+void TesLight::LedManager::setLedVoltage(const uint8_t ledVoltage)
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set LED voltage."));
+	this->ledVoltage = ledVoltage;
+}
+
+/**
+ * @brief Get the voltage used for the LEDs.
+ * @return uint8_t voltage of the LEDs multiplied by 10
+ */
+uint8_t TesLight::LedManager::getLedVoltage()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get LED voltage."));
+	return this->ledVoltage;
+}
+
+/**
+ * @brief Set the current for each LED per channel.
+ * @param redCurrent current of the red channel in mA
+ * @param greenCurrent current of the green channel in mA
+ * @param blueCurrent current of the blue channel in mA
+ */
+void TesLight::LedManager::setLedChannelCurrent(const uint8_t redCurrent, const uint8_t greenCurrent, const uint8_t blueCurrent)
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set LED channel current."));
+	this->ledChannelCurrent[0] = redCurrent;
+	this->ledChannelCurrent[1] = greenCurrent;
+	this->ledChannelCurrent[2] = blueCurrent;
+}
+
+/**
+ * @brief Get the currently set current for the red LED channel.
+ * @return uint8_t current for the channel in mA
+ */
+uint8_t TesLight::LedManager::getLedRedChannelCurrent()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get LED channel current for red channel."));
+	return this->ledChannelCurrent[0];
+}
+
+/**
+ * @brief Get the currently set current for the red LED channel.
+ * @return uint8_t current for the channel in mA
+ */
+uint8_t TesLight::LedManager::getLedGreenChannelCurrent()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get LED channel current for green channel."));
+	return this->ledChannelCurrent[1];
+}
+
+/**
+ * @brief Get the currently set current for the red LED channel.
+ * @return uint8_t current for the channel in mA
+ */
+uint8_t TesLight::LedManager::getLedBlueChannelCurrent()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get LED channel current for blue channel."));
+	return this->ledChannelCurrent[2];
 }
 
 /**
@@ -149,6 +259,7 @@ void TesLight::LedManager::render()
 			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to render LEDs with animator ") + String(i) + F(" because the animator is null."));
 		}
 	}
+	this->limitPowerConsumption();
 }
 
 /**
@@ -384,4 +495,54 @@ bool TesLight::LedManager::loadCustomAnimation(TesLight::Configuration *config)
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Animators for custom animation loaded."));
 	return true;
+}
+
+/**
+ * @brief Calculate the total power need for the current frame.
+ * @return float power need in watts
+ */
+float TesLight::LedManager::calculatePowerConsumption()
+{
+	float totalCurrent = 0.0f;
+	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	{
+		if (this->ledAnimator[i] != nullptr)
+		{
+			for (uint16_t j = 0; j < this->ledAnimator[i]->getPixelCount(); j++)
+			{
+				totalCurrent += this->ledChannelCurrent[0] * this->ledData[i][j].r / 255.0f;
+				totalCurrent += this->ledChannelCurrent[1] * this->ledData[i][j].g / 255.0f;
+				totalCurrent += this->ledChannelCurrent[2] * this->ledData[i][j].b / 255.0f;
+			}
+		}
+		else
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to calculate power consumption for animator ") + String(i) + F(" because the animator is null."));
+		}
+	}
+
+	return totalCurrent * (this->ledVoltage / 10.0f) / 1000.0f;
+}
+
+/**
+ * @brief Limit the power consumption of the current frame to the maxumim system power.
+ */
+void TesLight::LedManager::limitPowerConsumption()
+{
+	const float multiplicator = this->systemPowerLimit / this->calculatePowerConsumption();
+	if (multiplicator > 0.0f && multiplicator < 1.0f)
+	{
+		for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+		{
+			if (this->ledAnimator[i] != nullptr)
+			{
+				for (uint16_t j = 0; j < this->ledAnimator[i]->getPixelCount(); j++)
+				{
+					this->ledData[i][j].r *= multiplicator;
+					this->ledData[i][j].g *= multiplicator;
+					this->ledData[i][j].b *= multiplicator;
+				}
+			}
+		}
+	}
 }

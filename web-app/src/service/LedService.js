@@ -91,7 +91,6 @@ class LedService {
 
 			try {
 				const result = await this.postEncodedLedConfiguration(stream.saveToBase64());
-				console.log(result);
 				resolve(result);
 			} catch (ex) {
 				reject(new LedServiceException("Failed to send LED configuration to the TesLight controller.", ex));
