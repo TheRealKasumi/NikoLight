@@ -131,7 +131,7 @@ class SystemService {
 
 			fetch(url, options)
 				.then((response) => {
-					if (response.status !== 202) {
+					if (response.status !== 200) {
 						throw new SystemServiceException(
 							`The status code ${response.status} implies an error: "${response.text()}"`
 						);

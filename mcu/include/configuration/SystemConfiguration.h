@@ -13,7 +13,7 @@
 #define SD_CS_PIN 5
 #define SD_SPI_SPEED 4000000
 #define SD_MOUNT_POINT "/sd"
-#define SD_MAX_FILES 15
+#define SD_MAX_FILES 5
 
 // Logging configuration
 #define SERIAL_BAUD_RATE 460800
@@ -42,15 +42,20 @@
 
 // Webserver configuration
 #define WEB_SERVER_PORT 80
-#define WEB_SERVER_STATIC_CONTENT "/web-app"
+#define WEB_SERVER_STATIC_CONTENT "/web-app/"
 
 // Timer configuration
 #define LED_FRAME_TIME 16666
 #define LIGHT_SENSOR_CYCLE_TIME 20000
 #define MOTION_SENSOR_CYCLE_TIME 20000
 #define FPS_CYCLE_TIME 10000000
+#define WEB_SERVER_CYCLE_TIME 20000
 
 // FSEQ configuration
 #define FSEQ_DIRECTORY "/fseq"
+
+// Update configuration
+#define UPDATE_DIRECTORY "/update"
+#define UPDATE_FILE_NAME "update.tup"
 
 #endif

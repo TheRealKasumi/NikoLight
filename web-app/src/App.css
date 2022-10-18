@@ -409,6 +409,17 @@
 	outline: none;
 }
 
+.content input[type="file"] {
+	background: var(--color-secondary);
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	flex: 1;
+	height: auto;
+	outline: none;
+	width: 100%;
+}
+
 .content .checkbox,
 .content .radio {
 	background: var(--color-secondary);

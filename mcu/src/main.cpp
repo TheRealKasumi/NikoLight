@@ -20,13 +20,17 @@
 #include "sensor/MotionSensor.h"
 
 #include "wifi/WiFiManager.h"
-#include "server/WebServer.h"
+#include "server/WebServerManager.h"
 #include "server/ConnectionTestEndpoint.h"
 #include "server/SystemConfigurationEndpoint.h"
 #include "server/LedConfigurationEndpoint.h"
 #include "server/WiFiConfigurationEndpoint.h"
 #include "server/FseqEndpoint.h"
 #include "server/LogEndpoint.h"
+#include "server/UpdateEndpoint.h"
+
+#include "util/FileUtil.h"
+#include "update/Updater.h"
 
 #define MAX_ULONG_VALUE 0xffffffff
 
@@ -35,19 +39,15 @@ TesLight::LedManager *ledManager = nullptr;
 TesLight::LightSensor *lightSensor = nullptr;
 TesLight::MotionSensor *motionSensor = nullptr;
 TesLight::WiFiManager *wifiManager = nullptr;
-TesLight::WebServer *webServer = nullptr;
+TesLight::WebServerManager *webServerManager = nullptr;
 
 // Timer
 unsigned long ledTimer = 0;
 unsigned long lightSensorTimer = 0;
 unsigned long motionSensorTimer = 0;
 unsigned long fpsTimer = 0;
+unsigned long webServerTimer = 0;
 uint16_t ledFrameCounter = 0;
-
-// Flags
-bool systemConfigChangedFlag = false;
-bool ledConfigChangedFlag = false;
-bool wifiConfigChangedFlag = false;
 
 // Initialization functions
 void printLogo();
@@ -58,18 +58,22 @@ void initializeLedManager();
 void initializeLightSensor();
 bool initializeMotionSensor();
 void initializeWiFiManager();
-void initializeWebServer();
+void initializeWebServerManager();
 void initializeRestApi();
 void initializeTimers();
 void stop();
+
+// System update
+bool updateAvilable();
+void handleUpdate();
 
 // WiFi functions
 bool createtWiFiNetwork();
 
 // Callback functions for the rest endpoints
-void systemConfigChanged();
-void ledConfigChanged();
-void wifiConfigChanged();
+bool applySystemConfig();
+bool applyLedConfig();
+bool applyWifiConfig();
 
 /**
  * @brief Print the TesLight logo and FW version.
@@ -83,7 +87,7 @@ void printLogo()
 	Serial.println(F("   ██║   ██╔══╝  ╚════██║██║     ██║██║   ██║██╔══██║   ██║   "));
 	Serial.println(F("   ██║   ███████╗███████║███████╗██║╚██████╔╝██║  ██║   ██║   "));
 	Serial.println(F("   ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   "));
-	Serial.println(F("Firmware version 0.9.5 (beta)"));
+	Serial.println(F("Firmware version 0.9.8 (beta)"));
 	Serial.println();
 }
 
@@ -194,10 +198,10 @@ void initializeWiFiManager()
 /**
  * @brief Initialize the webserver to serve static files.
  */
-void initializeWebServer()
+void initializeWebServerManager()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize webserver."));
-	webServer = new TesLight::WebServer(WEB_SERVER_PORT, &SD, WEB_SERVER_STATIC_CONTENT);
+	webServerManager = new TesLight::WebServerManager(WEB_SERVER_PORT, &SD, WEB_SERVER_STATIC_CONTENT);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Webserver initialized."));
 }
 
@@ -207,19 +211,25 @@ void initializeWebServer()
 void initializeRestApi()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize REST API."));
-	TesLight::ConnectionTestEndpoint::init(webServer, F("/api/"));
+	TesLight::ConnectionTestEndpoint::init(webServerManager, F("/api/"));
 	TesLight::ConnectionTestEndpoint::begin();
-	TesLight::SystemConfigurationEndpoint::init(webServer, F("/api/"));
-	TesLight::SystemConfigurationEndpoint::begin(configuration, systemConfigChanged);
-	TesLight::LedConfigurationEndpoint::init(webServer, F("/api/"));
-	TesLight::LedConfigurationEndpoint::begin(configuration, ledConfigChanged);
-	TesLight::WiFiConfigurationEndpoint::init(webServer, F("/api/"));
-	TesLight::WiFiConfigurationEndpoint::begin(configuration, wifiConfigChanged);
-	TesLight::FseqEndpoint::init(webServer, F("/api/"));
+	TesLight::SystemConfigurationEndpoint::init(webServerManager, F("/api/"));
+	TesLight::SystemConfigurationEndpoint::begin(configuration, applySystemConfig);
+	TesLight::LedConfigurationEndpoint::init(webServerManager, F("/api/"));
+	TesLight::LedConfigurationEndpoint::begin(configuration, applyLedConfig);
+	TesLight::WiFiConfigurationEndpoint::init(webServerManager, F("/api/"));
+	TesLight::WiFiConfigurationEndpoint::begin(configuration, applyWifiConfig);
+	TesLight::FseqEndpoint::init(webServerManager, F("/api/"));
 	TesLight::FseqEndpoint::begin(&SD);
-	TesLight::LogEndpoint::init(webServer, F("/api/"));
+	TesLight::LogEndpoint::init(webServerManager, F("/api/"));
 	TesLight::LogEndpoint::begin(&SD);
+	TesLight::UpdateEndpoint::init(webServerManager, F("/api/"));
+	TesLight::UpdateEndpoint::begin(&SD);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("REST API initialized."));
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Starting web server."));
+	webServerManager->begin();
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Web server started."));
 }
 
 /**
@@ -232,6 +242,7 @@ void initializeTimers()
 	lightSensorTimer = micros();
 	motionSensorTimer = micros();
 	fpsTimer = micros();
+	webServerTimer = micros();
 }
 
 /**
@@ -242,6 +253,43 @@ void stop(const String reason)
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Programm stopped because: ") + reason);
 	while (1)
 		;
+}
+
+/**
+ * @brief Check if the update file is available.
+ * @return true when update file is available
+ * @return false when there is no update file
+ */
+bool updateAvilable()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Check if update package file is available."));
+	if (TesLight::FileUtil::fileExists(&SD, (String)UPDATE_DIRECTORY + F("/") + UPDATE_FILE_NAME))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Update package file was found."));
+		return true;
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("No update package found."));
+		return false;
+	}
+}
+
+/**
+ * @brief Install the system update from a TUP file. This function will not return.
+ */
+void handleUpdate()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Installing system update from update package."));
+	if (TesLight::Updater::install(&SD, (String)UPDATE_DIRECTORY + F("/") + UPDATE_FILE_NAME))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update installed successfully. Rebooting. Good luck ;) !"));
+		TesLight::Updater::reboot();
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to install system update! Trying to continue."));
+	}
 }
 
 /**
@@ -299,6 +347,17 @@ void setup()
 		stop(F("Failed to switch to SD card logger."));
 	}
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Check if system update is available."));
+	if (updateAvilable())
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System update package was found. Installing..."));
+		handleUpdate();
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("No available system update found."));
+	}
+
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize, load and save configuration."));
 	if (initializeConfiguration())
 	{
@@ -338,7 +397,7 @@ void setup()
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("WiFi manager initialized."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Starting Webserver."));
-	initializeWebServer();
+	initializeWebServerManager();
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Webserver started on port ") + WEB_SERVER_PORT + F("."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initializing REST api."));
@@ -422,86 +481,79 @@ void loop()
 		ledFrameCounter = 0;
 	}
 
-	// Handle System configuration updates when the flag is set
-	if (systemConfigChangedFlag)
+	// Handle web server requests
+	if (micros() - webServerTimer >= WEB_SERVER_CYCLE_TIME)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System configuration has changed. Updating system configuration."));
-		systemConfigChangedFlag = false;
-		const TesLight::Configuration::SystemConfig systemConfig = configuration->getSystemConfig();
-		TesLight::Logger::setMinLogLevel(systemConfig.logLevel);
-		if (lightSensor != nullptr)
-		{
-			lightSensor->setThreshold(systemConfig.lightSensorThreshold);
-			lightSensor->setMinValue(systemConfig.lightSensorMinValue);
-			lightSensor->setMaxValue(systemConfig.lightSensorMaxValue);
-			lightSensor->setLightSensorMode(systemConfig.lightSensorMode);
-			ledManager->setSystemPowerLimit(systemConfig.systemPowerLimit);
-			ledManager->setLedVoltage(systemConfig.ledVoltage);
-			ledManager->setLedChannelCurrent(systemConfig.ledChannelCurrent[0], systemConfig.ledChannelCurrent[1], systemConfig.ledChannelCurrent[2]);
-		}
-		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System configuration updated."));
-		initializeTimers();
-	}
-
-	// Handle LED configuration updates when the flag is set
-	if (ledConfigChangedFlag)
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("LED configuration has changed. Reload LEDs and animators using the LED Manager."));
-		ledConfigChangedFlag = false;
-		if (ledManager->loadFromConfiguration(configuration))
-		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("LEDs and animators reloaded."));
-		}
-		else
-		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to reload LEDs and animators. Continue without rendering LEDs."));
-		}
-		initializeTimers();
-	}
-
-	// Handle WiFi configuration updates when the flag is set
-	if (wifiConfigChangedFlag)
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("WiFi configuration has changed. Updating WiFi configuration."));
-		wifiConfigChangedFlag = false;
-		if (createtWiFiNetwork())
-		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("WiFi configuration updated."));
-		}
-		else
-		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to create WiFi network. Continuing without WiFi network. The REST API might be inaccessible."));
-		}
-		initializeTimers();
+		webServerTimer = micros() - (micros() - webServerTimer - WEB_SERVER_CYCLE_TIME);
+		webServerManager->handleRequest();
 	}
 }
 
 /**
- * @brief Is called by the {@link TesLight::Configuration::SystemConfigurationEndpoint} when the system configuration was updated.
- * Since it's called async by the WebServer it should be used with care. The actual update should only happen in the main loop.
+ * @brief Callback function is called via an REST endpoint when the system configuration was updated.
+ * @return true when the configuration was applied successfully
+ * @return false when there was an error applying the configuration
  */
-void systemConfigChanged()
+bool applySystemConfig()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("The system configuration was updated, setting flag."));
-	systemConfigChangedFlag = true;
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System configuration has changed. Updating system configuration."));
+	const TesLight::Configuration::SystemConfig systemConfig = configuration->getSystemConfig();
+	TesLight::Logger::setMinLogLevel(systemConfig.logLevel);
+	if (lightSensor != nullptr)
+	{
+		lightSensor->setThreshold(systemConfig.lightSensorThreshold);
+		lightSensor->setMinValue(systemConfig.lightSensorMinValue);
+		lightSensor->setMaxValue(systemConfig.lightSensorMaxValue);
+		lightSensor->setLightSensorMode(systemConfig.lightSensorMode);
+	}
+	ledManager->setSystemPowerLimit(systemConfig.systemPowerLimit);
+	ledManager->setLedVoltage(systemConfig.ledVoltage);
+	ledManager->setLedChannelCurrent(systemConfig.ledChannelCurrent[0], systemConfig.ledChannelCurrent[1], systemConfig.ledChannelCurrent[2]);
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System configuration updated."));
+	initializeTimers();
+	return true;
 }
 
 /**
- * @brief Is called by the {@link TesLight::Configuration::LedConfigurationEndpoint} when the LED configuration was updated.
- * Since it's called async by the WebServer it should be used with care. The actual update should only happen in the main loop.
+ * @brief Callback function is called via an REST endpoint when the LED configuration was updated.
+ * @return true when the configuration was applied successfully
+ * @return false when there was an error applying the configuration
  */
-void ledConfigChanged()
+bool applyLedConfig()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("The LED configuration was updated, setting flag."));
-	ledConfigChangedFlag = true;
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("LED configuration has changed. Reload LEDs and animators using the LED Manager."));
+	if (ledManager->loadFromConfiguration(configuration))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("LEDs and animators reloaded."));
+		initializeTimers();
+		return true;
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to reload LEDs and animators. Continue without rendering LEDs."));
+		initializeTimers();
+		return false;
+	}
 }
 
 /**
- * @brief Is called by the {@link TesLight::Configuration::WiFiConfigurationEndpoint} when the WiFi configuration was updated.
- * Since it's called async by the WebServer it should be used with care. Actual update should only happen in main loop.
+ * @brief Callback function is called via an REST endpoint when the WiFi configuration was updated.
+ * @return true when the configuration was applied successfully
+ * @return false when there was an error applying the configuration
  */
-void wifiConfigChanged()
+bool applyWifiConfig()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("The WiFi configuration was updated, setting flag."));
-	wifiConfigChangedFlag = true;
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("WiFi configuration has changed. Updating WiFi configuration."));
+	if (createtWiFiNetwork())
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("WiFi configuration updated."));
+		initializeTimers();
+		return true;
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to create WiFi network. Continuing without WiFi network. The REST API might be inaccessible."));
+		initializeTimers();
+		return false;
+	}
 }
