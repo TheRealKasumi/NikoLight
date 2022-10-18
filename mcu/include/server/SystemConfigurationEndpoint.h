@@ -22,16 +22,16 @@ namespace TesLight
 	class SystemConfigurationEndpoint : public RestEndpoint
 	{
 	public:
-		static void begin(TesLight::Configuration *_configuration, std::function<void()> _configChangedCallback);
+		static void begin(TesLight::Configuration *_configuration, std::function<bool()> _configChangedCallback);
 
 	private:
 		SystemConfigurationEndpoint();
 
 		static TesLight::Configuration *configuration;
-		static std::function<void()> configChangedCallback;
+		static std::function<bool()> configChangedCallback;
 
-		static void getSystemConfig(AsyncWebServerRequest *request);
-		static void postSystemConfig(AsyncWebServerRequest *request);
+		static void getSystemConfig();
+		static void postSystemConfig();
 		static bool validateLogLevel(const uint8_t logLevel);
 		static bool validateLightSensorMode(const uint8_t lightSensorMode);
 		static bool validateMinMax(const uint16_t min, const uint16_t max);

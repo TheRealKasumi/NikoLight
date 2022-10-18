@@ -17,126 +17,8 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/connection_test",
 							"protocol": "http",
-							"host": [
-								"{{TESLIGHTIP}}"
-							],
-							"path": [
-								"api",
-								"connection_test"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "WiFi Configuration",
-			"item": [
-				{
-					"name": "Get WiFi Configuration",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/wifi",
-							"protocol": "http",
-							"host": [
-								"{{TESLIGHTIP}}"
-							],
-							"path": [
-								"api",
-								"config",
-								"wifi"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Set WiFi Configuration",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "data",
-									"value": "",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/wifi",
-							"protocol": "http",
-							"host": [
-								"{{TESLIGHTIP}}"
-							],
-							"path": [
-								"api",
-								"config",
-								"wifi"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "LED Configuration",
-			"item": [
-				{
-					"name": "Get LED Configuration",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/led",
-							"protocol": "http",
-							"host": [
-								"{{TESLIGHTIP}}"
-							],
-							"path": [
-								"api",
-								"config",
-								"led"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Set LED Configuration",
-					"protocolProfileBehavior": {
-						"disabledSystemHeaders": {}
-					},
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "data",
-									"value": "",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/led",
-							"protocol": "http",
-							"host": [
-								"{{TESLIGHTIP}}"
-							],
-							"path": [
-								"api",
-								"config",
-								"led"
-							]
+							"host": ["{{TESLIGHTIP}}"],
+							"path": ["api", "connection_test"]
 						}
 					},
 					"response": []
@@ -154,14 +36,8 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/config/system",
 							"protocol": "http",
-							"host": [
-								"{{TESLIGHTIP}}"
-							],
-							"path": [
-								"api",
-								"config",
-								"system"
-							]
+							"host": ["{{TESLIGHTIP}}"],
+							"path": ["api", "config", "system"]
 						}
 					},
 					"response": []
@@ -179,7 +55,7 @@
 							"urlencoded": [
 								{
 									"key": "data",
-									"value": "",
+									"value": "AQEeAB4AAAgKMgwMDA==",
 									"type": "text"
 								}
 							]
@@ -187,14 +63,97 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/config/system",
 							"protocol": "http",
-							"host": [
-								"{{TESLIGHTIP}}"
-							],
-							"path": [
-								"api",
-								"config",
-								"system"
+							"host": ["{{TESLIGHTIP}}"],
+							"path": ["api", "config", "system"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "LED Configuration",
+			"item": [
+				{
+					"name": "Get LED Configuration",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/led",
+							"protocol": "http",
+							"host": ["{{TESLIGHTIP}}"],
+							"path": ["api", "config", "led"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set LED Configuration",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "data",
+									"value": "DUYAADIKADIABQAAAAAAAAAAAAAOAgAAMgoAMgAFAAAAAAAAAAAAAA8EAAAyCgAyAAUAAAAAAAAAAAAAEAQAADIKADIABQAAAAAAAAAAAAARBAAAMgoAMgAFAAAAAAAAAAAAABUEAAAyCgAyAAUAAAAAAAAAAAAA",
+									"type": "text"
+								}
 							]
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/led",
+							"protocol": "http",
+							"host": ["{{TESLIGHTIP}}"],
+							"path": ["api", "config", "led"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "WiFi Configuration",
+			"item": [
+				{
+					"name": "Get WiFi Configuration",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/wifi",
+							"protocol": "http",
+							"host": ["{{TESLIGHTIP}}"],
+							"path": ["api", "config", "wifi"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set WiFi Configuration",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "data",
+									"value": "CABUZXNMaWdodAoAVGVzTGlnaHRQVwEAAQAAAAA=",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/wifi",
+							"protocol": "http",
+							"host": ["{{TESLIGHTIP}}"],
+							"path": ["api", "config", "wifi"]
 						}
 					},
 					"response": []
@@ -212,13 +171,8 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/fseq",
 							"protocol": "http",
-							"host": [
-								"{{TESLIGHTIP}}"
-							],
-							"path": [
-								"api",
-								"fseq"
-							]
+							"host": ["{{TESLIGHTIP}}"],
+							"path": ["api", "fseq"]
 						}
 					},
 					"response": []
@@ -229,25 +183,24 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "file",
-							"file": {
-								"src": ""
-							}
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "",
+									"type": "file",
+									"src": ""
+								}
+							]
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/fseq?fileName=",
+							"raw": "http://{{TESLIGHTIP}}/api/fseq?fileName=test.fseq",
 							"protocol": "http",
-							"host": [
-								"{{TESLIGHTIP}}"
-							],
-							"path": [
-								"api",
-								"fseq"
-							],
+							"host": ["{{TESLIGHTIP}}"],
+							"path": ["api", "fseq"],
 							"query": [
 								{
 									"key": "fileName",
-									"value": ""
+									"value": "test.fseq"
 								}
 							]
 						}
@@ -257,22 +210,17 @@
 				{
 					"name": "Delete a FSEQ File",
 					"request": {
-						"method": "PATCH",
+						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/fseq?fileName=",
+							"raw": "http://{{TESLIGHTIP}}/api/fseq?fileName=test.fseq",
 							"protocol": "http",
-							"host": [
-								"{{TESLIGHTIP}}"
-							],
-							"path": [
-								"api",
-								"fseq"
-							],
+							"host": ["{{TESLIGHTIP}}"],
+							"path": ["api", "fseq"],
 							"query": [
 								{
 									"key": "fileName",
-									"value": ""
+									"value": "test.fseq"
 								}
 							]
 						}
@@ -292,14 +240,8 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/log/size",
 							"protocol": "http",
-							"host": [
-								"{{TESLIGHTIP}}"
-							],
-							"path": [
-								"api",
-								"log",
-								"size"
-							]
+							"host": ["{{TESLIGHTIP}}"],
+							"path": ["api", "log", "size"]
 						}
 					},
 					"response": []
@@ -310,15 +252,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/log?start=0&count=0",
+							"raw": "http://{{TESLIGHTIP}}/api/log?start=0&count=197",
 							"protocol": "http",
-							"host": [
-								"{{TESLIGHTIP}}"
-							],
-							"path": [
-								"api",
-								"log"
-							],
+							"host": ["{{TESLIGHTIP}}"],
+							"path": ["api", "log"],
 							"query": [
 								{
 									"key": "start",
@@ -326,7 +263,7 @@
 								},
 								{
 									"key": "count",
-									"value": "0"
+									"value": "197"
 								}
 							]
 						}
@@ -336,18 +273,42 @@
 				{
 					"name": "Clear Log",
 					"request": {
-						"method": "PATCH",
+						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/log",
 							"protocol": "http",
-							"host": [
-								"{{TESLIGHTIP}}"
-							],
-							"path": [
-								"api",
-								"log"
+							"host": ["{{TESLIGHTIP}}"],
+							"path": ["api", "log"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update",
+			"item": [
+				{
+					"name": "Upload TesLight Update Package",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "",
+									"type": "file",
+									"src": ""
+								}
 							]
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/update",
+							"protocol": "http",
+							"host": ["{{TESLIGHTIP}}"],
+							"path": ["api", "update"]
 						}
 					},
 					"response": []
@@ -360,18 +321,14 @@
 			"listen": "prerequest",
 			"script": {
 				"type": "text/javascript",
-				"exec": [
-					""
-				]
+				"exec": [""]
 			}
 		},
 		{
 			"listen": "test",
 			"script": {
 				"type": "text/javascript",
-				"exec": [
-					""
-				]
+				"exec": [""]
 			}
 		}
 	],

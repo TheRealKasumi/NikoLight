@@ -36,7 +36,7 @@ app.get("/api/config/system", (req, res) => {
 app.post("/api/config/system", (req, res) => {
 	data.systemConfiguration = req.body.data;
 	console.log(`Set new system configuration: ${data.systemConfiguration}`);
-	res.status(202).send();
+	res.status(200).send();
 });
 
 /**
@@ -53,7 +53,7 @@ app.get("/api/config/led", (req, res) => {
 app.post("/api/config/led", (req, res) => {
 	data.ledConfiguration = req.body.data;
 	console.log(`Set new LED configuration: ${data.ledConfiguration}`);
-	res.status(202).send();
+	res.status(200).send();
 });
 
 /**
@@ -70,7 +70,7 @@ app.get("/api/config/wifi", (req, res) => {
 app.post("/api/config/wifi", (req, res) => {
 	data.wifiConfiguration = req.body.data;
 	console.log(`Set new wifi configuration: ${data.wifiConfiguration}`);
-	res.status(202).send();
+	res.status(200).send();
 });
 
 /**

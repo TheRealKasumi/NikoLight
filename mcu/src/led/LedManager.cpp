@@ -349,8 +349,7 @@ bool TesLight::LedManager::createAnimators(TesLight::Configuration *config)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Using fseq custom animation with animation file index ") + String(animationFileIndex) + F("."));
 		String fileName;
-		TesLight::FileUtil::getFileNameByIndex(&SD, FSEQ_DIRECTORY, animationFileIndex, fileName);
-		if (fileName.length() > 0)
+		if (TesLight::FileUtil::getFileNameFromIndex(&SD, FSEQ_DIRECTORY, animationFileIndex, fileName, false) && fileName.length() > 0)
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Loading fseq file: ") + fileName);
 			this->fseqLoader = new TesLight::FseqLoader(&SD);

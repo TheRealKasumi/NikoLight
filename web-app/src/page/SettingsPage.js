@@ -207,7 +207,7 @@ class SettingsPage extends React.Component {
 					max={4095}
 					value={this.state.systemConfigurationCopy.getLightSensorThreshold()}
 					step={10}
-					icon="../../img/icon/sensor.svg"
+					icon={process.env.PUBLIC_URL + "/img/icon/sensor.svg"}
 					onChange={this.setLightSensorThreshold}
 				/>
 				<div className="spacer"></div>
@@ -219,7 +219,7 @@ class SettingsPage extends React.Component {
 					max={4095}
 					value={this.state.systemConfigurationCopy.getLightSensorMinValue()}
 					step={10}
-					icon="../../img/icon/brightness-min.svg"
+					icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
 					onChange={this.setLightSensorMinValue}
 				/>
 				<div className="spacer"></div>
@@ -231,7 +231,7 @@ class SettingsPage extends React.Component {
 					max={4095}
 					value={this.state.systemConfigurationCopy.getLightSensorMaxValue()}
 					step={10}
-					icon="../../img/icon/brightness-max.svg"
+					icon={process.env.PUBLIC_URL + "/img/icon/brightness-max.svg"}
 					onChange={this.setLightSensorMaxValue}
 				/>
 				<div className="spacer2"></div>
@@ -243,7 +243,7 @@ class SettingsPage extends React.Component {
 					key={`settings-page-input-key-${this.state.inputKey + 4}`}
 					title="SSID"
 					value={this.state.wifiConfigurationCopy.getAccessPointSsid()}
-					icon="../../img/icon/wifi.svg"
+					icon={process.env.PUBLIC_URL + "/img/icon/wifi.svg"}
 					onChange={this.setAccessPointSsid}
 				/>
 				<div className="spacer"></div>
@@ -252,7 +252,7 @@ class SettingsPage extends React.Component {
 					key={`settings-page-input-key-${this.state.inputKey + 5}`}
 					title="Password"
 					value={this.state.wifiConfigurationCopy.getAccessPointPassword()}
-					icon="../../img/icon/lock.svg"
+					icon={process.env.PUBLIC_URL + "/img/icon/lock.svg"}
 					onChange={this.setAccessPointPassword}
 				/>
 				<div className="spacer2"></div>
@@ -267,7 +267,7 @@ class SettingsPage extends React.Component {
 					max={100}
 					value={this.state.systemConfigurationCopy.getSystemPowerLimit()}
 					step={1}
-					icon="../../img/icon/brightness-min.svg"
+					icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
 					onChange={this.setSystemPowerLimit}
 				/>
 				<div className="spacer"></div>
@@ -279,7 +279,7 @@ class SettingsPage extends React.Component {
 					max={55}
 					value={this.state.systemConfigurationCopy.getLedVoltage()}
 					step={1}
-					icon="../../img/icon/brightness-min.svg"
+					icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
 					onChange={this.setLedVoltage}
 				/>
 				<div className="spacer"></div>
@@ -291,7 +291,7 @@ class SettingsPage extends React.Component {
 					max={200}
 					value={this.state.systemConfigurationCopy.getLedChannelCurrent()[0]}
 					step={1}
-					icon="../../img/icon/brightness-min.svg"
+					icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
 					onChange={this.setLedChannelCurrent}
 				/>
 				<div className="spacer2"></div>

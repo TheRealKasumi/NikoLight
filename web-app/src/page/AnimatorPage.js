@@ -201,7 +201,7 @@ class AnimatorPage extends React.Component {
 					max={255}
 					value={this.state.ledConfigurationCopy.getBrightness()}
 					step={5}
-					icon="../../img/icon/brightness.svg"
+					icon={process.env.PUBLIC_URL + "/img/icon/brightness.svg"}
 					onChange={this.setAnimatorBrightness}
 				/>
 				<div className="spacer"></div>
@@ -213,7 +213,7 @@ class AnimatorPage extends React.Component {
 						max={255}
 						value={this.state.ledConfigurationCopy.getSpeed()}
 						step={5}
-						icon="../../img/icon/speed.svg"
+						icon={process.env.PUBLIC_URL + "/img/icon/speed.svg"}
 						onChange={this.setAnimationSpeed}
 					/>
 				) : null}
@@ -227,7 +227,7 @@ class AnimatorPage extends React.Component {
 							max={255}
 							value={this.state.ledConfigurationCopy.getOffset()}
 							step={5}
-							icon="../../img/icon/offset.svg"
+							icon={process.env.PUBLIC_URL + "/img/icon/offset.svg"}
 							onChange={this.setAnimationOffset}
 						/>
 						<div className="spacer"></div>
@@ -254,7 +254,7 @@ class AnimatorPage extends React.Component {
 					max={255}
 					value={this.state.ledConfigurationCopy.getFadeSpeed()}
 					step={5}
-					icon="../../img/icon/fading.svg"
+					icon={process.env.PUBLIC_URL + "/img/icon/fading.svg"}
 					onChange={this.setAnimationFadingSpeed}
 				/>
 				<div className="spacer"></div>

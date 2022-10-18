@@ -22,7 +22,7 @@ namespace TesLight
 	private:
 		ConnectionTestEndpoint();
 
-		static void handleConnectionTest(AsyncWebServerRequest *request);
+		static void handleConnectionTest();
 	};
 }
 

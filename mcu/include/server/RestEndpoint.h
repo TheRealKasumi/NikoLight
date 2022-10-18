@@ -1,7 +1,7 @@
 /**
  * @file RestEndpoint.h
  * @author TheRealKasumi
- * @brief Contains a base class to model a single REST endpoint.
+ * @brief Contains a base class for a single REST endpoint.
  *
  * @copyright Copyright (c) 2022
  *
@@ -9,7 +9,8 @@
 #ifndef REST_ENDPOINT_H
 #define REST_ENDPOINT_H
 
-#include "server/WebServer.h"
+#include <WebServer.h>
+#include "server/WebServerManager.h"
 #include "util/Base64Util.h"
 
 namespace TesLight
@@ -17,16 +18,19 @@ namespace TesLight
 	class RestEndpoint
 	{
 	public:
-		static void init(TesLight::WebServer *_webServer, String _baseUri);
+		static void init(TesLight::WebServerManager *_webServerManager, String _baseUri);
 
-		static TesLight::WebServer *getWebServer();
+		static TesLight::WebServerManager *getServerManager();
+		static WebServer *getServer();
 		static String getBaseUri();
 
 	private:
-		static TesLight::WebServer *webServer;
-		static String baseUri;
-
 		RestEndpoint();
+
+	protected:
+		static TesLight::WebServerManager *webServerManager;
+		static WebServer *webServer;
+		static String baseUri;
 	};
 }
 

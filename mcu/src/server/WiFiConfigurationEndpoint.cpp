@@ -10,88 +10,85 @@
 
 // Initialize
 TesLight::Configuration *TesLight::WiFiConfigurationEndpoint::configuration = nullptr;
-std::function<void()> TesLight::WiFiConfigurationEndpoint::configChangedCallback = nullptr;
+std::function<bool()> TesLight::WiFiConfigurationEndpoint::configChangedCallback = nullptr;
 
 /**
- * @brief Add all request handler for this {@link TesLight::RestEndpoint} to the {@link TesLight::WebServer}.
+ * @brief Add all request handler for this {@link TesLight::RestEndpoint} to the {@link TesLight::WebServerManager}.
  */
-void TesLight::WiFiConfigurationEndpoint::begin(TesLight::Configuration *_configuration, std::function<void()> _configChangedCallback)
+void TesLight::WiFiConfigurationEndpoint::begin(TesLight::Configuration *_configuration, std::function<bool()> _configChangedCallback)
 {
-	configuration = _configuration;
-	configChangedCallback = _configChangedCallback;
-	getWebServer()->addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_GET, TesLight::WiFiConfigurationEndpoint::getWiFiConfig);
-	getWebServer()->addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_POST, TesLight::WiFiConfigurationEndpoint::postWiFiConfig);
+	TesLight::WiFiConfigurationEndpoint::configuration = _configuration;
+	TesLight::WiFiConfigurationEndpoint::configChangedCallback = _configChangedCallback;
+	webServerManager->addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_GET, TesLight::WiFiConfigurationEndpoint::getWiFiConfig);
+	webServerManager->addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_POST, TesLight::WiFiConfigurationEndpoint::postWiFiConfig);
 }
 
 /**
  * @brief Return the WiFi configuration to the client.
- * @param request instance of {@link AsyncWebServerRequest}
  */
-void TesLight::WiFiConfigurationEndpoint::getWiFiConfig(AsyncWebServerRequest *request)
+void TesLight::WiFiConfigurationEndpoint::getWiFiConfig()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the WiFi configuration."));
 	TesLight::InMemoryBinaryFile binary(256);
-	binary.writeString(configuration->getWiFiConfig().accessPointSsid);
-	binary.writeString(configuration->getWiFiConfig().accessPointPassword);
-	binary.writeByte(configuration->getWiFiConfig().accessPointChannel);
-	binary.writeByte(configuration->getWiFiConfig().accessPointHidden);
-	binary.writeByte(configuration->getWiFiConfig().accessPointMaxConnections);
-	binary.writeString(configuration->getWiFiConfig().wifiSsid);
-	binary.writeString(configuration->getWiFiConfig().wifiPassword);
+	binary.writeString(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointSsid);
+	binary.writeString(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointPassword);
+	binary.writeByte(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointChannel);
+	binary.writeByte(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointHidden);
+	binary.writeByte(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointMaxConnections);
+	binary.writeString(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().wifiSsid);
+	binary.writeString(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().wifiPassword);
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Preparing base64 response."));
 	String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
 	if (encoded == F("BASE64_ERROR"))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to encode response."));
-		request->send(500, F("application/octet-stream"), F("Failed to encode response."));
+		webServer->send(500, F("application/octet-stream"), F("Failed to encode response."));
 		return;
 	}
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Base64 response prepared."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Sending the response."));
-	request->send(200, F("octet-stream"), encoded);
+	webServer->send(200, F("octet-stream"), encoded);
 }
 
 /**
  * @brief Receive the WiFi configuration sent by the client.
- * @param request instance of {@link AsyncWebServerRequest}
  */
-void TesLight::WiFiConfigurationEndpoint::postWiFiConfig(AsyncWebServerRequest *request)
+void TesLight::WiFiConfigurationEndpoint::postWiFiConfig()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the WiFi configuration."));
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking content-length."));
-	if (request->contentLength() == 0)
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking request."));
+	if (!webServer->hasArg(F("data")) || webServer->arg(F("data")).length() == 0)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Content-length must not be null. The request could not be processed because it's empty."));
-		request->send(400, F("text/plain"), F("A request body must be provided and the content-length must not be null."));
-		return;
-	}
-	else if (request->contentType() != F("application/x-www-form-urlencoded"))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/x-www-form-urlencoded\"."));
-		request->send(400, F("text/plain"), F("The content type must be \"application/x-www-form-urlencoded\"."));
-		return;
-	}
-	else if (request->arg(F("data")).length() == 0)
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a body parameter \"data\" with the base64 encoded WiFi data."));
-		request->send(400, F("text/plain"), F("There must be a body parameter \"data\" with the base64 encoded WiFi data."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a x-www-form-urlencoded body parameter \"data\" with the base64 encoded WiFi data."));
+		webServer->send(400, F("text/plain"), F("There must be a body parameter \"data\" with the base64 encoded WiFi data."));
 		return;
 	}
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Decoding base64 request."));
-	const String encoded = request->arg(F("data"));
+	const String encoded = webServer->arg(F("data"));
 	size_t length;
 	uint8_t *decoded = TesLight::Base64Util::decode(encoded, length);
 	if (decoded == nullptr)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to decode request."));
-		request->send(500, F("application/octet-stream"), F("Failed to decode request."));
+		webServer->send(500, F("application/octet-stream"), F("Failed to decode request."));
 		return;
 	}
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Request decoded."));
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking length of the decoded data."));
+	if (length > 256)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Length of decoded data is invalid."));
+		delete[] decoded;
+		webServer->send(400, F("text/plain"), F("The length of the decoded data must be max 256 bytes."));
+		return;
+	}
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Decoded data is ok, loading into binary buffer."));
 	TesLight::InMemoryBinaryFile binary(length);
 	binary.loadFrom(decoded, length);
 	delete[] decoded;
@@ -111,36 +108,42 @@ void TesLight::WiFiConfigurationEndpoint::postWiFiConfig(AsyncWebServerRequest *
 		!validateWiFiMaxConnections(config.accessPointMaxConnections))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The access point configuration is invalid."));
-		request->send(400, F("text/plain"), (String)F("The access point configuration is invalid."));
+		webServer->send(400, F("text/plain"), F("The access point configuration is invalid."));
 		return;
 	}
 
 	if ((config.wifiSsid != "" && !validateWiFiSsid(config.wifiSsid)) || (config.wifiPassword != "" && !validateWiFiPassword(config.wifiPassword)))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The WiFi configuration is invalid."));
-		request->send(400, F("text/plain"), (String)F("The WiFi configuration is invalid."));
+		webServer->send(400, F("text/plain"), F("The WiFi configuration is invalid."));
 		return;
 	}
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("WiFi configuration is valid. Saving WiFi configuration."));
-	configuration->setWiFiConfig(config);
-	if (configuration->save())
+	TesLight::WiFiConfigurationEndpoint::configuration->setWiFiConfig(config);
+	if (TesLight::WiFiConfigurationEndpoint::configuration->save())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("WiFi configuration saved. Executing callback function."));
-		if (configChangedCallback)
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("WiFi configuration saved."));
+		if (TesLight::WiFiConfigurationEndpoint::configChangedCallback)
 		{
-			configChangedCallback();
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calling callback function."));
+			if (!TesLight::WiFiConfigurationEndpoint::configChangedCallback())
+			{
+				TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The callback function returned with an error."));
+				webServer->send(500, F("text/plain"), F("Failed to call the callback function."));
+				return;
+			}
 		}
 	}
 	else
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save WiFi configuration."));
-		request->send(500, F("text/plain"), (String)F("Failed to save WiFi configuration."));
+		webServer->send(500, F("text/plain"), F("Failed to save WiFi configuration."));
 		return;
 	}
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("WiFi configuration saved. Sending the response."));
-	request->send(202);
+	webServer->send(200);
 }
 
 /**
