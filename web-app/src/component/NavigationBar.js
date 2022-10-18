@@ -36,6 +36,9 @@ class NavigationBar extends React.Component {
 			case 2:
 				this.state.setPage(3, {});
 				break;
+			case 3:
+				this.state.setPage(4, {});
+				break;
 		}
 	};
 
@@ -70,6 +73,14 @@ class NavigationBar extends React.Component {
 						}}
 					>
 						<img src={process.env.PUBLIC_URL + "/img/button/log.svg"} />
+					</li>
+					<li
+						className={this.state.selectedIndex === 3 ? "active" : ""}
+						onClick={() => {
+							this.setSelectedIndex(3);
+						}}
+					>
+						<img src={process.env.PUBLIC_URL + "/img/button/update.svg"} />
 					</li>
 				</ul>
 			</nav>

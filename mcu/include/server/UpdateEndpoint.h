@@ -1,13 +1,13 @@
 /**
- * @file FseqEndpoint.h
+ * @file UpdateEndpoint.h
  * @author TheRealKasumi
- * @brief Contains a REST endpoint to manage fseq files on the TesLight controller.
+ * @brief Contains a REST endpoint to load update packages to the TesLight controller.
  *
  * @copyright Copyright (c) 2022
  *
  */
-#ifndef FSEQ_ENDPOINT_H
-#define FSEQ_ENDPOINT_H
+#ifndef UPDATE_ENDPOINT_H
+#define UPDATE_ENDPOINT_H
 
 #include <FS.h>
 
@@ -15,24 +15,23 @@
 #include "server/RestEndpoint.h"
 #include "logging/Logger.h"
 #include "util/FileUtil.h"
+#include "update/Updater.h"
 
 namespace TesLight
 {
-	class FseqEndpoint : public RestEndpoint
+	class UpdateEndpoint : public RestEndpoint
 	{
 	public:
 		static void begin(FS *_fileSystem);
 
 	private:
-		FseqEndpoint();
+		UpdateEndpoint();
 
 		static FS *fileSystem;
 		static File uploadFile;
 
-		static void getFseqList();
-		static void postFseq();
-		static void fseqUpload();
-		static void deleteFseq();
+		static void postPackage();
+		static void packageUpload();
 	};
 }
 

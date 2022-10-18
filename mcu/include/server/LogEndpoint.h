@@ -28,9 +28,9 @@ namespace TesLight
 
 		static FS *fileSystem;
 
-		static void getLogSize(AsyncWebServerRequest *request);
-		static void getLog(AsyncWebServerRequest *request);
-		static void clearLog(AsyncWebServerRequest *request);
+		static void getLogSize();
+		static void getLog();
+		static void clearLog();
 	};
 }
 

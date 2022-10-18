@@ -22,16 +22,16 @@ namespace TesLight
 	class LedConfigurationEndpoint : public RestEndpoint
 	{
 	public:
-		static void begin(TesLight::Configuration *_configuration, std::function<void()> _configChangedCallback);
+		static void begin(TesLight::Configuration *_configuration, std::function<bool()> _configChangedCallback);
 
 	private:
 		LedConfigurationEndpoint();
 
 		static TesLight::Configuration *configuration;
-		static std::function<void()> configChangedCallback;
+		static std::function<bool()> configChangedCallback;
 
-		static void getLedConfig(AsyncWebServerRequest *request);
-		static void postLedConfig(AsyncWebServerRequest *request);
+		static void getLedConfig();
+		static void postLedConfig();
 
 		static bool validateLedPin(const int ledPin);
 		static bool validateLedCount(const int ledCount);

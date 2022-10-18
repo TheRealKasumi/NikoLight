@@ -80,7 +80,7 @@ class LogService {
 			const url = this.url.concat("log");
 
 			const options = {
-				method: "PATCH",
+				method: "DELETE",
 				headers: {
 					Accept: "text/plain",
 				},

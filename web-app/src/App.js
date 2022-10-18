@@ -3,11 +3,13 @@ import ZonePage from "./page/ZonePage";
 import AnimatorPage from "./page/AnimatorPage";
 import SettingsPage from "./page/SettingsPage";
 import LogPage from "./page/LogPage";
+import UpdatePage from "./page/UpdatePage";
 import NavigationBar from "./component/NavigationBar";
 import SystemService from "./service/SystemService";
 import LedService from "./service/LedService";
 import WifiService from "./service/WifiService";
 import LogService from "./service/LogService";
+import UpdateService from "./service/UpdateService";
 import "./App.css";
 
 /**
@@ -29,6 +31,7 @@ class App extends React.Component {
 			ledService: new LedService("/api/"),
 			wifiService: new WifiService("/api/"),
 			logService: new LogService("/api/"),
+			updateService: new UpdateService("/api/"),
 			systemConfiguration: null,
 			ledConfiguration: null,
 			wifiConfiguration: null,
@@ -176,6 +179,7 @@ class App extends React.Component {
 						/>
 					) : null}
 					{this.state.page.id === 3 ? <LogPage logService={this.state.logService} /> : null}
+					{this.state.page.id === 4 ? <UpdatePage updateService={this.state.updateService} /> : null}
 				</div>
 				<NavigationBar selectedIndex={0} setPage={this.setPage} />
 			</div>

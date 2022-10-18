@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 32 32" style="enable-background:new 0 0 32 32;" xml:space="preserve">
+	<g>
+		<g id="loop_x5F_alt1">
+			<g>
+				<path style="fill:rgba(50, 10, 40, 1);" d="M26,16l-6,6h4c0,1.102-0.898,2-2,2H10c-1.102,0-2-0.898-2-2v-2H4v2c0,3.309,2.691,6,6,6h12
+				c3.309,0,6-2.691,6-6h4L26,16z" />
+				<path style="fill:rgba(50, 10, 40, 1);" d="M22,4H10c-3.309,0-6,2.691-6,6v0.062H0L6,16l6-5.938H8V10c0-1.102,0.898-2,2-2h12
+				c1.102,0,2,0.898,2,2v2h4v-2C28,6.691,25.309,4,22,4z" />
+			</g>
+		</g>
+	</g>
+</svg>
