@@ -141,6 +141,16 @@ class AnimatorPage extends React.Component {
 	};
 
 	/**
+	 * Set the LED count for the currently selected zone.
+	 * @param {string} value
+	 */
+	setLedCount = (value) => {
+		const state = this.state;
+		state.ledConfigurationCopy.setLedCount(value);
+		this.setState(state);
+	};
+
+	/**
 	 * Apply the settings and send them to the TesLight controller.
 	 */
 	applySettings = () => {
@@ -181,96 +191,127 @@ class AnimatorPage extends React.Component {
 				<h2>Select Animation</h2>
 				<div className="spacer"></div>
 
-				<DropDown
-					title="Animation"
-					value={this.state.ledConfigurationCopy.getType()}
-					options={[
-						{ value: "0", name: "Rainbow" },
-						{ value: "1", name: "Rainbow Linear" },
-						{ value: "2", name: "Rainbow Centered" },
-						{ value: "3", name: "Gradient" },
-						{ value: "4", name: "Static" },
-					]}
-					onChange={this.setAnimatorType}
-				/>
-				<div className="spacer"></div>
+				<details className="details" open>
+					<summary className="summary">Basic</summary>
+					<div className="spacer"></div>
 
-				<Slider
-					title="Brightness"
-					min={0}
-					max={255}
-					value={this.state.ledConfigurationCopy.getBrightness()}
-					step={5}
-					icon={process.env.PUBLIC_URL + "/img/icon/brightness.svg"}
-					onChange={this.setAnimatorBrightness}
-				/>
-				<div className="spacer"></div>
+					<DropDown
+						title="Animation"
+						value={this.state.ledConfigurationCopy.getType()}
+						options={[
+							{ value: "0", name: "Rainbow" },
+							{ value: "1", name: "Rainbow Linear" },
+							{ value: "2", name: "Rainbow Centered" },
+							{ value: "3", name: "Gradient" },
+							{ value: "4", name: "Static" },
+						]}
+						onChange={this.setAnimatorType}
+					/>
+					<div className="spacer"></div>
 
-				{this.state.ledConfigurationCopy.getType() <= 2 ? (
 					<Slider
-						title="Speed"
+						title="Brightness"
 						min={0}
 						max={255}
-						value={this.state.ledConfigurationCopy.getSpeed()}
+						value={this.state.ledConfigurationCopy.getBrightness()}
 						step={5}
-						icon={process.env.PUBLIC_URL + "/img/icon/speed.svg"}
-						onChange={this.setAnimationSpeed}
+						icon={process.env.PUBLIC_URL + "/img/icon/brightness.svg"}
+						onChange={this.setAnimatorBrightness}
 					/>
-				) : null}
-				<div className="spacer"></div>
+					<div className="spacer"></div>
 
-				{this.state.ledConfigurationCopy.getType() <= 2 ? (
-					<>
+					{this.state.ledConfigurationCopy.getType() <= 2 ? (
 						<Slider
-							title="Offset"
+							title="Speed"
 							min={0}
 							max={255}
-							value={this.state.ledConfigurationCopy.getOffset()}
+							value={this.state.ledConfigurationCopy.getSpeed()}
 							step={5}
-							icon={process.env.PUBLIC_URL + "/img/icon/offset.svg"}
-							onChange={this.setAnimationOffset}
+							icon={process.env.PUBLIC_URL + "/img/icon/speed.svg"}
+							onChange={this.setAnimationSpeed}
 						/>
-						<div className="spacer"></div>
-					</>
-				) : null}
+					) : null}
+					<div className="spacer"></div>
 
-				{this.state.ledConfigurationCopy.getType() === 3 || this.state.ledConfigurationCopy.getType() === 4 ? (
-					<>
-						<ColorPicker title="Color 1" value={this.getAnimationColor1()} onChange={this.setAnimationColor1} />
-						<div className="spacer"></div>
-					</>
-				) : null}
+					{this.state.ledConfigurationCopy.getType() <= 2 ? (
+						<>
+							<Slider
+								title="Offset"
+								min={0}
+								max={255}
+								value={this.state.ledConfigurationCopy.getOffset()}
+								step={5}
+								icon={process.env.PUBLIC_URL + "/img/icon/offset.svg"}
+								onChange={this.setAnimationOffset}
+							/>
+							<div className="spacer"></div>
+						</>
+					) : null}
 
-				{this.state.ledConfigurationCopy.getType() === 3 ? (
-					<>
-						<ColorPicker title="Color 2" value={this.getAnimationColor2()} onChange={this.setAnimationColor2} />
-						<div className="spacer"></div>
-					</>
-				) : null}
+					{this.state.ledConfigurationCopy.getType() === 3 || this.state.ledConfigurationCopy.getType() === 4 ? (
+						<>
+							<ColorPicker
+								title="Color 1"
+								value={this.getAnimationColor1()}
+								onChange={this.setAnimationColor1}
+							/>
+							<div className="spacer"></div>
+						</>
+					) : null}
 
-				<Slider
-					title="Fading"
-					min={0}
-					max={255}
-					value={this.state.ledConfigurationCopy.getFadeSpeed()}
-					step={5}
-					icon={process.env.PUBLIC_URL + "/img/icon/fading.svg"}
-					onChange={this.setAnimationFadingSpeed}
-				/>
+					{this.state.ledConfigurationCopy.getType() === 3 ? (
+						<>
+							<ColorPicker
+								title="Color 2"
+								value={this.getAnimationColor2()}
+								onChange={this.setAnimationColor2}
+							/>
+							<div className="spacer"></div>
+						</>
+					) : null}
+
+					<Slider
+						title="Fading"
+						min={0}
+						max={255}
+						value={this.state.ledConfigurationCopy.getFadeSpeed()}
+						step={5}
+						icon={process.env.PUBLIC_URL + "/img/icon/fading.svg"}
+						onChange={this.setAnimationFadingSpeed}
+					/>
+					<div className="spacer"></div>
+
+					{this.state.ledConfigurationCopy.getType() <= 3 ? (
+						<>
+							<ToggleSwitch
+								title="Reverse"
+								leftText="Normal"
+								rightText="Reverse"
+								value={this.state.ledConfigurationCopy.getReverse()}
+								onChange={this.setAnimationReverse}
+							/>
+							<div className="spacer"></div>
+						</>
+					) : null}
+				</details>
+
 				<div className="spacer"></div>
 
-				{this.state.ledConfigurationCopy.getType() <= 3 ? (
-					<>
-						<ToggleSwitch
-							title="Reverse"
-							leftText="Normal"
-							rightText="Reverse"
-							value={this.state.ledConfigurationCopy.getReverse()}
-							onChange={this.setAnimationReverse}
-						/>
-						<div className="spacer"></div>
-					</>
-				) : null}
+				<details className="details">
+					<summary>Advanced</summary>
+					<div className="spacer"></div>
+
+					<Slider
+						title="LED Count"
+						min={1}
+						max={200}
+						value={this.state.ledConfigurationCopy.getLedCount()}
+						step={1}
+						icon={process.env.PUBLIC_URL + "/img/icon/count.svg"}
+						onChange={this.setLedCount}
+					/>
+				</details>
+				<div className="spacer"></div>
 
 				<Button title="Apply" onClick={this.applySettings} />
 				<div className="spacer"></div>

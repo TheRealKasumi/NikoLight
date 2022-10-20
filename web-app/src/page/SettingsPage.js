@@ -183,134 +183,145 @@ class SettingsPage extends React.Component {
 	render() {
 		return (
 			<div className="wrapper active">
-				<h2>Light Sensor</h2>
+				<h2>System Settings</h2>
 				<div className="spacer"></div>
 
-				<DropDown
-					key={`settings-page-input-key-${this.state.inputKey}`}
-					title="Mode"
-					value={this.state.systemConfigurationCopy.getLightSensorMode()}
-					options={[
-						{ value: "0", name: "Always Off" },
-						{ value: "1", name: "Always On" },
-						{ value: "2", name: "Automatic On/Off" },
-						{ value: "3", name: "Automatic Brightness" },
-					]}
-					onChange={this.setLightSensorMode}
-				/>
+				<details className="details">
+					<summary>Light Sensor</summary>
+					<div className="spacer"></div>
+
+					<DropDown
+						key={`settings-page-input-key-${this.state.inputKey}`}
+						title="Mode"
+						value={this.state.systemConfigurationCopy.getLightSensorMode()}
+						options={[
+							{ value: "0", name: "Always Off" },
+							{ value: "1", name: "Always On" },
+							{ value: "2", name: "Automatic On/Off" },
+							{ value: "3", name: "Automatic Brightness" },
+						]}
+						onChange={this.setLightSensorMode}
+					/>
+					<div className="spacer"></div>
+
+					<Slider
+						key={`settings-page-input-key-${this.state.inputKey + 1}`}
+						title="Threshold"
+						min={1}
+						max={4095}
+						value={this.state.systemConfigurationCopy.getLightSensorThreshold()}
+						step={10}
+						icon={process.env.PUBLIC_URL + "/img/icon/sensor.svg"}
+						onChange={this.setLightSensorThreshold}
+					/>
+					<div className="spacer"></div>
+
+					<Slider
+						key={`settings-page-input-key-${this.state.inputKey + 2}`}
+						title="Minimum Brightness"
+						min={1}
+						max={4095}
+						value={this.state.systemConfigurationCopy.getLightSensorMinValue()}
+						step={10}
+						icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
+						onChange={this.setLightSensorMinValue}
+					/>
+					<div className="spacer"></div>
+
+					<Slider
+						key={`settings-page-input-key-${this.state.inputKey + 3}`}
+						title="Maximum Brightness"
+						min={1}
+						max={4095}
+						value={this.state.systemConfigurationCopy.getLightSensorMaxValue()}
+						step={10}
+						icon={process.env.PUBLIC_URL + "/img/icon/brightness-max.svg"}
+						onChange={this.setLightSensorMaxValue}
+					/>
+				</details>
 				<div className="spacer"></div>
 
-				<Slider
-					key={`settings-page-input-key-${this.state.inputKey + 1}`}
-					title="Threshold"
-					min={1}
-					max={4095}
-					value={this.state.systemConfigurationCopy.getLightSensorThreshold()}
-					step={10}
-					icon={process.env.PUBLIC_URL + "/img/icon/sensor.svg"}
-					onChange={this.setLightSensorThreshold}
-				/>
+				<details className="details">
+					<summary>WiFi Hotspot</summary>
+					<div className="spacer"></div>
+
+					<TextInput
+						key={`settings-page-input-key-${this.state.inputKey + 4}`}
+						title="SSID"
+						value={this.state.wifiConfigurationCopy.getAccessPointSsid()}
+						icon={process.env.PUBLIC_URL + "/img/icon/wifi.svg"}
+						onChange={this.setAccessPointSsid}
+					/>
+					<div className="spacer"></div>
+
+					<TextInput
+						key={`settings-page-input-key-${this.state.inputKey + 5}`}
+						title="Password"
+						value={this.state.wifiConfigurationCopy.getAccessPointPassword()}
+						icon={process.env.PUBLIC_URL + "/img/icon/lock.svg"}
+						onChange={this.setAccessPointPassword}
+					/>
+				</details>
 				<div className="spacer"></div>
 
-				<Slider
-					key={`settings-page-input-key-${this.state.inputKey + 2}`}
-					title="Minimum Brightness"
-					min={1}
-					max={4095}
-					value={this.state.systemConfigurationCopy.getLightSensorMinValue()}
-					step={10}
-					icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
-					onChange={this.setLightSensorMinValue}
-				/>
+				<details className="details">
+					<summary>Power Limit</summary>
+					<div className="spacer"></div>
+
+					<Slider
+						key={`settings-page-input-key-${this.state.inputKey + 6}`}
+						title="Power Limit (W)"
+						min={1}
+						max={100}
+						value={this.state.systemConfigurationCopy.getSystemPowerLimit()}
+						step={1}
+						icon={process.env.PUBLIC_URL + "/img/icon/power.svg"}
+						onChange={this.setSystemPowerLimit}
+					/>
+					<div className="spacer"></div>
+
+					<VoltageSlider
+						key={`settings-page-input-key-${this.state.inputKey + 7}`}
+						title="LED Voltage"
+						min={40}
+						max={55}
+						value={this.state.systemConfigurationCopy.getLedVoltage()}
+						step={1}
+						icon={process.env.PUBLIC_URL + "/img/icon/voltage.svg"}
+						onChange={this.setLedVoltage}
+					/>
+					<div className="spacer"></div>
+
+					<Slider
+						key={`settings-page-input-key-${this.state.inputKey + 8}`}
+						title="LED Current Per Channel (mA)"
+						min={1}
+						max={200}
+						value={this.state.systemConfigurationCopy.getLedChannelCurrent()[0]}
+						step={1}
+						icon={process.env.PUBLIC_URL + "/img/icon/voltage.svg"}
+						onChange={this.setLedChannelCurrent}
+					/>
+				</details>
 				<div className="spacer"></div>
 
-				<Slider
-					key={`settings-page-input-key-${this.state.inputKey + 3}`}
-					title="Maximum Brightness"
-					min={1}
-					max={4095}
-					value={this.state.systemConfigurationCopy.getLightSensorMaxValue()}
-					step={10}
-					icon={process.env.PUBLIC_URL + "/img/icon/brightness-max.svg"}
-					onChange={this.setLightSensorMaxValue}
-				/>
-				<div className="spacer2"></div>
+				<details className="details">
+					<summary>Logging and Debugging</summary>
+					<div className="spacer"></div>
 
-				<h2>WiFi Hotspot</h2>
-				<div className="spacer"></div>
-
-				<TextInput
-					key={`settings-page-input-key-${this.state.inputKey + 4}`}
-					title="SSID"
-					value={this.state.wifiConfigurationCopy.getAccessPointSsid()}
-					icon={process.env.PUBLIC_URL + "/img/icon/wifi.svg"}
-					onChange={this.setAccessPointSsid}
-				/>
-				<div className="spacer"></div>
-
-				<TextInput
-					key={`settings-page-input-key-${this.state.inputKey + 5}`}
-					title="Password"
-					value={this.state.wifiConfigurationCopy.getAccessPointPassword()}
-					icon={process.env.PUBLIC_URL + "/img/icon/lock.svg"}
-					onChange={this.setAccessPointPassword}
-				/>
-				<div className="spacer2"></div>
-
-				<h2>Power Limit</h2>
-				<div className="spacer"></div>
-
-				<Slider
-					key={`settings-page-input-key-${this.state.inputKey + 6}`}
-					title="Power Limit (W)"
-					min={1}
-					max={100}
-					value={this.state.systemConfigurationCopy.getSystemPowerLimit()}
-					step={1}
-					icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
-					onChange={this.setSystemPowerLimit}
-				/>
-				<div className="spacer"></div>
-
-				<VoltageSlider
-					key={`settings-page-input-key-${this.state.inputKey + 7}`}
-					title="LED Voltage"
-					min={40}
-					max={55}
-					value={this.state.systemConfigurationCopy.getLedVoltage()}
-					step={1}
-					icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
-					onChange={this.setLedVoltage}
-				/>
-				<div className="spacer"></div>
-
-				<Slider
-					key={`settings-page-input-key-${this.state.inputKey + 8}`}
-					title="LED Current Per Channel (mA)"
-					min={1}
-					max={200}
-					value={this.state.systemConfigurationCopy.getLedChannelCurrent()[0]}
-					step={1}
-					icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
-					onChange={this.setLedChannelCurrent}
-				/>
-				<div className="spacer2"></div>
-
-				<h2>Logging and Debugging</h2>
-				<div className="spacer"></div>
-
-				<DropDown
-					key={`settings-page-input-key-${this.state.inputKey + 9}`}
-					title="Log Level"
-					value={this.state.systemConfigurationCopy.getLogLevel()}
-					options={[
-						{ value: "0", name: "Debug" },
-						{ value: "1", name: "Info" },
-						{ value: "2", name: "Warning" },
-						{ value: "3", name: "Error" },
-					]}
-					onChange={this.setLogLevel}
-				/>
+					<DropDown
+						key={`settings-page-input-key-${this.state.inputKey + 9}`}
+						title="Log Level"
+						value={this.state.systemConfigurationCopy.getLogLevel()}
+						options={[
+							{ value: "0", name: "Debug" },
+							{ value: "1", name: "Info" },
+							{ value: "2", name: "Warning" },
+							{ value: "3", name: "Error" },
+						]}
+						onChange={this.setLogLevel}
+					/>
+				</details>
 				<div className="spacer"></div>
 
 				<Button title="Apply" onClick={this.applySettings} />

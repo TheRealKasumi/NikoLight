@@ -115,7 +115,7 @@ void TesLight::Configuration::loadDefaults()
 
 	// LED config
 	const uint8_t ledPins[NUM_LED_STRIPS] = {13, 14, 15, 16, 17, 21};
-	const uint8_t ledCounts[NUM_LED_STRIPS] = {70, 2, 4, 4, 4, 4};
+	const uint8_t ledCounts[NUM_LED_STRIPS] = {72, 2, 4, 4, 4, 4};
 	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
 	{
 		this->ledConfig[i].ledPin = ledPins[i];
