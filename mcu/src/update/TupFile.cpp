@@ -222,7 +222,7 @@ bool TesLight::TupFile::loadTupHeader()
 	this->file.read((uint8_t *)&this->tupHeader.numberBlocks, 4);
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking magic."));
-	if (this->tupHeader.magic[0] != 'T' || this->tupHeader.magic[0] != 'L' || this->tupHeader.magic[0] != 'U' || this->tupHeader.magic[0] != 'P')
+	if (this->tupHeader.magic[0] != 'T' || this->tupHeader.magic[1] != 'L' || this->tupHeader.magic[2] != 'U' || this->tupHeader.magic[3] != 'P')
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to load TUP header. Magic numbers are invalid."));
 		return false;

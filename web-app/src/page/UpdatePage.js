@@ -64,7 +64,7 @@ class UpdatePage extends React.Component {
 						Here a system update can be installed to the TesLight controller. This includes the firmware of the
 						mcu as well as the user interface. To install a system update, you first need to download a so called
 						"TesLight Update Package". These files have the extension ".tup" and can be found in the release
-						section on my Github page:
+						section on my GitHub page:
 						<br />
 						<br />
 						https://github.com/TheRealKasumi/TesLight
@@ -78,7 +78,7 @@ class UpdatePage extends React.Component {
 						<br />
 						But here is also a word of warning. Uploading broken update packages could make the controller
 						unreachable. Then a wired connection to reinstall the firmware is required. So it is recommended to
-						only upload stable and tested update packages from the Github page.
+						only upload stable and tested update packages from the GitHub page.
 					</p>
 				</div>
 				<div className="spacer2"></div>
