@@ -53,7 +53,7 @@ More about that later in the build guide.
 | Front Doors    | 4     | 265cm + 8cm + 75cm + 90cm | 3, 4             |
 | Rear Doors     | 4     | 405cm + 8cm + 75cm + 75cm | 5, 6             |
 
-So for this build we need between 44 and 82 LEDs plus ~20m cable with 3 wires.
+So for this build we need between 44 and 90 LEDs plus ~20m cable with 3 wires.
 Also 15m of fibre cable was used around the doors and centre console.
 Make sure to measure the required length carefully for the build.
 
@@ -70,12 +70,12 @@ To calculate the total power draw, the following formula can be used:
 
 `power = led_count * 0.036 * 5`
 
-From the example configuration above we assume a total number of LEDs ranging from 44 and 82.
+From the example configuration above we assume a total number of LEDs ranging from 44 and 90.
 
 If the minimum number of LEDs were used this would result in a current draw of around 1.58A or a total power of 7.92W.
 The onboard regulator is perfectly suitable for this kind of load.
 
-Assuming the second case with 82 LEDs, we expect a current draw of up to 2.95A or a total power of 14.76W.
+Assuming the second case with 90 LEDs, we expect a current draw of up to 3.24A or a total power of 16.2W.
 This comes close to the limit of the onboard regulator.
 In practice, these loads are only reached when the LEDs are set to full brightness with constant white color.
 If you are plan to use the LEDs at max current draw, you should consider to use an external regulator with a higher power limit.
