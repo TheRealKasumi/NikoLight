@@ -52,10 +52,6 @@ void TesLight::FseqEndpoint::getFseqList()
 void TesLight::FseqEndpoint::postFseq()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Upload of fseq file completed."));
-	if (TesLight::FseqEndpoint::uploadFile)
-	{
-		TesLight::FseqEndpoint::uploadFile.close();
-	}
 	webServer->send(200, F("text/plain"), F("File upload successful."));
 }
 
@@ -64,7 +60,8 @@ void TesLight::FseqEndpoint::postFseq()
  */
 void TesLight::FseqEndpoint::fseqUpload()
 {
-	if (!TesLight::FseqEndpoint::uploadFile)
+	HTTPUpload &upload = webServer->upload();
+	if (upload.status == UPLOAD_FILE_START)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to upload a new fseq file."));
 		const String fileName = webServer->arg(F("fileName"));
@@ -83,12 +80,26 @@ void TesLight::FseqEndpoint::fseqUpload()
 			return;
 		}
 	}
-
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Writing chunk of data."));
-	HTTPUpload &upload = webServer->upload();
-	if (TesLight::FseqEndpoint::uploadFile.write(upload.buf, upload.currentSize) != upload.currentSize)
+	else if (upload.status == UPLOAD_FILE_WRITE)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to write chunk to file. Not all bytes were written."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Writing chunk of data."));
+		if (TesLight::FseqEndpoint::uploadFile.write(upload.buf, upload.currentSize) != upload.currentSize)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to write chunk to file. Not all bytes were written."));
+			webServer->send(500, F("text/plain"), F("Failed to write chunk to file. Not all bytes were written."));
+			return;
+		}
+	}
+	else if (upload.status == UPLOAD_FILE_END)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Received end of upload."));
+		TesLight::FseqEndpoint::uploadFile.close();
+	}
+	else if (upload.status == UPLOAD_FILE_ABORTED)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Upload was aborted."));
+		TesLight::FseqEndpoint::uploadFile.close();
+		webServer->send(400, F("text/plain"), F("Upload was aborted by the client."));
 	}
 }
 
