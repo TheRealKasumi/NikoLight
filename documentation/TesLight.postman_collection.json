@@ -17,8 +17,13 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/connection_test",
 							"protocol": "http",
-							"host": ["{{TESLIGHTIP}}"],
-							"path": ["api", "connection_test"]
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"connection_test"
+							]
 						}
 					},
 					"response": []
@@ -36,8 +41,14 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/config/system",
 							"protocol": "http",
-							"host": ["{{TESLIGHTIP}}"],
-							"path": ["api", "config", "system"]
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"system"
+							]
 						}
 					},
 					"response": []
@@ -55,7 +66,7 @@
 							"urlencoded": [
 								{
 									"key": "data",
-									"value": "AQEeAB4AAAgKMgwMDA==",
+									"value": "AQEeAB4AAAgK",
 									"type": "text"
 								}
 							]
@@ -63,8 +74,14 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/config/system",
 							"protocol": "http",
-							"host": ["{{TESLIGHTIP}}"],
-							"path": ["api", "config", "system"]
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"system"
+							]
 						}
 					},
 					"response": []
@@ -82,8 +99,14 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/config/led",
 							"protocol": "http",
-							"host": ["{{TESLIGHTIP}}"],
-							"path": ["api", "config", "led"]
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"led"
+							]
 						}
 					},
 					"response": []
@@ -101,7 +124,7 @@
 							"urlencoded": [
 								{
 									"key": "data",
-									"value": "DUYAADIKADIABQAAAAAAAAAAAAAOAgAAMgoAMgAFAAAAAAAAAAAAAA8EAAAyCgAyAAUAAAAAAAAAAAAAEAQAADIKADIABQAAAAAAAAAAAAARBAAAMgoAMgAFAAAAAAAAAAAAABUEAAAyCgAyAAUAAAAAAAAAAAAA",
+									"value": "DQIAADIKADIAHgAAAAAAAAAAAAAAAAAAADIMDAwRAgAAMgoAMgAeAAAAAAAAAAAAAAAAAAAAMgwMDA4CAAAyCgAyAB4AAAAAAAAAAAAAAAAAAAAyDAwMFQIAADIKADIAHgAAAAAAAAAAAAAAAAAAADIMDAwPAgAAMgoAMgAeAAAAAAAAAAAAAAAAAAAAMgwMDBYCAAAyCgAyAB4AAAAAAAAAAAAAAAAAAAAyDAwMEAIAADIKADIAHgAAAAAAAAAAAAAAAAAAADIMDAwZAgAAMgoAMgAeAAAAAAAAAAAAAAAAAAAAMgwMDA==",
 									"type": "text"
 								}
 							]
@@ -109,8 +132,14 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/config/led",
 							"protocol": "http",
-							"host": ["{{TESLIGHTIP}}"],
-							"path": ["api", "config", "led"]
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"led"
+							]
 						}
 					},
 					"response": []
@@ -128,8 +157,14 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/config/wifi",
 							"protocol": "http",
-							"host": ["{{TESLIGHTIP}}"],
-							"path": ["api", "config", "wifi"]
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"wifi"
+							]
 						}
 					},
 					"response": []
@@ -152,8 +187,14 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/config/wifi",
 							"protocol": "http",
-							"host": ["{{TESLIGHTIP}}"],
-							"path": ["api", "config", "wifi"]
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"wifi"
+							]
 						}
 					},
 					"response": []
@@ -171,8 +212,13 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/fseq",
 							"protocol": "http",
-							"host": ["{{TESLIGHTIP}}"],
-							"path": ["api", "fseq"]
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"fseq"
+							]
 						}
 					},
 					"response": []
@@ -187,16 +233,20 @@
 							"formdata": [
 								{
 									"key": "",
-									"type": "file",
-									"src": ""
+									"type": "file"
 								}
 							]
 						},
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/fseq?fileName=test.fseq",
 							"protocol": "http",
-							"host": ["{{TESLIGHTIP}}"],
-							"path": ["api", "fseq"],
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"fseq"
+							],
 							"query": [
 								{
 									"key": "fileName",
@@ -215,8 +265,13 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/fseq?fileName=test.fseq",
 							"protocol": "http",
-							"host": ["{{TESLIGHTIP}}"],
-							"path": ["api", "fseq"],
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"fseq"
+							],
 							"query": [
 								{
 									"key": "fileName",
@@ -240,8 +295,14 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/log/size",
 							"protocol": "http",
-							"host": ["{{TESLIGHTIP}}"],
-							"path": ["api", "log", "size"]
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"log",
+								"size"
+							]
 						}
 					},
 					"response": []
@@ -254,8 +315,13 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/log?start=0&count=197",
 							"protocol": "http",
-							"host": ["{{TESLIGHTIP}}"],
-							"path": ["api", "log"],
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"log"
+							],
 							"query": [
 								{
 									"key": "start",
@@ -263,7 +329,7 @@
 								},
 								{
 									"key": "count",
-									"value": "197"
+									"value": "128"
 								}
 							]
 						}
@@ -278,8 +344,13 @@
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/log",
 							"protocol": "http",
-							"host": ["{{TESLIGHTIP}}"],
-							"path": ["api", "log"]
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"log"
+							]
 						}
 					},
 					"response": []
@@ -299,16 +370,65 @@
 							"formdata": [
 								{
 									"key": "",
-									"type": "file",
-									"src": ""
+									"type": "file"
 								}
 							]
 						},
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/update",
 							"protocol": "http",
-							"host": ["{{TESLIGHTIP}}"],
-							"path": ["api", "update"]
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"update"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reset",
+			"item": [
+				{
+					"name": "Soft Reset",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/reset/soft",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"reset",
+								"soft"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hard Reset",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/reset/hard",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"reset",
+								"hard"
+							]
 						}
 					},
 					"response": []
@@ -321,14 +441,18 @@
 			"listen": "prerequest",
 			"script": {
 				"type": "text/javascript",
-				"exec": [""]
+				"exec": [
+					""
+				]
 			}
 		},
 		{
 			"listen": "test",
 			"script": {
 				"type": "text/javascript",
-				"exec": [""]
+				"exec": [
+					""
+				]
 			}
 		}
 	],
