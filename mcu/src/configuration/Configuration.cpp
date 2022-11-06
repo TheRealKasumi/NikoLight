@@ -19,7 +19,7 @@ TesLight::Configuration::Configuration(FS *fileSystem, const String fileName)
 
 	this->fileSystem = fileSystem;
 	this->fileName = fileName;
-	this->configurationVersion = 1;
+	this->configurationVersion = CONFIGURATION_FILE_VERSION;
 	this->loadDefaults();
 
 	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Configuration initialized."));
@@ -102,44 +102,44 @@ void TesLight::Configuration::loadDefaults()
 	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Loading default configuration."));
 
 	// System config
-	this->systemConfig.logLevel = TesLight::Logger::LogLevel::INFO;
-	this->systemConfig.lightSensorMode = TesLight::LightSensor::LightSensorMode::ALWAYS_ON;
-	this->systemConfig.lightSensorThreshold = 30;  // Analog value
-	this->systemConfig.lightSensorMinValue = 30;   // Analog value
-	this->systemConfig.lightSensorMaxValue = 2048; // Analog value
-	this->systemConfig.systemPowerLimit = 10;	   // W
-	this->systemConfig.ledVoltage = 50;			   // Voltage * 10
-	this->systemConfig.ledChannelCurrent[0] = 12;  // mA
-	this->systemConfig.ledChannelCurrent[1] = 12;  // mA
-	this->systemConfig.ledChannelCurrent[2] = 12;  // mA
+	this->systemConfig.logLevel = LOG_DEFAULT_LEVEL;
+	this->systemConfig.lightSensorMode = LIGHT_SENSOR_DEFAULT_MODE;
+	this->systemConfig.lightSensorThreshold = LIGHT_SENSOR_DEFAULT_THRESHOLD;
+	this->systemConfig.lightSensorMinValue = LIGHT_SENSOR_DEFAULT_MIN;
+	this->systemConfig.lightSensorMaxValue = LIGHT_SENSOR_DEFAULT_MAX;
+	this->systemConfig.systemPowerLimit = REGULATOR_POWER_LIMIT * REGULATOR_COUNT;
 
 	// LED config
-	const uint8_t ledPins[NUM_LED_STRIPS] = {13, 14, 15, 16, 17, 21};
-	const uint8_t ledCounts[NUM_LED_STRIPS] = {72, 2, 4, 4, 4, 4};
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	const uint8_t ledPins[LED_NUM_ZONES] = LED_OUTPUT_PINS;
+	const uint8_t ledCounts[LED_NUM_ZONES] = LED_COUNTS;
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		this->ledConfig[i].ledPin = ledPins[i];
 		this->ledConfig[i].ledCount = ledCounts[i];
-		this->ledConfig[i].type = 0;
-		this->ledConfig[i].speed = 50;
-		this->ledConfig[i].offset = 10;
-		this->ledConfig[i].brightness = 50;
-		this->ledConfig[i].reverse = false;
-		this->ledConfig[i].fadeSpeed = 5;
-		for (uint8_t j = 0; j < NUM_ANIMATOR_CUSTOM_FIELDS; j++)
+		this->ledConfig[i].type = ANIMATOR_DEFAULT_TYPE;
+		this->ledConfig[i].speed = ANIMATOR_DEFAULT_SPEED;
+		this->ledConfig[i].offset = ANIMATOR_DEFAULT_OFFSET;
+		this->ledConfig[i].brightness = ANIMATOR_DEFAULT_BRIGHTNESS;
+		this->ledConfig[i].reverse = ANIMATOR_DEFAULT_REVERSE;
+		this->ledConfig[i].fadeSpeed = ANIMATOR_DEFAULT_FADE_SPEED;
+		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
 		{
 			this->ledConfig[i].customField[j] = 0;
 		}
+		this->ledConfig[i].ledVoltage = REGULATOR_DEFAULT_VOLTAGE;
+		this->ledConfig[i].ledChannelCurrent[0] = LED_DEFAULT_CHANNEL_CURRENT;
+		this->ledConfig[i].ledChannelCurrent[1] = LED_DEFAULT_CHANNEL_CURRENT;
+		this->ledConfig[i].ledChannelCurrent[2] = LED_DEFAULT_CHANNEL_CURRENT;
 	}
 
 	// WiFi config
-	this->wifiConfig.accessPointSsid = F("TesLight");
-	this->wifiConfig.accessPointPassword = F("TesLightPW");
-	this->wifiConfig.accessPointChannel = 1;
-	this->wifiConfig.accessPointHidden = false;
-	this->wifiConfig.accessPointMaxConnections = 1;
-	this->wifiConfig.wifiSsid = F("");
-	this->wifiConfig.wifiPassword = F("");
+	this->wifiConfig.accessPointSsid = F(AP_DEFAULT_SSID);
+	this->wifiConfig.accessPointPassword = F(AP_DEDAULT_PASSWORD);
+	this->wifiConfig.accessPointChannel = AP_DEFAULT_CHANNEL;
+	this->wifiConfig.accessPointHidden = AP_DEFAULT_HIDDEN;
+	this->wifiConfig.accessPointMaxConnections = AP_DEFAULT_MAX_CONN;
+	this->wifiConfig.wifiSsid = F(WIFI_DEFAULT_SSID);
+	this->wifiConfig.wifiPassword = F(WIFI_DEFAULT_PASSWORD);
 }
 
 /**
@@ -178,13 +178,9 @@ bool TesLight::Configuration::load()
 	this->systemConfig.lightSensorMinValue = file.readWord();
 	this->systemConfig.lightSensorMaxValue = file.readWord();
 	this->systemConfig.systemPowerLimit = file.readByte();
-	this->systemConfig.ledVoltage = file.readByte();
-	this->systemConfig.ledChannelCurrent[0] = file.readByte();
-	this->systemConfig.ledChannelCurrent[1] = file.readByte();
-	this->systemConfig.ledChannelCurrent[2] = file.readByte();
 
 	// LED config
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		this->ledConfig[i].ledPin = file.readByte();
 		this->ledConfig[i].ledCount = file.readWord();
@@ -194,10 +190,14 @@ bool TesLight::Configuration::load()
 		this->ledConfig[i].brightness = file.readByte();
 		this->ledConfig[i].reverse = file.readByte();
 		this->ledConfig[i].fadeSpeed = file.readByte();
-		for (uint8_t j = 0; j < NUM_ANIMATOR_CUSTOM_FIELDS; j++)
+		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
 		{
 			this->ledConfig[i].customField[j] = file.readByte();
 		}
+		this->ledConfig[i].ledVoltage = file.readByte();
+		this->ledConfig[i].ledChannelCurrent[0] = file.readByte();
+		this->ledConfig[i].ledChannelCurrent[1] = file.readByte();
+		this->ledConfig[i].ledChannelCurrent[2] = file.readByte();
 	}
 
 	// WiFi config
@@ -251,13 +251,9 @@ bool TesLight::Configuration::save()
 	file.writeWord(this->systemConfig.lightSensorMinValue);
 	file.writeWord(this->systemConfig.lightSensorMaxValue);
 	file.writeByte(this->systemConfig.systemPowerLimit);
-	file.writeByte(this->systemConfig.ledVoltage);
-	file.writeByte(this->systemConfig.ledChannelCurrent[0]);
-	file.writeByte(this->systemConfig.ledChannelCurrent[1]);
-	file.writeByte(this->systemConfig.ledChannelCurrent[2]);
 
 	// LED configuration
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		file.writeByte(this->ledConfig[i].ledPin);
 		file.writeWord(this->ledConfig[i].ledCount);
@@ -267,10 +263,14 @@ bool TesLight::Configuration::save()
 		file.writeByte(this->ledConfig[i].brightness);
 		file.writeByte(this->ledConfig[i].reverse);
 		file.writeByte(this->ledConfig[i].fadeSpeed);
-		for (uint8_t j = 0; j < NUM_ANIMATOR_CUSTOM_FIELDS; j++)
+		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
 		{
 			file.writeByte(this->ledConfig[i].customField[j]);
 		}
+		file.writeByte(this->ledConfig[i].ledVoltage);
+		file.writeByte(this->ledConfig[i].ledChannelCurrent[0]);
+		file.writeByte(this->ledConfig[i].ledChannelCurrent[1]);
+		file.writeByte(this->ledConfig[i].ledChannelCurrent[2]);
 	}
 
 	// WiFi configuration
@@ -306,11 +306,7 @@ uint16_t TesLight::Configuration::getSimpleHash()
 	hash = hash * 31 + this->systemConfig.lightSensorMinValue;
 	hash = hash * 31 + this->systemConfig.lightSensorMaxValue;
 	hash = hash * 31 + this->systemConfig.systemPowerLimit;
-	hash = hash * 31 + this->systemConfig.ledVoltage;
-	hash = hash * 31 + this->systemConfig.ledChannelCurrent[0];
-	hash = hash * 31 + this->systemConfig.ledChannelCurrent[1];
-	hash = hash * 31 + this->systemConfig.ledChannelCurrent[2];
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		hash = hash * 31 + this->ledConfig[i].ledPin;
 		hash = hash * 31 + this->ledConfig[i].ledCount;
@@ -320,10 +316,14 @@ uint16_t TesLight::Configuration::getSimpleHash()
 		hash = hash * 31 + this->ledConfig[i].brightness;
 		hash = hash * 31 + this->ledConfig[i].reverse;
 		hash = hash * 31 + this->ledConfig[i].fadeSpeed;
-		for (uint8_t j = 0; j < NUM_ANIMATOR_CUSTOM_FIELDS; j++)
+		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
 		{
 			hash = hash * 31 + this->ledConfig[i].customField[j];
 		}
+		hash = hash * 31 + this->ledConfig[i].ledVoltage;
+		hash = hash * 31 + this->ledConfig[i].ledChannelCurrent[0];
+		hash = hash * 31 + this->ledConfig[i].ledChannelCurrent[1];
+		hash = hash * 31 + this->ledConfig[i].ledChannelCurrent[2];
 	}
 	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.accessPointSsid);
 	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.accessPointPassword);

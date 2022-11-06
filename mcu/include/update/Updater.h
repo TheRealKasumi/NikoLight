@@ -22,7 +22,7 @@ namespace TesLight
 	{
 	public:
 		static bool install(FS *fileSystem, const String packageFileName);
-		static void reboot();
+		static void reboot(const String reason);
 
 	private:
 		Updater();

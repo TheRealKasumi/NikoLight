@@ -17,19 +17,25 @@ namespace TesLight
 	class GradientAnimator : public LedAnimator
 	{
 	public:
+		enum GradientMode
+		{
+			GRADIENT_LINEAR,
+			GRADIENT_CENTER
+		};
+
 		GradientAnimator();
-		GradientAnimator(const uint8_t red1, const uint8_t green1, const uint8_t blue1, const uint8_t red2, const uint8_t green2, const uint8_t blue2);
+		GradientAnimator(const TesLight::GradientAnimator::GradientMode gradientMode, const CRGB color1, const CRGB color2);
 		~GradientAnimator();
 
 		void init();
 		void render();
 
-		void setColor(const uint8_t red1, const uint8_t green1, const uint8_t blue1, const uint8_t red2, const uint8_t green2, const uint8_t blue2);
+		void setGradientMode(const TesLight::GradientAnimator::GradientMode gradientMode);
+		void setColor(const CRGB color1, const CRGB color2);
 
 	private:
-		uint8_t red[2];
-		uint8_t green[2];
-		uint8_t blue[2];
+		TesLight::GradientAnimator::GradientMode gradientMode;
+		CRGB color[2];
 	};
 }
 

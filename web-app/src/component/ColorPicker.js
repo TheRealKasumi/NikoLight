@@ -13,6 +13,7 @@ class ColorPicker extends React.Component {
 		this.state = {
 			title: props.title,
 			value: props.value,
+			icon: props.icon,
 			onChange: props.onChange,
 		};
 	}

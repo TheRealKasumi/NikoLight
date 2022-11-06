@@ -30,8 +30,8 @@ void TesLight::LedConfigurationEndpoint::begin(TesLight::Configuration *_configu
 void TesLight::LedConfigurationEndpoint::getLedConfig()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the LED configuration."));
-	TesLight::InMemoryBinaryFile binary(120);
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	TesLight::InMemoryBinaryFile binary(232);
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledPin);
 		binary.writeWord(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledCount);
@@ -41,10 +41,14 @@ void TesLight::LedConfigurationEndpoint::getLedConfig()
 		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).brightness);
 		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).reverse);
 		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).fadeSpeed);
-		for (uint8_t j = 0; j < NUM_ANIMATOR_CUSTOM_FIELDS; j++)
+		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
 		{
 			binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).customField[j]);
 		}
+		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledVoltage);
+		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledChannelCurrent[0]);
+		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledChannelCurrent[1]);
+		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledChannelCurrent[2]);
 	}
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Preparing base64 response."));
@@ -89,11 +93,11 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Request decoded."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking length of the decoded data."));
-	if (length != 120)
+	if (length != 232)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Length of decoded data is invalid."));
 		delete[] decoded;
-		webServer->send(400, F("text/plain"), F("The length of the decoded data must be exactly 120 bytes."));
+		webServer->send(400, F("text/plain"), F("The length of the decoded data must be exactly 232 bytes."));
 		return;
 	}
 
@@ -103,8 +107,8 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
 	delete[] decoded;
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Parsing new LED configuration."));
-	TesLight::Configuration::LedConfig config[6];
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	TesLight::Configuration::LedConfig config[LED_NUM_ZONES];
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		config[i].ledPin = binary.readByte();
 		config[i].ledCount = binary.readWord();
@@ -114,10 +118,14 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
 		config[i].brightness = binary.readByte();
 		config[i].reverse = binary.readByte();
 		config[i].fadeSpeed = binary.readByte();
-		for (uint8_t j = 0; j < NUM_ANIMATOR_CUSTOM_FIELDS; j++)
+		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
 		{
 			config[i].customField[j] = binary.readByte();
 		}
+		config[i].ledVoltage = binary.readByte();
+		config[i].ledChannelCurrent[0] = binary.readByte();
+		config[i].ledChannelCurrent[1] = binary.readByte();
+		config[i].ledChannelCurrent[2] = binary.readByte();
 
 		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Validating LED configuration with index ") + String(i) + ".");
 		if (!validateLedPin(config[i].ledPin) || !validateLedCount(config[i].ledCount) || !validateAnimatorType(config[i].type))
@@ -129,7 +137,7 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
 	}
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("LED configuration is valid. Saving LED configuration."));
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		TesLight::LedConfigurationEndpoint::configuration->setLedConfig(config[i], i);
 	}
@@ -167,7 +175,16 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
  */
 bool TesLight::LedConfigurationEndpoint::validateLedPin(int ledPin)
 {
-	return ledPin == 13 || ledPin == 14 || ledPin == 15 || ledPin == 16 || ledPin == 17 || ledPin == 21;
+	const uint8_t ledOutputPins[LED_NUM_ZONES] = LED_OUTPUT_PINS;
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	{
+		if (ledOutputPins[i] == ledPin)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /**
@@ -189,5 +206,5 @@ bool TesLight::LedConfigurationEndpoint::validateLedCount(const int ledCount)
  */
 bool TesLight::LedConfigurationEndpoint::validateAnimatorType(const int animatorType)
 {
-	return (animatorType >= 0 && animatorType <= 4) || animatorType == 255;
+	return (animatorType >= 0 && animatorType <= 17) || animatorType == 255;
 }

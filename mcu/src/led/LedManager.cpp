@@ -15,18 +15,18 @@
 TesLight::LedManager::LedManager()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize LedManager."));
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		this->ledData[i] = nullptr;
 		this->ledAnimator[i] = nullptr;
+		this->ledVoltage[i] = 0;
+		this->ledChannelCurrent[i][0] = 0;
+		this->ledChannelCurrent[i][1] = 0;
+		this->ledChannelCurrent[i][2] = 0;
 	}
 	this->fseqLoader = nullptr;
 	this->targetFrameTime = LED_FRAME_TIME;
 	this->systemPowerLimit = 0;
-	this->ledVoltage = 0;
-	this->ledChannelCurrent[0] = 0;
-	this->ledChannelCurrent[1] = 0;
-	this->ledChannelCurrent[2] = 0;
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("LedMananger initialized."));
 }
 
@@ -53,10 +53,13 @@ bool TesLight::LedManager::loadFromConfiguration(TesLight::Configuration *config
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Load power limit configuration."));
 	this->systemPowerLimit = config->getSystemConfig().systemPowerLimit;
-	this->ledVoltage = config->getSystemConfig().ledVoltage;
-	this->ledChannelCurrent[0] = config->getSystemConfig().ledChannelCurrent[0];
-	this->ledChannelCurrent[1] = config->getSystemConfig().ledChannelCurrent[1];
-	this->ledChannelCurrent[2] = config->getSystemConfig().ledChannelCurrent[2];
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	{
+		this->ledVoltage[i] = config->getLedConfig(i).ledVoltage;
+		this->ledChannelCurrent[i][0] = config->getLedConfig(i).ledChannelCurrent[0];
+		this->ledChannelCurrent[i][1] = config->getLedConfig(i).ledChannelCurrent[1];
+		this->ledChannelCurrent[i][2] = config->getLedConfig(i).ledChannelCurrent[2];
+	}
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Create new LED data."));
 	if (!this->createLedData(config))
@@ -86,7 +89,7 @@ void TesLight::LedManager::clear()
 	FastLED.clear();
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Delete LED data and animators."));
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		if (this->ledData[i] != nullptr)
 		{
@@ -115,7 +118,7 @@ void TesLight::LedManager::clear()
 void TesLight::LedManager::setAmbientBrightness(const float ambientBrightness)
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set ambient brightness."));
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		if (this->ledAnimator[i] != nullptr)
 		{
@@ -132,10 +135,18 @@ void TesLight::LedManager::setAmbientBrightness(const float ambientBrightness)
  * @brief Get the currently set ambient brightness.
  * @return float ambient brightness from 0.0 to 1.0
  */
-float TesLight::LedManager::getAmbientBrightness()
+bool TesLight::LedManager::getAmbientBrightness(float &ambientBrightness)
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get ambient brightness."));
-	return this->ledAnimator[0] != nullptr ? this->ledAnimator[0]->getAmbientBrightness() : 0.0f;
+	if (this->ledAnimator[0] == nullptr)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to get ambient brightness value because led animator at index 0 is null."));
+		return false;
+	}
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Got the ambient brightness value."));
+	ambientBrightness = this->ledAnimator[0]->getAmbientBrightness();
+	return true;
 }
 
 /**
@@ -180,67 +191,166 @@ uint8_t TesLight::LedManager::getSystemPowerLimit()
 }
 
 /**
- * @brief Set the voltage used for the LEDs.
+ * @brief Set the voltage used for the LED of a specific zone.
+ * @param zoneIndex index of the LED zone
  * @param ledVoltage voltage of the LEDs multiplied by 10
  */
-void TesLight::LedManager::setLedVoltage(const uint8_t ledVoltage)
+void TesLight::LedManager::setLedVoltage(const uint8_t zoneIndex, const uint8_t ledVoltage)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set LED voltage."));
-	this->ledVoltage = ledVoltage;
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Set LED voltage for zone ") + String(zoneIndex) + F(" to ") + String(ledVoltage / 10.0f) + F("V."));
+	if (zoneIndex < LED_NUM_ZONES)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("LED voltage set."));
+		this->ledVoltage[zoneIndex] = ledVoltage;
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set LED voltage. Channel index is out of bounds."));
+	}
 }
 
 /**
- * @brief Get the voltage used for the LEDs.
+ * @brief Get the voltage used for the LEDs of a specific zone.
+ * @param zoneIndex index of the LED zone
  * @return uint8_t voltage of the LEDs multiplied by 10
  */
-uint8_t TesLight::LedManager::getLedVoltage()
+uint8_t TesLight::LedManager::getLedVoltage(const uint8_t zoneIndex)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get LED voltage."));
-	return this->ledVoltage;
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Get LED voltage for zone ") + String(zoneIndex) + F("."));
+	if (zoneIndex < LED_NUM_ZONES)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Got LED voltage of ") + String(this->ledVoltage[zoneIndex]) + F("V."));
+		return this->ledVoltage[zoneIndex];
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to get LED voltage. Channel index is out of bounds."));
+		return 0;
+	}
 }
 
 /**
- * @brief Set the current for each LED per channel.
+ * @brief Set the current for each LED per channel of a specific zone.
+ * @param zoneIndex index of the LED zone
  * @param redCurrent current of the red channel in mA
  * @param greenCurrent current of the green channel in mA
  * @param blueCurrent current of the blue channel in mA
  */
-void TesLight::LedManager::setLedChannelCurrent(const uint8_t redCurrent, const uint8_t greenCurrent, const uint8_t blueCurrent)
+void TesLight::LedManager::setLedChannelCurrent(const uint8_t zoneIndex, const uint8_t redCurrent, const uint8_t greenCurrent, const uint8_t blueCurrent)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set LED channel current."));
-	this->ledChannelCurrent[0] = redCurrent;
-	this->ledChannelCurrent[1] = greenCurrent;
-	this->ledChannelCurrent[2] = blueCurrent;
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Set LED channel current for zone ") + String(zoneIndex) + F("."));
+
+	if (zoneIndex < LED_NUM_ZONES)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Set LED current successfully."));
+		this->ledChannelCurrent[zoneIndex][0] = redCurrent;
+		this->ledChannelCurrent[zoneIndex][1] = greenCurrent;
+		this->ledChannelCurrent[zoneIndex][2] = blueCurrent;
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set LED current. Channel index is out of bounds."));
+	}
 }
 
 /**
- * @brief Get the currently set current for the red LED channel.
+ * @brief Get the currently set current for the red LED channel of a specific zone.
+ * @param zoneIndex index of the LED zone
  * @return uint8_t current for the channel in mA
  */
-uint8_t TesLight::LedManager::getLedRedChannelCurrent()
+uint8_t TesLight::LedManager::getLedRedChannelCurrent(const uint8_t zoneIndex)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get LED channel current for red channel."));
-	return this->ledChannelCurrent[0];
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Get LED channel current for red channel ") + String(zoneIndex) + F("."));
+	if (zoneIndex < LED_NUM_ZONES)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Got LED channel current of ") + String(this->ledChannelCurrent[zoneIndex][0]) + F("mA."));
+		return this->ledChannelCurrent[zoneIndex][0];
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to get LED channel current. Channel index is out of bounds."));
+		return 0;
+	}
 }
 
 /**
- * @brief Get the currently set current for the red LED channel.
+ * @brief Get the currently set current for the green LED channel of a specific zone.
+ * @param zoneIndex index of the LED zone
  * @return uint8_t current for the channel in mA
  */
-uint8_t TesLight::LedManager::getLedGreenChannelCurrent()
+uint8_t TesLight::LedManager::getLedGreenChannelCurrent(const uint8_t zoneIndex)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get LED channel current for green channel."));
-	return this->ledChannelCurrent[1];
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Get LED channel current for green channel ") + String(zoneIndex) + F("."));
+	if (zoneIndex < LED_NUM_ZONES)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Got LED channel current of ") + String(this->ledChannelCurrent[zoneIndex][1]) + F("mA."));
+		return this->ledChannelCurrent[zoneIndex][1];
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to get LED channel current. Channel index is out of bounds."));
+		return 0;
+	}
 }
 
 /**
- * @brief Get the currently set current for the red LED channel.
+ * @brief Get the currently set current for the blue LED channel of a specific zone.
+ * @param zoneIndex index of the LED zone
  * @return uint8_t current for the channel in mA
  */
-uint8_t TesLight::LedManager::getLedBlueChannelCurrent()
+uint8_t TesLight::LedManager::getLedBlueChannelCurrent(const uint8_t zoneIndex)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get LED channel current for blue channel."));
-	return this->ledChannelCurrent[2];
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Get LED channel current for blue channel ") + String(zoneIndex) + F("."));
+	if (zoneIndex < LED_NUM_ZONES)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Got LED channel current of ") + String(this->ledChannelCurrent[zoneIndex][2]) + F("mA."));
+		return this->ledChannelCurrent[zoneIndex][2];
+	}
+	else
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to get LED channel current. Channel index is out of bounds."));
+		return 0;
+	}
+}
+
+/**
+ * @brief Set the current motion sensor data.
+ * @param motionSensorData instance of the {@link TesLight::MotionSensor::MotionSensorData}
+ */
+void TesLight::LedManager::setMotionSensorData(const TesLight::MotionSensor::MotionSensorData motionSensorData)
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set motion sensor data."));
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	{
+		if (this->ledAnimator[i] != nullptr)
+		{
+			this->ledAnimator[i]->setMotionSensorData(motionSensorData);
+		}
+		else
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to set motion sensor data for animator ") + String(i) + F(" because the animator is null."));
+		}
+	}
+}
+
+/**
+ * @brief Get the currently set and used motion sensor data.
+ * @param motionSensorData reference to a {@link TesLight::MotionSensor::MotionSensorData}
+ * @return true when the data was read successfully
+ * @return false when there was an error
+ */
+bool TesLight::LedManager::getMotionSensorData(TesLight::MotionSensor::MotionSensorData &motionSensorData)
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get motion sensor data."));
+	if (this->ledAnimator[0] != nullptr)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to get motion sensor data because animator with index 0 was null."));
+		return false;
+	}
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Got motion sensor data."));
+	motionSensorData = this->ledAnimator[0]->getMotionSensorData();
+	return true;
 }
 
 /**
@@ -248,7 +358,7 @@ uint8_t TesLight::LedManager::getLedBlueChannelCurrent()
  */
 void TesLight::LedManager::render()
 {
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		if (this->ledAnimator[i] != nullptr)
 		{
@@ -279,7 +389,7 @@ void TesLight::LedManager::show()
 bool TesLight::LedManager::createLedData(TesLight::Configuration *config)
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Create new LED data and link it to the FastLED lib."));
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		const TesLight::Configuration::LedConfig ledConfig = config->getLedConfig(i);
 
@@ -311,8 +421,14 @@ bool TesLight::LedManager::createLedData(TesLight::Configuration *config)
 		case 21:
 			FastLED.addLeds<NEOPIXEL, 21>(ledData[i], ledConfig.ledCount);
 			break;
+		case 22:
+			FastLED.addLeds<NEOPIXEL, 22>(ledData[i], ledConfig.ledCount);
+			break;
+		case 25:
+			FastLED.addLeds<NEOPIXEL, 25>(ledData[i], ledConfig.ledCount);
+			break;
 		default:
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to link the created pixel data to the FastLED lib because the pin is invalid. It must be one of [13, 14, 15, 16, 17, 21]."));
+			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to link the created pixel data to the FastLED lib because the pin is invalid. It must be one of [13, 14, 15, 16, 17, 21, 22, 25]."));
 			return false;
 		}
 	}
@@ -332,9 +448,11 @@ bool TesLight::LedManager::createAnimators(TesLight::Configuration *config)
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Create new LED animators."));
 
 	// Custom animations will be used when the first animator type is set to 255
-	// The used file index is set by the first custom field
+	// The used file identifier is set by the custom fields [10-13]
+	// Field 14 is reserved to store the previous, calculated animation type
 	const bool customAnimation = config->getLedConfig(0).type == 255;
-	const uint8_t animationFileIndex = config->getLedConfig(0).customField[0];
+	uint32_t identifier = 0;
+	memcpy(&identifier, &config->getLedConfig(0).customField[10], sizeof(identifier));
 	if (!customAnimation)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Using calculated animations."));
@@ -347,9 +465,9 @@ bool TesLight::LedManager::createAnimators(TesLight::Configuration *config)
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Using fseq custom animation with animation file index ") + String(animationFileIndex) + F("."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Using fseq custom animation with animation file with id ") + String(identifier) + F("."));
 		String fileName;
-		if (TesLight::FileUtil::getFileNameFromIndex(&SD, FSEQ_DIRECTORY, animationFileIndex, fileName, false) && fileName.length() > 0)
+		if (TesLight::FileUtil::getFileNameFromIdentifier(&SD, FSEQ_DIRECTORY, identifier, fileName) && fileName.length() > 0)
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Loading fseq file: ") + fileName);
 			this->fseqLoader = new TesLight::FseqLoader(&SD);
@@ -363,7 +481,7 @@ bool TesLight::LedManager::createAnimators(TesLight::Configuration *config)
 		}
 		else
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to determine file name for animation file index ") + String(animationFileIndex) + F("."));
+			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to determine file name for animation file with id ") + String(identifier) + F("."));
 			return false;
 		}
 
@@ -387,7 +505,7 @@ bool TesLight::LedManager::createAnimators(TesLight::Configuration *config)
 bool TesLight::LedManager::loadCalculatedAnimations(TesLight::Configuration *config)
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Load animators for calculated animations."));
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		const TesLight::Configuration::LedConfig ledConfig = config->getLedConfig(i);
 
@@ -412,18 +530,123 @@ bool TesLight::LedManager::loadCalculatedAnimations(TesLight::Configuration *con
 			ledAnimator[i] = new TesLight::RainbowAnimator(TesLight::RainbowAnimator::RainbowMode::RAINBOW_CENTER);
 		}
 
-		// Gradient type
+		// Gradient linear type
 		else if (ledConfig.type == 3)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is Gradient."));
-			ledAnimator[i] = new TesLight::GradientAnimator(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2], ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]);
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is Gradient linear."));
+			ledAnimator[i] = new TesLight::GradientAnimator(TesLight::GradientAnimator::GradientMode::GRADIENT_LINEAR, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+		}
+
+		// Gradient center type
+		else if (ledConfig.type == 4)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is Gradient center."));
+			ledAnimator[i] = new TesLight::GradientAnimator(TesLight::GradientAnimator::GradientMode::GRADIENT_CENTER, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
 		}
 
 		// Static color type
-		else if (ledConfig.type == 4)
+		else if (ledConfig.type == 5)
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is Static."));
-			ledAnimator[i] = new TesLight::StaticColorAnimator(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]);
+			ledAnimator[i] = new TesLight::StaticColorAnimator(CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]));
+		}
+
+		// Color bar linear hard type
+		else if (ledConfig.type == 6)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is COLOR_BAR_LINEAR_HARD."));
+			ledAnimator[i] = new TesLight::ColorBarAnimator(TesLight::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_HARD, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+		}
+
+		// Color bar linear smooth type
+		else if (ledConfig.type == 7)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is COLOR_BAR_LINEAR_SMOOTH."));
+			ledAnimator[i] = new TesLight::ColorBarAnimator(TesLight::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_SMOOTH, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+		}
+
+		// Color bar center hard type
+		else if (ledConfig.type == 8)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is COLOR_BAR_CENTER_HARD."));
+			ledAnimator[i] = new TesLight::ColorBarAnimator(TesLight::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_HARD, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+		}
+
+		// Color bar center smooth type
+		else if (ledConfig.type == 9)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is COLOR_BAR_CENTER_SMOOTH."));
+			ledAnimator[i] = new TesLight::ColorBarAnimator(TesLight::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_SMOOTH, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+		}
+
+		// Rainbow linear motion acc x type
+		else if (ledConfig.type == 10)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is RAINBOW_LINEAR ACC_X_G."));
+			ledAnimator[i] = new TesLight::RainbowAnimatorMotion(TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TesLight::MotionSensor::MotionSensorValue::ACC_X_G);
+		}
+
+		// Rainbow linear motion acc y type
+		else if (ledConfig.type == 11)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is RAINBOW_LINEAR ACC_Y_G."));
+			ledAnimator[i] = new TesLight::RainbowAnimatorMotion(TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TesLight::MotionSensor::MotionSensorValue::ACC_Y_G);
+		}
+
+		// Rainbow linear motion acc x type
+		else if (ledConfig.type == 10)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is RAINBOW_LINEAR ACC_X_G."));
+			ledAnimator[i] = new TesLight::RainbowAnimatorMotion(TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TesLight::MotionSensor::MotionSensorValue::ACC_X_G);
+		}
+
+		// Rainbow linear motion acc y type
+		else if (ledConfig.type == 11)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is RAINBOW_LINEAR ACC_Y_G."));
+			ledAnimator[i] = new TesLight::RainbowAnimatorMotion(TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TesLight::MotionSensor::MotionSensorValue::ACC_Y_G);
+		}
+
+		// Rainbow center motion acc x type
+		else if (ledConfig.type == 12)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is RAINBOW_CENTER ACC_X_G."));
+			ledAnimator[i] = new TesLight::RainbowAnimatorMotion(TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_CENTER, TesLight::MotionSensor::MotionSensorValue::ACC_X_G);
+		}
+
+		// Rainbow center motion acc y type
+		else if (ledConfig.type == 13)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is RAINBOW_CENTER ACC_Y_G."));
+			ledAnimator[i] = new TesLight::RainbowAnimatorMotion(TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_CENTER, TesLight::MotionSensor::MotionSensorValue::ACC_Y_G);
+		}
+
+		// Gradient linear motion acc x type
+		else if (ledConfig.type == 14)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is Gradient linear ACC_X_G."));
+			ledAnimator[i] = new TesLight::GradientAnimatorMotion(TesLight::GradientAnimatorMotion::GradientMode::GRADIENT_LINEAR, TesLight::MotionSensor::MotionSensorValue::ACC_X_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+		}
+
+		// Gradient linear motion acc y type
+		else if (ledConfig.type == 15)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is Gradient linear ACC_Y_G."));
+			ledAnimator[i] = new TesLight::GradientAnimatorMotion(TesLight::GradientAnimatorMotion::GradientMode::GRADIENT_LINEAR, TesLight::MotionSensor::MotionSensorValue::ACC_Y_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+		}
+
+		// Gradient center motion acc x type
+		else if (ledConfig.type == 16)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is Gradient center ACC_X_G."));
+			ledAnimator[i] = new TesLight::GradientAnimatorMotion(TesLight::GradientAnimatorMotion::GradientMode::GRADIENT_CENTER, TesLight::MotionSensor::MotionSensorValue::ACC_X_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+		}
+
+		// Gradient center motion acc y type
+		else if (ledConfig.type == 17)
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is Gradient center ACC_Y_G."));
+			ledAnimator[i] = new TesLight::GradientAnimatorMotion(TesLight::GradientAnimatorMotion::GradientMode::GRADIENT_CENTER, TesLight::MotionSensor::MotionSensorValue::ACC_Y_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
 		}
 
 		// Unknown type
@@ -459,7 +682,7 @@ bool TesLight::LedManager::loadCustomAnimation(TesLight::Configuration *config)
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Load animators for custom animations."));
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calculating total number of LEDs."));
 	uint32_t totalLedCount = 0;
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		const TesLight::Configuration::LedConfig ledConfig = config->getLedConfig(i);
 		totalLedCount += ledConfig.ledCount;
@@ -475,7 +698,7 @@ bool TesLight::LedManager::loadCustomAnimation(TesLight::Configuration *config)
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Fseq file is usable."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Create LED animators for fseq custom animation."));
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		const TesLight::Configuration::LedConfig ledConfig = config->getLedConfig(i);
 		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Create LED animator of type fseq for ") + ledConfig.ledCount + F(" LED's on pin ") + ledConfig.ledPin);
@@ -497,43 +720,63 @@ bool TesLight::LedManager::loadCustomAnimation(TesLight::Configuration *config)
 }
 
 /**
- * @brief Calculate the total power need for the current frame.
- * @return float power need in watts
+ * @brief Calculate the total power draw from each regulator using the current frame.
+ * @param regulatorPower array containing the power draw per regulator after the call
+ * @return true when successful
+ * @return false when there was an error
  */
-float TesLight::LedManager::calculatePowerConsumption()
+bool TesLight::LedManager::calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_COUNT])
 {
-	float totalCurrent = 0.0f;
-	for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+	for (uint8_t i = 0; i < REGULATOR_COUNT; i++)
 	{
+		regulatorPower[i] = 0.0f;
+	}
+
+	const uint8_t regulatorMap[LED_NUM_ZONES] = REGULATOR_ZONE_MAPPING;
+	for (uint8_t i = 0; i < 6; i++)
+	{
+		float zoneCurrent = 0.0f;
 		if (this->ledAnimator[i] != nullptr)
 		{
 			for (uint16_t j = 0; j < this->ledAnimator[i]->getPixelCount(); j++)
 			{
-				totalCurrent += this->ledChannelCurrent[0] * this->ledData[i][j].r / 255.0f;
-				totalCurrent += this->ledChannelCurrent[1] * this->ledData[i][j].g / 255.0f;
-				totalCurrent += this->ledChannelCurrent[2] * this->ledData[i][j].b / 255.0f;
+				zoneCurrent += this->ledChannelCurrent[i][0] * this->ledData[i][j].r / 255.0f;
+				zoneCurrent += this->ledChannelCurrent[i][1] * this->ledData[i][j].g / 255.0f;
+				zoneCurrent += this->ledChannelCurrent[i][2] * this->ledData[i][j].b / 255.0f;
 			}
 		}
 		else
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to calculate power consumption for animator ") + String(i) + F(" because the animator is null."));
+			return false;
 		}
+		regulatorPower[regulatorMap[i]] += zoneCurrent * (this->ledVoltage[i] / 10.0f) / 1000.0f;
 	}
 
-	return totalCurrent * (this->ledVoltage / 10.0f) / 1000.0f;
+	return true;
 }
 
 /**
  * @brief Limit the power consumption of the current frame to the maxumim system power.
+ * @return true when successful
+ * @return false when there was an error
  */
-void TesLight::LedManager::limitPowerConsumption()
+bool TesLight::LedManager::limitPowerConsumption()
 {
-	const float multiplicator = this->systemPowerLimit / this->calculatePowerConsumption();
-	if (multiplicator > 0.0f && multiplicator < 1.0f)
+	float regulatorPower[REGULATOR_COUNT];
+	if (!this->calculateRegulatorPowerDraw(regulatorPower))
 	{
-		for (uint8_t i = 0; i < NUM_LED_STRIPS; i++)
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to get regulator power draw."));
+		return false;
+	}
+
+	const uint8_t regulatorMap[LED_NUM_ZONES] = REGULATOR_ZONE_MAPPING;
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	{
+		if (this->ledAnimator[i] != nullptr)
 		{
-			if (this->ledAnimator[i] != nullptr)
+			const float multiplicator = ((float)this->systemPowerLimit / REGULATOR_COUNT) / regulatorPower[regulatorMap[i]];
+			if (multiplicator > 0.0f && multiplicator < 1.0f)
 			{
 				for (uint16_t j = 0; j < this->ledAnimator[i]->getPixelCount(); j++)
 				{
@@ -544,4 +787,6 @@ void TesLight::LedManager::limitPowerConsumption()
 			}
 		}
 	}
+
+	return true;
 }

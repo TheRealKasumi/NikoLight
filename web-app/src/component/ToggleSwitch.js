@@ -44,7 +44,12 @@ class ToggleSwitch extends React.Component {
 							<span>{this.state.leftText}</span>
 						</div>
 						<div style={{ flex: "1" }}>
-							<input className="toggle-checkbox" type="checkbox" onChange={this.onChange} />
+							<input
+								className="toggle-checkbox"
+								type="checkbox"
+								checked={this.state.active}
+								onChange={this.onChange}
+							/>
 							<div className="toggle-switch"></div>
 						</div>
 						<div style={{ width: "35%", textAlign: "left" }}>

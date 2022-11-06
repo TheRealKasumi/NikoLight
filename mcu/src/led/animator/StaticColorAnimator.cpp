@@ -13,23 +13,16 @@
  */
 TesLight::StaticColorAnimator::StaticColorAnimator()
 {
-	this->red = 0;
-	this->green = 0;
-	this->blue = 0;
+	this->color = CRGB::Black;
 }
 
 /**
  * @brief Create a new instance of {@link TesLight::StaticColorAnimator}.
- *
- * @param red red value
- * @param green green value
- * @param blue blue value
+ * @param color color to display
  */
-TesLight::StaticColorAnimator::StaticColorAnimator(const uint8_t red, const uint8_t green, const uint8_t blue)
+TesLight::StaticColorAnimator::StaticColorAnimator(const CRGB color)
 {
-	this->red = red;
-	this->green = green;
-	this->blue = blue;
+	this->color = color;
 }
 
 /**
@@ -57,7 +50,7 @@ void TesLight::StaticColorAnimator::render()
 {
 	for (uint16_t i = 0; i < this->pixelCount; i++)
 	{
-		this->pixels[i].setRGB(this->red, this->green, this->blue);
+		this->pixels[i] = this->color;
 	}
 
 	this->applyBrightness();
@@ -65,13 +58,9 @@ void TesLight::StaticColorAnimator::render()
 
 /**
  * @brief Set the static color.
- * @param red red value
- * @param green green value
- * @param blue blue value
+ * @param color color to display
  */
-void TesLight::StaticColorAnimator::setColor(const uint8_t red, const uint8_t green, const uint8_t blue)
+void TesLight::StaticColorAnimator::setColor(const CRGB color)
 {
-	this->red = red;
-	this->green = green;
-	this->blue = blue;
+	this->color = color;
 }

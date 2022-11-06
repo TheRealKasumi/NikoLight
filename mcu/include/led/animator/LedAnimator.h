@@ -13,6 +13,7 @@
 #include <math.h>
 
 #include "FastLED.h"
+#include "sensor/MotionSensor.h"
 
 namespace TesLight
 {
@@ -46,12 +47,16 @@ namespace TesLight
 		void setReverse(const bool reverse);
 		bool getReverse();
 
+		void setMotionSensorData(const TesLight::MotionSensor::MotionSensorData motionSensorData);
+		TesLight::MotionSensor::MotionSensorData getMotionSensorData();
+
 		virtual void init() = 0;
 		virtual void render() = 0;
 
 	protected:
 		CRGB *pixels;
 		uint16_t pixelCount;
+
 		uint8_t speed;
 		uint16_t offset;
 		float animationBrightness;
@@ -59,6 +64,8 @@ namespace TesLight
 		float smoothedAmbBrightness;
 		float fadeSpeed;
 		bool reverse;
+
+		TesLight::MotionSensor::MotionSensorData motionSensorData;
 
 		void applyBrightness();
 		static float trapezoid(float angle);

@@ -39,6 +39,9 @@ class NavigationBar extends React.Component {
 			case 3:
 				this.state.setPage(4, {});
 				break;
+			case 4:
+				this.state.setPage(5, {});
+				break;
 		}
 	};
 
@@ -58,6 +61,17 @@ class NavigationBar extends React.Component {
 					>
 						<img src={process.env.PUBLIC_URL + "/img/button/led.svg"} />
 					</li>
+
+					<li
+						style={{ display: "none" }}
+						className={this.state.selectedIndex === 4 ? "active" : ""}
+						onClick={() => {
+							this.setSelectedIndex(4);
+						}}
+					>
+						<img src={process.env.PUBLIC_URL + "/img/button/film.svg"} />
+					</li>
+
 					<li
 						className={this.state.selectedIndex === 1 ? "active" : ""}
 						onClick={() => {
@@ -66,14 +80,7 @@ class NavigationBar extends React.Component {
 					>
 						<img src={process.env.PUBLIC_URL + "/img/button/gear.svg"} />
 					</li>
-					<li
-						className={this.state.selectedIndex === 2 ? "active" : ""}
-						onClick={() => {
-							this.setSelectedIndex(2);
-						}}
-					>
-						<img src={process.env.PUBLIC_URL + "/img/button/log.svg"} />
-					</li>
+
 					<li
 						className={this.state.selectedIndex === 3 ? "active" : ""}
 						onClick={() => {
@@ -81,6 +88,15 @@ class NavigationBar extends React.Component {
 						}}
 					>
 						<img src={process.env.PUBLIC_URL + "/img/button/update.svg"} />
+					</li>
+
+					<li
+						className={this.state.selectedIndex === 2 ? "active" : ""}
+						onClick={() => {
+							this.setSelectedIndex(2);
+						}}
+					>
+						<img src={process.env.PUBLIC_URL + "/img/button/log.svg"} />
 					</li>
 				</ul>
 			</nav>

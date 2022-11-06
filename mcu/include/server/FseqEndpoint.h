@@ -11,28 +11,34 @@
 
 #include <FS.h>
 
-#include "configuration/SystemConfiguration.h"
 #include "server/RestEndpoint.h"
+#include "configuration/SystemConfiguration.h"
+#include "configuration/Configuration.h"
 #include "logging/Logger.h"
 #include "util/FileUtil.h"
+#include "util/FseqLoader.h"
 
 namespace TesLight
 {
 	class FseqEndpoint : public RestEndpoint
 	{
 	public:
-		static void begin(FS *_fileSystem);
+		static void begin(FS *_fileSystem, TesLight::Configuration *_configuration);
 
 	private:
 		FseqEndpoint();
 
 		static FS *fileSystem;
+		static TesLight::Configuration *configuration;
 		static File uploadFile;
 
 		static void getFseqList();
 		static void postFseq();
 		static void fseqUpload();
 		static void deleteFseq();
+
+		static bool verifyFileName(const String fileName);
+		static bool verifyFseqFile(const String fileName);
 	};
 }
 

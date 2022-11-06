@@ -84,9 +84,9 @@ bool TesLight::Updater::install(FS *fileSystem, const String packageFileName)
 /**
  * @brief This function will reboot the controller. It does not return.
  */
-void TesLight::Updater::reboot()
+void TesLight::Updater::reboot(const String reason)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Rebooting controller."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Rebooting controller for reason: ") + reason);
 	ESP.restart();
 }
 

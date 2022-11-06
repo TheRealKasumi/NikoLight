@@ -21,8 +21,7 @@ namespace TesLight
 		{
 			RAINBOW_SOLID,
 			RAINBOW_LINEAR,
-			RAINBOW_CENTER,
-			RAINBOW_SLIDE
+			RAINBOW_CENTER
 		};
 
 		RainbowAnimator();

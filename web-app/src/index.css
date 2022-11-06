@@ -13,6 +13,8 @@
 	--colorGradientB: #e73c7e;
 	--colorGradientC: #23a6d5;
 	--colorGradientD: #23d5ab;
+	--colorMessageSuccess: rgba(0, 255, 85, 0.616);
+	--colorMessageError: rgba(255, 38, 0, 0.432);
 }
 
 * {
