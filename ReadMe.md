@@ -2,54 +2,75 @@
 
 ![Logo](web-app/public/img/logo192.png)
 
-## Important Notes
-
-Creating this project has taken a lot of my time, effort and money.
-Nevertheless, I share it publicly with you.
-You can use it for free, modify it and even sell it.
-But please **don't steal** my work, be a little **respectful** and **give credits**.
-
-Also, you should be careful when working on the project and especially your car.
-Use this project at your own risk.
-
-That said, I hope you have a lot of fun!
-Thank you💖
-
 ## Beta Warning
 
-Currently this project is still in a beta stage but we are slowly approaching a first release version.
-Some bugs, crashes and missing documentation are to be expected.
+Currently this project is still in a beta stage but we are quickly approaching a first release version.
+Some minor bugs and missing documentation are to be expected.
 
 ## Introduction
 
-TesLight is an open source ambient light system for cars that you can build by yourself.
-Like the name implies, it was developed to integrate with Tesla cars with a focus on the Model 3 and Model Y.
-However, it can also be used for other cars with some modifications.
+TesLight is an open source ambient light that you can build by yourself.
+The project is primarily aimed at people who are not looking for a ready-made solution and prefer to tinker, modify, extend and work on it as a community.
+As the name suggests, the project was started primarily for Tesla vehicles.
+The focus is on the Model 3 and Model Y.
+However, it can also be used for other cars with some small modifications.
 
-The main feature of TesLight is to give zonal control over the ambient lighting in your car.
-The zones are: the 4 doors, the dashboard and the center console.
-Each zone can have a string of LEDs which TesLight can individually address.
-In total it can give you control over hundreds of LEDs installed in your car.
+With TesLight you can control up tp 8 zones with a variable number of WS2812-type LEDs.
+For example, the 4 doors, the center console, the footwell lights and a light bar under the dashboard.
+In total several hundred LEDs can be controlled individually.
 
-You can choose between different algorithms to display static colors, gradients or even animations for each individual zone.
-These animations, can be further configured using the browser-based user interface.
+Since there should be an easy way to control all these LEDs, there are many different effects for each zone.
+These can display a simple color, color gradients or even animations in the individual zones.
+Since the controller has a motion sensor, some effects are even interactive.
+The effects are expandable in the future and can be adapted to your wishes over time.
+Even fully customized animation are possible.
+You can create these on your computer and play them back in the car.
 
-When TesLight is powered up, it will create a WiFi access point which you can use to connect your mobile device to.
-Then you have access to the user interface via your browser to configure your ambient light.
-This can be a one-time setup or you can play with different colors every day if you desire.
+TesLight can be easily integrated into your Tesla (and other cars).
+There is a sensor that can be connected to the lighting around the footwell.
+This way, TesLight switches on and off automatically when you open or lock the car.
+It is also possible to regulate the brightness together with the factory-installed lights or via the display.
+The controller is also expandable and could support additional hardware in the future.
+For example, there could be a CAN adapter to get more information from the vehicle.
+How relevant these extensions will be depends a little bit on the community and the support I will receive.
 
-TesLight integrates seamlessly with OEM features and is capable of syncing system operation to locking/unlocking your car or adjusting the screen brightness.
+Once built and installed, TesLight can be configured via a browser-based UI.
+When starting the controller, a WiFi hotspot is created to which you can connect to with basically any device.
+The user interface can be accessed via a normal browser thanks to the integrated web server.
+The project is therefore mostly platform-independent.
 
-You think "Wtf is she talking about? This girl is a potato."
-And you would be right, I am a potato. But also maybe have a look at a few pictures.
+**Here is a short summary of the currently most interesting features:**
 
-(Oh really friend? You were supposed to look for typos, not call me a potato... Ahhh what ever..)
+-  Individual control of each LED installed in the car
+-  Hundreds of LEDs are possible
+-  Compatible with all WS2812-type LEDs (and LEDs with the same protocol)
+-  Fiber cables, light bars and normal LED strips are supported
+-  Up to 8 individual zones
+-  Currently 18 different effects that can be selected and further customized for each zone
+-  Browser based user interface
+-  Switching on/off as well as dynamic brightness via the existing lighting in the footwell
+-  Rotation and acceleration sensors
+-  Interactive effects
+-  Light shows
+-  Fully customized animations can be created on your PC (playback of fseq 1.0 files from [xLights](https://xlights.org/))
+-  OTA (wireless) updates
+-  Hardware is upgradeable via extensions in the future
 
-![Teaser 1](documentation/media/teaser/teaser_1.jpeg)
+## Some Videos and Pictures
 
-![Teaser 2](documentation/media/teaser/teaser_2.gif)
+[![TesLight Demo 2](https://img.youtube.com/vi/_N5h1IViB-E/0.jpg)](https://www.youtube.com/watch?v=_N5h1IViB-E)
 
-![Teaser 3](documentation/media/teaser/teaser_3.gif)
+(click to watch on YouTube)
+
+[![TesLight Demo 1](https://img.youtube.com/vi/bwzbVkCsNws/0.jpg)](https://www.youtube.com/watch?v=bwzbVkCsNws)
+
+(click to watch on YouTube)
+
+![App](documentation/media/readme/app.jpg)
+
+![PCB](documentation/media/readme/pcb-front.jpg)
+
+![PCB](documentation/media/readme/pcb-back.jpg)
 
 ## Planning
 
@@ -59,8 +80,23 @@ This will save you some trouble and makes it easier to buy the right parts.
 
 ## Part List
 
-A list of required parts can be found [here](documentation/part-list.md).
+A list of required and optional parts can be found [here](documentation/part-list.md).
 
 ## Build Guide
 
 The build guide can be found [here](documentation/build.md).
+
+## One request
+
+Creating this project has taken a lot of my time, effort and money.
+Nevertheless, I share it publicly with you.
+You can use it for free, modify it and even earn a coffee by building the parts for other people.
+But please **don't steal** my work silently, be a little **respectful** and **give credits**.
+Thats all I wish for.
+
+Also, you should be careful when working on the project and especially your car.
+I am not a professional electrical engineer and only doing this as a hobby on the side.
+Use this project at your own risk.
+
+That said, I hope you have a lot of fun and great experience with TesLight!
+Thank you💖
