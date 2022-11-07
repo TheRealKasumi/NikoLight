@@ -144,5 +144,5 @@ Once the regulators cooled down, they should be reset and the controller reboots
 However this is a emergency feature that should not be triggered in normal use.
 You are still risking temperatures of up to 115°C on the board.
 Keep that in mind when you think you are special and need to exceed limits😛.
-Also don't cry at my when you burn something down.
+Also don't cry at me when you burn something down.
 You have been warned.
