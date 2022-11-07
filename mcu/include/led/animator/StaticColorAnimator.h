@@ -18,18 +18,16 @@ namespace TesLight
 	{
 	public:
 		StaticColorAnimator();
-		StaticColorAnimator(const uint8_t red, const uint8_t green, const uint8_t blue);
+		StaticColorAnimator(const CRGB color);
 		~StaticColorAnimator();
 
 		void init();
 		void render();
 
-		void setColor(const uint8_t red, const uint8_t green, const uint8_t blue);
+		void setColor(const CRGB color);
 
 	private:
-		uint8_t red;
-		uint8_t green;
-		uint8_t blue;
+		CRGB color;
 	};
 }
 

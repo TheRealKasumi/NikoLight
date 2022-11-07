@@ -15,6 +15,7 @@ TesLight::LedAnimator::LedAnimator()
 {
 	this->pixels = nullptr;
 	this->pixelCount = 0;
+
 	this->speed = 0;
 	this->offset = 0;
 	this->animationBrightness = 0.0f;
@@ -22,6 +23,19 @@ TesLight::LedAnimator::LedAnimator()
 	this->smoothedAmbBrightness = 0.0f;
 	this->fadeSpeed = 1.0f;
 	this->reverse = false;
+
+	this->motionSensorData.accXRaw = 0;
+	this->motionSensorData.accYRaw = 0;
+	this->motionSensorData.accZRaw = 0;
+	this->motionSensorData.gyroXRaw = 0;
+	this->motionSensorData.gyroYRaw = 0;
+	this->motionSensorData.gyroZRaw = 0;
+	this->motionSensorData.accXG = 0;
+	this->motionSensorData.accYG = 0;
+	this->motionSensorData.accZG = 0;
+	this->motionSensorData.gyroXDeg = 0;
+	this->motionSensorData.gyroYDeg = 0;
+	this->motionSensorData.gyroZDeg = 0;
 }
 
 /**
@@ -198,6 +212,24 @@ void TesLight::LedAnimator::setReverse(const bool reverse)
 bool TesLight::LedAnimator::getReverse()
 {
 	return this->reverse;
+}
+
+/**
+ * @brief Set the motion sensor data.
+ * @param motionSensorData instance of {@link TesLight::MotionSensor::MotionSensorData}
+ */
+void TesLight::LedAnimator::setMotionSensorData(const TesLight::MotionSensor::MotionSensorData motionSensorData)
+{
+	this->motionSensorData = motionSensorData;
+}
+
+/**
+ * @brief Get the currently set and used motion sensor data.
+ * @return TesLight::MotionSensor::MotionSensorData currently set and used motion sensor data
+ */
+TesLight::MotionSensor::MotionSensorData TesLight::LedAnimator::getMotionSensorData()
+{
+	return this->motionSensorData;
 }
 
 /**

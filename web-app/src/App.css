@@ -166,6 +166,7 @@
 .content .zone>li label {
 	align-items: center;
 	background-color: var(--color-secondary);
+	border: 1px solid var(--color-primary);
 	border-radius: 10px;
 	color: var(--color-text-light);
 	display: flex;
@@ -413,10 +414,12 @@
 	background: var(--color-secondary);
 	border: none;
 	border-radius: 6px;
+	color: var(--color-text-light);
 	cursor: pointer;
 	flex: 1;
 	height: auto;
 	outline: none;
+	text-align: center;
 	width: 100%;
 }
 
@@ -443,7 +446,7 @@
 
 .content .button {
 	background-color: var(--color-secondary);
-	border: 1px solid var(--color-secondary);
+	border: 1px solid var(--color-primary);
 	border-radius: 20px;
 	color: var(--color-text-light);
 	font-size: 1rem;
@@ -451,6 +454,14 @@
 	outline: none;
 	padding: 1rem;
 	width: 100%;
+}
+
+.success {
+	background: var(--colorMessageSuccess) !important;
+}
+
+.error {
+	background: var(--colorMessageError) !important;
 }
 
 .content .button:hover {
@@ -465,7 +476,7 @@
 
 .content .details {
 	background: var(--color-secondary);
-	border: 1px solid var(--color-secondary);
+	border: 1px solid var(--color-primary);
 	border-radius: 20px;
 	color: var(--color-text-light);
 	font-size: 1rem;
@@ -484,9 +495,45 @@
 	background: var(--color-secondary-light);
 }
 
+.content .info {
+	background: var(--color-secondary);
+	border: 1px solid var(--color-primary);
+	border-radius: 20px;
+	color: var(--color-text-light);
+	font-size: 1rem;
+	font-weight: bold;
+	outline: none;
+	padding: 1rem;
+	text-align: center;
+	width: 100%;
+}
+
+.content .table {
+	background: var(--color-secondary);
+	border-radius: 20px;
+	color: var(--color-text-light);
+	margin: 0 auto;
+	padding: 10px;
+	text-align: center;
+	width: 100%;
+}
+
+.content .table thead th {
+	padding-bottom: 1rem;
+	text-decoration: underline;
+}
+
+.content .table tbody tr {
+	text-decoration: none;
+}
+
+.content .table .button {
+	width: fit-content;
+}
+
 details>summary {
-	list-style-type: "▼     ";
 	list-style-position: outside;
+	list-style-type: "▼     ";
 }
 
 details[open]>summary {

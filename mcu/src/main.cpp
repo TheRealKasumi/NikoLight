@@ -28,6 +28,7 @@
 #include "server/FseqEndpoint.h"
 #include "server/LogEndpoint.h"
 #include "server/UpdateEndpoint.h"
+#include "server/ResetEndpoint.h"
 
 #include "util/FileUtil.h"
 #include "update/Updater.h"
@@ -87,7 +88,7 @@ void printLogo()
 	Serial.println(F("   ██║   ██╔══╝  ╚════██║██║     ██║██║   ██║██╔══██║   ██║   "));
 	Serial.println(F("   ██║   ███████╗███████║███████╗██║╚██████╔╝██║  ██║   ██║   "));
 	Serial.println(F("   ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   "));
-	Serial.println(F("Firmware version 0.9.9 (beta)"));
+	Serial.println(F("Firmware version 1.0.0"));
 	Serial.println();
 }
 
@@ -178,7 +179,7 @@ bool initializeMotionSensor()
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initializing motion sensor."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize motion sensor."));
 		delete motionSensor;
 		motionSensor = nullptr;
 		return false;
@@ -220,11 +221,13 @@ void initializeRestApi()
 	TesLight::WiFiConfigurationEndpoint::init(webServerManager, F("/api/"));
 	TesLight::WiFiConfigurationEndpoint::begin(configuration, applyWifiConfig);
 	TesLight::FseqEndpoint::init(webServerManager, F("/api/"));
-	TesLight::FseqEndpoint::begin(&SD);
+	TesLight::FseqEndpoint::begin(&SD, configuration);
 	TesLight::LogEndpoint::init(webServerManager, F("/api/"));
 	TesLight::LogEndpoint::begin(&SD);
 	TesLight::UpdateEndpoint::init(webServerManager, F("/api/"));
 	TesLight::UpdateEndpoint::begin(&SD);
+	TesLight::ResetEndpoint::init(webServerManager, F("/api/"));
+	TesLight::ResetEndpoint::begin(&SD);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("REST API initialized."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Starting web server."));
@@ -238,6 +241,7 @@ void initializeRestApi()
 void initializeTimers()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize timers."));
+	ledFrameCounter = 0;
 	ledTimer = micros();
 	lightSensorTimer = micros();
 	motionSensorTimer = micros();
@@ -284,7 +288,7 @@ void handleUpdate()
 	if (TesLight::Updater::install(&SD, (String)UPDATE_DIRECTORY + F("/") + UPDATE_FILE_NAME))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update installed successfully. Rebooting. Good luck ;) !"));
-		TesLight::Updater::reboot();
+		TesLight::Updater::reboot(F("Update Success"));
 	}
 	else
 	{
@@ -465,7 +469,11 @@ void loop()
 	if (micros() - motionSensorTimer >= MOTION_SENSOR_CYCLE_TIME && motionSensorTimer != MAX_ULONG_VALUE)
 	{
 		motionSensorTimer = micros() - (micros() - motionSensorTimer - MOTION_SENSOR_CYCLE_TIME);
-		if (motionSensor == nullptr || !motionSensor->readData())
+		if (motionSensor != nullptr && motionSensor->readData())
+		{
+			ledManager->setMotionSensorData(motionSensor->getData());
+		}
+		else
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to read motion sensor data. Motion sensor is disabled now."));
 			motionSensorTimer = MAX_ULONG_VALUE;
@@ -507,8 +515,6 @@ bool applySystemConfig()
 		lightSensor->setLightSensorMode(systemConfig.lightSensorMode);
 	}
 	ledManager->setSystemPowerLimit(systemConfig.systemPowerLimit);
-	ledManager->setLedVoltage(systemConfig.ledVoltage);
-	ledManager->setLedChannelCurrent(systemConfig.ledChannelCurrent[0], systemConfig.ledChannelCurrent[1], systemConfig.ledChannelCurrent[2]);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System configuration updated."));
 	initializeTimers();
 	return true;

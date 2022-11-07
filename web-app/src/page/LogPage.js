@@ -72,23 +72,23 @@ class LogPage extends React.Component {
 	/**
 	 * Clear the log on the TesLight controller.
 	 */
-	clearLog = () => {
+	clearLog = (event, callback) => {
 		const state = this.state;
 		const result = state.logService.clearLog();
 		result
 			.then(() => {
 				this.reloadLog();
+				callback(true);
 			})
 			.catch(() => {
-				// Todo properly handle error
-				alert("Failed to clear log.");
+				callback(false);
 			});
 	};
 
 	/**
 	 * Download the log file.
 	 */
-	downloadLog = () => {
+	downloadLog = (event, callback) => {
 		const state = this.state;
 		const logSize = state.logService.getLogSize();
 		logSize
@@ -97,15 +97,14 @@ class LogPage extends React.Component {
 				logText
 					.then((logText) => {
 						this.download(logText);
+						callback(true);
 					})
 					.catch((error) => {
-						// Todo
-						alert("Failed to download log from the controller.");
+						callback(false);
 					});
 			})
 			.catch((error) => {
-				// Todo
-				alert("Failed to get the log size from the controller.");
+				callback(false);
 			});
 	};
 
@@ -140,10 +139,26 @@ class LogPage extends React.Component {
 				</p>
 				<div className="spacer"></div>
 
-				<Button title="Clear log" onClick={this.clearLog} />
+				<Button
+					className="button"
+					title="Clear log"
+					successTitle="Log cleared"
+					errorTitle="Failed to clear log"
+					successClassName="button success"
+					errorClassName="button error"
+					onClick={this.clearLog}
+				/>
 				<div className="spacer"></div>
 
-				<Button title="Download" onClick={this.downloadLog} />
+				<Button
+					className="button"
+					title="Download"
+					successTitle="Download started"
+					errorTitle="Failed to start download"
+					successClassName="button success"
+					errorClassName="button error"
+					onClick={this.downloadLog}
+				/>
 			</div>
 		);
 	}

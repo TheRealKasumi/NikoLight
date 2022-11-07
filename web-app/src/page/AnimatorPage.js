@@ -3,6 +3,7 @@ import Button from "../component/Button";
 import ColorPicker from "../component/ColorPicker";
 import DropDown from "../component/DropDown";
 import Slider from "../component/Slider";
+import VoltageSlider from "../component/VoltageSlider";
 import ToggleSwitch from "../component/ToggleSwitch";
 import ColorUtil from "../util/ColorUtil";
 
@@ -142,7 +143,7 @@ class AnimatorPage extends React.Component {
 
 	/**
 	 * Set the LED count for the currently selected zone.
-	 * @param {string} value
+	 * @param {number} value
 	 */
 	setLedCount = (value) => {
 		const state = this.state;
@@ -151,34 +152,56 @@ class AnimatorPage extends React.Component {
 	};
 
 	/**
+	 * Set the LED voltage for the currently selected zone.
+	 * @param {number} value
+	 */
+	setLedVoltage = (value) => {
+		const state = this.state;
+		console.log(value);
+		state.ledConfigurationCopy.setLedVoltage(value);
+		this.setState(state);
+	};
+
+	/**
+	 * Set the channel current for LED of the currently selected zone.
+	 * @param {number} value
+	 */
+	setLedChannelCurrent = (value) => {
+		const state = this.state;
+		console.log(value);
+		state.ledConfigurationCopy.setLedChannelCurrent([value, value, value]);
+		this.setState(state);
+	};
+
+	/**
 	 * Apply the settings and send them to the TesLight controller.
 	 */
-	applySettings = () => {
+	applySettings = (event, callback) => {
 		const state = this.state;
 		state.ledConfiguration[state.selectedZone].copyFrom(state.ledConfigurationCopy);
-		this.setState(state);
 
 		if (state.ledConfiguration[state.selectedZone].hasChanged()) {
 			const result = state.ledService.postLedConfiguration(state.ledConfiguration);
 			result.then(() => {
 				state.ledConfiguration[state.selectedZone].hasChanged(true);
 				state.ledConfigurationCopy.hasChanged(true);
+				callback(true);
 			});
 			result.catch((error) => {
-				// Todo properly handle this with info box
-				alert("Failed to update LED animation");
+				callback(false);
 			});
+		} else {
+			callback(true);
 		}
 	};
 
 	/**
 	 * Cancel and go back to the zone selection.
 	 */
-	cancel = () => {
+	cancel = (event, callback) => {
 		const state = this.state;
 		state.ledConfigurationCopy.copyFrom(state.ledConfiguration[state.selectedZone]);
-		this.setState(state);
-		this.state.setPage(0, {});
+		state.setPage(0, {});
 	};
 
 	/**
@@ -197,13 +220,26 @@ class AnimatorPage extends React.Component {
 
 					<DropDown
 						title="Animation"
-						value={this.state.ledConfigurationCopy.getType()}
+						value={this.state.ledConfigurationCopy.getType().toString()}
 						options={[
 							{ value: "0", name: "Rainbow" },
 							{ value: "1", name: "Rainbow Linear" },
 							{ value: "2", name: "Rainbow Centered" },
-							{ value: "3", name: "Gradient" },
-							{ value: "4", name: "Static" },
+							{ value: "3", name: "Gradient Linear" },
+							{ value: "4", name: "Gradient Center" },
+							{ value: "5", name: "Static" },
+							{ value: "6", name: "Color Bars Linear Hard" },
+							{ value: "7", name: "Color Bars Linear Soft" },
+							{ value: "8", name: "Color Bars Center Hard" },
+							{ value: "9", name: "Color Bars Center Soft" },
+							{ value: "10", name: "Rainbow Linear Acc X" },
+							{ value: "11", name: "Rainbow Linear Acc Y" },
+							{ value: "12", name: "Rainbow Centered Acc X" },
+							{ value: "13", name: "Rainbow Centered Acc Y" },
+							{ value: "14", name: "Gradient Linear Acc X" },
+							{ value: "15", name: "Gradient Linear Acc Y" },
+							{ value: "16", name: "Gradient Centered Acc X" },
+							{ value: "17", name: "Gradient Centered Acc Y" },
 						]}
 						onChange={this.setAnimatorType}
 					/>
@@ -214,13 +250,15 @@ class AnimatorPage extends React.Component {
 						min={0}
 						max={255}
 						value={this.state.ledConfigurationCopy.getBrightness()}
-						step={5}
+						step={2}
 						icon={process.env.PUBLIC_URL + "/img/icon/brightness.svg"}
 						onChange={this.setAnimatorBrightness}
 					/>
 					<div className="spacer"></div>
 
-					{this.state.ledConfigurationCopy.getType() <= 2 ? (
+					{[0, 1, 2, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].includes(
+						this.state.ledConfigurationCopy.getType()
+					) ? (
 						<Slider
 							title="Speed"
 							min={0}
@@ -233,7 +271,9 @@ class AnimatorPage extends React.Component {
 					) : null}
 					<div className="spacer"></div>
 
-					{this.state.ledConfigurationCopy.getType() <= 2 ? (
+					{[0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].includes(
+						this.state.ledConfigurationCopy.getType()
+					) ? (
 						<>
 							<Slider
 								title="Offset"
@@ -248,22 +288,24 @@ class AnimatorPage extends React.Component {
 						</>
 					) : null}
 
-					{this.state.ledConfigurationCopy.getType() === 3 || this.state.ledConfigurationCopy.getType() === 4 ? (
+					{[3, 4, 5, 6, 7, 8, 9, 14, 15, 16, 17].includes(this.state.ledConfigurationCopy.getType()) ? (
 						<>
 							<ColorPicker
 								title="Color 1"
 								value={this.getAnimationColor1()}
+								icon={process.env.PUBLIC_URL + "/img/icon/color.svg"}
 								onChange={this.setAnimationColor1}
 							/>
 							<div className="spacer"></div>
 						</>
 					) : null}
 
-					{this.state.ledConfigurationCopy.getType() === 3 ? (
+					{[3, 4, 6, 7, 8, 9, 14, 15, 16, 17].includes(this.state.ledConfigurationCopy.getType()) ? (
 						<>
 							<ColorPicker
 								title="Color 2"
 								value={this.getAnimationColor2()}
+								icon={process.env.PUBLIC_URL + "/img/icon/color.svg"}
 								onChange={this.setAnimationColor2}
 							/>
 							<div className="spacer"></div>
@@ -281,20 +323,21 @@ class AnimatorPage extends React.Component {
 					/>
 					<div className="spacer"></div>
 
-					{this.state.ledConfigurationCopy.getType() <= 3 ? (
+					{[0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].includes(
+						this.state.ledConfigurationCopy.getType()
+					) ? (
 						<>
 							<ToggleSwitch
 								title="Reverse"
 								leftText="Normal"
 								rightText="Reverse"
-								value={this.state.ledConfigurationCopy.getReverse()}
+								active={this.state.ledConfigurationCopy.getReverse()}
 								onChange={this.setAnimationReverse}
 							/>
 							<div className="spacer"></div>
 						</>
 					) : null}
 				</details>
-
 				<div className="spacer"></div>
 
 				<details className="details">
@@ -310,13 +353,43 @@ class AnimatorPage extends React.Component {
 						icon={process.env.PUBLIC_URL + "/img/icon/count.svg"}
 						onChange={this.setLedCount}
 					/>
+					<div className="spacer"></div>
+
+					<VoltageSlider
+						title="LED Voltage"
+						min={40}
+						max={55}
+						value={this.state.ledConfigurationCopy.getLedVoltage()}
+						step={1}
+						icon={process.env.PUBLIC_URL + "/img/icon/voltage.svg"}
+						onChange={this.setLedVoltage}
+					/>
+					<div className="spacer"></div>
+
+					<Slider
+						title="LED Current Per Channel (mA)"
+						min={1}
+						max={200}
+						value={this.state.ledConfigurationCopy.getLedChannelCurrent()[0]}
+						step={1}
+						icon={process.env.PUBLIC_URL + "/img/icon/voltage.svg"}
+						onChange={this.setLedChannelCurrent}
+					/>
 				</details>
 				<div className="spacer"></div>
 
-				<Button title="Apply" onClick={this.applySettings} />
+				<Button
+					className="button"
+					title="Save"
+					successTitle="Configuration saved"
+					errorTitle="Failed to save"
+					successClassName="button success"
+					errorClassName="button error"
+					onClick={this.applySettings}
+				/>
 				<div className="spacer"></div>
 
-				<Button title="Back to Zones" onClick={this.cancel} />
+				<Button className="button" title="Back to Zones" onClick={this.cancel} />
 				<div className="spacer"></div>
 			</div>
 		);

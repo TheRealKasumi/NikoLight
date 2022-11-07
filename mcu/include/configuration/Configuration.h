@@ -35,30 +35,38 @@ namespace TesLight
 
 			// Power config
 			uint8_t systemPowerLimit; // W
-			uint8_t ledVoltage; // Voltage * 10
-			uint8_t ledChannelCurrent[3]; // mA
 		};
 
 		struct LedConfig
 		{
+			// Pin Configuration
 			uint8_t ledPin;
 			uint16_t ledCount;
+
+			// Animation Configuration
 			uint8_t type;
 			uint8_t speed;
 			uint16_t offset;
 			uint8_t brightness;
 			bool reverse;
 			uint8_t fadeSpeed;
-			uint8_t customField[NUM_ANIMATOR_CUSTOM_FIELDS];
+			uint8_t customField[ANIMATOR_NUM_CUSTOM_FIELDS];
+
+			// Power config
+			uint8_t ledVoltage;			  // Voltage * 10
+			uint8_t ledChannelCurrent[3]; // mA
 		};
 
 		struct WiFiConfig
 		{
+			// Access point configuration
 			String accessPointSsid;
 			String accessPointPassword;
 			uint8_t accessPointChannel;
 			bool accessPointHidden;
 			uint8_t accessPointMaxConnections;
+
+			// WiFi network configuration
 			String wifiSsid;
 			String wifiPassword;
 		};
@@ -85,7 +93,7 @@ namespace TesLight
 		uint16_t configurationVersion;
 
 		TesLight::Configuration::SystemConfig systemConfig;
-		TesLight::Configuration::LedConfig ledConfig[NUM_LED_STRIPS];
+		TesLight::Configuration::LedConfig ledConfig[LED_NUM_ZONES];
 		TesLight::Configuration::WiFiConfig wifiConfig;
 
 		uint16_t getSimpleHash();

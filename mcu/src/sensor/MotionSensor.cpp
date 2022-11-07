@@ -23,7 +23,7 @@ TesLight::MotionSensor::MotionSensor(const uint8_t deviceAddress, const uint8_t 
 	this->sclPin = sclPin;
 	this->bufferSize = bufferSize > 0 ? bufferSize : 1;
 	this->bufferIndex = 0;
-	this->motionData = new TesLight::MotionSensorData[this->bufferSize];
+	this->motionData = new TesLight::MotionSensor::MotionSensorData[this->bufferSize];
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initializing buffers."));
 	this->initializeMotionSensorData(this->motionData, this->bufferSize);
@@ -173,12 +173,12 @@ bool TesLight::MotionSensor::readData(const bool asRingBuffer)
 
 /**
  * @brief Get the current motion data respecting the calibration data.
- * @return {@link TesLight::MotionSensorData} containing the motion data
+ * @return {@link TesLight::MotionSensor::MotionSensorData} containing the motion data
  */
-TesLight::MotionSensorData TesLight::MotionSensor::getData()
+TesLight::MotionSensor::MotionSensorData TesLight::MotionSensor::getData()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get (compensated) Motion Sensor data."));
-	TesLight::MotionSensorData data = this->average(this->motionData, this->bufferSize);
+	TesLight::MotionSensor::MotionSensorData data = this->average(this->motionData, this->bufferSize);
 	data.accXRaw -= this->offsetData.accXRaw;
 	data.accYRaw -= this->offsetData.accYRaw;
 	data.accZRaw -= this->offsetData.accZRaw;
@@ -198,7 +198,7 @@ TesLight::MotionSensorData TesLight::MotionSensor::getData()
  * @brief Set the offset data for sensor calibration.
  * @param offsetData offset data
  */
-void TesLight::MotionSensor::setOffsetData(TesLight::MotionSensorData offsetData)
+void TesLight::MotionSensor::setOffsetData(TesLight::MotionSensor::MotionSensorData offsetData)
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set Motion Sensor offset data."));
 	this->offsetData = offsetData;
@@ -206,20 +206,20 @@ void TesLight::MotionSensor::setOffsetData(TesLight::MotionSensorData offsetData
 
 /**
  * @brief Get the calculate offset data for sensor calibration.
- * @return instance of {@link TesLight::MotionSensorData}
+ * @return instance of {@link TesLight::MotionSensor::MotionSensorData}
  */
-TesLight::MotionSensorData TesLight::MotionSensor::getOffsetData()
+TesLight::MotionSensor::MotionSensorData TesLight::MotionSensor::getOffsetData()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get Motion Sensor offset data."));
 	return this->offsetData;
 }
 
 /**
- * @brief Initialize {@link TesLight::MotionSensorData} to 0 values.
+ * @brief Initialize {@link TesLight::MotionSensor::MotionSensorData} to 0 values.
  * @param data pointer to the instance
  * @param sampleSize number of samples to initialize
  */
-void TesLight::MotionSensor::initializeMotionSensorData(TesLight::MotionSensorData *data, const uint8_t sampleSize)
+void TesLight::MotionSensor::initializeMotionSensorData(TesLight::MotionSensor::MotionSensorData *data, const uint8_t sampleSize)
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize Motion Sensor data to 0."));
 	for (uint8_t i = 0; i < sampleSize; i++)
@@ -241,12 +241,12 @@ void TesLight::MotionSensor::initializeMotionSensorData(TesLight::MotionSensorDa
 }
 
 /**
- * @brief Average buffer of {@link TesLight::MotionSensorData}.
+ * @brief Average buffer of {@link TesLight::MotionSensor::MotionSensorData}.
  * @param data buffer containing the data
  * @param sampleSize number of samples
- * @return {@link TesLight::MotionSensorData} containing the average values
+ * @return {@link TesLight::MotionSensor::MotionSensorData} containing the average values
  */
-TesLight::MotionSensorData TesLight::MotionSensor::average(TesLight::MotionSensorData *data, const uint8_t sampleSize)
+TesLight::MotionSensor::MotionSensorData TesLight::MotionSensor::average(TesLight::MotionSensor::MotionSensorData *data, const uint8_t sampleSize)
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calculcate the average Motion Sensor data based on buffer."));
 	double accXRaw = 0.0;
@@ -278,7 +278,7 @@ TesLight::MotionSensorData TesLight::MotionSensor::average(TesLight::MotionSenso
 		gyroZDeg += data[i].gyroZDeg * (1.0 / sampleSize);
 	}
 
-	TesLight::MotionSensorData averageData;
+	TesLight::MotionSensor::MotionSensorData averageData;
 	averageData.accXRaw = (int16_t)accXRaw;
 	averageData.accYRaw = (int16_t)accYRaw;
 	averageData.accZRaw = (int16_t)accZRaw;

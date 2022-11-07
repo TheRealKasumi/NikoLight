@@ -4,12 +4,14 @@ import AnimatorPage from "./page/AnimatorPage";
 import SettingsPage from "./page/SettingsPage";
 import LogPage from "./page/LogPage";
 import UpdatePage from "./page/UpdatePage";
+import FseqPage from "./page/FseqPage";
 import NavigationBar from "./component/NavigationBar";
 import SystemService from "./service/SystemService";
 import LedService from "./service/LedService";
 import WifiService from "./service/WifiService";
 import LogService from "./service/LogService";
 import UpdateService from "./service/UpdateService";
+import FseqService from "./service/FseqService";
 import "./App.css";
 
 /**
@@ -32,6 +34,7 @@ class App extends React.Component {
 			wifiService: new WifiService("/api/"),
 			logService: new LogService("/api/"),
 			updateService: new UpdateService("/api/"),
+			fseqService: new FseqService("/api/"),
 			systemConfiguration: null,
 			ledConfiguration: null,
 			wifiConfiguration: null,
@@ -62,10 +65,13 @@ class App extends React.Component {
 			const state = this.state;
 			state.systemConfiguration = systemConfiguration;
 			this.setState(state);
-			this.configurationLoadedCallback();
+			this.configurationLoadedCallback("SystemConfiguration");
 		});
 		result.catch((error) => {
-			this.configurationLoadFailedCallback(error);
+			const state = this.state;
+			state.systemConfiguration = null;
+			this.setState(state);
+			this.configurationLoadFailedCallback(error, "SystemConfiguration");
 		});
 	};
 
@@ -78,10 +84,13 @@ class App extends React.Component {
 			const state = this.state;
 			state.ledConfiguration = ledConfiguration;
 			this.setState(state);
-			this.configurationLoadedCallback();
+			this.configurationLoadedCallback("LedConfiguration");
 		});
 		result.catch((error) => {
-			this.configurationLoadFailedCallback(error);
+			const state = this.state;
+			state.ledConfiguration = null;
+			this.setState(state);
+			this.configurationLoadFailedCallback(error, "LedConfiguration");
 		});
 	};
 
@@ -94,10 +103,13 @@ class App extends React.Component {
 			const state = this.state;
 			state.wifiConfiguration = wifiConfiguration;
 			this.setState(state);
-			this.configurationLoadedCallback();
+			this.configurationLoadedCallback("WiFiConfiguration");
 		});
 		result.catch((error) => {
-			this.configurationLoadFailedCallback(error);
+			const state = this.state;
+			state.wifiConfiguration = null;
+			this.setState(state);
+			this.configurationLoadFailedCallback(error, "WiFiConfiguration");
 		});
 	};
 
@@ -105,8 +117,9 @@ class App extends React.Component {
 	 * Callback is called when a configuration was loaded successfully.
 	 * Once all configurations are loaded, a timer is started to wait
 	 * for the end of the loading animation. Then the UI is shown.
+	 * @param {string} type type of the configuration loaded
 	 */
-	configurationLoadedCallback = () => {
+	configurationLoadedCallback = (type) => {
 		if (
 			this.state.systemConfiguration !== null &&
 			this.state.ledConfiguration !== null &&
@@ -128,10 +141,19 @@ class App extends React.Component {
 	 * Callback is called when the laoding of a configuration failed.
 	 * This could happens due to connection errors.
 	 * @param {Exception} error the exception that caused the error
+	 * @param {string} type type of the configuration loaded
 	 */
-	configurationLoadFailedCallback = (error) => {
-		alert("Failed to load the configuration from the TesLight controller.");
-		// Todo handle error
+	configurationLoadFailedCallback = (error, type) => {
+		console.log(`Failed to load ${type} from the TesLight controller. Retrying in 2 seconds.`);
+		setTimeout(() => {
+			if (type === "SystemConfiguration") {
+				this.loadSystemConfiguration();
+			} else if (type === "LedConfiguration") {
+				this.loadLedConfiguration();
+			} else if (type === "WiFiConfiguration") {
+				this.loadWifiConfiguration();
+			}
+		}, 2000);
 	};
 
 	/**
@@ -161,7 +183,13 @@ class App extends React.Component {
 					<img src={process.env.PUBLIC_URL + "/img/logo.svg"} />
 				</div>
 				<div className="content">
-					{this.state.page.id === 0 ? <ZonePage setPage={this.setPage} /> : null}
+					{this.state.page.id === 0 ? (
+						<ZonePage
+							ledService={this.state.ledService}
+							ledConfiguration={this.state.ledConfiguration}
+							setPage={this.setPage}
+						/>
+					) : null}
 					{this.state.page.id === 1 ? (
 						<AnimatorPage
 							ledService={this.state.ledService}
@@ -180,6 +208,13 @@ class App extends React.Component {
 					) : null}
 					{this.state.page.id === 3 ? <LogPage logService={this.state.logService} /> : null}
 					{this.state.page.id === 4 ? <UpdatePage updateService={this.state.updateService} /> : null}
+					{this.state.page.id === 5 ? (
+						<FseqPage
+							fseqService={this.state.fseqService}
+							ledService={this.state.ledService}
+							ledConfiguration={this.state.ledConfiguration}
+						/>
+					) : null}
 				</div>
 				<NavigationBar selectedIndex={0} setPage={this.setPage} />
 			</div>

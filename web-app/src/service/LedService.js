@@ -33,7 +33,7 @@ class LedService {
 
 			try {
 				const zones = [];
-				for (let i = 0; i < 6; i++) {
+				for (let i = 0; i < 8; i++) {
 					const zone = new LedConfiguration();
 					zone.setLedPin(stream.readByte());
 					zone.setLedCount(stream.readWord());
@@ -43,11 +43,15 @@ class LedService {
 					zone.setBrightness(stream.readByte());
 					zone.setReverse(stream.readByte() >= 1);
 					zone.setFadeSpeed(stream.readByte());
+
 					const customFields = zone.getCustomFields();
-					for (let j = 0; j < 10; j++) {
+					for (let j = 0; j < 15; j++) {
 						customFields[j] = stream.readByte();
 					}
 					zone.setCustomFields(customFields);
+
+					zone.setLedVoltage(stream.readByte());
+					zone.setLedChannelCurrent([stream.readByte(), stream.readByte(), stream.readByte()]);
 					zone.hasChanged(true);
 					zones.push(zone);
 				}
@@ -64,10 +68,10 @@ class LedService {
 	 */
 	postLedConfiguration = (ledConfiguration) => {
 		return new Promise(async (resolve, reject) => {
-			const stream = new BinaryStream(120);
+			const stream = new BinaryStream(232);
 
 			try {
-				for (let i = 0; i < 6; i++) {
+				for (let i = 0; i < 8; i++) {
 					const zone = ledConfiguration[i];
 
 					stream.writeByte(zone.getLedPin());
@@ -80,9 +84,14 @@ class LedService {
 					stream.writeByte(zone.getFadeSpeed());
 
 					const customFields = zone.getCustomFields();
-					for (let j = 0; j < 10; j++) {
+					for (let j = 0; j < 15; j++) {
 						stream.writeByte(customFields[j]);
 					}
+
+					stream.writeByte(zone.getLedVoltage());
+					stream.writeByte(zone.getLedChannelCurrent()[0]);
+					stream.writeByte(zone.getLedChannelCurrent()[1]);
+					stream.writeByte(zone.getLedChannelCurrent()[2]);
 				}
 			} catch (ex) {
 				reject(new LedServiceException("Failed to write binary data to the stream."));
