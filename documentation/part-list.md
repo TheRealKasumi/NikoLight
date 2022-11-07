@@ -35,12 +35,12 @@ Also, this list assumes that you have all necessary tools and materials for buil
 
 ## Parts For On-Board Regulator
 
-| Part                        | Count | Source             | Comment                               |
-| --------------------------- | ----- | ------------------ | ------------------------------------- |
-| LM2596T-5.0 Regulator.      | 1/2   | [Reichelt][lm2596] | Make sure to get the fixed 5V version |
-| Inductor min. 33µH          | 1/2   | [Reichelt][ind33]  |                                       |
-| IN5824 Schottky Diode       | 1/2   | [Reichelt][in5824] | Or diode with similar specs           |
-| Capacitor 680µf             | 1/2   | [Reichelt][cap680] |                                       |
+| Part                   | Count | Source             | Comment                               |
+| ---------------------- | ----- | ------------------ | ------------------------------------- |
+| LM2596T-5.0 Regulator. | 1/2   | [Reichelt][lm2596] | Make sure to get the fixed 5V version |
+| Inductor min. 33µH     | 1/2   | [Reichelt][ind33]  |                                       |
+| IN5824 Schottky Diode  | 1/2   | [Reichelt][in5824] | Or diode with similar specs           |
+| Capacitor 680µf        | 1/2   | [Reichelt][cap680] |                                       |
 
 ## Possible LEDs
 
@@ -53,10 +53,11 @@ Also, this list assumes that you have all necessary tools and materials for buil
 
 ## Optional Parts
 
-| Part           | Count   | Source          | Comment                                         |
-| -------------- | ------- | --------------- | ----------------------------------------------- |
-| Shrinking tube | depends | [Amazon][tubes] | Will help you to have a cleaner and safer build |
-| Fabric tape    | depends | [Amazon][tape]  | Will help you to have a cleaner and safer build |
+| Part                    | Count   | Source            | Comment                                         |
+| ----------------------- | ------- | ----------------- | ----------------------------------------------- |
+| Heatsink for regulators | 2       | [Reichelt][hsink] | Helps to keep the temperature a little lower    |
+| Shrinking tube          | depends | [Amazon][tubes]   | Will help you to have a cleaner and safer build |
+| Fabric tape             | depends | [Amazon][tape]    | Will help you to have a cleaner and safer build |
 
 ## Order the PCB and Printed Parts
 
@@ -90,5 +91,6 @@ See [build guide](build.md#order-the-pcb-and-3d-printed-parts).
 [ws2812b]: https://www.amazon.de/BTF-LIGHTING-adressierbar-Vollfarbiger-wasserdichte-DIY-Projekte/dp/B088BRY2SH/ref=sr_1_8?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1OSVQ80JPAJDG&keywords=ws2812b+strip+60%2Fm&qid=1662188470&sprefix=ws2812b+strip+60%2Fm%2Caps%2C82&sr=8-8
 [fiber]: https://www.amazon.de/TABEN-Autoseitenlicht-LED-Beleuchtung-Innenatmosph%C3%A4re-Neonstreifenleuchten/dp/B08DLJ2JJ1/ref=sr_1_7?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&keywords=taben+fiber&qid=1662190164&sr=8-7
 [lightbars]: https://individualiseyourcar.com/en/ambitrim-digital-rgb-led-ambient-light-components.html
+[hsink]: https://www.reichelt.de/kuehlkoerper-15-2-mm-alu-26-k-w-to-220-fk-242-sa-220-o-p228044.html?PROVID=2788&gclid=CjwKCAiA9qKbBhAzEiwAS4yeDbgDFQnpxuPlW2l_6iWmSpzoQlH7U5ZTtUvpgh0bGrCp32GTk7xljBoCXLsQAvD_BwE
 [tubes]: https://www.amazon.de/ChiliTec-12000058-Chilitec-Schrumpfschlauch-Sortiment-100-teilig/dp/B003H9CJ1Y/ref=sr_1_20_mod_primary_new?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1Q5IY5D32HNLR&keywords=schrumpfschlauch&qid=1662189028&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&sprefix=schrumpfschlauch%2Caps%2C115&sr=8-20
 [tape]: https://www.amazon.de/tesa-Gewebeband-Witterungsbest%C3%A4ndiges-Panzertape-Befestigen/dp/B000KT7E0U/ref=sr_1_5?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1U7SK4BSKYGK0&keywords=Gewebeband&qid=1662189088&sprefix=gewebeban%2Caps%2C94&sr=8-5
