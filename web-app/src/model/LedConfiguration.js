@@ -15,7 +15,9 @@ class LedConfiguration {
 		this.brightness = 50;
 		this.reverse = false;
 		this.fadeSpeed = 5;
-		this.customFields = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.customFields = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.ledVoltage = 50;
+		this.ledChannelCurrent = [14, 14, 14];
 	}
 
 	/**
@@ -104,12 +106,31 @@ class LedConfiguration {
 	};
 
 	/**
+	 * Get the LED voltage x 10 of the zone.
+	 * @returns LED voltage x10
+	 */
+	getLedVoltage = () => {
+		return this.ledVoltage;
+	};
+
+	/**
+	 * Get the array containing the channel currents for the zone.
+	 * @returns array containing channel currents
+	 */
+	getLedChannelCurrent = () => {
+		return this.ledChannelCurrent;
+	};
+
+	/**
 	 * Set the output pin for the LEDs.
 	 * @param {number} ledPin
 	 * @returns true when valid, false when invalid
 	 */
 	setLedPin = (ledPin) => {
-		if (typeof ledPin === "number" && ((ledPin >= 13 && ledPin <= 17) || ledPin === 21)) {
+		if (
+			typeof ledPin === "number" &&
+			((ledPin >= 13 && ledPin <= 17) || (ledPin >= 21 && ledPin <= 22) || ledPin === 25)
+		) {
 			this.ledPin = ledPin;
 			this.changed = true;
 			return true;
@@ -137,7 +158,7 @@ class LedConfiguration {
 	 * @returns true when valid, false when invalid
 	 */
 	setType = (type) => {
-		if (typeof type === "number" && ((type >= 0 && type <= 4) || type === 255)) {
+		if (typeof type === "number" && ((type >= 0 && type <= 17) || type === 255)) {
 			this.type = type;
 			this.changed = true;
 			return true;
@@ -219,12 +240,40 @@ class LedConfiguration {
 	/**
 	 * Set the custom fields of the animaiton.
 	 * The meaning depends on the used animation type.
-	 * @param {object} customFields custom fields
+	 * @param {Array} customFields custom fields
 	 * @returns true when valid, false when invalid
 	 */
 	setCustomFields = (customFields) => {
-		if (typeof customFields === "object" && Array.isArray(customFields) && customFields.length === 10) {
+		if (typeof customFields === "object" && Array.isArray(customFields) && customFields.length === 15) {
 			this.customFields = customFields;
+			this.changed = true;
+			return true;
+		}
+		return false;
+	};
+
+	/**
+	 * Set the LED voltage x 10 of the zone.
+	 * @param {number} ledVoltage LED voltage x 10
+	 * @returns true when valid, false when invalid
+	 */
+	setLedVoltage = (ledVoltage) => {
+		if (typeof ledVoltage === "number" && ledVoltage >= 30 && ledVoltage <= 150) {
+			this.ledVoltage = ledVoltage;
+			this.changed = true;
+			return true;
+		}
+		return false;
+	};
+
+	/**
+	 * Set the channel current in mA for the LEDs in this zone.
+	 * @param {Array} ledChannelCurrent channel current in mA
+	 * @returns true when valid, false when invalid
+	 */
+	setLedChannelCurrent = (ledChannelCurrent) => {
+		if (typeof ledChannelCurrent === "object" && Array.isArray(ledChannelCurrent) && ledChannelCurrent.length === 3) {
+			this.ledChannelCurrent = ledChannelCurrent;
 			this.changed = true;
 			return true;
 		}
@@ -247,6 +296,10 @@ class LedConfiguration {
 		for (let i = 0; i < ledConfiguration.customFields.length; i++) {
 			this.customFields[i] = ledConfiguration.customFields[i];
 		}
+		this.ledVoltage = ledConfiguration.ledVoltage;
+		for (let i = 0; i < 3; i++) {
+			this.ledChannelCurrent[i] = ledConfiguration.ledChannelCurrent[i];
+		}
 	};
 
 	/**
@@ -266,6 +319,10 @@ class LedConfiguration {
 		clone.fadeSpeed = this.fadeSpeed;
 		for (let i = 0; i < this.customFields.length; i++) {
 			clone.customFields[i] = this.customFields[i];
+		}
+		clone.ledVoltage = this.ledVoltage;
+		for (let i = 0; i < 3; i++) {
+			clone.ledChannelCurrent[i] = this.ledChannelCurrent[i];
 		}
 		return clone;
 	};

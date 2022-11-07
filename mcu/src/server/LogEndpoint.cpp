@@ -129,6 +129,6 @@ void TesLight::LogEndpoint::clearLog()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to clear the log file."));
 	TesLight::Logger::clearLog();
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Sending the response."));
 	webServer->send(200, F("text/plain"), F("Log cleared."));
 }

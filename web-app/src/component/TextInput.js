@@ -40,9 +40,11 @@ class TextInput extends React.Component {
 				<label className="title">{this.state.title}</label>
 				<div className="text">
 					<div>
-						<div style={{ width: "15%", textAlign: "center" }}>
-							<img src={this.state.icon} height="20px" />
-						</div>
+						{this.state.icon ? (
+							<div style={{ width: "15%", textAlign: "center" }}>
+								<img src={this.state.icon} height="20px" />
+							</div>
+						) : null}
 						<div style={{ flex: "1" }}>
 							<input type="text" value={this.state.value} onChange={this.onChange} />
 						</div>

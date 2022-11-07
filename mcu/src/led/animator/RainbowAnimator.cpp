@@ -18,7 +18,7 @@ TesLight::RainbowAnimator::RainbowAnimator()
 }
 
 /**
- * @brief Construct a new Tes Light:: Rainbow Animator:: Rainbow Animator object
+ * @brief Create a new instance of {@link TesLight::RainbowAnimator}.
  *
  * @param rainbowMode display mode of the rainbow
  */
@@ -57,7 +57,7 @@ void TesLight::RainbowAnimator::render()
 		float redAngle = 0.0f;
 		float greenAngle = 0.0f;
 		float blueAngle = 0.0f;
-		float offset = this->offset / 50.0f;
+		const float offset = this->offset / 50.0f;
 
 		if (this->rainbowMode == TesLight::RainbowAnimator::RainbowMode::RAINBOW_SOLID)
 		{
@@ -87,11 +87,11 @@ void TesLight::RainbowAnimator::render()
 
 	if (this->reverse)
 	{
-		this->angle += this->speed / 51.0f;
+		this->angle += this->speed / 50.0f;
 	}
 	else
 	{
-		this->angle -= this->speed / 51.0f;
+		this->angle -= this->speed / 50.0f;
 	}
 
 	if (this->angle >= 360.0f)

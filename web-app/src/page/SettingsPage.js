@@ -63,7 +63,7 @@ class SettingsPage extends React.Component {
 	 */
 	setLightSensorMaxValue = (value) => {
 		const state = this.state;
-		state.systemConfigurationCopy.setLightSensorMinValue(value);
+		state.systemConfigurationCopy.setLightSensorMaxValue(value);
 		this.setState(state);
 	};
 
@@ -98,26 +98,6 @@ class SettingsPage extends React.Component {
 	};
 
 	/**
-	 * Set the LED voltage multiplied by 10.
-	 * @param {string} value value of the selection
-	 */
-	setLedVoltage = (value) => {
-		const state = this.state;
-		state.systemConfigurationCopy.setLedVoltage(value);
-		this.setState(state);
-	};
-
-	/**
-	 * Set the LED current per channel in mA.
-	 * @param {string} value value of the selection
-	 */
-	setLedChannelCurrent = (value) => {
-		const state = this.state;
-		state.systemConfigurationCopy.setLedChannelCurrent([value, value, value]);
-		this.setState(state);
-	};
-
-	/**
 	 * Set the log level.
 	 * @param {string} value value of the selection
 	 * @param {number} selectedIndex index of the selection
@@ -128,12 +108,10 @@ class SettingsPage extends React.Component {
 		this.setState(state);
 	};
 
-	// Todo set power limit values
-
 	/**
 	 * Apply the settings and send them to the TesLight controller.
 	 */
-	applySettings = () => {
+	applySettings = (event, callback) => {
 		const state = this.state;
 		state.systemConfiguration.copyFrom(state.systemConfigurationCopy);
 		state.wifiConfiguration.copyFrom(state.wifiConfigurationCopy);
@@ -146,8 +124,7 @@ class SettingsPage extends React.Component {
 				state.systemConfigurationCopy.hasChanged(true);
 			});
 			result.catch((error) => {
-				// Todo properly handle this with info box
-				alert("Failed to update the system configuration.");
+				callback(false);
 			});
 		}
 
@@ -156,12 +133,13 @@ class SettingsPage extends React.Component {
 			result.then(() => {
 				state.wifiConfiguration.hasChanged(true);
 				state.wifiConfigurationCopy.hasChanged(true);
-				alert("The WiFi configuration was updated. You need to reconnect to the TesLight hotspot.");
+				callback(true);
 			});
 			result.catch((error) => {
-				// Todo properly handle this with info box
-				alert("Failed to update the wifi configuration.");
+				callback(false);
 			});
+		} else {
+			callback(true);
 		}
 	};
 
@@ -193,7 +171,7 @@ class SettingsPage extends React.Component {
 					<DropDown
 						key={`settings-page-input-key-${this.state.inputKey}`}
 						title="Mode"
-						value={this.state.systemConfigurationCopy.getLightSensorMode()}
+						value={this.state.systemConfigurationCopy.getLightSensorMode().toString()}
 						options={[
 							{ value: "0", name: "Always Off" },
 							{ value: "1", name: "Always On" },
@@ -279,29 +257,6 @@ class SettingsPage extends React.Component {
 						onChange={this.setSystemPowerLimit}
 					/>
 					<div className="spacer"></div>
-
-					<VoltageSlider
-						key={`settings-page-input-key-${this.state.inputKey + 7}`}
-						title="LED Voltage"
-						min={40}
-						max={55}
-						value={this.state.systemConfigurationCopy.getLedVoltage()}
-						step={1}
-						icon={process.env.PUBLIC_URL + "/img/icon/voltage.svg"}
-						onChange={this.setLedVoltage}
-					/>
-					<div className="spacer"></div>
-
-					<Slider
-						key={`settings-page-input-key-${this.state.inputKey + 8}`}
-						title="LED Current Per Channel (mA)"
-						min={1}
-						max={200}
-						value={this.state.systemConfigurationCopy.getLedChannelCurrent()[0]}
-						step={1}
-						icon={process.env.PUBLIC_URL + "/img/icon/voltage.svg"}
-						onChange={this.setLedChannelCurrent}
-					/>
 				</details>
 				<div className="spacer"></div>
 
@@ -324,10 +279,18 @@ class SettingsPage extends React.Component {
 				</details>
 				<div className="spacer"></div>
 
-				<Button title="Apply" onClick={this.applySettings} />
+				<Button
+					className="button"
+					title="Save"
+					successTitle="Configuration saved"
+					errorTitle="Failed to save"
+					successClassName="button success"
+					errorClassName="button error"
+					onClick={this.applySettings}
+				/>
 				<div className="spacer"></div>
 
-				<Button title="Reset" onClick={this.cancel} />
+				<Button className="button" title="Reset" onClick={this.cancel} />
 			</div>
 		);
 	}

@@ -50,8 +50,15 @@ bool TesLight::WiFiManager::startAccessPoint(const char *ssid, const char *passw
 		return false;
 	}
 
-	const IPAddress apIP = WiFi.softAPIP();
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("WiFi access point started. Listening on: ") + apIP.toString());
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Starting WiFi access point."));
+	delay(100);
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Configuring WiFi access point."));
+	IPAddress ip(192, 168, 4, 1);
+	IPAddress nMask(255, 255, 255, 0);
+	WiFi.softAPConfig(ip, ip, nMask);
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("WiFi access point started. Listening on: ") + WiFi.softAPIP().toString());
 
 	return true;
 }

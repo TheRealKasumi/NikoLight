@@ -17,6 +17,7 @@ std::function<bool()> TesLight::SystemConfigurationEndpoint::configChangedCallba
  */
 void TesLight::SystemConfigurationEndpoint::begin(TesLight::Configuration *_configuration, std::function<bool()> _configChangedCallback)
 {
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register System Configuration Endpoints."));
 	TesLight::SystemConfigurationEndpoint::configuration = _configuration;
 	TesLight::SystemConfigurationEndpoint::configChangedCallback = _configChangedCallback;
 	webServerManager->addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_GET, TesLight::SystemConfigurationEndpoint::getSystemConfig);
@@ -29,17 +30,13 @@ void TesLight::SystemConfigurationEndpoint::begin(TesLight::Configuration *_conf
 void TesLight::SystemConfigurationEndpoint::getSystemConfig()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the system configuration."));
-	TesLight::InMemoryBinaryFile binary(13);
+	TesLight::InMemoryBinaryFile binary(9);
 	binary.writeByte((uint8_t)TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().logLevel);
 	binary.writeByte((uint8_t)TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMode);
 	binary.writeWord(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorThreshold);
 	binary.writeWord(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinValue);
 	binary.writeWord(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxValue);
 	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().systemPowerLimit);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().ledVoltage);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().ledChannelCurrent[0]);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().ledChannelCurrent[1]);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().ledChannelCurrent[2]);
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Preparing base64 response."));
 	String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
@@ -83,11 +80,11 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Request decoded."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking length of the decoded data."));
-	if (length != 13)
+	if (length != 9)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Length of decoded data is invalid."));
 		delete[] decoded;
-		webServer->send(400, F("text/plain"), F("The length of the decoded data must be exactly 13 bytes."));
+		webServer->send(400, F("text/plain"), F("The length of the decoded data must be exactly 9 bytes."));
 		return;
 	}
 
@@ -104,10 +101,6 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 	config.lightSensorMinValue = binary.readWord();
 	config.lightSensorMaxValue = binary.readWord();
 	config.systemPowerLimit = binary.readByte();
-	config.ledVoltage = binary.readByte();
-	config.ledChannelCurrent[0] = binary.readByte();
-	config.ledChannelCurrent[1] = binary.readByte();
-	config.ledChannelCurrent[2] = binary.readByte();
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Validating system configuration."));
 	if (!validateLogLevel((uint8_t)config.logLevel))

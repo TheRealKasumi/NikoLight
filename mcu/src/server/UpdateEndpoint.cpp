@@ -42,7 +42,7 @@ void TesLight::UpdateEndpoint::postPackage()
 	// Reboot the controller.
 	// Update will be installed after the reboot.
 	delay(1000);
-	TesLight::Updater::reboot();
+	TesLight::Updater::reboot(F("Update"));
 }
 
 /**

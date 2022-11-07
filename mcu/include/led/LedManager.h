@@ -22,6 +22,11 @@
 #include "led/animator/GradientAnimator.h"
 #include "led/animator/StaticColorAnimator.h"
 #include "led/animator/FseqAnimator.h"
+#include "led/animator/ColorBarAnimator.h"
+#include "led/animator/RainbowAnimatorMotion.h"
+#include "led/animator/GradientAnimatorMotion.h"
+
+#include "sensor/MotionSensor.h"
 
 namespace TesLight
 {
@@ -35,7 +40,7 @@ namespace TesLight
 		void clear();
 
 		void setAmbientBrightness(const float ambientBrightness);
-		float getAmbientBrightness();
+		bool getAmbientBrightness(float &ambientBrightness);
 
 		void setTargetFrameTime(const uint32_t targetFrameTime);
 		uint32_t getTargetFrameTime();
@@ -43,34 +48,37 @@ namespace TesLight
 		void setSystemPowerLimit(const uint8_t systemPowerLimit);
 		uint8_t getSystemPowerLimit();
 
-		void setLedVoltage(const uint8_t ledVoltage);
-		uint8_t getLedVoltage();
+		void setLedVoltage(const uint8_t zoneIndex, const uint8_t ledVoltage);
+		uint8_t getLedVoltage(const uint8_t zoneIndex);
 
-		void setLedChannelCurrent(const uint8_t redCurrent, const uint8_t greenCurrent, const uint8_t blueCurrent);
-		uint8_t getLedRedChannelCurrent();
-		uint8_t getLedGreenChannelCurrent();
-		uint8_t getLedBlueChannelCurrent();
+		void setLedChannelCurrent(const uint8_t zoneIndex, const uint8_t redCurrent, const uint8_t greenCurrent, const uint8_t blueCurrent);
+		uint8_t getLedRedChannelCurrent(const uint8_t zoneIndex);
+		uint8_t getLedGreenChannelCurrent(const uint8_t zoneIndex);
+		uint8_t getLedBlueChannelCurrent(const uint8_t zoneIndex);
+
+		void setMotionSensorData(const TesLight::MotionSensor::MotionSensorData motionSensorData);
+		bool getMotionSensorData(TesLight::MotionSensor::MotionSensorData &motionSensorData);
 
 		void render();
 		void show();
 
 	private:
-		CRGB *ledData[NUM_LED_STRIPS];
-		TesLight::LedAnimator *ledAnimator[NUM_LED_STRIPS];
+		CRGB *ledData[LED_NUM_ZONES];
+		TesLight::LedAnimator *ledAnimator[LED_NUM_ZONES];
 		TesLight::FseqLoader *fseqLoader = nullptr;
 		uint32_t targetFrameTime;
 
 		uint8_t systemPowerLimit;
-		uint8_t ledVoltage;
-		uint8_t ledChannelCurrent[3];
+		uint8_t ledVoltage[LED_NUM_ZONES];
+		uint8_t ledChannelCurrent[LED_NUM_ZONES][3];
 
 		bool createLedData(TesLight::Configuration *config);
 		bool createAnimators(TesLight::Configuration *config);
 		bool loadCalculatedAnimations(TesLight::Configuration *config);
 		bool loadCustomAnimation(TesLight::Configuration *config);
 
-		float calculatePowerConsumption();
-		void limitPowerConsumption();
+		bool calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_COUNT]);
+		bool limitPowerConsumption();
 	};
 }
 

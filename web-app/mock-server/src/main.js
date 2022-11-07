@@ -10,11 +10,12 @@ const port = 3001;
  * Mock data for the frontend.
  */
 let data = {
-	systemConfiguration: "AQEeAB4AAAgKMgwMDA==",
+	systemConfiguration: "AQEeAB4AAAgK",
 	ledConfiguration:
-		"DUYAADIKADIABQAAAAAAAAAAAAAOAgAAMgoAMgAFAAAAAAAAAAAAAA8EAAAyCgAyAAUAAAAAAAAAAAAAEAQAADIKADIABQAAAAAAAAAAAAARBAAAMgoAMgAFAAAAAAAAAAAAABUEAAAyCgAyAAUAAAAAAAAAAAAA",
+		"DQIAADIKADIAHgAAAAAAAAAAAAAAAAAAADIMDAwRAgAAMgoAMgAeAAAAAAAAAAAAAAAAAAAAMgwMDA4CAAAyCgAyAB4AAAAAAAAAAAAAAAAAAAAyDAwMFQIAADIKADIAHgAAAAAAAAAAAAAAAAAAADIMDAwPAgAAMgoAMgAeAAAAAAAAAAAAAAAAAAAAMgwMDBYCAAAyCgAyAB4AAAAAAAAAAAAAAAAAAAAyDAwMEAIAADIKADIAHgAAAAAAAAAAAAAAAAAAADIMDAwZAgAAMgoAMgAeAAAAAAAAAAAAAAAAAAAAMgwMDA==",
 	wifiConfiguration: "CABUZXNMaWdodAoAVGVzTGlnaHRQVwEAAQAAAAA=",
 	logData: "00:00:00:000 [INFO] (src/mock) Some fake log data.\n",
+	fseqList: "test.fseq;1234;5678\nsome_mock.fseq;12;34",
 };
 
 /**
@@ -112,8 +113,36 @@ app.get("/api/log", (req, res) => {
 /**
  * Clear the log data.
  */
-app.patch("/api/log", (req, res) => {
-	res.send();
+app.delete("/api/log", (req, res) => {
+	res.send("Ok");
+});
+
+/**
+ * Upload update package
+ */
+app.post("/api/update", (req, res) => {
+	res.send("Ok");
+});
+
+/**
+ * Get the fseq list
+ */
+app.get("/api/fseq", (req, res) => {
+	res.send(data.fseqList);
+});
+
+/**
+ * Post a new fseq file
+ */
+app.post("/api/fseq", (req, res) => {
+	res.send("Ok");
+});
+
+/**
+ * Delete a fseq file
+ */
+app.delete("/api/fseq", (req, res) => {
+	res.send("Ok");
 });
 
 app.listen(port, () => {

@@ -65,6 +65,39 @@ bool TesLight::FileUtil::directoryExists(FS *fileSystem, const String path)
 }
 
 /**
+ * @brief Calculate a identifier for a file based on it's properties and content.
+ * @param fileSystem where the file is located
+ * @param fileName full path and name of the file
+ * @param identifier reference to the variable holding the identifier
+ * @return true when successful
+ * @return false when there was an error
+ */
+bool TesLight::FileUtil::getFileIdentifier(FS *fileSystem, const String fileName, uint32_t &identifier)
+{
+	File file = fileSystem->open(fileName, FILE_READ);
+	if (!file)
+	{
+		return false;
+	}
+	else if (file.isDirectory())
+	{
+		file.close();
+		return false;
+	}
+
+	identifier = 7;
+	for (uint16_t i = 0; i < fileName.length(); i++)
+	{
+		identifier = identifier * 31 + (uint8_t)fileName[i];
+	}
+	identifier = identifier * 31 + file.size();
+	identifier = identifier * 31 + file.getLastWrite();
+
+	file.close();
+	return true;
+}
+
+/**
  * @brief Count the number of files and optinally directories inside a directory.
  * @param fileSystem where the root directory is located
  * @param directory full path and name to the root directory
@@ -149,8 +182,17 @@ bool TesLight::FileUtil::getFileList(FS *fileSystem, const String directory, Str
 		{
 			if (includeDirs || !file.isDirectory())
 			{
-				fileList += String(file.name()) + F(";");
-				fileList += String(file.size()) + F("\n");
+				uint32_t id = 0;
+				if (TesLight::FileUtil::getFileIdentifier(fileSystem, directory + F("/") + file.name(), id))
+				{
+					fileList += String(file.name()) + F(";");
+					fileList += String(file.size()) + F(";");
+					fileList += String(id) + F("\n");
+				}
+				else
+				{
+					TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("Failed to get identifier for file \"") + directory + F("/") + file.name() + F("\"."));
+				}
 			}
 			file.close();
 		}
@@ -214,6 +256,70 @@ bool TesLight::FileUtil::getFileNameFromIndex(FS *fileSystem, const String direc
 					hasNext = false;
 				}
 				currentIndex++;
+			}
+			file.close();
+		}
+		else
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("No matching file or directory found."));
+			fileName = String();
+			hasNext = false;
+		}
+	}
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("File search successful."));
+	dir.close();
+	return true;
+}
+
+/**
+ * @brief Get the file name from a file located in the targe directory with a matching identifier.
+ * @param fileSystem where the file should be located
+ * @param directory where to look for the file
+ * @param identifier id of the file
+ * @param fileName reference variable holding the found file name
+ * @return true when the search was successful
+ * @return false when there was an error
+ */
+bool TesLight::FileUtil::getFileNameFromIdentifier(FS *fileSystem, const String directory, const uint32_t identifier, String &fileName)
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Get name of with id ") + String(identifier) + F(" in root directory ") + directory + F("."));
+	File dir = fileSystem->open(directory, FILE_READ);
+	if (!dir)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open directory. Directory could not be found."));
+		return false;
+	}
+	else if (!dir.isDirectory())
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open directory. It is a file."));
+		dir.close();
+		return false;
+	}
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Search for file."));
+	bool hasNext = true;
+	while (hasNext)
+	{
+		File file = dir.openNextFile(FILE_READ);
+		if (file)
+		{
+			if (!file.isDirectory())
+			{
+				uint32_t id = 0;
+				if (TesLight::FileUtil::getFileIdentifier(fileSystem, directory + F("/") + file.name(), id))
+				{
+					if (id == identifier)
+					{
+						TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("File or directory was found at \"") + directory + F("/") + file.name() + F("\"."));
+						fileName = file.name();
+						hasNext = false;
+					}
+				}
+				else
+				{
+					TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("Failed to calculate identifier for \"") + directory + F("/") + file.name() + F("\"."));
+				}
 			}
 			file.close();
 		}

@@ -21,7 +21,7 @@ class UpdatePage extends React.Component {
 	/**
 	 * Upload the selected TUP file to the controller.
 	 */
-	upload = async () => {
+	upload = async (event, callback) => {
 		const inputFile = document.getElementById("tup");
 		const state = this.state;
 
@@ -33,19 +33,22 @@ class UpdatePage extends React.Component {
 
 				try {
 					await state.updateService.uploadTupFile(inputFile.files[0]);
+					callback(true);
 					alert("The upload was successful. Now please wait for the controller to restart.");
 				} catch (error) {
-					alert("Unfortunately the upload failed.");
+					callback(false);
 				}
 
 				state.uploadFinished = true;
 				state.componentKey++;
 				this.setState(state);
 			} else {
-				alert("Stawwwwwp! What are you doing? You are already uploading the file. Please wait!");
+				alert("Stawwwwwp! What the f### are you doing? You are already uploading the file. Please wait!");
 			}
 		} else {
-			alert("Hey! I told you to be careful and you are not even selecting a file for the update...");
+			alert(
+				"Hey! I told you to be careful and you are not even selecting a file for the update. Wanna fill the flash memory with 0's? At least one of us is using her brain. Damn it!"
+			);
 		}
 	};
 
@@ -59,7 +62,7 @@ class UpdatePage extends React.Component {
 				<h2>System Update</h2>
 				<div className="spacer2"></div>
 
-				<div style={{ textAlign: "center" }}>
+				<div className="info">
 					<p>
 						Here a system update can be installed to the TesLight controller. This includes the firmware of the
 						mcu as well as the user interface. To install a system update, you first need to download a so called
@@ -81,14 +84,19 @@ class UpdatePage extends React.Component {
 						only upload stable and tested update packages from the GitHub page.
 					</p>
 				</div>
-				<div className="spacer2"></div>
+				<div className="spacer"></div>
 
 				<input id="tup" type="file" name="TesLight Update Package" accept=".tup" />
 				<div className="spacer"></div>
 
 				<Button
 					key={this.state.componentKey}
+					className="button"
 					title={this.state.uploadFinished ? "Update" : "Working..."}
+					successTitle="Package uploaded"
+					errorTitle="Failed to upload package"
+					successClassName="button success"
+					errorClassName="button error"
 					onClick={this.upload}
 				/>
 			</div>
