@@ -37,7 +37,7 @@ Also, this list assumes that you have all necessary tools and materials for buil
 
 | Part                        | Count | Source             | Comment                               |
 | --------------------------- | ----- | ------------------ | ------------------------------------- |
-| LM2596 Regulator - 5V fixed | 1/2   | [Reichelt][lm2596] | Make sure to get the fixed 5V version |
+| LM2596T-5.0 Regulator.      | 1/2   | [Reichelt][lm2596] | Make sure to get the fixed 5V version |
 | Inductor min. 33µH          | 1/2   | [Reichelt][ind33]  |                                       |
 | IN5824 Schottky Diode       | 1/2   | [Reichelt][in5824] | Or diode with similar specs           |
 | Capacitor 680µf             | 1/2   | [Reichelt][cap680] |                                       |
