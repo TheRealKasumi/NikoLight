@@ -75,7 +75,7 @@ This is the same configuration as shown in the following video (click to open).
 
 [![TesLight Demo](https://img.youtube.com/vi/_N5h1IViB-E/0.jpg)](https://www.youtube.com/watch?v=_N5h1IViB-E)
 
-The following table assumes that the TesLight controller is placed below the centre console for easy access an wiring.
+The following table assumes that the TesLight controller is placed below the centre console for easy access and wiring.
 
 | Zone              | LEDs | Type                      | Cable Length | Physical Channel |
 | ----------------- | ---- | ------------------------- | ------------ | ---------------- |
@@ -115,7 +115,7 @@ It is NOT recommended going any higher than around 8A in total.
 You might need to change the connectors, use thicker wires and thicker copper on the PCB.
 
 Assuming "average" WS2812 LED chips, each channel can draw around 14mA at 5V and maximum brightness.
-Since each LED has 3 channels (red, green, blue), a current draw of around 36mA has to be assumed.
+Since each LED has 3 channels (red, green, blue), a current draw of around 42mA has to be assumed.
 To calculate the total power draw, the following formula can be used:
 
 `power = led_count x 0.042 x 5`
@@ -138,7 +138,7 @@ For this calculation to work properly, the LED voltage and current per channel m
 Generally it is NOT recommended to do so in any way.
 The 20W power limit, or 10W per channel, was tested to be a good compromise between brightness and regulator temperature.
 When using a proper LM2596 (not faked ones), it will shut down as soon as a critical current or temperature (115°C) is reached.
-Due to the missing power the Controller will shut down and is not available via the web-app anymore.
+Due to the missing power the controller will shut down and is not available via the web-app anymore.
 No damange _should_ be taken from this.
 Once the regulators cooled down, they should be reset and the controller reboots.
 However this is a emergency feature that should not be triggered in normal use.

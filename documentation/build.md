@@ -117,7 +117,7 @@ There is an overvoltage protection in place and exceeding this limit for a short
 Instead the resistor `R10` of the voltage devider can be adjusted accordingly.
 
 Keep in mind that according to the picture diagram above, the right pin is connected to ground.
-Never connect it to the positive wire of your car lights when using them as signal to turn on and off.
+Never connect the ground pin to the positive wire of your footwell lights.
 If you are sure that there is a good ground connection, which is usually the case, there is no need to use it.
 One last thing to keep in mind is that only positive voltages can be measured, so avoid doing something crazy with this simple input.
 
