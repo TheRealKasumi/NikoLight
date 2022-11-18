@@ -14,7 +14,7 @@
  */
 TesLight::BinaryFile::BinaryFile(FS *fileSystem)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize Binary File."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize binary file."));
 	this->fileSystem = fileSystem;
 }
 
@@ -23,7 +23,7 @@ TesLight::BinaryFile::BinaryFile(FS *fileSystem)
  */
 TesLight::BinaryFile::~BinaryFile()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Delete Binary File and close resources."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Delete binary file and close resources."));
 	if (this->file)
 	{
 		this->file.close();

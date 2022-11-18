@@ -59,7 +59,7 @@ void TesLight::RainbowAnimatorMotion::render()
 		float redAngle = 0.0f;
 		float greenAngle = 0.0f;
 		float blueAngle = 0.0f;
-		const float offset = this->offset / 50.0f;
+		const float offset = this->offset / 25.0f;
 
 		if (this->rainbowMode == TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_SOLID)
 		{
@@ -87,32 +87,7 @@ void TesLight::RainbowAnimatorMotion::render()
 
 	this->applyBrightness();
 
-	float speed = this->speed / 25.0f;
-	if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_X_G)
-	{
-		speed *= this->motionSensorData.accXG;
-	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_Y_G)
-	{
-		speed *= this->motionSensorData.accYG;
-	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_Z_G)
-	{
-		speed *= this->motionSensorData.accZG;
-	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_X_DEG)
-	{
-		speed *= this->motionSensorData.gyroXDeg / 10.0f;
-	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_Y_DEG)
-	{
-		speed *= this->motionSensorData.gyroYDeg / 10.0f;
-	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_Z_DEG)
-	{
-		speed *= this->motionSensorData.gyroZDeg / 10.0f;
-	}
-
+	const float speed = this->getMotionSpeed();
 	if (this->reverse)
 	{
 		this->angle += speed;
@@ -148,4 +123,48 @@ void TesLight::RainbowAnimatorMotion::setRainbowMode(const TesLight::RainbowAnim
 void TesLight::RainbowAnimatorMotion::setMotionSensorValue(const TesLight::MotionSensor::MotionSensorValue motionSensorValue)
 {
 	this->motionSensorValue = motionSensorValue;
+}
+
+/**
+ * @brief Get the rainbow speed based on the motion senor value.
+ * @return speed value based on the motion sensor value
+ */
+float TesLight::RainbowAnimatorMotion::getMotionSpeed()
+{
+	float speed = this->speed / 15.0f;
+	if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_X_G)
+	{
+		speed *= this->motionSensorData.accXG;
+	}
+	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_Y_G)
+	{
+		speed *= this->motionSensorData.accYG;
+	}
+	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_Z_G)
+	{
+		speed *= this->motionSensorData.accZG;
+	}
+	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_X_DEG)
+	{
+		speed *= this->motionSensorData.gyroXDeg / 10.0f;
+	}
+	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_Y_DEG)
+	{
+		speed *= this->motionSensorData.gyroYDeg / 10.0f;
+	}
+	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_Z_DEG)
+	{
+		speed *= this->motionSensorData.gyroZDeg / 10.0f;
+	}
+
+	if (speed > 20)
+	{
+		speed = 20;
+	}
+	else if (speed < -20)
+	{
+		speed = -20;
+	}
+
+	return speed;
 }

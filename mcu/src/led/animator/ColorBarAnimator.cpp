@@ -62,7 +62,7 @@ void TesLight::ColorBarAnimator::render()
 	{
 		float colorAngle1 = 0.0f;
 		float colorAngle2 = 0.0f;
-		float offset = this->offset / 10.0f;
+		float offset = this->offset / 5.0f;
 
 		if (this->colorBarMode == TesLight::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_HARD || this->colorBarMode == TesLight::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_SMOOTH)
 		{
@@ -76,8 +76,8 @@ void TesLight::ColorBarAnimator::render()
 			colorAngle2 = i < middle ? (this->angle + 180.0f) + i * offset : (this->angle + 180.0f) + (this->pixelCount - i) * offset;
 		}
 
-		float trapezoidValue1 = this->trapezoid(colorAngle1);
-		float trapezoidValue2 = this->trapezoid(colorAngle2);
+		float trapezoidValue1 = this->trapezoid2(colorAngle1);
+		float trapezoidValue2 = this->trapezoid2(colorAngle2);
 
 		if (this->colorBarMode == TesLight::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_HARD || this->colorBarMode == TesLight::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_HARD)
 		{

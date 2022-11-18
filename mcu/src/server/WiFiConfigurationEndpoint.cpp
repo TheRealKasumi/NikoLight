@@ -17,7 +17,7 @@ std::function<bool()> TesLight::WiFiConfigurationEndpoint::configChangedCallback
  */
 void TesLight::WiFiConfigurationEndpoint::begin(TesLight::Configuration *_configuration, std::function<bool()> _configChangedCallback)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register WiFi Configuration Endpoints."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register WiFi configuration Endpoints."));
 	TesLight::WiFiConfigurationEndpoint::configuration = _configuration;
 	TesLight::WiFiConfigurationEndpoint::configChangedCallback = _configChangedCallback;
 	webServerManager->addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_GET, TesLight::WiFiConfigurationEndpoint::getWiFiConfig);

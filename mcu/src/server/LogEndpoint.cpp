@@ -16,10 +16,10 @@ FS *TesLight::LogEndpoint::fileSystem = nullptr;
  */
 void TesLight::LogEndpoint::begin(FS *_fileSystem)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize Log Endpoint."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize Log endpoint."));
 	TesLight::LogEndpoint::fileSystem = _fileSystem;
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register Log Endpoints."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register Log endpoints."));
 	webServerManager->addRequestHandler((getBaseUri() + F("log/size")).c_str(), http_method::HTTP_GET, TesLight::LogEndpoint::getLogSize);
 	webServerManager->addRequestHandler((getBaseUri() + F("log")).c_str(), http_method::HTTP_GET, TesLight::LogEndpoint::getLog);
 	webServerManager->addRequestHandler((getBaseUri() + F("log")).c_str(), http_method::HTTP_DELETE, TesLight::LogEndpoint::clearLog);

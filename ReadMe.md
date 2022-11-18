@@ -68,9 +68,7 @@ The project is therefore mostly platform-independent.
 
 ![App](documentation/media/readme/app.jpg)
 
-![PCB](documentation/media/readme/pcb-front.jpg)
-
-![PCB](documentation/media/readme/pcb-back.jpg)
+![PCB](documentation/media/build/pcb.png)
 
 ## Planning
 

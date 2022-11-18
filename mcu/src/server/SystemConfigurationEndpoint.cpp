@@ -17,7 +17,7 @@ std::function<bool()> TesLight::SystemConfigurationEndpoint::configChangedCallba
  */
 void TesLight::SystemConfigurationEndpoint::begin(TesLight::Configuration *_configuration, std::function<bool()> _configChangedCallback)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register System Configuration Endpoints."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register system configuration endpoints."));
 	TesLight::SystemConfigurationEndpoint::configuration = _configuration;
 	TesLight::SystemConfigurationEndpoint::configChangedCallback = _configChangedCallback;
 	webServerManager->addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_GET, TesLight::SystemConfigurationEndpoint::getSystemConfig);
@@ -30,13 +30,19 @@ void TesLight::SystemConfigurationEndpoint::begin(TesLight::Configuration *_conf
 void TesLight::SystemConfigurationEndpoint::getSystemConfig()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the system configuration."));
-	TesLight::InMemoryBinaryFile binary(9);
+	TesLight::InMemoryBinaryFile binary(15);
 	binary.writeByte((uint8_t)TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().logLevel);
 	binary.writeByte((uint8_t)TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMode);
 	binary.writeWord(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorThreshold);
 	binary.writeWord(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinValue);
 	binary.writeWord(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxValue);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().systemPowerLimit);
+	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorPowerLimit);
+	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorHighTemperature);
+	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorCutoffTemperature);
+	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMinPwmValue);
+	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMaxPwmValue);
+	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMinTemperature);
+	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMaxTemperature);
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Preparing base64 response."));
 	String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
@@ -80,11 +86,11 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Request decoded."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking length of the decoded data."));
-	if (length != 9)
+	if (length != 15)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Length of decoded data is invalid."));
 		delete[] decoded;
-		webServer->send(400, F("text/plain"), F("The length of the decoded data must be exactly 9 bytes."));
+		webServer->send(400, F("text/plain"), F("The length of the decoded data must be exactly 15 bytes."));
 		return;
 	}
 
@@ -100,25 +106,61 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 	config.lightSensorThreshold = binary.readWord();
 	config.lightSensorMinValue = binary.readWord();
 	config.lightSensorMaxValue = binary.readWord();
-	config.systemPowerLimit = binary.readByte();
+	config.regulatorPowerLimit = binary.readByte();
+	config.regulatorHighTemperature = binary.readByte();
+	config.regulatorCutoffTemperature = binary.readByte();
+	config.fanMinPwmValue = binary.readByte();
+	config.fanMaxPwmValue = binary.readByte();
+	config.fanMinTemperature = binary.readByte();
+	config.fanMaxTemperature = binary.readByte();
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Validating system configuration."));
-	if (!validateLogLevel((uint8_t)config.logLevel))
+	if (!TesLight::SystemConfigurationEndpoint::validateLogLevel((uint8_t)config.logLevel))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The received log level is invalid."));
 		webServer->send(400, F("text/plain"), F("The received log level is invalid."));
 		return;
 	}
-	if (!validateLightSensorMode((uint8_t)config.lightSensorMode))
+	if (!TesLight::SystemConfigurationEndpoint::validateLightSensorMode((uint8_t)config.lightSensorMode))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The received light sensor mode is invalid."));
 		webServer->send(400, F("text/plain"), F("The received light sensor mode is invalid."));
 		return;
 	}
-	if (!validateMinMax(config.lightSensorMinValue, config.lightSensorMaxValue))
+	if (!TesLight::SystemConfigurationEndpoint::validateLightSensorValue(config.lightSensorThreshold))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The light sensor threshold value must be between 0 and 4095."));
+		webServer->send(400, F("text/plain"), F("The light sensor threshold value must be between 0 and 4095."));
+		return;
+	}
+	if (!TesLight::SystemConfigurationEndpoint::validateLightSensorValue(config.lightSensorMinValue))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The light sensor min value must be between 0 and 4095."));
+		webServer->send(400, F("text/plain"), F("The light sensor min value must be between 0 and 4095."));
+		return;
+	}
+	if (!TesLight::SystemConfigurationEndpoint::validateLightSensorValue(config.lightSensorMaxValue))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The light sensor max value must be between 0 and 4095."));
+		webServer->send(400, F("text/plain"), F("The light sensor max value must be between 0 and 4095."));
+		return;
+	}
+	if (!TesLight::SystemConfigurationEndpoint::validateMinMax(config.lightSensorMinValue, config.lightSensorMaxValue))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The light sensor min value must be smaller than the max value."));
 		webServer->send(400, F("text/plain"), F("The light sensor min value must be smaller than the max value."));
+		return;
+	}
+	if (!TesLight::SystemConfigurationEndpoint::validateMinMax(config.fanMinPwmValue, config.fanMaxPwmValue))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The fan min pwm value must be smaller than the max value."));
+		webServer->send(400, F("text/plain"), F("The fan min pwm value must be smaller than the max value."));
+		return;
+	}
+	if (!TesLight::SystemConfigurationEndpoint::validateMinMax(config.fanMinTemperature, config.fanMaxTemperature))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The fan min temperature value must be smaller than the max value."));
+		webServer->send(400, F("text/plain"), F("The fan min temperature value must be smaller than the max value."));
 		return;
 	}
 
@@ -168,7 +210,7 @@ bool TesLight::SystemConfigurationEndpoint::validateLogLevel(const uint8_t logLe
  */
 bool TesLight::SystemConfigurationEndpoint::validateLightSensorMode(const uint8_t lightSensorMode)
 {
-	return lightSensorMode <= 3;
+	return lightSensorMode <= 5;
 }
 
 /**
@@ -181,4 +223,15 @@ bool TesLight::SystemConfigurationEndpoint::validateLightSensorMode(const uint8_
 bool TesLight::SystemConfigurationEndpoint::validateMinMax(const uint16_t min, const uint16_t max)
 {
 	return min < max;
+}
+
+/**
+ * @brief Validate if the values for the light sensor are in range 0 to 4095.
+ * @param value value to validate
+ * @return true when valid
+ * @return false when invalid
+ */
+bool TesLight::SystemConfigurationEndpoint::validateLightSensorValue(const uint16_t value)
+{
+	return value < 4096;
 }

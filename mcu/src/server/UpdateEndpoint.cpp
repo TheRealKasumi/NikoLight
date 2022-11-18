@@ -17,13 +17,13 @@ File TesLight::UpdateEndpoint::uploadFile = File();
  */
 void TesLight::UpdateEndpoint::begin(FS *_fileSystem)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize Update Endpoint."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize update endpoint."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Create storage directory for package file."));
 	TesLight::UpdateEndpoint::fileSystem = _fileSystem;
 	TesLight::UpdateEndpoint::fileSystem->mkdir(UPDATE_DIRECTORY);
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register Update Endpoints."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register update endpoints."));
 	webServerManager->addUploadRequestHandler((getBaseUri() + F("update")).c_str(), http_method::HTTP_POST, TesLight::UpdateEndpoint::postPackage, TesLight::UpdateEndpoint::packageUpload);
 }
 

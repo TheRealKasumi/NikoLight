@@ -26,12 +26,12 @@ An example could look like this:
 | Channel/Zone | Used for            |
 | ------------ | ------------------- |
 | 1            | Dashboard           |
-| 5            | Center console      |
-| 2            | Left, front door    |
-| 6            | Right, front door   |
-| 3            | Rear, left door     |
-| 7            | Rear, right door    |
-| 4            | Footwell lighting 1 |
+| 2            | Center console      |
+| 3            | Left, front door    |
+| 4            | Right, front door   |
+| 5            | Rear, left door     |
+| 6            | Rear, right door    |
+| 7            | Footwell lighting 1 |
 | 8            | Footwell lighting 2 |
 
 TesLight is using digital LEDs, so that it controll each LED individually.
@@ -80,10 +80,10 @@ The following table assumes that the TesLight controller is placed below the cen
 | Zone              | LEDs | Type                      | Cable Length | Physical Channel |
 | ----------------- | ---- | ------------------------- | ------------ | ---------------- |
 | Dash              | 72   | LED strip                 | 150cm        | 1                |
-| Centre Console    | 4    | Fiber cable and injectors | 150cm        | 5                |
-| Front Doors       | 130  | Light bar (2 in parallel) | 265cm + 50cm | 2, 6             |
-| Rear Doors        | 92   | Light bar                 | 405cm + 45cm | 3, 7             |
-| Footwell lighting | 4    | LED strip or single LEDs  | 100cm        | 4, 8             |
+| Centre Console    | 4    | Fiber cable and injectors | 150cm        | 2                |
+| Front Doors       | 130  | Light bar (2 in parallel) | 265cm + 50cm | 3, 4             |
+| Rear Doors        | 92   | Light bar                 | 405cm + 45cm | 5, 6             |
+| Footwell lighting | 4    | LED strip or single LEDs  | 100cm        | 7, 8             |
 
 So for this build we have a total of around 784 LEDs and need ~20m cable with 3 wires.
 Also 5m of fibre cable is recommended for use around the centre console.
@@ -95,23 +95,25 @@ Since this project can make use of many LEDs, the power consumption plays an imp
 TesLight can (and should) be built with an onboard regulator.
 This ensures that you stay below the limits the hardware can handle without modifications.
 The regulator has 2 channels and is capable of providing a total of 6A at 5V, which is around 30W of power.
-These 6A are split to 2x 3A on the channels {1, 2, 3, 4} and {5, 6, 7, 8}.
+These 6A are split to 2x 3A on the channels {1, 3, 5, 7} and {2, 4, 6, 8}.
 The load of the two single channels should not exceed 3A or 15W at maximum.
 By default TesLight has a configured power limit of 20W, or 10W per regulator.
 If this limit is reached, the brightness is reduced to stay below this limit.
+Also a temperature limit of 80°C is enforced by default when the optinal temperature sensors are installed.
 
 If you need to save some money, you can also only build one channel of the regulator.
-Then the power output is halfed and the jumper `J2` must be closed.
+Then the power output is halfed and the jumper `J1` must be closed.
 The full dual channel buld is recommended because otherwise you are very limited on brightness.
 
-If more power is really needed, then an external regulator is required.
-In that case all components for the onboard regulator must be removed from the board.
+If more power is really needed, then an external regulator is required and the boards input must be bypassed.
+In that case all components for the onboard regulator should be removed from the board.
 An exception are the capacitors `C3` and `C4`, which should remain on the board.
-The jumpers `J1` and `J2` must be closed.
+The jumper `J1` should be closed
+Instead of powering the board via the power input, it must be powered via an LED output.
+Make sure to provide stable 5V to an LED output.
 
 However, be careful when dealing with the high currents an external regulator could provide.
 It could significantly heat up your connectors, wires, LEDs or even the TesLight board.
-It is NOT recommended going any higher than around 8A in total.
 You might need to change the connectors, use thicker wires and thicker copper on the PCB.
 
 Assuming "average" WS2812 LED chips, each channel can draw around 14mA at 5V and maximum brightness.
@@ -129,20 +131,18 @@ Also it would allow for brightness levels, that are far from practical, especial
 
 In a normal use case, the power provided by the TesLight controller is enough.
 It still allows for a decent brightness without having to deal with dangerously high currents.
-By default the software ensures that a maximum power draw of around 20W is not exceeded.
-You can adjust this value in the UI.
-For this calculation to work properly, the LED voltage and current per channel must be configured correctly.
+Like mentioned above, by default the software ensures that a maximum power draw of around 20W is not exceeded.
+Also the regulator temperature is limited to 80°C when the optional temperature sensors are installed.
+You can adjust these limits in the UI.
+For the power limit calculation to work properly, the LED voltage and current per channel must be configured correctly.
 
 > What happens when I exceed the power limit of the regulator temporary or permanently?
 
 Generally it is NOT recommended to do so in any way.
 The 20W power limit, or 10W per channel, was tested to be a good compromise between brightness and regulator temperature.
+Installing the optional temperature sensors to the board will also limit the temperature to 80°C by default.
+This temperature can be exceeded without the sensors.
 When using a proper LM2596 (not faked ones), it will shut down as soon as a critical current or temperature (115°C) is reached.
-Due to the missing power the controller will shut down and is not available via the web-app anymore.
 No damange _should_ be taken from this.
-Once the regulators cooled down, they should be reset and the controller reboots.
-However this is a emergency feature that should not be triggered in normal use.
-You are still risking temperatures of up to 115°C on the board.
-Keep that in mind when you think you are special and need to exceed limits😛.
-Also don't cry at me when you burn something down.
+However don't cry at me when you burn something down.
 You have been warned.

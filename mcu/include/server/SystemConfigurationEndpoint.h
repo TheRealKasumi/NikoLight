@@ -35,6 +35,7 @@ namespace TesLight
 		static bool validateLogLevel(const uint8_t logLevel);
 		static bool validateLightSensorMode(const uint8_t lightSensorMode);
 		static bool validateMinMax(const uint16_t min, const uint16_t max);
+		static bool validateLightSensorValue(const uint16_t value);
 	};
 }
 

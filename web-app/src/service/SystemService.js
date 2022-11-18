@@ -41,6 +41,12 @@ class SystemService {
 				systemConfig.setLightSensorMinValue(stream.readWord());
 				systemConfig.setLightSensorMaxValue(stream.readWord());
 				systemConfig.setSystemPowerLimit(stream.readByte());
+				systemConfig.setRegulatorHighTemperature(stream.readByte());
+				systemConfig.setRegulatorCutoffTemperature(stream.readByte());
+				systemConfig.setFanMinPwmValue(stream.readByte());
+				systemConfig.setFanMaxPwmValue(stream.readByte());
+				systemConfig.setFanMinTemperature(stream.readByte());
+				systemConfig.setFanMaxTemperature(stream.readByte());
 				systemConfig.hasChanged(true);
 				resolve(systemConfig);
 			} catch (ex) {
@@ -51,19 +57,25 @@ class SystemService {
 
 	/**
 	 * Send the system configuration to the TesLight controller.
-	 * @param {SystemConfiguration} systemConfiguration system configuration to send to the TesLight controller
+	 * @param {SystemConfiguration} systemConfig system configuration to send to the TesLight controller
 	 */
-	postSystemConfiguration = (systemConfiguration) => {
+	postSystemConfiguration = (systemConfig) => {
 		return new Promise(async (resolve, reject) => {
-			const stream = new BinaryStream(9);
+			const stream = new BinaryStream(15);
 
 			try {
-				stream.writeByte(systemConfiguration.getLogLevel());
-				stream.writeByte(systemConfiguration.getLightSensorMode());
-				stream.writeWord(systemConfiguration.getLightSensorThreshold());
-				stream.writeWord(systemConfiguration.getLightSensorMinValue());
-				stream.writeWord(systemConfiguration.getLightSensorMaxValue());
-				stream.writeByte(systemConfiguration.getSystemPowerLimit());
+				stream.writeByte(systemConfig.getLogLevel());
+				stream.writeByte(systemConfig.getLightSensorMode());
+				stream.writeWord(systemConfig.getLightSensorThreshold());
+				stream.writeWord(systemConfig.getLightSensorMinValue());
+				stream.writeWord(systemConfig.getLightSensorMaxValue());
+				stream.writeByte(systemConfig.getSystemPowerLimit());
+				stream.writeByte(systemConfig.getRegulatorHighTemperature());
+				stream.writeByte(systemConfig.getRegulatorCutoffTemperature());
+				stream.writeByte(systemConfig.getFanMinPwmValue());
+				stream.writeByte(systemConfig.getFanMaxPwmValue());
+				stream.writeByte(systemConfig.getFanMinTemperature());
+				stream.writeByte(systemConfig.getFanMaxTemperature());
 			} catch (ex) {
 				reject(new SystemServiceException("Failed to write binary data to the stream."));
 				return;

@@ -98,6 +98,66 @@ class SettingsPage extends React.Component {
 	};
 
 	/**
+	 *  Set the temp in °C where brightness is reduced.
+	 * @param {string} value value of the selection
+	 */
+	setRegulatorHighTemperature = (value) => {
+		const state = this.state;
+		state.systemConfigurationCopy.setRegulatorHighTemperature(value);
+		this.setState(state);
+	};
+
+	/**
+	 * Set the temp in °C where LEDs are turned off.
+	 * @param {string} value value of the selection
+	 */
+	setRegulatorCutoffTemperature = (value) => {
+		const state = this.state;
+		state.systemConfigurationCopy.setRegulatorCutoffTemperature(value);
+		this.setState(state);
+	};
+
+	/**
+	 * Set the minimum pwm value output to the fan (stall guard).
+	 * @param {string} value value of the selection
+	 */
+	setFanMinPwmValue = (value) => {
+		const state = this.state;
+		state.systemConfigurationCopy.setFanMinPwmValue(value);
+		this.setState(state);
+	};
+
+	/**
+	 * Set the maximum pwm value output to the fan.
+	 * @param {string} value value of the selection
+	 */
+	setFanMaxPwmValue = (value) => {
+		const state = this.state;
+		state.systemConfigurationCopy.setFanMaxPwmValue(value);
+		this.setState(state);
+	};
+
+	/**
+	 * Set the minimum temp in °C where the fan starts.
+	 * @param {string} value value of the selection
+	 */
+	setFanMinTemperature = (value) => {
+		const state = this.state;
+		state.systemConfigurationCopy.setFanMinTemperature(value);
+		this.setState(state);
+	};
+
+	/**
+	 * Set the maximum temp in °C to run at maximum speed.
+	 * @param {string} value value of the selection
+	 */
+	setFanMaxTemperature = (value) => {
+		const state = this.state;
+		state.systemConfigurationCopy.setFanMaxTemperature(value);
+		this.setState(state);
+	};
+
+	/**
 	 * Set the log level.
 	 * @param {string} value value of the selection
 	 * @param {number} selectedIndex index of the selection
@@ -175,8 +235,10 @@ class SettingsPage extends React.Component {
 						options={[
 							{ value: "0", name: "Always Off" },
 							{ value: "1", name: "Always On" },
-							{ value: "2", name: "Automatic On/Off" },
-							{ value: "3", name: "Automatic Brightness" },
+							{ value: "2", name: "Automatic On/Off ADC" },
+							{ value: "3", name: "Automatic Brightness ADC" },
+							{ value: "4", name: "Automatic On/Off BH1750" },
+							{ value: "5", name: "Automatic Brightness BH1750" },
 						]}
 						onChange={this.setLightSensorMode}
 					/>
@@ -243,7 +305,7 @@ class SettingsPage extends React.Component {
 				<div className="spacer"></div>
 
 				<details className="details">
-					<summary>Power Limit</summary>
+					<summary>Regulator</summary>
 					<div className="spacer"></div>
 
 					<Slider
@@ -257,6 +319,78 @@ class SettingsPage extends React.Component {
 						onChange={this.setSystemPowerLimit}
 					/>
 					<div className="spacer"></div>
+
+					<Slider
+						key={`settings-page-input-key-${this.state.inputKey + 7}`}
+						title="Throttle Temperature (°C)"
+						min={60}
+						max={120}
+						value={this.state.systemConfigurationCopy.getRegulatorHighTemperature()}
+						step={1}
+						icon={process.env.PUBLIC_URL + "/img/icon/power.svg"}
+						onChange={this.setRegulatorHighTemperature}
+					/>
+					<div className="spacer"></div>
+
+					<Slider
+						key={`settings-page-input-key-${this.state.inputKey + 8}`}
+						title="Shut Down Temperature (°C)"
+						min={70}
+						max={120}
+						value={this.state.systemConfigurationCopy.getRegulatorCutoffTemperature()}
+						step={1}
+						icon={process.env.PUBLIC_URL + "/img/icon/power.svg"}
+						onChange={this.setRegulatorCutoffTemperature}
+					/>
+					<div className="spacer"></div>
+
+					<Slider
+						key={`settings-page-input-key-${this.state.inputKey + 9}`}
+						title="Fan Start Temp (°C)"
+						min={40}
+						max={120}
+						value={this.state.systemConfigurationCopy.getFanMinTemperature()}
+						step={1}
+						icon={process.env.PUBLIC_URL + "/img/icon/power.svg"}
+						onChange={this.setFanMinTemperature}
+					/>
+					<div className="spacer"></div>
+
+					<Slider
+						key={`settings-page-input-key-${this.state.inputKey + 10}`}
+						title="Fan Full Speed Temp (°C)"
+						min={40}
+						max={120}
+						value={this.state.systemConfigurationCopy.getFanMaxTemperature()}
+						step={1}
+						icon={process.env.PUBLIC_URL + "/img/icon/power.svg"}
+						onChange={this.setFanMaxTemperature}
+					/>
+					<div className="spacer"></div>
+
+					<Slider
+						key={`settings-page-input-key-${this.state.inputKey + 11}`}
+						title="Fan Min PWM (Stall Guard)"
+						min={0}
+						max={255}
+						value={this.state.systemConfigurationCopy.getFanMinPwmValue()}
+						step={1}
+						icon={process.env.PUBLIC_URL + "/img/icon/power.svg"}
+						onChange={this.setFanMinPwmValue}
+					/>
+					<div className="spacer"></div>
+
+					<Slider
+						key={`settings-page-input-key-${this.state.inputKey + 12}`}
+						title="Fan Max PWM"
+						min={0}
+						max={255}
+						value={this.state.systemConfigurationCopy.getFanMaxPwmValue()}
+						step={1}
+						icon={process.env.PUBLIC_URL + "/img/icon/power.svg"}
+						onChange={this.setFanMaxPwmValue}
+					/>
+					<div className="spacer"></div>
 				</details>
 				<div className="spacer"></div>
 
@@ -265,7 +399,7 @@ class SettingsPage extends React.Component {
 					<div className="spacer"></div>
 
 					<DropDown
-						key={`settings-page-input-key-${this.state.inputKey + 9}`}
+						key={`settings-page-input-key-${this.state.inputKey + 13}`}
 						title="Log Level"
 						value={this.state.systemConfigurationCopy.getLogLevel()}
 						options={[
