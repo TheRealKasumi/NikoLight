@@ -250,7 +250,7 @@ class AnimatorPage extends React.Component {
 						min={0}
 						max={255}
 						value={this.state.ledConfigurationCopy.getBrightness()}
-						step={2}
+						step={1}
 						icon={process.env.PUBLIC_URL + "/img/icon/brightness.svg"}
 						onChange={this.setAnimatorBrightness}
 					/>
@@ -346,7 +346,7 @@ class AnimatorPage extends React.Component {
 
 					<Slider
 						title="LED Count"
-						min={1}
+						min={2}
 						max={200}
 						value={this.state.ledConfigurationCopy.getLedCount()}
 						step={1}

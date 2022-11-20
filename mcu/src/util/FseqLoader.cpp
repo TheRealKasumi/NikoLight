@@ -14,7 +14,7 @@
  */
 TesLight::FseqLoader::FseqLoader(FS *fileSystem)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize Fseq Loader."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize fseq loader."));
 	this->fileSystem = fileSystem;
 }
 
@@ -23,7 +23,7 @@ TesLight::FseqLoader::FseqLoader(FS *fileSystem)
  */
 TesLight::FseqLoader::~FseqLoader()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Delete Fseq Loader and close resources."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Delete fseq loader and close resources."));
 	this->close();
 }
 
@@ -154,7 +154,7 @@ bool TesLight::FseqLoader::readPixelbuffer(CRGB *pixelBuffer, const size_t buffe
 		}
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to read pixel buffer from fseq file."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read pixel buffer from fseq file."));
 	return false;
 }
 

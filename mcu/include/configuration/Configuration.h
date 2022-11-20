@@ -24,51 +24,44 @@ namespace TesLight
 	public:
 		struct SystemConfig
 		{
-			// Log config
-			TesLight::Logger::LogLevel logLevel;
-
-			// Light sensor config
-			TesLight::LightSensor::LightSensorMode lightSensorMode;
-			uint16_t lightSensorThreshold;
-			uint16_t lightSensorMinValue;
-			uint16_t lightSensorMaxValue;
-
-			// Power config
-			uint8_t systemPowerLimit; // W
+			TesLight::Logger::LogLevel logLevel;					// Logging level
+			TesLight::LightSensor::LightSensorMode lightSensorMode; // Mode of the light sensor
+			uint16_t lightSensorThreshold;							// Threshold value to turn on/off the LEDs
+			uint16_t lightSensorMinValue;							// Minimum value for automatic brightness adjustment
+			uint16_t lightSensorMaxValue;							// Maximum value for automatic brightness adjustment
+			uint8_t regulatorPowerLimit;							// Limit in W
+			uint8_t regulatorHighTemperature;						// Temp in °C where brightness is reduced
+			uint8_t regulatorCutoffTemperature;						// Temp in °C where LEDs are turned off
+			uint8_t fanMinPwmValue;									// Minimum pwm value output to the fan (stall guard)
+			uint8_t fanMaxPwmValue;									// Maximum pwm value output to the fan
+			uint8_t fanMinTemperature;								// Minimum temp in °C where the fan starts
+			uint8_t fanMaxTemperature;								// Maximum temp in °C to run at maximum speed
 		};
 
 		struct LedConfig
 		{
-			// Pin Configuration
-			uint8_t ledPin;
-			uint16_t ledCount;
-
-			// Animation Configuration
-			uint8_t type;
-			uint8_t speed;
-			uint16_t offset;
-			uint8_t brightness;
-			bool reverse;
-			uint8_t fadeSpeed;
-			uint8_t customField[ANIMATOR_NUM_CUSTOM_FIELDS];
-
-			// Power config
-			uint8_t ledVoltage;			  // Voltage * 10
-			uint8_t ledChannelCurrent[3]; // mA
+			uint8_t ledPin;									 // Physical pin for the LED output
+			uint16_t ledCount;								 // Number of LEDs
+			uint8_t type;									 // Type of the animation
+			uint8_t speed;									 // Speed of the animation
+			uint16_t offset;								 // Offset for the animation
+			uint8_t brightness;								 // Brightness of the LED channel
+			bool reverse;									 // Reverse the animation
+			uint8_t fadeSpeed;								 // Fading speed when turning on/off
+			uint8_t customField[ANIMATOR_NUM_CUSTOM_FIELDS]; // Custom fields for the animation
+			uint8_t ledVoltage;								 // Voltage of the LED x10
+			uint8_t ledChannelCurrent[3];					 // Current for each LED channel per LED in mA
 		};
 
 		struct WiFiConfig
 		{
-			// Access point configuration
-			String accessPointSsid;
-			String accessPointPassword;
-			uint8_t accessPointChannel;
-			bool accessPointHidden;
-			uint8_t accessPointMaxConnections;
-
-			// WiFi network configuration
-			String wifiSsid;
-			String wifiPassword;
+			String accessPointSsid;			   // SSID for the access point
+			String accessPointPassword;		   // Password for the access point
+			uint8_t accessPointChannel;		   // Channel for the access point
+			bool accessPointHidden;			   // Hide the access point
+			uint8_t accessPointMaxConnections; // Maximum number of connection to the access point
+			String wifiSsid;				   // SSID of a WiFi network
+			String wifiPassword;			   // Password of a WiFi network
 		};
 
 		Configuration(FS *fileSystem, const String fileName);

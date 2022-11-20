@@ -18,14 +18,14 @@ File TesLight::FseqEndpoint::uploadFile = File();
  */
 void TesLight::FseqEndpoint::begin(FS *_fileSystem, TesLight::Configuration *_configuration)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize Fseq Endpoint."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize fseq endpoint."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Create storage directory for fseq files."));
 	TesLight::FseqEndpoint::fileSystem = _fileSystem;
 	TesLight::FseqEndpoint::configuration = _configuration;
 	TesLight::FseqEndpoint::fileSystem->mkdir(FSEQ_DIRECTORY);
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register Fseq Endpoints."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register fseq endpoints."));
 	webServerManager->addRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_GET, TesLight::FseqEndpoint::getFseqList);
 	webServerManager->addUploadRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_POST, TesLight::FseqEndpoint::postFseq, TesLight::FseqEndpoint::fseqUpload);
 	webServerManager->addRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_DELETE, TesLight::FseqEndpoint::deleteFseq);

@@ -225,7 +225,7 @@ void TesLight::LedAnimator::setMotionSensorData(const TesLight::MotionSensor::Mo
 
 /**
  * @brief Get the currently set and used motion sensor data.
- * @return TesLight::MotionSensor::MotionSensorData currently set and used motion sensor data
+ * @return currently set and used motion sensor data
  */
 TesLight::MotionSensor::MotionSensorData TesLight::LedAnimator::getMotionSensorData()
 {
@@ -295,6 +295,46 @@ float TesLight::LedAnimator::trapezoid(float angle)
 	else if (angle >= 240.0f && angle < 300)
 	{
 		return (angle - 240.0f) / 60.0f;
+	}
+
+	return 0.0f;
+}
+
+/**
+ * @brief Create a trapezoid waveform. The returned value depends on the input angle.
+ * 		  Compared to the first version it has smoother edges.
+ * @param angle input angle in degree
+ * @return float value between 0.0 and 1.0 representing the trapezoid
+ */
+float TesLight::LedAnimator::trapezoid2(float angle)
+{
+	// This will limit the angle to [0...360]
+	float factor = angle / 360.0f;
+	factor -= (int)factor;
+	angle = factor * 360.0f;
+	if (angle < 0.0f)
+	{
+		angle = 360.0f + angle;
+	}
+
+	if ((angle >= 0.0f && angle < 40.0f) || (angle >= 320.0f && angle <= 360.0f))
+	{
+		return 1.0f;
+	}
+
+	else if (angle >= 40.0f && angle < 140.0f)
+	{
+		return 1.0f - (angle - 40.0f) / 100.0f;
+	}
+
+	else if (angle >= 140.0f && angle < 220.0f)
+	{
+		return 0.0f;
+	}
+
+	else if (angle >= 220.0f && angle < 320)
+	{
+		return (angle - 220.0f) / 100.0f;
 	}
 
 	return 0.0f;

@@ -57,75 +57,68 @@ void TesLight::GradientAnimatorMotion::init()
  */
 void TesLight::GradientAnimatorMotion::render()
 {
-	float motionValue = this->speed / 128.0f;
-	if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_X_G)
+	if (this->pixelCount == 2)
 	{
-		motionValue *= this->motionSensorData.accXG;
-	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_Y_G)
-	{
-		motionValue *= this->motionSensorData.accYG;
-	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_Z_G)
-	{
-		motionValue *= this->motionSensorData.accZG;
-	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_X_DEG)
-	{
-		motionValue *= this->motionSensorData.gyroXDeg / 30.0f;
-	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_Y_DEG)
-	{
-		motionValue *= this->motionSensorData.gyroYDeg / 30.0f;
-	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_Z_DEG)
-	{
-		motionValue *= this->motionSensorData.gyroZDeg / 30.0f;
-	}
-
-	motionValue = 0.5f + motionValue / (this->reverse ? -2.0f : 2.0f);
-	if (motionValue < 0.0f)
-	{
-		motionValue = 0.0f;
-	}
-	if (motionValue > 1.0f)
-	{
-		motionValue = 1.0f;
-	}
-
-	const uint16_t middle = this->pixelCount * motionValue;
-	for (uint16_t i = 0; i < this->pixelCount; i++)
-	{
-		float position = 0.0f;
-
-		if (this->gradientMode == TesLight::GradientAnimatorMotion::GradientMode::GRADIENT_LINEAR)
+		const float motionOffset = (this->getMotionOffset() - 0.5f) * 2.0f;
+		if (motionOffset < 0.0f)
 		{
-			if (i < middle)
-			{
-				position = i * 0.5f / middle;
-			}
-			else
-			{
-				position = 0.5f + ((float)i - middle) / (this->pixelCount - middle) * 0.5f;
-			}
+			this->pixels[0].setRGB(this->color[0].r, this->color[0].g, this->color[0].b);
+			this->pixels[1].setRGB(
+				(-motionOffset * this->color[0].r + (1 + motionOffset) * this->color[1].r),
+				(-motionOffset * this->color[0].g + (1 + motionOffset) * this->color[1].g),
+				(-motionOffset * this->color[0].b + (1 + motionOffset) * this->color[1].b));
+		}
+		else
+		{
+			this->pixels[0].setRGB(
+				(motionOffset * this->color[1].r + (1 - motionOffset) * this->color[0].r),
+				(motionOffset * this->color[1].g + (1 - motionOffset) * this->color[0].g),
+				(motionOffset * this->color[1].b + (1 - motionOffset) * this->color[0].b));
+			this->pixels[1].setRGB(this->color[1].r, this->color[1].g, this->color[1].b);
+		}
+	}
+	else
+	{
+		float motionOffset = (this->pixelCount - 1) * this->getMotionOffset();
+		if (motionOffset < 0.01f)
+		{
+			motionOffset = 0.01f;
+		}
+		else if (motionOffset > this->pixelCount - 1.01f)
+		{
+			motionOffset = this->pixelCount - 1.01f;
 		}
 
-		else if (this->gradientMode == TesLight::GradientAnimatorMotion::GradientMode::GRADIENT_CENTER)
+		for (uint16_t i = 0; i < this->pixelCount; i++)
 		{
-			if (i < middle)
+			float position = 0.0f;
+			if (this->gradientMode == TesLight::GradientAnimatorMotion::GradientMode::GRADIENT_LINEAR)
 			{
-				position = (float)i / middle;
+				if (i < motionOffset)
+				{
+					position = i * 0.5f / motionOffset;
+				}
+				else
+				{
+					position = 0.5f + ((float)i - motionOffset) / ((this->pixelCount - 1) - motionOffset) * 0.5f;
+				}
 			}
-			else
+			else if (this->gradientMode == TesLight::GradientAnimatorMotion::GradientMode::GRADIENT_CENTER)
 			{
-				position = 1.0f - ((float)i - middle) / (this->pixelCount - middle);
+				if (i < motionOffset)
+				{
+					position = (float)i / motionOffset;
+				}
+				else
+				{
+					position = 1.0f - ((float)i - motionOffset) / ((this->pixelCount - 1) - motionOffset);
+				}
 			}
+			this->pixels[i].setRGB(
+				(position * this->color[0].r + (1 - position) * this->color[1].r),
+				(position * this->color[0].g + (1 - position) * this->color[1].g),
+				(position * this->color[0].b + (1 - position) * this->color[1].b));
 		}
-
-		this->pixels[i].setRGB(
-			(position * this->color[this->reverse ? 0 : 1].r + (1 - position) * this->color[this->reverse ? 1 : 0].r),
-			(position * this->color[this->reverse ? 0 : 1].g + (1 - position) * this->color[this->reverse ? 1 : 0].g),
-			(position * this->color[this->reverse ? 0 : 1].b + (1 - position) * this->color[this->reverse ? 1 : 0].b));
 	}
 
 	this->applyBrightness();
@@ -158,4 +151,51 @@ void TesLight::GradientAnimatorMotion::setColor(const CRGB color1, const CRGB co
 void TesLight::GradientAnimatorMotion::setMotionSensorValue(const TesLight::MotionSensor::MotionSensorValue motionSensorValue)
 {
 	this->motionSensorValue = motionSensorValue;
+}
+
+/**
+ * @brief Get the motion based offset value between 0.0 and 1.0.
+ * @return motion based offset value
+ */
+float TesLight::GradientAnimatorMotion::getMotionOffset()
+{
+	float motionValue = 0.0f;
+	if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_X_G)
+	{
+		motionValue = this->motionSensorData.accXG;
+	}
+	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_Y_G)
+	{
+		motionValue = this->motionSensorData.accYG;
+	}
+	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_Z_G)
+	{
+		motionValue = this->motionSensorData.accZG;
+	}
+	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_X_DEG)
+	{
+		motionValue = this->motionSensorData.gyroXDeg / 30.0f;
+	}
+	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_Y_DEG)
+	{
+		motionValue = this->motionSensorData.gyroYDeg / 30.0f;
+	}
+	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_Z_DEG)
+	{
+		motionValue = this->motionSensorData.gyroZDeg / 30.0f;
+	}
+
+	motionValue *= this->speed / 127.0f;
+	motionValue += (this->offset / 255.0f) - 0.5f;
+
+	if (motionValue < -0.5f)
+	{
+		motionValue = -0.5f;
+	}
+	if (motionValue > 0.5f)
+	{
+		motionValue = 0.5f;
+	}
+
+	return 0.5f + (this->reverse ? -motionValue : motionValue);
 }

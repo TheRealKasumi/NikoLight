@@ -130,6 +130,23 @@ class ZonePage extends React.Component {
 								this.openAnimatorPage(5);
 							}}
 						/>
+
+						<ZoneTile
+							title="Left footwell"
+							icon={process.env.PUBLIC_URL + "/img/zone/door-animated.svg"}
+							flipped={true}
+							onClick={() => {
+								this.openAnimatorPage(6);
+							}}
+						/>
+						<ZoneTile
+							title="Right footwell"
+							icon={process.env.PUBLIC_URL + "/img/zone/door-animated.svg"}
+							flipped={false}
+							onClick={() => {
+								this.openAnimatorPage(7);
+							}}
+						/>
 					</ul>
 				)}
 			</div>
