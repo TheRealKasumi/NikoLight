@@ -39,6 +39,8 @@ namespace TesLight
 		TesLight::GradientAnimatorMotion::GradientMode gradientMode;
 		CRGB color[2];
 		TesLight::MotionSensor::MotionSensorValue motionSensorValue;
+
+		float getMotionOffset();
 	};
 }
 

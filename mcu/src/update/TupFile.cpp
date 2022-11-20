@@ -13,7 +13,7 @@
  */
 TesLight::TupFile::TupFile()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize TUP File."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize TUP file."));
 	this->initHeader();
 }
 
@@ -22,7 +22,7 @@ TesLight::TupFile::TupFile()
  */
 TesLight::TupFile::~TupFile()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Destroy TUP File and free resources."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Destroy TUP file and free resources."));
 	this->close();
 }
 
@@ -173,7 +173,7 @@ void TesLight::TupFile::close()
 
 /**
  * @brief Get the currently loaded {@link TesLight::TupFile::TupHeader}.
- * @return TesLight::TupFile::TupHeader header of the loaded file
+ * @return header of the loaded file
  */
 TesLight::TupFile::TupHeader TesLight::TupFile::getHeader()
 {

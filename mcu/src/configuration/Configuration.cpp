@@ -107,11 +107,17 @@ void TesLight::Configuration::loadDefaults()
 	this->systemConfig.lightSensorThreshold = LIGHT_SENSOR_DEFAULT_THRESHOLD;
 	this->systemConfig.lightSensorMinValue = LIGHT_SENSOR_DEFAULT_MIN;
 	this->systemConfig.lightSensorMaxValue = LIGHT_SENSOR_DEFAULT_MAX;
-	this->systemConfig.systemPowerLimit = REGULATOR_POWER_LIMIT * REGULATOR_COUNT;
+	this->systemConfig.regulatorPowerLimit = REGULATOR_POWER_LIMIT * REGULATOR_COUNT;
+	this->systemConfig.regulatorHighTemperature = REGULATOR_HIGH_TEMP;
+	this->systemConfig.regulatorCutoffTemperature = REGULATOR_CUT_OFF_TEMP;
+	this->systemConfig.fanMinPwmValue = FAN_PWM_MIN;
+	this->systemConfig.fanMaxPwmValue = FAN_PWM_MAX;
+	this->systemConfig.fanMinTemperature = FAN_TEMP_MIN;
+	this->systemConfig.fanMaxTemperature = FAN_TEMP_MAX;
 
 	// LED config
-	const uint8_t ledPins[LED_NUM_ZONES] = LED_OUTPUT_PINS;
-	const uint8_t ledCounts[LED_NUM_ZONES] = LED_COUNTS;
+	const uint8_t ledPins[LED_NUM_ZONES] = LED_DEFAULT_OUTPUT_PINS;
+	const uint8_t ledCounts[LED_NUM_ZONES] = LED_DEFAULT_COUNTS;
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		this->ledConfig[i].ledPin = ledPins[i];
@@ -177,7 +183,13 @@ bool TesLight::Configuration::load()
 	this->systemConfig.lightSensorThreshold = file.readWord();
 	this->systemConfig.lightSensorMinValue = file.readWord();
 	this->systemConfig.lightSensorMaxValue = file.readWord();
-	this->systemConfig.systemPowerLimit = file.readByte();
+	this->systemConfig.regulatorPowerLimit = file.readByte();
+	this->systemConfig.regulatorHighTemperature = file.readByte();
+	this->systemConfig.regulatorCutoffTemperature = file.readByte();
+	this->systemConfig.fanMinPwmValue = file.readByte();
+	this->systemConfig.fanMaxPwmValue = file.readByte();
+	this->systemConfig.fanMinTemperature = file.readByte();
+	this->systemConfig.fanMaxTemperature = file.readByte();
 
 	// LED config
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
@@ -235,7 +247,7 @@ bool TesLight::Configuration::save()
 	TesLight::BinaryFile file(this->fileSystem);
 	if (!file.open(this->fileName, FILE_WRITE))
 	{
-		TesLight::Logger::log(TesLight::Logger::WARN, SOURCE_LOCATION, F("Failed to open configuration file."));
+		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, F("Failed to open configuration file."));
 		return false;
 	}
 
@@ -250,7 +262,13 @@ bool TesLight::Configuration::save()
 	file.writeWord(this->systemConfig.lightSensorThreshold);
 	file.writeWord(this->systemConfig.lightSensorMinValue);
 	file.writeWord(this->systemConfig.lightSensorMaxValue);
-	file.writeByte(this->systemConfig.systemPowerLimit);
+	file.writeByte(this->systemConfig.regulatorPowerLimit);
+	file.writeByte(this->systemConfig.regulatorHighTemperature);
+	file.writeByte(this->systemConfig.regulatorCutoffTemperature);
+	file.writeByte(this->systemConfig.fanMinPwmValue);
+	file.writeByte(this->systemConfig.fanMaxPwmValue);
+	file.writeByte(this->systemConfig.fanMinTemperature);
+	file.writeByte(this->systemConfig.fanMaxTemperature);
 
 	// LED configuration
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
@@ -305,7 +323,13 @@ uint16_t TesLight::Configuration::getSimpleHash()
 	hash = hash * 31 + this->systemConfig.lightSensorThreshold;
 	hash = hash * 31 + this->systemConfig.lightSensorMinValue;
 	hash = hash * 31 + this->systemConfig.lightSensorMaxValue;
-	hash = hash * 31 + this->systemConfig.systemPowerLimit;
+	hash = hash * 31 + this->systemConfig.regulatorPowerLimit;
+	hash = hash * 31 + this->systemConfig.regulatorHighTemperature;
+	hash = hash * 31 + this->systemConfig.regulatorCutoffTemperature;
+	hash = hash * 31 + this->systemConfig.fanMinPwmValue;
+	hash = hash * 31 + this->systemConfig.fanMaxPwmValue;
+	hash = hash * 31 + this->systemConfig.fanMinTemperature;
+	hash = hash * 31 + this->systemConfig.fanMaxTemperature;
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		hash = hash * 31 + this->ledConfig[i].ledPin;

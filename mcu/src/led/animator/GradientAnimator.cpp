@@ -54,39 +54,68 @@ void TesLight::GradientAnimator::init()
  */
 void TesLight::GradientAnimator::render()
 {
-	const uint16_t middle = this->pixelCount * (this->offset / 255.0f);
-	for (uint16_t i = 0; i < this->pixelCount; i++)
+	if (this->pixelCount == 2)
 	{
-		float position = 0.0f;
-
-		if (this->gradientMode == TesLight::GradientAnimator::GradientMode::GRADIENT_LINEAR)
+		const float middle = (this->offset / 255.0f - 0.5f) * 2.0f;
+		if (middle < 0.0f)
 		{
-			if (i < middle)
-			{
-				position = i * 0.5f / middle;
-			}
-			else
-			{
-				position = 0.5f + ((float)i - middle) / (this->pixelCount - middle) * 0.5f;
-			}
+			this->pixels[0].setRGB(this->color[this->reverse ? 1 : 0].r, this->color[this->reverse ? 1 : 0].g, this->color[this->reverse ? 1 : 0].b);
+			this->pixels[1].setRGB(
+				(-middle * this->color[this->reverse ? 1 : 0].r + (1 + middle) * this->color[this->reverse ? 0 : 1].r),
+				(-middle * this->color[this->reverse ? 1 : 0].g + (1 + middle) * this->color[this->reverse ? 0 : 1].g),
+				(-middle * this->color[this->reverse ? 1 : 0].b + (1 + middle) * this->color[this->reverse ? 0 : 1].b));
+		}
+		else
+		{
+			this->pixels[0].setRGB(
+				(middle * this->color[this->reverse ? 0 : 1].r + (1 - middle) * this->color[this->reverse ? 1 : 0].r),
+				(middle * this->color[this->reverse ? 0 : 1].g + (1 - middle) * this->color[this->reverse ? 1 : 0].g),
+				(middle * this->color[this->reverse ? 0 : 1].b + (1 - middle) * this->color[this->reverse ? 1 : 0].b));
+			this->pixels[1].setRGB(this->color[this->reverse ? 0 : 1].r, this->color[this->reverse ? 0 : 1].g, this->color[this->reverse ? 0 : 1].b);
+		}
+	}
+	else
+	{
+		float middle = (this->pixelCount - 1) * this->offset / 255.0f;
+		if (middle < 0.01f)
+		{
+			middle = 0.01f;
+		}
+		else if (middle > this->pixelCount - 1.01f)
+		{
+			middle = this->pixelCount - 1.01f;
 		}
 
-		else if (this->gradientMode == TesLight::GradientAnimator::GradientMode::GRADIENT_CENTER)
+		for (uint16_t i = 0; i < this->pixelCount; i++)
 		{
-			if (i < middle)
+			float position = 0.0f;
+			if (this->gradientMode == TesLight::GradientAnimator::GradientMode::GRADIENT_LINEAR)
 			{
-				position = (float)i / middle;
+				if (i < middle)
+				{
+					position = i * 0.5f / middle;
+				}
+				else
+				{
+					position = 0.5f + ((float)i - middle) / ((this->pixelCount - 1) - middle) * 0.5f;
+				}
 			}
-			else
+			else if (this->gradientMode == TesLight::GradientAnimator::GradientMode::GRADIENT_CENTER)
 			{
-				position = 1.0f - ((float)i - middle) / (this->pixelCount - middle);
+				if (i < middle)
+				{
+					position = (float)i / middle;
+				}
+				else
+				{
+					position = 1.0f - ((float)i - middle) / ((this->pixelCount - 1) - middle);
+				}
 			}
+			this->pixels[i].setRGB(
+				(position * this->color[this->reverse ? 1 : 0].r + (1 - position) * this->color[this->reverse ? 0 : 1].r),
+				(position * this->color[this->reverse ? 1 : 0].g + (1 - position) * this->color[this->reverse ? 0 : 1].g),
+				(position * this->color[this->reverse ? 1 : 0].b + (1 - position) * this->color[this->reverse ? 0 : 1].b));
 		}
-
-		this->pixels[i].setRGB(
-			(position * this->color[this->reverse ? 0 : 1].r + (1 - position) * this->color[this->reverse ? 1 : 0].r),
-			(position * this->color[this->reverse ? 0 : 1].g + (1 - position) * this->color[this->reverse ? 1 : 0].g),
-			(position * this->color[this->reverse ? 0 : 1].b + (1 - position) * this->color[this->reverse ? 1 : 0].b));
 	}
 
 	this->applyBrightness();

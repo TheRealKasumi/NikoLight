@@ -13,6 +13,12 @@ class SystemConfiguration {
 		this.lightSensorMinValue = 30;
 		this.lightSensorMaxValue = 2048;
 		this.systemPowerLimit = 10;
+		this.regulatorHighTemperature = 80;
+		this.regulatorCutoffTemperature = 90;
+		this.fanMinPwmValue = 100;
+		this.fanMaxPwmValue = 255;
+		this.fanMinTemperature = 60;
+		this.fanMaxTemperature = 80;
 	}
 
 	/**
@@ -77,6 +83,54 @@ class SystemConfiguration {
 	};
 
 	/**
+	 * Get the temp in °C where brightness is reduced.
+	 * @returns temp in °C where brightness is reduced
+	 */
+	getRegulatorHighTemperature = () => {
+		return this.regulatorHighTemperature;
+	};
+
+	/**
+	 * Get the temp in °C where LEDs are turned off.
+	 * @returns temp in °C where LEDs are turned off
+	 */
+	getRegulatorCutoffTemperature = () => {
+		return this.regulatorCutoffTemperature;
+	};
+
+	/**
+	 * Get the minimum pwm value output to the fan (stall guard).
+	 * @returns minimum pwm value output to the fan (stall guard)
+	 */
+	getFanMinPwmValue = () => {
+		return this.fanMinPwmValue;
+	};
+
+	/**
+	 * Get the maximum pwm value output to the fan.
+	 * @returns maximum pwm value output to the fan
+	 */
+	getFanMaxPwmValue = () => {
+		return this.fanMaxPwmValue;
+	};
+
+	/**
+	 * Get the minimum temp in °C where the fan starts.
+	 * @returns minimum temp in °C where the fan starts
+	 */
+	getFanMinTemperature = () => {
+		return this.fanMinTemperature;
+	};
+
+	/**
+	 * Get the maximum temp in °C to run at maximum speed.
+	 * @returns maximum temp in °C to run at maximum speed
+	 */
+	getFanMaxTemperature = () => {
+		return this.fanMaxTemperature;
+	};
+
+	/**
 	 * Set the log level.
 	 * @param {number} logLevel log level
 	 * @returns true when valid, false when invalid
@@ -96,7 +150,7 @@ class SystemConfiguration {
 	 * @returns true when valid, false when invalid
 	 */
 	setLightSensorMode = (lightSensorMode) => {
-		if (typeof lightSensorMode === "number" && lightSensorMode >= 0 && lightSensorMode < 4) {
+		if (typeof lightSensorMode === "number" && lightSensorMode >= 0 && lightSensorMode < 6) {
 			this.lightSensorMode = lightSensorMode;
 			this.changed = true;
 			return true;
@@ -171,6 +225,93 @@ class SystemConfiguration {
 	};
 
 	/**
+	 * Set the temp in °C where brightness is reduced.
+	 * @param regulatorHighTemperature
+	 * @returns true when valid, false when invalid
+	 */
+	setRegulatorHighTemperature = (regulatorHighTemperature) => {
+		if (
+			typeof regulatorHighTemperature === "number" &&
+			regulatorHighTemperature >= 0 &&
+			regulatorHighTemperature < 256
+		) {
+			this.regulatorHighTemperature = regulatorHighTemperature;
+			this.changed = true;
+			return true;
+		}
+		return false;
+	};
+
+	/**
+	 * Set the temp in °C where LEDs are turned off.
+	 * @param regulatorCutoffTemperature
+	 * @returns true when valid, false when invalid
+	 */
+	setRegulatorCutoffTemperature = (regulatorCutoffTemperature) => {
+		if (
+			typeof regulatorCutoffTemperature === "number" &&
+			regulatorCutoffTemperature >= 0 &&
+			regulatorCutoffTemperature < 256
+		) {
+			this.regulatorCutoffTemperature = regulatorCutoffTemperature;
+			this.changed = true;
+			return true;
+		}
+	};
+
+	/**
+	 * Set the minimum pwm value output to the fan (stall guard).
+	 * @param fanMinPwmValue
+	 * @returns true when valid, false when invalid
+	 */
+	setFanMinPwmValue = (fanMinPwmValue) => {
+		if (typeof fanMinPwmValue === "number" && fanMinPwmValue >= 0 && fanMinPwmValue < 256) {
+			this.fanMinPwmValue = fanMinPwmValue;
+			this.changed = true;
+			return true;
+		}
+	};
+
+	/**
+	 * Set the maximum pwm value output to the fan.
+	 * @param fanMaxPwmValue
+	 * @returns true when valid, false when invalid
+	 */
+	setFanMaxPwmValue = (fanMaxPwmValue) => {
+		if (typeof fanMaxPwmValue === "number" && fanMaxPwmValue >= 0 && fanMaxPwmValue < 256) {
+			this.fanMaxPwmValue = fanMaxPwmValue;
+			this.changed = true;
+			return true;
+		}
+	};
+
+	/**
+	 * Set the minimum temp in °C where the fan starts.
+	 * @param fanMinTemperature
+	 * @returns true when valid, false when invalid
+	 */
+	setFanMinTemperature = (fanMinTemperature) => {
+		if (typeof fanMinTemperature === "number" && fanMinTemperature >= 0 && fanMinTemperature < 256) {
+			this.fanMinTemperature = fanMinTemperature;
+			this.changed = true;
+			return true;
+		}
+	};
+
+	/**
+	 * Set the maximum temp in °C to run at maximum speed.
+	 * @param fanMaxTemperature
+	 * @returns true when valid, false when invalid
+	 */
+	setFanMaxTemperature = (fanMaxTemperature) => {
+		if (typeof fanMaxTemperature === "number" && fanMaxTemperature >= 0 && fanMaxTemperature < 256) {
+			this.fanMaxTemperature = fanMaxTemperature;
+			this.changed = true;
+			return true;
+		}
+	};
+
+	/**
 	 * Copy the values from a {SystemConfiguration}.
 	 */
 	copyFrom = (systemConfiguration) => {
@@ -181,6 +322,12 @@ class SystemConfiguration {
 		this.lightSensorMinValue = systemConfiguration.lightSensorMinValue;
 		this.lightSensorMaxValue = systemConfiguration.lightSensorMaxValue;
 		this.systemPowerLimit = systemConfiguration.systemPowerLimit;
+		this.regulatorHighTemperature = systemConfiguration.regulatorHighTemperature;
+		this.regulatorCutoffTemperature = systemConfiguration.regulatorCutoffTemperature;
+		this.fanMinPwmValue = systemConfiguration.fanMinPwmValue;
+		this.fanMaxPwmValue = systemConfiguration.fanMaxPwmValue;
+		this.fanMinTemperature = systemConfiguration.fanMinTemperature;
+		this.fanMaxTemperature = systemConfiguration.fanMaxTemperature;
 	};
 
 	/**
@@ -196,6 +343,12 @@ class SystemConfiguration {
 		clone.lightSensorMinValue = this.lightSensorMinValue;
 		clone.lightSensorMaxValue = this.lightSensorMaxValue;
 		clone.systemPowerLimit = this.systemPowerLimit;
+		clone.regulatorHighTemperature = this.regulatorHighTemperature;
+		clone.regulatorCutoffTemperature = this.regulatorCutoffTemperature;
+		clone.fanMinPwmValue = this.fanMinPwmValue;
+		clone.fanMaxPwmValue = this.fanMaxPwmValue;
+		clone.fanMinTemperature = this.fanMinTemperature;
+		clone.fanMaxTemperature = this.fanMaxTemperature;
 		return clone;
 	};
 }

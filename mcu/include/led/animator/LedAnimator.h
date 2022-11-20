@@ -69,6 +69,7 @@ namespace TesLight
 
 		void applyBrightness();
 		static float trapezoid(float angle);
+		static float trapezoid2(float angle);
 	};
 }
 

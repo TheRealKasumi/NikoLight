@@ -17,7 +17,7 @@ std::function<bool()> TesLight::LedConfigurationEndpoint::configChangedCallback 
  */
 void TesLight::LedConfigurationEndpoint::begin(TesLight::Configuration *_configuration, std::function<bool()> _configChangedCallback)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register LED Configuration Endpoints."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register LED configuration Endpoints."));
 	TesLight::LedConfigurationEndpoint::configuration = _configuration;
 	TesLight::LedConfigurationEndpoint::configChangedCallback = _configChangedCallback;
 	webServerManager->addRequestHandler((getBaseUri() + F("config/led")).c_str(), http_method::HTTP_GET, TesLight::LedConfigurationEndpoint::getLedConfig);
@@ -175,7 +175,7 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
  */
 bool TesLight::LedConfigurationEndpoint::validateLedPin(int ledPin)
 {
-	const uint8_t ledOutputPins[LED_NUM_ZONES] = LED_OUTPUT_PINS;
+	const uint8_t ledOutputPins[LED_NUM_ZONES] = LED_DEFAULT_OUTPUT_PINS;
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		if (ledOutputPins[i] == ledPin)
@@ -195,7 +195,7 @@ bool TesLight::LedConfigurationEndpoint::validateLedPin(int ledPin)
  */
 bool TesLight::LedConfigurationEndpoint::validateLedCount(const int ledCount)
 {
-	return ledCount > 0 && ledCount < 255;
+	return ledCount > 1 && ledCount < 255;
 }
 
 /**

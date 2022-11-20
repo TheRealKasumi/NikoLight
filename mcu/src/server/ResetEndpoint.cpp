@@ -15,7 +15,7 @@ FS *TesLight::ResetEndpoint::fileSystem = nullptr;
  */
 void TesLight::ResetEndpoint::begin(FS *_fileSystem)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register Reset Endpoints."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register reset endpoints."));
 	ResetEndpoint::fileSystem = _fileSystem;
 	webServerManager->addRequestHandler((getBaseUri() + F("reset/soft")).c_str(), http_method::HTTP_POST, TesLight::ResetEndpoint::handleSoftReset);
 	webServerManager->addRequestHandler((getBaseUri() + F("reset/hard")).c_str(), http_method::HTTP_POST, TesLight::ResetEndpoint::handleHardReset);

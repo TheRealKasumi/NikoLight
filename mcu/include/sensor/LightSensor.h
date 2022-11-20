@@ -1,7 +1,7 @@
 /**
  * @file LightSensor.h
  * @author TheRealKasumi
- * @brief Contains a class for reading the light input, connected to the cars ambient light.
+ * @brief Contains a class for reading the ambient brightness from either the cars ambient light or an external light sensor.
  *
  * @copyright Copyright (c) 2022
  *
@@ -11,11 +11,13 @@
 
 #include <stdint.h>
 
+#include "configuration/SystemConfiguration.h"
+#include "hardware/ESP32ADC.h"
+#include "hardware/BH1750.h"
 #include "logging/Logger.h"
 
 namespace TesLight
 {
-
 	class LightSensor
 	{
 	public:
@@ -23,40 +25,37 @@ namespace TesLight
 		{
 			ALWAYS_OFF = 0,
 			ALWAYS_ON = 1,
-			AUTO_ON_OFF = 2,
-			AUTO_BRIGHTNESS = 3
+			AUTO_ON_OFF_ADC = 2,
+			AUTO_BRIGHTNESS_ADC = 3,
+			AUTO_ON_OFF_BH1750 = 4,
+			AUTO_BRIGHTNESS_BH1750 = 5
 		};
 
-		LightSensor(const uint8_t inputPin, const uint16_t bufferSize, const TesLight::LightSensor::LightSensorMode lightSensorMode, const uint16_t threshold, const uint16_t minValue, const uint16_t maxValue);
+		LightSensor(const TesLight::LightSensor::LightSensorMode lightSensorMode, const float threshold, const float minValue, const float maxValue);
 		~LightSensor();
 
 		TesLight::LightSensor::LightSensorMode getLightSensorMode();
 		void setLightSensorMode(const TesLight::LightSensor::LightSensorMode lightSensorMode);
 
-		uint16_t getThreshold();
-		void setThreshold(const uint16_t threshold);
+		float getThreshold();
+		void setThreshold(const float threshold);
 
-		uint16_t getMinValue();
-		void setMinValue(const uint16_t minValue);
+		float getMinValue();
+		void setMinValue(const float minValue);
 
-		uint16_t getMaxValue();
-		void setMaxValue(const uint16_t maxValue);
+		float getMaxValue();
+		void setMaxValue(const float maxValue);
 
-		float getBrightness();
+		bool getBrightness(float &brightness);
 
 	private:
-		uint8_t inputPin;
-		uint16_t bufferSize;
+		TesLight::ESP32ADC *esp32adc;
+		TesLight::BH1750 *bh1750;
 
 		TesLight::LightSensor::LightSensorMode lightSensorMode;
-		uint16_t threshold;
-		uint16_t minValue;
-		uint16_t maxValue;
-
-		uint16_t *buffer;
-		uint16_t bufferIndex;
-
-		uint16_t getAnalogeValue();
+		float threshold;
+		float minValue;
+		float maxValue;
 	};
 }
 
