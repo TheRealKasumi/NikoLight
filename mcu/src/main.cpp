@@ -322,7 +322,12 @@ bool updateAvilable()
  */
 void handleUpdate()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Installing system update from update package."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Install system update from update package."));
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Set fan speed to maximum during the update."));
+	TesLight::FanController fanController(FAN_PWM_PIN, 0, 255, 0, 10);
+	fanController.setTemperature(255);
+
 	if (TesLight::Updater::install(&SD, (String)UPDATE_DIRECTORY + F("/") + UPDATE_FILE_NAME))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update installed successfully. Rebooting. Good luck ;) !"));
@@ -588,6 +593,10 @@ bool applySystemConfig()
 	lightSensor->setThreshold(systemConfig.lightSensorThreshold / 4096.0f);
 	lightSensor->setMinValue(systemConfig.lightSensorMinValue / 4096.0f);
 	lightSensor->setMaxValue(systemConfig.lightSensorMaxValue / 4096.0f);
+	fanController->setPwmMin(systemConfig.fanMinPwmValue);
+	fanController->setPwmMax(systemConfig.fanMaxPwmValue);
+	fanController->setTempMin(systemConfig.fanMinTemperature);
+	fanController->setTempMax(systemConfig.fanMaxTemperature);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System configuration updated."));
 	initializeTimers();
 	return true;

@@ -151,6 +151,30 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 		webServer->send(400, F("text/plain"), F("The light sensor min value must be smaller than the max value."));
 		return;
 	}
+	if (!TesLight::SystemConfigurationEndpoint::validateRegulatorPowerLimit(config.regulatorPowerLimit))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The regulator power limit must be between 1 and 30W."));
+		webServer->send(400, F("text/plain"), F("The regulator power limit must be between 1 and 30W."));
+		return;
+	}
+	if (!TesLight::SystemConfigurationEndpoint::validateMinMax(config.regulatorHighTemperature, config.regulatorCutoffTemperature))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The regulator high temperature must be lower than the cutoff temperature."));
+		webServer->send(400, F("text/plain"), F("The regulator high temperature must be lower than the cutoff temperature."));
+		return;
+	}
+	if (!TesLight::SystemConfigurationEndpoint::validateRegulatorHighTemperature(config.regulatorHighTemperature))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The regulator high temperature must be between 60°C and 90°C."));
+		webServer->send(400, F("text/plain"), F("The regulator high temperature must be between 60°C and 90°C."));
+		return;
+	}
+	if (!TesLight::SystemConfigurationEndpoint::validateRegulatorCutoffTemperature(config.regulatorCutoffTemperature))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The regulator cutoff temperature must be between 60°C and 100°C."));
+		webServer->send(400, F("text/plain"), F("The regulator cutoff temperature must be between 60°C and 100°C."));
+		return;
+	}
 	if (!TesLight::SystemConfigurationEndpoint::validateMinMax(config.fanMinPwmValue, config.fanMaxPwmValue))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The fan min pwm value must be smaller than the max value."));
@@ -161,6 +185,18 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The fan min temperature value must be smaller than the max value."));
 		webServer->send(400, F("text/plain"), F("The fan min temperature value must be smaller than the max value."));
+		return;
+	}
+	if (!TesLight::SystemConfigurationEndpoint::validateMinFanTemperature(config.fanMinTemperature))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The fan starting temperature must be between 40°C and 70°C."));
+		webServer->send(400, F("text/plain"), F("The fan starting temperature must be between 40°C and 70°C."));
+		return;
+	}
+	if (!TesLight::SystemConfigurationEndpoint::validateMaxFanTemperature(config.fanMaxTemperature))
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The fan max temperature must be between 50°C and 90°C."));
+		webServer->send(400, F("text/plain"), F("The fan max temperature must be between 50°C and 90°C."));
 		return;
 	}
 
@@ -192,28 +228,6 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 }
 
 /**
- * @brief Validate if the log level is valid.
- * @param logLevel received log level
- * @return true when valid
- * @return false when invalid
- */
-bool TesLight::SystemConfigurationEndpoint::validateLogLevel(const uint8_t logLevel)
-{
-	return logLevel <= 3;
-}
-
-/**
- * @brief Validate if the light sensor mode is valid.
- * @param lightSensorMode received light sensor mode
- * @return true when valid
- * @return false when invalid
- */
-bool TesLight::SystemConfigurationEndpoint::validateLightSensorMode(const uint8_t lightSensorMode)
-{
-	return lightSensorMode <= 5;
-}
-
-/**
  * @brief Validate if the min is smaller than the max value.
  * @param min received min value
  * @param max received max value
@@ -226,6 +240,28 @@ bool TesLight::SystemConfigurationEndpoint::validateMinMax(const uint16_t min, c
 }
 
 /**
+ * @brief Validate if the log level is valid.
+ * @param value received log level
+ * @return true when valid
+ * @return false when invalid
+ */
+bool TesLight::SystemConfigurationEndpoint::validateLogLevel(const uint8_t value)
+{
+	return value <= 3;
+}
+
+/**
+ * @brief Validate if the light sensor mode is valid.
+ * @param value received light sensor mode
+ * @return true when valid
+ * @return false when invalid
+ */
+bool TesLight::SystemConfigurationEndpoint::validateLightSensorMode(const uint8_t value)
+{
+	return value <= 5;
+}
+
+/**
  * @brief Validate if the values for the light sensor are in range 0 to 4095.
  * @param value value to validate
  * @return true when valid
@@ -234,4 +270,59 @@ bool TesLight::SystemConfigurationEndpoint::validateMinMax(const uint16_t min, c
 bool TesLight::SystemConfigurationEndpoint::validateLightSensorValue(const uint16_t value)
 {
 	return value < 4096;
+}
+
+/**
+ * @brief Validate the maximum regulator power.
+ * @param value value to validate
+ * @return true when valid
+ * @return false when invalid
+ */
+bool TesLight::SystemConfigurationEndpoint::validateRegulatorPowerLimit(const uint8_t value)
+{
+	return value > 0 && value <= 30;
+}
+
+/**
+ * @brief Validate the regulator high temperature.
+ * @param value value to validate
+ * @return true when valid
+ * @return false when invalid
+ */
+bool TesLight::SystemConfigurationEndpoint::validateRegulatorHighTemperature(const uint8_t value)
+{
+	return value >= 60 && value <= 90;
+}
+
+/**
+ * @brief Validate the regulator cutoff temperature.
+ * @param value value to validate
+ * @return true when valid
+ * @return false when invalid
+ */
+bool TesLight::SystemConfigurationEndpoint::validateRegulatorCutoffTemperature(const uint8_t value)
+{
+	return value >= 60 && value <= 100;
+}
+
+/**
+ * @brief Validate the minimum temperature where the fan starts.
+ * @param value value to validate
+ * @return true when valid
+ * @return false when invalid
+ */
+bool TesLight::SystemConfigurationEndpoint::validateMinFanTemperature(const uint8_t value)
+{
+	return value >= 40 && value <= 70;
+}
+
+/**
+ * @brief Validate the maximum temperature where the fun runs at full speed.
+ * @param value value to validate
+ * @return true when valid
+ * @return false when invalid
+ */
+bool TesLight::SystemConfigurationEndpoint::validateMaxFanTemperature(const uint8_t value)
+{
+	return value >= 50 && value <= 90;
 }

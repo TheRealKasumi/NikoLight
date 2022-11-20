@@ -312,7 +312,7 @@ class SettingsPage extends React.Component {
 						key={`settings-page-input-key-${this.state.inputKey + 6}`}
 						title="Power Limit (W)"
 						min={1}
-						max={100}
+						max={30}
 						value={this.state.systemConfigurationCopy.getSystemPowerLimit()}
 						step={1}
 						icon={process.env.PUBLIC_URL + "/img/icon/power.svg"}
@@ -324,7 +324,7 @@ class SettingsPage extends React.Component {
 						key={`settings-page-input-key-${this.state.inputKey + 7}`}
 						title="Throttle Temperature (°C)"
 						min={60}
-						max={120}
+						max={90}
 						value={this.state.systemConfigurationCopy.getRegulatorHighTemperature()}
 						step={1}
 						icon={process.env.PUBLIC_URL + "/img/icon/power.svg"}
@@ -335,8 +335,8 @@ class SettingsPage extends React.Component {
 					<Slider
 						key={`settings-page-input-key-${this.state.inputKey + 8}`}
 						title="Shut Down Temperature (°C)"
-						min={70}
-						max={120}
+						min={60}
+						max={100}
 						value={this.state.systemConfigurationCopy.getRegulatorCutoffTemperature()}
 						step={1}
 						icon={process.env.PUBLIC_URL + "/img/icon/power.svg"}
@@ -348,7 +348,7 @@ class SettingsPage extends React.Component {
 						key={`settings-page-input-key-${this.state.inputKey + 9}`}
 						title="Fan Start Temp (°C)"
 						min={40}
-						max={120}
+						max={70}
 						value={this.state.systemConfigurationCopy.getFanMinTemperature()}
 						step={1}
 						icon={process.env.PUBLIC_URL + "/img/icon/power.svg"}
@@ -359,8 +359,8 @@ class SettingsPage extends React.Component {
 					<Slider
 						key={`settings-page-input-key-${this.state.inputKey + 10}`}
 						title="Fan Full Speed Temp (°C)"
-						min={40}
-						max={120}
+						min={50}
+						max={90}
 						value={this.state.systemConfigurationCopy.getFanMaxTemperature()}
 						step={1}
 						icon={process.env.PUBLIC_URL + "/img/icon/power.svg"}

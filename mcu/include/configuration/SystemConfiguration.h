@@ -38,17 +38,17 @@
 #define ANIMATOR_DEFAULT_FADE_SPEED 30 								// Default fading speed
 
 // Voltage regulator
-#define REGULATOR_POWER_LIMIT 10							// W per regulator
+#define REGULATOR_POWER_LIMIT 12							// W per regulator
 #define REGULATOR_COUNT 2									// Number of regulators
 #define REGULATOR_DEFAULT_VOLTAGE 50						// Output Voltage x10
 #define REGULATOR_ZONE_MAPPING {0, 1, 0, 1, 0, 1, 0, 1}		// Maps zone index to regulator number
-#define REGULATOR_HIGH_TEMP 80								// Temp in °C where brightness is reduced
-#define REGULATOR_CUT_OFF_TEMP 90							// Temp in °C where LEDs are turned off
+#define REGULATOR_HIGH_TEMP 70								// Temp in °C where brightness is reduced
+#define REGULATOR_CUT_OFF_TEMP 85							// Temp in °C where LEDs are turned off
 
 // Cooling fan
 #define FAN_PWM_PIN 27			// Output pin for the fan
 #define FAN_PWM_CHANNEL 0		// PWM channel for the fan control
-#define FAN_PWM_FREQUENCY 50000	// PWM frequency of the fan in Hz
+#define FAN_PWM_FREQUENCY 30000	// PWM frequency of the fan in Hz
 #define FAN_PWM_RESOLUTION 8 	// Resolution of the fan control in bits
 #define FAN_PWM_MIN 75		 	// Minimum PWM value for the fan (stall guard)
 #define FAN_PWM_MAX 255		 	// Maximum PWm value for the fan

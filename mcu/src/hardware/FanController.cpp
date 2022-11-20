@@ -30,6 +30,86 @@ TesLight::FanController::FanController(const uint8_t fanPin, const uint16_t pwmM
 }
 
 /**
+ * @brief Set the minimum pwm value that will be output to the fan.
+ * @param pwmMin minimum pwm value for the fan
+ */
+void TesLight::FanController::setPwmMin(const uint16_t pwmMin)
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set the minimum pwm value for the fan."));
+	this->pwmMin = pwmMin;
+}
+
+/**
+ * @brief Get the minimum pwm value that will be output to the fan.
+ * @return minimum pwm value that will be output to the fan
+ */
+uint16_t TesLight::FanController::getPwmMin()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get the minimum pwm value for the fan."));
+	return this->pwmMin;
+}
+
+/**
+ * @brief Set the maximum pwm value that will be output to the fan.
+ * @param pwmMax maximum pwm value for the fan
+ */
+void TesLight::FanController::setPwmMax(const uint16_t pwmMax)
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set the maximum pwm value for the fan."));
+	this->pwmMax = pwmMax;
+}
+
+/**
+ * @brief Get the maximum pwm value that will be output to the fan.
+ * @return maximum pwm value that will be output to the fan
+ */
+uint16_t TesLight::FanController::getPwmMax()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get the maximum pwm value for the fan."));
+	return this->pwmMax;
+}
+
+/**
+ * @brief Set the minimum temperature at which the fan will start to spin.
+ * @param tempMin minimum temperature at which the fan will start to spin
+ */
+void TesLight::FanController::setTempMin(const uint8_t tempMin)
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set the minimum tempearture."));
+	this->tempMin = tempMin;
+}
+
+/**
+ * @brief Get the minimum temperature at which the fan will start to spin.
+ * @return minimum temperature at which the fan will start to spin
+ */
+uint8_t TesLight::FanController::getTempMin()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get the minimum tempearture."));
+	return this->tempMin;
+}
+
+/**
+ * @brief Set the maximum temperature at which the fan will run at full speed.
+ * @param tempMax maximum temperature at which the fan will run at full speed
+ */
+void TesLight::FanController::setTempMax(const uint8_t tempMax)
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set the maximum tempearture."));
+	this->tempMax = tempMax;
+}
+
+/**
+ * @brief Get the maximum temperature at which the fan will start to spin.
+ * @return maximum temperature at which the fan will start to spin
+ */
+uint8_t TesLight::FanController::getTempMax()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get the maximum tempearture."));
+	return this->tempMax;
+}
+
+/**
  * @brief Destroy the {@link TesLight::FanController} instance and free resources.
  */
 TesLight::FanController::~FanController()
