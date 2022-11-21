@@ -417,16 +417,22 @@ Once changed, you can save the file and close it.
 Now there is one more configuration step before you are ready to upload the code to the board.
 Please navigate to [include/configuration](/mcu/include/configuration) and open the file [SystemConfiguration.h](/mcu/include/configuration/SystemConfiguration.h).
 
-If you decided to only install one voltage regulator, please to the following changes:
+If you decided to only install one voltage regulator, please do the following changes:
 
--  `#define REGULATOR_COUNT 1`.
--  `#define REGULATOR_ZONE_MAPPING {0, 0, 0, 0, 0, 0, 0, 0}`
+-  `#define REGULATOR_COUNT 1`
+-  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
 
 Also depending on the board version, the following changes are required.
 
-Board Version 1.0 and 2.0:
+Board version 1.0 (@luap):
+
+-  `#define REGULATOR_COUNT 1`
+-  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
+
+Board version 2.0 (@PhilippDen):
 
 -  `#define LED_OUTPUT_PINS {13, 15, 17, 22, 14, 16, 21, 25}`
+-  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
 
 Save the files and then click the upload button in the bottom left.
 

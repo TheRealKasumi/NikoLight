@@ -74,6 +74,8 @@ namespace TesLight
 		bool calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_COUNT]);
 		bool limitPowerConsumption();
 		bool limitRegulatorTemperature();
+
+		uint8_t getRegulatorIndexFromPin(const uint8_t pin);
 	};
 }
 
