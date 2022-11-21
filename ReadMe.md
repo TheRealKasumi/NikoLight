@@ -1,6 +1,6 @@
 # TesLight
 
-![Logo](web-app/public/img/logo192.png)
+![PlatformUI Build](https://github.com/TheRealKasumi/TesLight/actions/workflows/PlatformIO-Build.yml/badge.svg?branch=main)
 
 ## Beta Warning
 
