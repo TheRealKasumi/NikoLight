@@ -67,6 +67,14 @@ uint8_t TesLight::TemperatureSensor::getNumSensors()
 bool TesLight::TemperatureSensor::getMinTemperature(float &temp)
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get the minimum temperature."));
+
+	if (this->ds18b20->getNumSensors() == 0)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("No temperature sensors present."));
+		temp = 0.0f;
+		return true;
+	}
+
 	temp = 1000.0f;
 	for (uint8_t i = 0; i < this->ds18b20->getNumSensors(); i++)
 	{
@@ -103,6 +111,14 @@ bool TesLight::TemperatureSensor::getMinTemperature(float &temp)
 bool TesLight::TemperatureSensor::getMaxTemperature(float &temp)
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get the maximum temperature."));
+
+	if (this->ds18b20->getNumSensors() == 0)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("No temperature sensors present."));
+		temp = 0.0f;
+		return true;
+	}
+
 	temp = -1000.0f;
 	for (uint8_t i = 0; i < this->ds18b20->getNumSensors(); i++)
 	{
@@ -139,6 +155,14 @@ bool TesLight::TemperatureSensor::getMaxTemperature(float &temp)
 bool TesLight::TemperatureSensor::getAverageTemperature(float &temp)
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get the average temperature."));
+
+	if (this->ds18b20->getNumSensors() == 0)
+	{
+		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("No temperature sensors present."));
+		temp = 0.0f;
+		return true;
+	}
+
 	temp = 0.0f;
 	for (uint8_t i = 0; i < this->ds18b20->getNumSensors(); i++)
 	{
@@ -160,11 +184,6 @@ bool TesLight::TemperatureSensor::getAverageTemperature(float &temp)
 
 		temp += currentTemp;
 	}
-
-	if (this->ds18b20->getNumSensors() > 0)
-	{
-		temp / this->ds18b20->getNumSensors();
-	}
-
+	temp / this->ds18b20->getNumSensors();
 	return true;
 }

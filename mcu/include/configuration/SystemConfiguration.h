@@ -38,12 +38,12 @@
 #define ANIMATOR_DEFAULT_FADE_SPEED 30 								// Default fading speed
 
 // Voltage regulator
-#define REGULATOR_POWER_LIMIT 12							// W per regulator
-#define REGULATOR_COUNT 2									// Number of regulators
-#define REGULATOR_DEFAULT_VOLTAGE 50						// Output Voltage x10
-#define REGULATOR_ZONE_MAPPING {0, 1, 0, 1, 0, 1, 0, 1}		// Maps zone index to regulator number
-#define REGULATOR_HIGH_TEMP 70								// Temp in °C where brightness is reduced
-#define REGULATOR_CUT_OFF_TEMP 85							// Temp in °C where LEDs are turned off
+#define REGULATOR_POWER_LIMIT 12																		// W per regulator
+#define REGULATOR_COUNT 2																				// Number of regulators
+#define REGULATOR_DEFAULT_VOLTAGE 50																	// Output Voltage x10
+#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 1}, {15, 0}, {16, 1}, {17,0}, {21, 1}, {22, 0}, {25, 1}}	// Map a output pin to a regulator index
+#define REGULATOR_HIGH_TEMP 70																			// Temp in °C where brightness is reduced
+#define REGULATOR_CUT_OFF_TEMP 85																		// Temp in °C where LEDs are turned off
 
 // Cooling fan
 #define FAN_PWM_PIN 27			// Output pin for the fan

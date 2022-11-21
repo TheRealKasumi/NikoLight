@@ -632,7 +632,6 @@ bool TesLight::LedManager::calculateRegulatorPowerDraw(float regulatorPower[REGU
 		regulatorPower[i] = 0.0f;
 	}
 
-	const uint8_t regulatorMap[LED_NUM_ZONES] = REGULATOR_ZONE_MAPPING;
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		TesLight::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
@@ -651,7 +650,9 @@ bool TesLight::LedManager::calculateRegulatorPowerDraw(float regulatorPower[REGU
 			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to calculate power consumption for animator ") + String(i) + F(" because the animator is null."));
 			return false;
 		}
-		regulatorPower[regulatorMap[i]] += zoneCurrent * (ledConfig.ledVoltage / 10.0f) / 1000.0f;
+
+		const uint8_t regulatorIndex = this->getRegulatorIndexFromPin(ledConfig.ledPin);
+		regulatorPower[regulatorIndex] += zoneCurrent * (ledConfig.ledVoltage / 10.0f) / 1000.0f;
 	}
 
 	return true;
@@ -671,13 +672,14 @@ bool TesLight::LedManager::limitPowerConsumption()
 		return false;
 	}
 
-	const uint8_t regulatorMap[LED_NUM_ZONES] = REGULATOR_ZONE_MAPPING;
+	TesLight::Configuration::SystemConfig systemConfig = this->config->getSystemConfig();
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		TesLight::Configuration::SystemConfig systemConfig = this->config->getSystemConfig();
+		TesLight::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
 		if (this->ledAnimator[i] != nullptr)
 		{
-			float multiplicator = ((float)systemConfig.regulatorPowerLimit / REGULATOR_COUNT) / regulatorPower[regulatorMap[i]];
+			const uint8_t regulatorIndex = this->getRegulatorIndexFromPin(ledConfig.ledPin);
+			float multiplicator = ((float)systemConfig.regulatorPowerLimit / REGULATOR_COUNT) / regulatorPower[regulatorIndex];
 			if (multiplicator < 0.0f)
 			{
 				multiplicator = 0.0f;
@@ -740,4 +742,22 @@ bool TesLight::LedManager::limitRegulatorTemperature()
 	}
 
 	return true;
+}
+
+/**
+ * @brief Get the regulator index by providing the pin number.
+ * @param pin physical pin number
+ * @return regulator index
+ */
+uint8_t TesLight::LedManager::getRegulatorIndexFromPin(const uint8_t pin)
+{
+	const uint8_t regulatorMap[LED_NUM_ZONES][2] = REGULATOR_ZONE_MAPPING;
+	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	{
+		if (regulatorMap[i][0] == pin)
+		{
+			return regulatorMap[i][1];
+		}
+	}
+	return 0;
 }
