@@ -9,7 +9,7 @@ Some minor bugs and missing documentation are to be expected.
 
 ## Introduction
 
-TesLight is an open source ambient light that you can build by yourself.
+TesLight is an open source ambient light that you can build yourself.
 The project is primarily aimed at people who are not looking for a ready-made solution and prefer to tinker, modify, extend and work on it as a community.
 As the name suggests, the project was started primarily for Tesla vehicles.
 The focus is on the Model 3 and Model Y.
