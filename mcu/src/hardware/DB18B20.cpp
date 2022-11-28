@@ -14,7 +14,6 @@
  */
 TesLight::DS18B20::DS18B20(const uint8_t busPin)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize DS18B20 instance."));
 	this->oneWire = new OneWire(busPin);
 	this->numSensors = 0;
 	this->sensorAddress = nullptr;
@@ -28,7 +27,6 @@ TesLight::DS18B20::DS18B20(const uint8_t busPin)
  */
 TesLight::DS18B20::~DS18B20()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Deleting DS18B20 instance and free resources."));
 	if (this->oneWire)
 	{
 		delete this->oneWire;
@@ -63,8 +61,6 @@ TesLight::DS18B20::~DS18B20()
  */
 bool TesLight::DS18B20::begin()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Start DS18B20 instance."));
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Search for sensors."));
 	uint64_t addressBuffer[4] = {0};
 	if (!this->getSensors(this->numSensors, addressBuffer, 4))
 	{
@@ -78,7 +74,6 @@ bool TesLight::DS18B20::begin()
 		return true;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Reserving memory for the found sensors."));
 	this->sensorAddress = new uint64_t[this->numSensors];
 	this->resolution = new TesLight::DS18B20::DS18B20Res[this->numSensors];
 	this->lastMeasurement = new float[this->numSensors];
@@ -91,7 +86,6 @@ bool TesLight::DS18B20::begin()
 		this->measurementReadyTime[i] = ULONG_MAX;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("DS18B20 instance started successfully."));
 	return true;
 }
 
@@ -101,7 +95,6 @@ bool TesLight::DS18B20::begin()
  */
 uint8_t TesLight::DS18B20::getNumSensors()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get number of DS18B20 sensors."));
 	return this->numSensors;
 }
 
@@ -112,7 +105,6 @@ uint8_t TesLight::DS18B20::getNumSensors()
  */
 uint64_t TesLight::DS18B20::getSensorAddress(const uint8_t sensorIndex)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Get sensor address of sensor with index ") + sensorIndex + F("."));
 	if (sensorIndex >= this->numSensors)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Sensor index out of bounds."));
@@ -131,21 +123,18 @@ uint64_t TesLight::DS18B20::getSensorAddress(const uint8_t sensorIndex)
  */
 bool TesLight::DS18B20::setResolution(const uint8_t sensorIndex, const TesLight::DS18B20::DS18B20Res resolution)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Set resolution of sensor with index ") + sensorIndex + F("."));
 	if (sensorIndex >= this->numSensors)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Sensor index out of bounds."));
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Reset OneWire bus."));
 	if (!this->oneWire->reset())
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to reset OneWire bus. The bus lines might be shorted or a sensor is malfunctioning."));
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Write scratchpad."));
 	this->oneWire->select((uint8_t *)&this->sensorAddress[sensorIndex]);
 	this->oneWire->write(0x4E, 0);
 	this->oneWire->write(0x00, 0);
@@ -165,7 +154,6 @@ bool TesLight::DS18B20::setResolution(const uint8_t sensorIndex, const TesLight:
  */
 bool TesLight::DS18B20::getResolution(const uint8_t sensorIndex, TesLight::DS18B20::DS18B20Res &resolution)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Get resolution of sensor with index ") + sensorIndex + F("."));
 	if (sensorIndex >= this->numSensors)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Sensor index out of bounds."));
@@ -183,25 +171,21 @@ bool TesLight::DS18B20::getResolution(const uint8_t sensorIndex, TesLight::DS18B
  */
 bool TesLight::DS18B20::startMeasurement(const uint8_t sensorIndex)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Start temperature measurement for sensor with index ") + sensorIndex + F("."));
 	if (sensorIndex >= this->numSensors)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Sensor index out of bounds."));
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Reset OneWire bus."));
 	if (!this->oneWire->reset())
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to reset OneWire bus. The bus lines might be shorted or a sensor is malfunctioning."));
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read scratchpad."));
 	this->oneWire->select((uint8_t *)&this->sensorAddress[sensorIndex]);
 	this->oneWire->write(0x44, 0);
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set timer to check when the measurement should be ready."));
 	if (this->resolution[sensorIndex] == TesLight::DS18B20::DS18B20Res::DS18B20_9_BIT)
 	{
 		this->measurementReadyTime[sensorIndex] = millis() + 110;
@@ -229,7 +213,6 @@ bool TesLight::DS18B20::startMeasurement(const uint8_t sensorIndex)
  */
 bool TesLight::DS18B20::isMeasurementReady(const uint8_t sensorIndex)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Check if sensor with index ") + sensorIndex + F(" finished the measurement."));
 	if (sensorIndex >= this->numSensors)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Sensor index out of bounds."));
@@ -247,7 +230,6 @@ bool TesLight::DS18B20::isMeasurementReady(const uint8_t sensorIndex)
  */
 bool TesLight::DS18B20::getTemperature(const uint8_t sensorIndex, float &temp)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Read temperature of sensor with index ") + sensorIndex + F("."));
 	if (sensorIndex >= this->numSensors)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Sensor index out of bounds."));
@@ -255,7 +237,6 @@ bool TesLight::DS18B20::getTemperature(const uint8_t sensorIndex, float &temp)
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Check if the measurement is ready."));
 	if (!this->isMeasurementReady(sensorIndex))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Sensor is not ready. Return previous measurement."));
@@ -263,25 +244,21 @@ bool TesLight::DS18B20::getTemperature(const uint8_t sensorIndex, float &temp)
 		return true;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Reset OneWire bus."));
 	if (!this->oneWire->reset())
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to reset OneWire bus. The bus lines might be shorted or a sensor is malfunctioning."));
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read scratchpad."));
 	this->oneWire->select((uint8_t *)&this->sensorAddress[sensorIndex]);
 	this->oneWire->write(0xBE);
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read scratchpad data from scratchpad."));
 	uint8_t data[9] = {0};
 	for (uint8_t i = 0; i < 9; i++)
 	{
 		data[i] = this->oneWire->read();
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Validate CRC of the scratchpad data."));
 	if (OneWire::crc8(data, 8) != data[8])
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The CRC of the sensors address is invalid. Check the OneWire bus."));
@@ -289,30 +266,21 @@ bool TesLight::DS18B20::getTemperature(const uint8_t sensorIndex, float &temp)
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read temperature raw data."));
 	int16_t raw = (data[1] << 8) | data[0];
 	const uint8_t resolution = (data[4] & 0x60);
 	if (resolution == 0x00) // 9 bit
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Temperature resolution is 9 bit."));
 		raw = raw & ~7;
 	}
 	else if (resolution == 0x20) // 10 bit
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Temperature resolution is 10 bit."));
 		raw = raw & ~3;
 	}
 	else if (resolution == 0x40) // 11 bit
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Temperature resolution is 11 bit."));
 		raw = raw & ~1;
 	}
-	else
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Temperature resolution is 12 bit."));
-	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calculate temperature in degree celsius."));
 	temp = (float)raw / 16.0f;
 	this->lastMeasurement[sensorIndex] = temp;
 	return true;
@@ -328,7 +296,6 @@ bool TesLight::DS18B20::getTemperature(const uint8_t sensorIndex, float &temp)
  */
 bool TesLight::DS18B20::getSensors(uint8_t &sensorCount, uint64_t sensorAddresses[], const uint8_t bufferSize)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Search sensors and read their addresses."));
 	sensorCount = 0;
 	this->oneWire->reset_search();
 	while (this->oneWire->search((uint8_t *)&sensorAddresses[sensorCount]))
@@ -347,13 +314,10 @@ bool TesLight::DS18B20::getSensors(uint8_t &sensorCount, uint64_t sensorAddresse
 
 		if (((uint8_t *)&sensorAddresses[sensorCount])[0] != 0x28)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Device is not a DS18B20 sensor. Skipping."));
 			continue;
 		}
 
 		sensorCount++;
 	}
-
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Sensor search completed."));
 	return true;
 }

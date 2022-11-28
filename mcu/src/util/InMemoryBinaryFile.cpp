@@ -14,12 +14,10 @@
  */
 TesLight::InMemoryBinaryFile::InMemoryBinaryFile(const size_t size, const bool freeOnDestory)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Initialize in memory binary File with size ") + String(size) + F("."));
 	this->buffer = new uint8_t[size];
 	this->size = size;
 	this->index = 0;
 	this->freeOnDestroy = freeOnDestory;
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("In memory binary File initialized."));
 }
 
 /**
@@ -27,10 +25,8 @@ TesLight::InMemoryBinaryFile::InMemoryBinaryFile(const size_t size, const bool f
  */
 TesLight::InMemoryBinaryFile::~InMemoryBinaryFile()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Deleting in memory binary File."));
 	if (this->freeOnDestroy)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Freeing allocated memory."));
 		delete[] this->buffer;
 		this->buffer = nullptr;
 	}
@@ -41,7 +37,6 @@ TesLight::InMemoryBinaryFile::~InMemoryBinaryFile()
  */
 uint8_t *TesLight::InMemoryBinaryFile::getData()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get binary file data."));
 	return this->buffer;
 }
 
@@ -52,14 +47,12 @@ uint8_t *TesLight::InMemoryBinaryFile::getData()
  */
 bool TesLight::InMemoryBinaryFile::loadFrom(uint8_t *buffer, const size_t bufferSize)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Load in memory binary File."));
 	if (bufferSize > this->size)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to load in memory binary File because the data exceeds the buffer size."));
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Copy data into buffer."));
 	for (size_t i = 0; i < this->size; i++)
 	{
 		if (i < bufferSize)
@@ -72,7 +65,6 @@ bool TesLight::InMemoryBinaryFile::loadFrom(uint8_t *buffer, const size_t buffer
 		}
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Data loaded."));
 	this->index = 0;
 	return true;
 }
@@ -83,7 +75,6 @@ bool TesLight::InMemoryBinaryFile::loadFrom(uint8_t *buffer, const size_t buffer
  */
 size_t TesLight::InMemoryBinaryFile::getBytesWritten()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get number of written bytes."));
 	return this->index;
 }
 
@@ -95,7 +86,6 @@ size_t TesLight::InMemoryBinaryFile::getBytesWritten()
  */
 bool TesLight::InMemoryBinaryFile::writeByte(const uint8_t byte)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Write byte ") + String(byte) + F(" to in memory binary File."));
 	if (this->index >= this->size)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to write to in memory binary File because the data exceeds the buffer size."));
@@ -111,7 +101,6 @@ bool TesLight::InMemoryBinaryFile::writeByte(const uint8_t byte)
  */
 uint8_t TesLight::InMemoryBinaryFile::readByte()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read byte from in memory binary File."));
 	if (this->index >= this->size)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read from in memory binary File because the end is reached."));
@@ -128,7 +117,6 @@ uint8_t TesLight::InMemoryBinaryFile::readByte()
  */
 bool TesLight::InMemoryBinaryFile::writeWord(const uint16_t word)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Write word ") + String(word) + F(" to in memory binary File."));
 	if (this->index + sizeof(word) - 1 >= this->size)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to write to in memory binary File because the data exceeds the buffer size."));
@@ -145,7 +133,6 @@ bool TesLight::InMemoryBinaryFile::writeWord(const uint16_t word)
  */
 uint16_t TesLight::InMemoryBinaryFile::readWord()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read word from in memory binary File."));
 	if (this->index + sizeof(uint16_t) - 1 >= this->size)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read from in memory binary File because the end is reached."));
@@ -165,7 +152,6 @@ uint16_t TesLight::InMemoryBinaryFile::readWord()
  */
 bool TesLight::InMemoryBinaryFile::writeString(const String string)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Write string \"") + string + F("\" to in memory binary File."));
 	const uint16_t length = string.length();
 	if (this->index + sizeof(uint16_t) + length - 1 >= this->size)
 	{
@@ -188,7 +174,6 @@ bool TesLight::InMemoryBinaryFile::writeString(const String string)
  */
 String TesLight::InMemoryBinaryFile::readString()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read string from in memory binary File."));
 	if (this->index + sizeof(uint16_t) >= this->size)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read from in memory binary File because the end is reached."));

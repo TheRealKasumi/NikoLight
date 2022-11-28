@@ -15,7 +15,6 @@
 #include "configuration/SystemConfiguration.h"
 #include "util/BinaryFile.h"
 #include "logging/Logger.h"
-#include "sensor/LightSensor.h"
 
 namespace TesLight
 {
@@ -24,18 +23,20 @@ namespace TesLight
 	public:
 		struct SystemConfig
 		{
-			TesLight::Logger::LogLevel logLevel;					// Logging level
-			TesLight::LightSensor::LightSensorMode lightSensorMode; // Mode of the light sensor
-			uint16_t lightSensorThreshold;							// Threshold value to turn on/off the LEDs
-			uint16_t lightSensorMinValue;							// Minimum value for automatic brightness adjustment
-			uint16_t lightSensorMaxValue;							// Maximum value for automatic brightness adjustment
-			uint8_t regulatorPowerLimit;							// Limit in W
-			uint8_t regulatorHighTemperature;						// Temp in °C where brightness is reduced
-			uint8_t regulatorCutoffTemperature;						// Temp in °C where LEDs are turned off
-			uint8_t fanMinPwmValue;									// Minimum pwm value output to the fan (stall guard)
-			uint8_t fanMaxPwmValue;									// Maximum pwm value output to the fan
-			uint8_t fanMinTemperature;								// Minimum temp in °C where the fan starts
-			uint8_t fanMaxTemperature;								// Maximum temp in °C to run at maximum speed
+			uint8_t logLevel;						 // Logging level
+			uint8_t lightSensorMode;				 // Mode of the light sensor
+			uint8_t lightSensorThreshold;			 // Threshold value to turn on/off the LEDs
+			uint8_t lightSensorMinAmbientBrightness; // Minimum brightness of the ambient
+			uint8_t lightSensorMaxAmbientBrightness; // Maximum brightness of the ambient
+			uint8_t lightSensorMinLedBrightness;	 // Minimum brightness of the LEDs for brightnes control
+			uint8_t lightSensorMaxLedBrightness;	 // Maximum brightness of the LEDs for brightness control
+			uint8_t regulatorPowerLimit;			 // Limit in W
+			uint8_t regulatorHighTemperature;		 // Temp in °C where brightness is reduced
+			uint8_t regulatorCutoffTemperature;		 // Temp in °C where LEDs are turned off
+			uint8_t fanMinPwmValue;					 // Minimum pwm value output to the fan (stall guard)
+			uint8_t fanMaxPwmValue;					 // Maximum pwm value output to the fan
+			uint8_t fanMinTemperature;				 // Minimum temp in °C where the fan starts
+			uint8_t fanMaxTemperature;				 // Maximum temp in °C to run at maximum speed
 		};
 
 		struct LedConfig

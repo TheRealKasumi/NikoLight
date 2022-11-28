@@ -14,7 +14,6 @@
  */
 TesLight::ESP32ADC::ESP32ADC(const uint8_t inputPin)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize ESP32ADC."));
 	this->inputPin = inputPin;
 	this->inputMode = INPUT;
 	this->maxVoltage = 3.3f;
@@ -28,7 +27,6 @@ TesLight::ESP32ADC::ESP32ADC(const uint8_t inputPin)
  */
 TesLight::ESP32ADC::ESP32ADC(const uint8_t inputPin, const uint8_t inputMode)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize ESP32ADC."));
 	this->inputPin = inputPin;
 	this->inputMode = inputMode;
 	this->maxVoltage = 3.3f;
@@ -43,7 +41,6 @@ TesLight::ESP32ADC::ESP32ADC(const uint8_t inputPin, const uint8_t inputMode)
  */
 TesLight::ESP32ADC::ESP32ADC(const uint8_t inputPin, const uint8_t inputMode, const float maxVoltage)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize ESP32ADC."));
 	this->inputPin = inputPin;
 	this->inputMode = inputMode;
 	this->maxVoltage = maxVoltage;
@@ -55,7 +52,6 @@ TesLight::ESP32ADC::ESP32ADC(const uint8_t inputPin, const uint8_t inputMode, co
  */
 TesLight::ESP32ADC::~ESP32ADC()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Delete ESP32ADC instance and release the pin."));
 	pinMode(this->inputPin, INPUT);
 }
 
@@ -65,7 +61,6 @@ TesLight::ESP32ADC::~ESP32ADC()
  */
 void TesLight::ESP32ADC::setInputPin(const uint8_t inputPin)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Set input pin to ") + inputPin + F("."));
 	this->inputPin = inputPin;
 	this->setupPin();
 }
@@ -76,7 +71,6 @@ void TesLight::ESP32ADC::setInputPin(const uint8_t inputPin)
  */
 uint8_t TesLight::ESP32ADC::getInputPin()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get input pin."));
 	return this->inputPin;
 }
 
@@ -86,7 +80,6 @@ uint8_t TesLight::ESP32ADC::getInputPin()
  */
 void TesLight::ESP32ADC::setInputMode(const uint8_t inputMode)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Set input mode to ") + inputMode + F("."));
 	this->inputMode = inputMode;
 	this->setupPin();
 }
@@ -97,7 +90,6 @@ void TesLight::ESP32ADC::setInputMode(const uint8_t inputMode)
  */
 uint8_t TesLight::ESP32ADC::getInputMode()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get input mode."));
 	return this->inputMode;
 }
 
@@ -107,7 +99,6 @@ uint8_t TesLight::ESP32ADC::getInputMode()
  */
 void TesLight::ESP32ADC::setMaxVoltage(const float maxVoltage)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Set max voltage to ") + maxVoltage + F("V."));
 	this->maxVoltage = maxVoltage;
 }
 
@@ -117,7 +108,6 @@ void TesLight::ESP32ADC::setMaxVoltage(const float maxVoltage)
  */
 float TesLight::ESP32ADC::getMaxVoltage()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get max voltage."));
 	return this->maxVoltage;
 }
 
@@ -127,7 +117,6 @@ float TesLight::ESP32ADC::getMaxVoltage()
  */
 uint16_t TesLight::ESP32ADC::getAnalogValue()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read analog value."));
 	return analogRead(this->inputPin);
 }
 
@@ -138,8 +127,7 @@ uint16_t TesLight::ESP32ADC::getAnalogValue()
  */
 float TesLight::ESP32ADC::getAnalogVoltage(const bool usePolynomialCorrection)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read analog voltage."));
-	const double analogValue = analogRead(this->inputPin);
+	const double analogValue = this->getAnalogValue();
 	if (analogValue < 1.0f || analogValue > 4095.0f)
 	{
 		return 0.0f;
@@ -147,7 +135,6 @@ float TesLight::ESP32ADC::getAnalogVoltage(const bool usePolynomialCorrection)
 
 	if (usePolynomialCorrection)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Applying polinomial correction."));
 		const double correctedVoltage = -0.000000000000016 * pow(analogValue, 4) + 0.000000000118171 * pow(analogValue, 3) - 0.000000301211691 * pow(analogValue, 2) + 0.001109019271794 * analogValue + 0.034143524634089;
 		return correctedVoltage / 3.14f * this->maxVoltage;
 	}
@@ -162,7 +149,6 @@ float TesLight::ESP32ADC::getAnalogVoltage(const bool usePolynomialCorrection)
  */
 void TesLight::ESP32ADC::setupPin()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Setup pin."));
 	pinMode(this->inputPin, this->inputMode);
 	analogReadResolution(12);
 }

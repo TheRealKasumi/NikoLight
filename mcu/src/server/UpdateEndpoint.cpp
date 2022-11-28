@@ -64,7 +64,6 @@ void TesLight::UpdateEndpoint::packageUpload()
 	}
 	else if (upload.status == UPLOAD_FILE_WRITE)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Writing chunk of data."));
 		if (TesLight::UpdateEndpoint::uploadFile.write(upload.buf, upload.currentSize) != upload.currentSize)
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to write chunk to file. Not all bytes were written."));
@@ -74,12 +73,11 @@ void TesLight::UpdateEndpoint::packageUpload()
 	}
 	else if (upload.status == UPLOAD_FILE_END)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Received end of upload."));
 		TesLight::UpdateEndpoint::uploadFile.close();
 	}
 	else if (upload.status == UPLOAD_FILE_ABORTED)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Upload was aborted."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The upload was aborted by the client."));
 		TesLight::UpdateEndpoint::uploadFile.close();
 		webServer->send(400, F("text/plain"), F("Upload was aborted by the client."));
 	}

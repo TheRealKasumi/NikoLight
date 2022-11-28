@@ -17,7 +17,6 @@ std::function<bool()> TesLight::SystemConfigurationEndpoint::configChangedCallba
  */
 void TesLight::SystemConfigurationEndpoint::begin(TesLight::Configuration *_configuration, std::function<bool()> _configChangedCallback)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register system configuration endpoints."));
 	TesLight::SystemConfigurationEndpoint::configuration = _configuration;
 	TesLight::SystemConfigurationEndpoint::configChangedCallback = _configChangedCallback;
 	webServerManager->addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_GET, TesLight::SystemConfigurationEndpoint::getSystemConfig);
@@ -30,12 +29,14 @@ void TesLight::SystemConfigurationEndpoint::begin(TesLight::Configuration *_conf
 void TesLight::SystemConfigurationEndpoint::getSystemConfig()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the system configuration."));
-	TesLight::InMemoryBinaryFile binary(15);
+	TesLight::InMemoryBinaryFile binary(14);
 	binary.writeByte((uint8_t)TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().logLevel);
 	binary.writeByte((uint8_t)TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMode);
-	binary.writeWord(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorThreshold);
-	binary.writeWord(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinValue);
-	binary.writeWord(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxValue);
+	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorThreshold);
+	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinAmbientBrightness);
+	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxAmbientBrightness);
+	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinLedBrightness);
+	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxLedBrightness);
 	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorPowerLimit);
 	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorHighTemperature);
 	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorCutoffTemperature);
@@ -44,7 +45,6 @@ void TesLight::SystemConfigurationEndpoint::getSystemConfig()
 	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMinTemperature);
 	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMaxTemperature);
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Preparing base64 response."));
 	String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
 	if (encoded == F("BASE64_ERROR"))
 	{
@@ -52,9 +52,8 @@ void TesLight::SystemConfigurationEndpoint::getSystemConfig()
 		webServer->send(500, F("application/octet-stream"), F("Failed to encode response."));
 		return;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Base64 response prepared."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Sending the response."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
 	webServer->send(200, "application/octet-stream", encoded);
 }
 
@@ -65,7 +64,6 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the system configuration."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking request."));
 	if (!webServer->hasArg(F("data")) || webServer->arg(F("data")).length() == 0)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a x-www-form-urlencoded body parameter \"data\" with the base64 encoded system data."));
@@ -73,7 +71,6 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Decoding base64 request."));
 	const String encoded = webServer->arg(F("data"));
 	size_t length;
 	uint8_t *decoded = TesLight::Base64Util::decode(encoded, length);
@@ -83,29 +80,27 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 		webServer->send(500, F("text/plain"), F("Failed to decode request."));
 		return;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Request decoded."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking length of the decoded data."));
-	if (length != 15)
+	if (length != 14)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Length of decoded data is invalid."));
 		delete[] decoded;
-		webServer->send(400, F("text/plain"), F("The length of the decoded data must be exactly 15 bytes."));
+		webServer->send(400, F("text/plain"), F("The length of the decoded data must be exactly 14 bytes."));
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Decoded data is ok, loading into binary buffer."));
 	TesLight::InMemoryBinaryFile binary(length);
 	binary.loadFrom(decoded, length);
 	delete[] decoded;
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Parsing new system configuration."));
 	TesLight::Configuration::SystemConfig config;
-	config.logLevel = (TesLight::Logger::LogLevel)binary.readByte();
-	config.lightSensorMode = (TesLight::LightSensor::LightSensorMode)binary.readByte();
-	config.lightSensorThreshold = binary.readWord();
-	config.lightSensorMinValue = binary.readWord();
-	config.lightSensorMaxValue = binary.readWord();
+	config.logLevel = binary.readByte();
+	config.lightSensorMode = binary.readByte();
+	config.lightSensorThreshold = binary.readByte();
+	config.lightSensorMinAmbientBrightness = binary.readByte();
+	config.lightSensorMaxAmbientBrightness = binary.readByte();
+	config.lightSensorMinLedBrightness = binary.readByte();
+	config.lightSensorMaxLedBrightness = binary.readByte();
 	config.regulatorPowerLimit = binary.readByte();
 	config.regulatorHighTemperature = binary.readByte();
 	config.regulatorCutoffTemperature = binary.readByte();
@@ -114,7 +109,6 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 	config.fanMinTemperature = binary.readByte();
 	config.fanMaxTemperature = binary.readByte();
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Validating system configuration."));
 	if (!TesLight::SystemConfigurationEndpoint::validateLogLevel((uint8_t)config.logLevel))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The received log level is invalid."));
@@ -127,28 +121,16 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 		webServer->send(400, F("text/plain"), F("The received light sensor mode is invalid."));
 		return;
 	}
-	if (!TesLight::SystemConfigurationEndpoint::validateLightSensorValue(config.lightSensorThreshold))
+	if (!TesLight::SystemConfigurationEndpoint::validateMinMax(config.lightSensorMinAmbientBrightness, config.lightSensorMaxAmbientBrightness))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The light sensor threshold value must be between 0 and 4095."));
-		webServer->send(400, F("text/plain"), F("The light sensor threshold value must be between 0 and 4095."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The minimum ambient brightness must be smaller than the max value."));
+		webServer->send(400, F("text/plain"), F("The minimum ambient brightness must be smaller than the max value."));
 		return;
 	}
-	if (!TesLight::SystemConfigurationEndpoint::validateLightSensorValue(config.lightSensorMinValue))
+	if (!TesLight::SystemConfigurationEndpoint::validateMinMax(config.lightSensorMinLedBrightness, config.lightSensorMaxLedBrightness))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The light sensor min value must be between 0 and 4095."));
-		webServer->send(400, F("text/plain"), F("The light sensor min value must be between 0 and 4095."));
-		return;
-	}
-	if (!TesLight::SystemConfigurationEndpoint::validateLightSensorValue(config.lightSensorMaxValue))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The light sensor max value must be between 0 and 4095."));
-		webServer->send(400, F("text/plain"), F("The light sensor max value must be between 0 and 4095."));
-		return;
-	}
-	if (!TesLight::SystemConfigurationEndpoint::validateMinMax(config.lightSensorMinValue, config.lightSensorMaxValue))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The light sensor min value must be smaller than the max value."));
-		webServer->send(400, F("text/plain"), F("The light sensor min value must be smaller than the max value."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The minimum LED brightness for automatic adjustment must be smaller than the max value."));
+		webServer->send(400, F("text/plain"), F("The minimum LED brightness for automatic adjustment must be smaller than the max value."));
 		return;
 	}
 	if (!TesLight::SystemConfigurationEndpoint::validateRegulatorPowerLimit(config.regulatorPowerLimit))
@@ -200,14 +182,11 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Saving system configuration."));
 	TesLight::SystemConfigurationEndpoint::configuration->setSystemConfig(config);
 	if (TesLight::SystemConfigurationEndpoint::configuration->save())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("System configuration saved."));
 		if (TesLight::SystemConfigurationEndpoint::configChangedCallback)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calling callback function."));
 			if (!TesLight::SystemConfigurationEndpoint::configChangedCallback())
 			{
 				TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The callback function returned with an error."));
@@ -223,7 +202,7 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Sending the response."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
 	webServer->send(200);
 }
 
@@ -259,17 +238,6 @@ bool TesLight::SystemConfigurationEndpoint::validateLogLevel(const uint8_t value
 bool TesLight::SystemConfigurationEndpoint::validateLightSensorMode(const uint8_t value)
 {
 	return value <= 5;
-}
-
-/**
- * @brief Validate if the values for the light sensor are in range 0 to 4095.
- * @param value value to validate
- * @return true when valid
- * @return false when invalid
- */
-bool TesLight::SystemConfigurationEndpoint::validateLightSensorValue(const uint16_t value)
-{
-	return value < 4096;
 }
 
 /**

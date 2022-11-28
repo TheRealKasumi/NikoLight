@@ -37,9 +37,11 @@ class SystemService {
 				const systemConfig = new SystemConfiguration();
 				systemConfig.setLogLevel(stream.readByte());
 				systemConfig.setLightSensorMode(stream.readByte());
-				systemConfig.setLightSensorThreshold(stream.readWord());
-				systemConfig.setLightSensorMinValue(stream.readWord());
-				systemConfig.setLightSensorMaxValue(stream.readWord());
+				systemConfig.setLightSensorThreshold(stream.readByte());
+				systemConfig.setLightSensorMinAmbientBrightness(stream.readByte());
+				systemConfig.setLightSensorMaxAmbientBrightness(stream.readByte());
+				systemConfig.setLightSensorMinLedBrightness(stream.readByte());
+				systemConfig.setLightSensorMaxLedBrightness(stream.readByte());
 				systemConfig.setSystemPowerLimit(stream.readByte());
 				systemConfig.setRegulatorHighTemperature(stream.readByte());
 				systemConfig.setRegulatorCutoffTemperature(stream.readByte());
@@ -61,14 +63,16 @@ class SystemService {
 	 */
 	postSystemConfiguration = (systemConfig) => {
 		return new Promise(async (resolve, reject) => {
-			const stream = new BinaryStream(15);
+			const stream = new BinaryStream(14);
 
 			try {
 				stream.writeByte(systemConfig.getLogLevel());
 				stream.writeByte(systemConfig.getLightSensorMode());
-				stream.writeWord(systemConfig.getLightSensorThreshold());
-				stream.writeWord(systemConfig.getLightSensorMinValue());
-				stream.writeWord(systemConfig.getLightSensorMaxValue());
+				stream.writeByte(systemConfig.getLightSensorThreshold());
+				stream.writeByte(systemConfig.getLightSensorMinAmbientBrightness());
+				stream.writeByte(systemConfig.getLightSensorMaxAmbientBrightness());
+				stream.writeByte(systemConfig.getLightSensorMinLedBrightness());
+				stream.writeByte(systemConfig.getLightSensorMaxLedBrightness());
 				stream.writeByte(systemConfig.getSystemPowerLimit());
 				stream.writeByte(systemConfig.getRegulatorHighTemperature());
 				stream.writeByte(systemConfig.getRegulatorCutoffTemperature());

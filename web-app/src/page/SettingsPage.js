@@ -48,22 +48,42 @@ class SettingsPage extends React.Component {
 	};
 
 	/**
-	 * Set the light sensor min value.
+	 * Set the minimum ambient brightness for the light sensor.
 	 * @param {string} value value of the selection
 	 */
-	setLightSensorMinValue = (value) => {
+	setLightSensorMinAmbientBrightness = (value) => {
 		const state = this.state;
-		state.systemConfigurationCopy.setLightSensorMinValue(value);
+		state.systemConfigurationCopy.setLightSensorMinAmbientBrightness(value);
 		this.setState(state);
 	};
 
 	/**
-	 * Set the light sensor max value.
+	 * Set the maximum ambient brightness for the light sensor.
 	 * @param {string} value value of the selection
 	 */
-	setLightSensorMaxValue = (value) => {
+	setLightSensorMaxAmbientBrightness = (value) => {
 		const state = this.state;
-		state.systemConfigurationCopy.setLightSensorMaxValue(value);
+		state.systemConfigurationCopy.setLightSensorMaxAmbientBrightness(value);
+		this.setState(state);
+	};
+
+	/**
+	 * Set the minimum LED brightness for automatic adjustment.
+	 * @param {string} value value of the selection
+	 */
+	setLightSensorMinLedBrightness = (value) => {
+		const state = this.state;
+		state.systemConfigurationCopy.setLightSensorMinLedBrightness(value);
+		this.setState(state);
+	};
+
+	/**
+	 * Set the maximum LED brightness for automatic adjustment.
+	 * @param {string} value value of the selection
+	 */
+	setLightSensorMaxLedBrightness = (value) => {
+		const state = this.state;
+		state.systemConfigurationCopy.setLightSensorMaxLedBrightness(value);
 		this.setState(state);
 	};
 
@@ -248,9 +268,9 @@ class SettingsPage extends React.Component {
 						key={`settings-page-input-key-${this.state.inputKey + 1}`}
 						title="Threshold"
 						min={1}
-						max={4095}
+						max={255}
 						value={this.state.systemConfigurationCopy.getLightSensorThreshold()}
-						step={10}
+						step={1}
 						icon={process.env.PUBLIC_URL + "/img/icon/sensor.svg"}
 						onChange={this.setLightSensorThreshold}
 					/>
@@ -260,11 +280,11 @@ class SettingsPage extends React.Component {
 						key={`settings-page-input-key-${this.state.inputKey + 2}`}
 						title="Minimum Brightness"
 						min={1}
-						max={4095}
-						value={this.state.systemConfigurationCopy.getLightSensorMinValue()}
-						step={10}
+						max={255}
+						value={this.state.systemConfigurationCopy.getLightSensorMinAmbientBrightness()}
+						step={1}
 						icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
-						onChange={this.setLightSensorMinValue}
+						onChange={this.setLightSensorMinAmbientBrightness}
 					/>
 					<div className="spacer"></div>
 
@@ -272,13 +292,37 @@ class SettingsPage extends React.Component {
 						key={`settings-page-input-key-${this.state.inputKey + 3}`}
 						title="Maximum Brightness"
 						min={1}
-						max={4095}
-						value={this.state.systemConfigurationCopy.getLightSensorMaxValue()}
-						step={10}
+						max={255}
+						value={this.state.systemConfigurationCopy.getLightSensorMaxAmbientBrightness()}
+						step={1}
 						icon={process.env.PUBLIC_URL + "/img/icon/brightness-max.svg"}
-						onChange={this.setLightSensorMaxValue}
+						onChange={this.setLightSensorMaxAmbientBrightness}
+					/>
+
+					<Slider
+						key={`settings-page-input-key-${this.state.inputKey + 4}`}
+						title="Minimum LED Brightness"
+						min={1}
+						max={255}
+						value={this.state.systemConfigurationCopy.getLightSensorMinLedBrightness()}
+						step={1}
+						icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
+						onChange={this.setLightSensorMinLedBrightness}
+					/>
+					<div className="spacer"></div>
+
+					<Slider
+						key={`settings-page-input-key-${this.state.inputKey + 5}`}
+						title="Maximum LED Brightness"
+						min={1}
+						max={255}
+						value={this.state.systemConfigurationCopy.getLightSensorMaxLedBrightness()}
+						step={1}
+						icon={process.env.PUBLIC_URL + "/img/icon/brightness-max.svg"}
+						onChange={this.setLightSensorMaxLedBrightness}
 					/>
 				</details>
+
 				<div className="spacer"></div>
 
 				<details className="details">
@@ -286,7 +330,7 @@ class SettingsPage extends React.Component {
 					<div className="spacer"></div>
 
 					<TextInput
-						key={`settings-page-input-key-${this.state.inputKey + 4}`}
+						key={`settings-page-input-key-${this.state.inputKey + 6}`}
 						title="SSID"
 						value={this.state.wifiConfigurationCopy.getAccessPointSsid()}
 						icon={process.env.PUBLIC_URL + "/img/icon/wifi.svg"}
@@ -295,7 +339,7 @@ class SettingsPage extends React.Component {
 					<div className="spacer"></div>
 
 					<TextInput
-						key={`settings-page-input-key-${this.state.inputKey + 5}`}
+						key={`settings-page-input-key-${this.state.inputKey + 7}`}
 						title="Password"
 						value={this.state.wifiConfigurationCopy.getAccessPointPassword()}
 						icon={process.env.PUBLIC_URL + "/img/icon/lock.svg"}
@@ -309,7 +353,7 @@ class SettingsPage extends React.Component {
 					<div className="spacer"></div>
 
 					<Slider
-						key={`settings-page-input-key-${this.state.inputKey + 6}`}
+						key={`settings-page-input-key-${this.state.inputKey + 8}`}
 						title="Power Limit (W)"
 						min={1}
 						max={30}
@@ -321,7 +365,7 @@ class SettingsPage extends React.Component {
 					<div className="spacer"></div>
 
 					<Slider
-						key={`settings-page-input-key-${this.state.inputKey + 7}`}
+						key={`settings-page-input-key-${this.state.inputKey + 9}`}
 						title="Throttle Temperature (°C)"
 						min={60}
 						max={90}
@@ -333,7 +377,7 @@ class SettingsPage extends React.Component {
 					<div className="spacer"></div>
 
 					<Slider
-						key={`settings-page-input-key-${this.state.inputKey + 8}`}
+						key={`settings-page-input-key-${this.state.inputKey + 10}`}
 						title="Shut Down Temperature (°C)"
 						min={60}
 						max={100}
@@ -345,7 +389,7 @@ class SettingsPage extends React.Component {
 					<div className="spacer"></div>
 
 					<Slider
-						key={`settings-page-input-key-${this.state.inputKey + 9}`}
+						key={`settings-page-input-key-${this.state.inputKey + 11}`}
 						title="Fan Start Temp (°C)"
 						min={40}
 						max={70}
@@ -357,7 +401,7 @@ class SettingsPage extends React.Component {
 					<div className="spacer"></div>
 
 					<Slider
-						key={`settings-page-input-key-${this.state.inputKey + 10}`}
+						key={`settings-page-input-key-${this.state.inputKey + 12}`}
 						title="Fan Full Speed Temp (°C)"
 						min={50}
 						max={90}
@@ -369,7 +413,7 @@ class SettingsPage extends React.Component {
 					<div className="spacer"></div>
 
 					<Slider
-						key={`settings-page-input-key-${this.state.inputKey + 11}`}
+						key={`settings-page-input-key-${this.state.inputKey + 13}`}
 						title="Fan Min PWM (Stall Guard)"
 						min={0}
 						max={255}
@@ -381,7 +425,7 @@ class SettingsPage extends React.Component {
 					<div className="spacer"></div>
 
 					<Slider
-						key={`settings-page-input-key-${this.state.inputKey + 12}`}
+						key={`settings-page-input-key-${this.state.inputKey + 14}`}
 						title="Fan Max PWM"
 						min={0}
 						max={255}
@@ -399,7 +443,7 @@ class SettingsPage extends React.Component {
 					<div className="spacer"></div>
 
 					<DropDown
-						key={`settings-page-input-key-${this.state.inputKey + 13}`}
+						key={`settings-page-input-key-${this.state.inputKey + 15}`}
 						title="Log Level"
 						value={this.state.systemConfigurationCopy.getLogLevel()}
 						options={[

@@ -38,12 +38,13 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 | IN5824 Schottky Diode      | 1/2   | [Reichelt][in5824]    |                                                               |
 | Capacitor 680µf            | 1/2   | [Reichelt][cap680]    |                                                               |
 | SMD Capacitor 10µf 10V     | 1     | [Reichelt][cap10]     |                                                               |
-| SMD Capacitor 100µf 10V    | 2     | [Reichelt][cap100]    |                                                               |
+| SMD Capacitor 100µf 10V    | 3     | [Reichelt][cap100]    |                                                               |
 | SMD Capacitor 220µf 10V    | 2     | [Reichelt][cap220]    |                                                               |
-| Resistor 220Ω 125mW        | 9     | [Reichelt][res220]    |                                                               |
-| Resistor 1kΩ 125mW         | 1     | ???                   |                                                               |
-| Resistor 4.7kΩ 125mW       | 1     | [Reichelt][res4700]   |                                                               |
-| Resistor 2.2kΩ 125mW       | 2     | [Reichelt][res2200]   |                                                               |
+| SMD Resistor 220Ω 125mW    | 9     | [Reichelt][res220]    |                                                               |
+| SMD Resistor 1kΩ 125mW     | 1     | ???                   |                                                               |
+| SMD Resistor 4.7kΩ 125mW   | 1     | [Reichelt][res4700]   |                                                               |
+| SMD Resistor 2.2kΩ 125mW   | 2     | [Reichelt][res2200]   |                                                               |
+| SMD Resistor 6.65Ω 500mW   | 1     | [JCSC][res6]          |                                                               |
 | Zener Diode 3.0V           | 1     | [Reichelt][zener3.0]  |                                                               |
 | Fuse and Holder 5A         | 2     | [Reichelt][fuse]      |                                                               |
 | Poly Fuse 3A               | 1     | [Reichelt][pfuse]     |                                                               |
@@ -96,6 +97,7 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 [res220]: https://www.reichelt.de/smd-widerstand-0805-220-ohm-125-mw-1--smd-0805-220-p32878.html?&trstct=pos_1&nbc=1
 [res4700]: https://www.reichelt.de/smd-widerstand-0805-4-7-kohm-125-mw-1--smd-0805-4-70k-p32894.html?&trstct=pos_6&nbc=1
 [res2200]: https://www.reichelt.de/smd-widerstand-0805-2-2-kohm-125-mw-1--smd-0805-2-20k-p32890.html?&trstct=pos_13&nbc=1
+[res6]: https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount_YAGEO-RC1210FR-076R65L_C309592.html
 [zener3.0]: https://www.reichelt.de/zenerdiode-3-3-v-300mw-sod-323-mm3z3v3t1g-ons-p219513.html?&trstct=pos_0&nbc=1
 [fuse]: https://www.reichelt.de/smd-sicherungshalter-mit-sicherung-5-0-a-125-v-superflink-litt-0154005-dr-p229204.html?&trstct=pos_14&nbc=1
 [pfuse]: https://www.reichelt.de/rueckstellende-sicherungen-8-a-litt-ruef400-p242414.html?&trstct=pos_0&nbc=1
@@ -105,6 +107,6 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 [lightbars]: https://individualiseyourcar.com/en/ambitrim-digital-rgb-led-ambient-light-components.html
 [hsink]: https://www.reichelt.de/kuehlkoerper-15-2-mm-alu-26-k-w-to-220-fk-242-sa-220-o-p228044.html?PROVID=2788&gclid=CjwKCAiA9qKbBhAzEiwAS4yeDbgDFQnpxuPlW2l_6iWmSpzoQlH7U5ZTtUvpgh0bGrCp32GTk7xljBoCXLsQAvD_BwE
 [tsense]: https://www.reichelt.de/digital-thermometer-1-wire--0-5-c-to-92-ds-18b20-p58169.html?&trstct=pos_0&nbc=1
-[fan]: https://www.reichelt.de/axialluefter-30x30x6mm-5v-6-2m-h-15-7dba-sun-mf30060v2-1-p260654.html?&trstct=pos_2&nbc=1
+[fan]: https://www.amazon.de/gp/product/B071JN6HKM/ref=ppx_yo_dt_b_asin_title_o08_s00?ie=UTF8&psc=1
 [tubes]: https://www.amazon.de/ChiliTec-12000058-Chilitec-Schrumpfschlauch-Sortiment-100-teilig/dp/B003H9CJ1Y/ref=sr_1_20_mod_primary_new?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1Q5IY5D32HNLR&keywords=schrumpfschlauch&qid=1662189028&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&sprefix=schrumpfschlauch%2Caps%2C115&sr=8-20
 [tape]: https://www.amazon.de/tesa-Gewebeband-Witterungsbest%C3%A4ndiges-Panzertape-Befestigen/dp/B000KT7E0U/ref=sr_1_5?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1U7SK4BSKYGK0&keywords=Gewebeband&qid=1662189088&sprefix=gewebeban%2Caps%2C94&sr=8-5

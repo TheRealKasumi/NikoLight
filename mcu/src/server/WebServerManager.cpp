@@ -17,12 +17,10 @@
  */
 TesLight::WebServerManager::WebServerManager(const uint16_t port, FS *fileSystem, const String staticContentLocation)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Starting webserver on port ") + String(port) + F("."));
 	this->webServer = new WebServer(port);
 	this->fileSystem = fileSystem;
 	this->staticContentLocation = staticContentLocation;
 	this->init();
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Webserver running."));
 }
 
 /**
@@ -51,7 +49,6 @@ WebServer *TesLight::WebServerManager::getWebServer()
  */
 void TesLight::WebServerManager::addRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction handler)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Adding request handler for \"") + uri + F("\"."));
 	this->webServer->on(uri, method, handler);
 }
 
@@ -64,7 +61,6 @@ void TesLight::WebServerManager::addRequestHandler(const char *uri, http_method 
  */
 void TesLight::WebServerManager::addUploadRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction requestHandler, WebServer::THandlerFunction uploadHandler)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Adding upload request handler for \"") + uri + F("\"."));
 	this->webServer->on(uri, method, requestHandler, uploadHandler);
 }
 
@@ -97,11 +93,8 @@ void TesLight::WebServerManager::handleRequest()
  */
 void TesLight::WebServerManager::init()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Setting handler for not found error."));
 	this->webServer->onNotFound([this]()
 								{ this->handleNotFound(); });
-
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Serving static files from: ") + this->staticContentLocation);
 	this->webServer->serveStatic("/web-app/", *this->fileSystem, this->staticContentLocation.c_str());
 	this->webServer->on("/", http_method::HTTP_GET, [this]()
 						{this->webServer->sendHeader("Location", "/web-app/index.html"); this->webServer->send(301); });

@@ -10,7 +10,6 @@
 #define CONNECTION_TEST_ENDPOINT_H
 
 #include "server/RestEndpoint.h"
-#include "logging/Logger.h"
 
 namespace TesLight
 {

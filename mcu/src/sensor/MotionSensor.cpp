@@ -14,7 +14,6 @@
  */
 TesLight::MotionSensor::MotionSensor(const uint8_t sensorAddress)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize motion sensor."));
 	this->mpu6050 = new TesLight::MPU6050(sensorAddress);
 	this->calibrationData.accXRaw = 0;
 	this->calibrationData.accYRaw = 0;
@@ -55,7 +54,6 @@ TesLight::MotionSensor::MotionSensor(const uint8_t sensorAddress)
  */
 TesLight::MotionSensor::~MotionSensor()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Delete motion sensor and free resources."));
 	delete this->mpu6050;
 	this->mpu6050 = nullptr;
 }
@@ -67,21 +65,18 @@ TesLight::MotionSensor::~MotionSensor()
  */
 bool TesLight::MotionSensor::begin()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Start motion sensor."));
 	if (!this->mpu6050->begin())
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to start MPU6050 sensor."));
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set acc scale to 4g."));
 	if (!this->mpu6050->setAccScale(TesLight::MPU6050::MPU6050AccScale::SCALE_4G))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set acc scale of MPU6050 sensor."));
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set gyro scale to 500°/s."));
 	if (!this->mpu6050->setGyScale(TesLight::MPU6050::MPU6050GyScale::SCALE_500DS))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set gyro scale of MPU6050 sensor."));
@@ -98,7 +93,6 @@ bool TesLight::MotionSensor::begin()
  */
 bool TesLight::MotionSensor::run()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Run motion measurement and orientation calculation of the motion sensor."));
 	TesLight::MPU6050::MPU6050MotionData sensorData;
 	if (!this->mpu6050->getData(sensorData))
 	{
@@ -106,12 +100,10 @@ bool TesLight::MotionSensor::run()
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calculate the time scale."));
 	const unsigned long timeStep = this->lastMeasure == 0 ? 0.0f : (micros() - this->lastMeasure);
 	const float timeScale = timeStep / 1000000.0f;
 	this->lastMeasure = micros();
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set basic motion data."));
 	this->motionData.accXRaw = sensorData.accXRaw - this->calibrationData.accXRaw;
 	this->motionData.accYRaw = sensorData.accYRaw - this->calibrationData.accYRaw;
 	this->motionData.accZRaw = sensorData.accZRaw - this->calibrationData.accZRaw;
@@ -127,23 +119,17 @@ bool TesLight::MotionSensor::run()
 	this->motionData.temperatureRaw = sensorData.temperatureRaw;
 	this->motionData.temperatureDeg = sensorData.temperatureDeg;
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Tracking rotation using gyros."));
 	this->motionData.pitch += this->motionData.gyroXDeg * timeScale;
 	this->motionData.roll += this->motionData.gyroYDeg * timeScale;
 	this->motionData.yaw += this->motionData.gyroZDeg * timeScale;
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Apply drift compensation for pitch axis using accelerometer."));
 	const float accPitch = atan(this->motionData.accYG / this->motionData.accZG) * 180.0f / PI;
 	this->motionData.pitch += (accPitch - this->motionData.pitch) / 500.0f;
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Apply drift compensation for roll axis using accelerometer."));
 	const float accRoll = -atan(this->motionData.accXG / this->motionData.accZG) * 180.0f / PI;
 	this->motionData.roll += (accRoll - this->motionData.roll) / 500.0f;
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calculate g force on x axis with roll compensation."));
 	this->motionData.rollCompensatedAccXG = this->motionData.accXG + sin(this->motionData.roll / 180.0f * PI);
-
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calculate g force on y axis with pitch compensation."));
 	this->motionData.pitchCompensatedAccYG = this->motionData.accYG - sin(this->motionData.pitch / 180.0f * PI);
 
 	return true;
@@ -159,10 +145,8 @@ bool TesLight::MotionSensor::run()
  */
 uint8_t TesLight::MotionSensor::calibrate(const bool failOnTemperature)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calibrate the motion sensor."));
 	if (failOnTemperature)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking motion sensor temperature."));
 		TesLight::MPU6050::MPU6050MotionData sensorData;
 		if (!this->mpu6050->getData(sensorData))
 		{
@@ -182,7 +166,6 @@ uint8_t TesLight::MotionSensor::calibrate(const bool failOnTemperature)
 		}
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Collect data."));
 	double calibrationData[12] = {0.0f};
 	for (uint16_t i = 0; i < 100; i++)
 	{
@@ -207,7 +190,6 @@ uint8_t TesLight::MotionSensor::calibrate(const bool failOnTemperature)
 		calibrationData[11] += sensorData.gyroZDeg / 100.0f;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set data."));
 	this->calibrationData.accXRaw = calibrationData[0];
 	this->calibrationData.accYRaw = calibrationData[1];
 	// this->calibrationData.accZRaw = calibrationData[2];
@@ -221,7 +203,6 @@ uint8_t TesLight::MotionSensor::calibrate(const bool failOnTemperature)
 	this->calibrationData.gyroYDeg = calibrationData[10];
 	this->calibrationData.gyroZDeg = calibrationData[11];
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calibration successful."));
 	return 0;
 }
 

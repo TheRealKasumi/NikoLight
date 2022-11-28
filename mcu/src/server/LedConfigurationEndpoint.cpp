@@ -17,7 +17,6 @@ std::function<bool()> TesLight::LedConfigurationEndpoint::configChangedCallback 
  */
 void TesLight::LedConfigurationEndpoint::begin(TesLight::Configuration *_configuration, std::function<bool()> _configChangedCallback)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register LED configuration Endpoints."));
 	TesLight::LedConfigurationEndpoint::configuration = _configuration;
 	TesLight::LedConfigurationEndpoint::configChangedCallback = _configChangedCallback;
 	webServerManager->addRequestHandler((getBaseUri() + F("config/led")).c_str(), http_method::HTTP_GET, TesLight::LedConfigurationEndpoint::getLedConfig);
@@ -51,7 +50,6 @@ void TesLight::LedConfigurationEndpoint::getLedConfig()
 		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledChannelCurrent[2]);
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Preparing base64 response."));
 	String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
 	if (encoded == F("BASE64_ERROR"))
 	{
@@ -59,9 +57,8 @@ void TesLight::LedConfigurationEndpoint::getLedConfig()
 		webServer->send(500, F("application/octet-stream"), F("Failed to encode response."));
 		return;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Base64 response prepared."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Sending the response."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
 	webServer->send(200, F("application/octet-stream"), encoded);
 }
 
@@ -72,7 +69,6 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the LED configuration."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking request."));
 	if (!webServer->hasArg(F("data")) || webServer->arg(F("data")).length() == 0)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a x-www-form-urlencoded body parameter \"data\" with the base64 encoded LED data."));
@@ -80,7 +76,6 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Decoding base64 request."));
 	const String encoded = webServer->arg(F("data"));
 	size_t length;
 	uint8_t *decoded = TesLight::Base64Util::decode(encoded, length);
@@ -90,9 +85,7 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
 		webServer->send(500, F("application/octet-stream"), F("Failed to decode request."));
 		return;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Request decoded."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking length of the decoded data."));
 	if (length != 232)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Length of decoded data is invalid."));
@@ -101,12 +94,10 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Decoded data is ok, loading into binary buffer."));
 	TesLight::InMemoryBinaryFile binary(length);
 	binary.loadFrom(decoded, length);
 	delete[] decoded;
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Parsing new LED configuration."));
 	TesLight::Configuration::LedConfig config[LED_NUM_ZONES];
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
@@ -127,7 +118,6 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
 		config[i].ledChannelCurrent[1] = binary.readByte();
 		config[i].ledChannelCurrent[2] = binary.readByte();
 
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Validating LED configuration with index ") + String(i) + ".");
 		if (!validateLedPin(config[i].ledPin) || !validateLedCount(config[i].ledCount) || !validateAnimatorType(config[i].type))
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The LED configuration at index ") + String(i) + F(" is invalid."));
@@ -136,7 +126,6 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
 		}
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("LED configuration is valid. Saving LED configuration."));
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		TesLight::LedConfigurationEndpoint::configuration->setLedConfig(config[i], i);
@@ -144,10 +133,8 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
 
 	if (TesLight::LedConfigurationEndpoint::configuration->save())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("LED configuration saved."));
 		if (TesLight::LedConfigurationEndpoint::configChangedCallback)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calling callback function."));
 			if (!TesLight::LedConfigurationEndpoint::configChangedCallback())
 			{
 				TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The callback function returned with an error."));
@@ -163,7 +150,7 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("LED configuration saved. Sending the response."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("LED configuration saved. Sending the response."));
 	webServer->send(200);
 }
 
