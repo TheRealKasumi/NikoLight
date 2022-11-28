@@ -17,21 +17,17 @@
  */
 bool TesLight::FileUtil::fileExists(FS *fileSystem, const String fileName)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Checking if file \"") + fileName + F("\" exists."));
 	File file = fileSystem->open(fileName, FILE_READ);
 	if (!file)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Failed to open file."));
 		return false;
 	}
 	else if (file.isDirectory())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Failed to open file. It is a directory."));
 		file.close();
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("File was found."));
 	file.close();
 	return true;
 }
@@ -45,21 +41,17 @@ bool TesLight::FileUtil::fileExists(FS *fileSystem, const String fileName)
  */
 bool TesLight::FileUtil::directoryExists(FS *fileSystem, const String path)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Checking if directory \"") + path + F("\" exists."));
 	File file = fileSystem->open(path, FILE_READ);
 	if (!file)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Failed to open directory."));
 		return false;
 	}
 	else if (!file.isDirectory())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Failed to open directory. It is a file."));
 		file.close();
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Directory was found."));
 	file.close();
 	return true;
 }
@@ -108,21 +100,17 @@ bool TesLight::FileUtil::getFileIdentifier(FS *fileSystem, const String fileName
  */
 bool TesLight::FileUtil::countFiles(FS *fileSystem, const String directory, uint16_t &count, const bool includeDirs)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Count the number of files (and directories) in \"") + directory + F("\"."));
 	File dir = fileSystem->open(directory, FILE_READ);
 	if (!dir)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open directory. Directory could not be found."));
 		return false;
 	}
 	else if (!dir.isDirectory())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open directory. It is a file."));
 		dir.close();
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Counting files and folders."));
 	count = 0;
 	bool hasNext = true;
 	while (hasNext)
@@ -142,7 +130,6 @@ bool TesLight::FileUtil::countFiles(FS *fileSystem, const String directory, uint
 		}
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("File counting successful."));
 	dir.close();
 	return true;
 }
@@ -158,21 +145,17 @@ bool TesLight::FileUtil::countFiles(FS *fileSystem, const String directory, uint
  */
 bool TesLight::FileUtil::getFileList(FS *fileSystem, const String directory, String &fileList, const bool includeDirs)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("List all files (and directories) from root directory ") + directory + F("."));
 	File dir = fileSystem->open(directory, FILE_READ);
 	if (!dir)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open directory. Directory could not be found."));
 		return false;
 	}
 	else if (!dir.isDirectory())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open directory. It is a file."));
 		dir.close();
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Listing files (and directories)."));
 	fileList = String();
 	bool hasNext = true;
 	while (hasNext)
@@ -189,10 +172,6 @@ bool TesLight::FileUtil::getFileList(FS *fileSystem, const String directory, Str
 					fileList += String(file.size()) + F(";");
 					fileList += String(id) + F("\n");
 				}
-				else
-				{
-					TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("Failed to get identifier for file \"") + directory + F("/") + file.name() + F("\"."));
-				}
 			}
 			file.close();
 		}
@@ -202,14 +181,13 @@ bool TesLight::FileUtil::getFileList(FS *fileSystem, const String directory, Str
 		}
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("All files listed successfully."));
 	dir.close();
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Remove new-line at the end of the list."));
 	if (fileList.length() > 0)
 	{
 		fileList = fileList.substring(0, fileList.length() - 1);
 	}
+
 	return true;
 }
 
@@ -225,21 +203,17 @@ bool TesLight::FileUtil::getFileList(FS *fileSystem, const String directory, Str
  */
 bool TesLight::FileUtil::getFileNameFromIndex(FS *fileSystem, const String directory, const uint16_t fileIndex, String &fileName, const bool includeDirs)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Get name of file (or directory) with index ") + String(fileIndex) + F(" in root directory ") + directory + F("."));
 	File dir = fileSystem->open(directory, FILE_READ);
 	if (!dir)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open directory. Directory could not be found."));
 		return false;
 	}
 	else if (!dir.isDirectory())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open directory. It is a file."));
 		dir.close();
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Search for file or directory."));
 	uint16_t currentIndex = 0;
 	bool hasNext = true;
 	while (hasNext)
@@ -251,7 +225,6 @@ bool TesLight::FileUtil::getFileNameFromIndex(FS *fileSystem, const String direc
 			{
 				if (currentIndex == fileIndex)
 				{
-					TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("File or directory was found at \"") + directory + F("/") + file.name() + F("\"."));
 					fileName = file.name();
 					hasNext = false;
 				}
@@ -261,13 +234,11 @@ bool TesLight::FileUtil::getFileNameFromIndex(FS *fileSystem, const String direc
 		}
 		else
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("No matching file or directory found."));
 			fileName = String();
 			hasNext = false;
 		}
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("File search successful."));
 	dir.close();
 	return true;
 }
@@ -283,21 +254,17 @@ bool TesLight::FileUtil::getFileNameFromIndex(FS *fileSystem, const String direc
  */
 bool TesLight::FileUtil::getFileNameFromIdentifier(FS *fileSystem, const String directory, const uint32_t identifier, String &fileName)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Get name of with id ") + String(identifier) + F(" in root directory ") + directory + F("."));
 	File dir = fileSystem->open(directory, FILE_READ);
 	if (!dir)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open directory. Directory could not be found."));
 		return false;
 	}
 	else if (!dir.isDirectory())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open directory. It is a file."));
 		dir.close();
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Search for file."));
 	bool hasNext = true;
 	while (hasNext)
 	{
@@ -311,27 +278,20 @@ bool TesLight::FileUtil::getFileNameFromIdentifier(FS *fileSystem, const String 
 				{
 					if (id == identifier)
 					{
-						TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("File or directory was found at \"") + directory + F("/") + file.name() + F("\"."));
 						fileName = file.name();
 						hasNext = false;
 					}
-				}
-				else
-				{
-					TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("Failed to calculate identifier for \"") + directory + F("/") + file.name() + F("\"."));
 				}
 			}
 			file.close();
 		}
 		else
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("No matching file or directory found."));
 			fileName = String();
 			hasNext = false;
 		}
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("File search successful."));
 	dir.close();
 	return true;
 }
@@ -346,83 +306,56 @@ bool TesLight::FileUtil::getFileNameFromIdentifier(FS *fileSystem, const String 
  */
 bool TesLight::FileUtil::deleteDirectory(FS *fileSystem, const String directory, const bool removeDir)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Deleting directory \"") + directory + F("\"."));
 	uint16_t fileCount = 0;
 	if (!TesLight::FileUtil::countFiles(fileSystem, directory, fileCount, true))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to count files in the directory that should be deleted."));
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Iterating over ") + fileCount + F(" files and directories for deletion."));
 	for (uint16_t i = 0; i < fileCount; i++)
 	{
 		String name;
 		if (!TesLight::FileUtil::getFileNameFromIndex(fileSystem, directory, i, name, true))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to get next file or directory."));
 			return false;
 		}
 		name = directory == F("/") ? (String)F("/") + name : directory + F("/") + name;
 
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Check if \"") + name + F("\" is excluded from the deletion."));
 		if (name == LOG_FILE_NAME || name == CONFIGURATION_FILE_NAME || name == FSEQ_DIRECTORY || name == UPDATE_DIRECTORY)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("It is excluded, continuing with next entity."));
 			continue;
 		}
 
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Check if \"") + name + F("\" is a file or directory."));
 		if (TesLight::FileUtil::directoryExists(fileSystem, name))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("It is a directory, recursively diving into it for deletion."));
 			if (!TesLight::FileUtil::deleteDirectory(fileSystem, name, true))
 			{
-				TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to recursively delete directory \"") + name + F("\"."));
 				return false;
 			}
 			i--;
 			fileCount--;
-			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Directory deleted."));
 		}
 		else if (TesLight::FileUtil::fileExists(fileSystem, name))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("It is a file, continuing with deletion."));
 			if (!fileSystem->remove(name))
 			{
-				TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to delete file \"") + name + F("\"."));
 				return false;
 			}
 			i--;
 			fileCount--;
-			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("File deleted."));
 		}
 		else
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("It is not a file but also no directory. Something is wrong."));
 			return false;
 		}
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Directory \"") + directory + F("\" is cleared."));
 	if (removeDir)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Removing directory \"") + directory + F("\"."));
-		if (!fileSystem->rmdir(directory))
-		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to remove directory."));
-			return false;
-		}
-		else
-		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Directory was removed."));
-			return true;
-		}
+		return fileSystem->rmdir(directory);
 	}
-	else
-	{
-		return true;
-	}
+
+	return true;
 }
 
 /**
@@ -433,15 +366,5 @@ bool TesLight::FileUtil::deleteDirectory(FS *fileSystem, const String directory,
  */
 bool TesLight::FileUtil::clearRoot(FS *filesSystem)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Clearing root directory."));
-	if (TesLight::FileUtil::deleteDirectory(filesSystem, F("/"), false))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Root directory was cleared."));
-		return true;
-	}
-	else
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Failed to clear root directory."));
-		return false;
-	}
+	return TesLight::FileUtil::deleteDirectory(filesSystem, F("/"), false);
 }

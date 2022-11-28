@@ -13,7 +13,6 @@
  */
 TesLight::TemperatureSensor::TemperatureSensor()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize temperature sensor."));
 	this->ds18b20 = new TesLight::DS18B20(ONE_WIRE_PIN);
 	if (!this->ds18b20->begin())
 	{
@@ -21,10 +20,9 @@ TesLight::TemperatureSensor::TemperatureSensor()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Temperature sensor initialized, set sensor resolution and start measurement."));
 	for (uint8_t i = 0; i < this->ds18b20->getNumSensors(); i++)
 	{
-		if (!this->ds18b20->setResolution(i, TEMP_SENSOR_RESOLUTION))
+		if (!this->ds18b20->setResolution(i, (TesLight::DS18B20::DS18B20Res)TEMP_SENSOR_RESOLUTION))
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set temperature sensor resolution."));
 		}
@@ -40,7 +38,6 @@ TesLight::TemperatureSensor::TemperatureSensor()
  */
 TesLight::TemperatureSensor::~TemperatureSensor()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("delete temperature sensor and free resources."));
 	if (this->ds18b20)
 	{
 		delete this->ds18b20;
@@ -54,23 +51,19 @@ TesLight::TemperatureSensor::~TemperatureSensor()
  */
 uint8_t TesLight::TemperatureSensor::getNumSensors()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get number of detected sensors."));
 	return this->ds18b20->getNumSensors();
 }
 
 /**
  * @brief Get the minimum temperature from all sensors.
- * @param temp variable to hold the temperature value
+ * @param temp variable to hold the temperature value, will be 0.0 if no sensor is present
  * @return true when successful
  * @return false when there was an error
  */
 bool TesLight::TemperatureSensor::getMinTemperature(float &temp)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get the minimum temperature."));
-
 	if (this->ds18b20->getNumSensors() == 0)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("No temperature sensors present."));
 		temp = 0.0f;
 		return true;
 	}
@@ -104,17 +97,14 @@ bool TesLight::TemperatureSensor::getMinTemperature(float &temp)
 
 /**
  * @brief Get the maximum temperature of all sensors.
- * @param temp variable to hold the temperature value
+ * @param temp variable to hold the temperature value, will be 0.0 if no sensor is present
  * @return true when successful
  * @return false when there was an error
  */
 bool TesLight::TemperatureSensor::getMaxTemperature(float &temp)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get the maximum temperature."));
-
 	if (this->ds18b20->getNumSensors() == 0)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("No temperature sensors present."));
 		temp = 0.0f;
 		return true;
 	}
@@ -148,17 +138,14 @@ bool TesLight::TemperatureSensor::getMaxTemperature(float &temp)
 
 /**
  * @brief Get the average temperature from all sensors.
- * @param temp variable to hold the temperature value
+ * @param temp variable to hold the temperature value, will be 0.0 if no sensor is present
  * @return true when successful
  * @return false when there was an error
  */
 bool TesLight::TemperatureSensor::getAverageTemperature(float &temp)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get the average temperature."));
-
 	if (this->ds18b20->getNumSensors() == 0)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("No temperature sensors present."));
 		temp = 0.0f;
 		return true;
 	}

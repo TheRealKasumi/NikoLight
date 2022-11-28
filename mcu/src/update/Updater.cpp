@@ -134,7 +134,7 @@ bool TesLight::Updater::installFirmware(FS *fileSystem, const String firmwareFil
 	}
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Firmware update started."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Checking number of written bytes."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Writing data to flash memory."));
 	const size_t writtenBytes = Update.writeStream(firmware);
 	if (writtenBytes != firmwareSize)
 	{

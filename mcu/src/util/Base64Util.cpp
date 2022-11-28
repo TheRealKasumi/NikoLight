@@ -16,7 +16,6 @@
  */
 size_t TesLight::Base64Util::getEncodedSize(uint8_t *data, const size_t length)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Calculate length of the base64 encoded string representing ") + String(length) + F(" bytes."));
 	size_t encodedLength;
 	mbedtls_base64_encode(nullptr, 0, &encodedLength, data, length);
 	return encodedLength;
@@ -30,7 +29,6 @@ size_t TesLight::Base64Util::getEncodedSize(uint8_t *data, const size_t length)
  */
 size_t TesLight::Base64Util::getDecodedSize(uint8_t *data, const size_t length)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Calculate length of the decoded base64 string with ") + String(length) + F(" bytes."));
 	size_t decodedLength;
 	mbedtls_base64_decode(nullptr, 0, &decodedLength, data, length);
 	return decodedLength;
@@ -44,8 +42,6 @@ size_t TesLight::Base64Util::getDecodedSize(uint8_t *data, const size_t length)
  */
 String TesLight::Base64Util::encode(uint8_t *data, const size_t length)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Base64 encode ") + String(length) + F(" bytes of the input data."));
-
 	if (length == 0)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Nothing to encode."));
@@ -69,7 +65,6 @@ String TesLight::Base64Util::encode(uint8_t *data, const size_t length)
 		encodedString += (char)encoded[i];
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Data encoded successfully."));
 	return encodedString;
 }
 
@@ -81,8 +76,6 @@ String TesLight::Base64Util::encode(uint8_t *data, const size_t length)
  */
 uint8_t *TesLight::Base64Util::decode(const String data, size_t &length)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Base64 decode ") + String(length) + F(" bytes of the input data."));
-
 	if (data.length() == 0)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Nothing to decode."));
@@ -110,6 +103,5 @@ uint8_t *TesLight::Base64Util::decode(const String data, size_t &length)
 		length = 0;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Data decoded successfully."));
 	return decoded;
 }

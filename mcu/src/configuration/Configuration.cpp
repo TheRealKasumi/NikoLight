@@ -15,14 +15,10 @@
  */
 TesLight::Configuration::Configuration(FS *fileSystem, const String fileName)
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Initialize configuration."));
-
 	this->fileSystem = fileSystem;
 	this->fileName = fileName;
-	this->configurationVersion = CONFIGURATION_FILE_VERSION;
+	this->configurationVersion = 5;
 	this->loadDefaults();
-
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Configuration initialized."));
 }
 
 /**
@@ -38,7 +34,6 @@ TesLight::Configuration::~Configuration()
  */
 TesLight::Configuration::SystemConfig TesLight::Configuration::getSystemConfig()
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Get system configuration."));
 	return this->systemConfig;
 }
 
@@ -48,7 +43,6 @@ TesLight::Configuration::SystemConfig TesLight::Configuration::getSystemConfig()
  */
 void TesLight::Configuration::setSystemConfig(TesLight::Configuration::SystemConfig systemConfig)
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Set system configuration."));
 	this->systemConfig = systemConfig;
 }
 
@@ -59,7 +53,6 @@ void TesLight::Configuration::setSystemConfig(TesLight::Configuration::SystemCon
  */
 TesLight::Configuration::LedConfig TesLight::Configuration::getLedConfig(const uint8_t index)
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, (String)F("Get LED configuration with index: ") + String(index));
 	return this->ledConfig[index];
 }
 
@@ -70,7 +63,6 @@ TesLight::Configuration::LedConfig TesLight::Configuration::getLedConfig(const u
  */
 void TesLight::Configuration::setLedConfig(const TesLight::Configuration::LedConfig ledConfig, const uint8_t index)
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, (String)F("Set LED configuration with index: ") + String(index));
 	this->ledConfig[index] = ledConfig;
 }
 
@@ -80,7 +72,6 @@ void TesLight::Configuration::setLedConfig(const TesLight::Configuration::LedCon
  */
 TesLight::Configuration::WiFiConfig TesLight::Configuration::getWiFiConfig()
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Get WiFi configuration."));
 	return this->wifiConfig;
 }
 
@@ -90,7 +81,6 @@ TesLight::Configuration::WiFiConfig TesLight::Configuration::getWiFiConfig()
  */
 void TesLight::Configuration::setWiFiConfig(TesLight::Configuration::WiFiConfig wifiConfig)
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Set WiFi configuration."));
 	this->wifiConfig = wifiConfig;
 }
 
@@ -99,14 +89,14 @@ void TesLight::Configuration::setWiFiConfig(TesLight::Configuration::WiFiConfig 
  */
 void TesLight::Configuration::loadDefaults()
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Loading default configuration."));
-
 	// System config
 	this->systemConfig.logLevel = LOG_DEFAULT_LEVEL;
 	this->systemConfig.lightSensorMode = LIGHT_SENSOR_DEFAULT_MODE;
 	this->systemConfig.lightSensorThreshold = LIGHT_SENSOR_DEFAULT_THRESHOLD;
-	this->systemConfig.lightSensorMinValue = LIGHT_SENSOR_DEFAULT_MIN;
-	this->systemConfig.lightSensorMaxValue = LIGHT_SENSOR_DEFAULT_MAX;
+	this->systemConfig.lightSensorMinAmbientBrightness = LIGHT_SENSOR_DEFAULT_MIN_AMBIENT;
+	this->systemConfig.lightSensorMaxAmbientBrightness = LIGHT_SENSOR_DEFAULT_MAX_AMBIENT;
+	this->systemConfig.lightSensorMinLedBrightness = LIGHT_SENSOR_DEFAULT_MIN_LED;
+	this->systemConfig.lightSensorMaxLedBrightness = LIGHT_SENSOR_DEFAULT_MAX_LED;
 	this->systemConfig.regulatorPowerLimit = REGULATOR_POWER_LIMIT * REGULATOR_COUNT;
 	this->systemConfig.regulatorHighTemperature = REGULATOR_HIGH_TEMP;
 	this->systemConfig.regulatorCutoffTemperature = REGULATOR_CUT_OFF_TEMP;
@@ -156,16 +146,12 @@ void TesLight::Configuration::loadDefaults()
  */
 bool TesLight::Configuration::load()
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, (String)F("Loading configuration from file \"") + this->fileName + F("\"."));
-
 	TesLight::BinaryFile file(this->fileSystem);
 	if (!file.open(this->fileName, FILE_READ))
 	{
 		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, (String)F("Failed to load configuration file: ") + fileName);
 		return false;
 	}
-
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Configuration file loaded. Parsing configuration from file."));
 
 	// Check the configuration file version
 	if (file.readWord() != this->configurationVersion)
@@ -175,14 +161,14 @@ bool TesLight::Configuration::load()
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Reading binary data."));
-
 	// System config
-	this->systemConfig.logLevel = (TesLight::Logger::LogLevel)file.readByte();
-	this->systemConfig.lightSensorMode = (TesLight::LightSensor::LightSensorMode)file.readByte();
-	this->systemConfig.lightSensorThreshold = file.readWord();
-	this->systemConfig.lightSensorMinValue = file.readWord();
-	this->systemConfig.lightSensorMaxValue = file.readWord();
+	this->systemConfig.logLevel = file.readByte();
+	this->systemConfig.lightSensorMode = file.readByte();
+	this->systemConfig.lightSensorThreshold = file.readByte();
+	this->systemConfig.lightSensorMinAmbientBrightness = file.readByte();
+	this->systemConfig.lightSensorMaxAmbientBrightness = file.readByte();
+	this->systemConfig.lightSensorMinLedBrightness = file.readByte();
+	this->systemConfig.lightSensorMaxLedBrightness = file.readByte();
 	this->systemConfig.regulatorPowerLimit = file.readByte();
 	this->systemConfig.regulatorHighTemperature = file.readByte();
 	this->systemConfig.regulatorCutoffTemperature = file.readByte();
@@ -230,8 +216,6 @@ bool TesLight::Configuration::load()
 	}
 
 	file.close();
-
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Configuration parsed."));
 	return true;
 }
 
@@ -242,8 +226,6 @@ bool TesLight::Configuration::load()
  */
 bool TesLight::Configuration::save()
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, (String)F("Saving configuration to file \"") + this->fileName + F("\"."));
-
 	TesLight::BinaryFile file(this->fileSystem);
 	if (!file.open(this->fileName, FILE_WRITE))
 	{
@@ -251,17 +233,17 @@ bool TesLight::Configuration::save()
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Configuration file opened. Writing configuration to file."));
-
 	// Write the configuration file version
 	file.writeWord(this->configurationVersion);
 
 	// System cofiguration
 	file.writeByte((uint8_t)this->systemConfig.logLevel);
 	file.writeByte((uint8_t)this->systemConfig.lightSensorMode);
-	file.writeWord(this->systemConfig.lightSensorThreshold);
-	file.writeWord(this->systemConfig.lightSensorMinValue);
-	file.writeWord(this->systemConfig.lightSensorMaxValue);
+	file.writeByte(this->systemConfig.lightSensorThreshold);
+	file.writeByte(this->systemConfig.lightSensorMinAmbientBrightness);
+	file.writeByte(this->systemConfig.lightSensorMaxAmbientBrightness);
+	file.writeByte(this->systemConfig.lightSensorMinLedBrightness);
+	file.writeByte(this->systemConfig.lightSensorMaxLedBrightness);
 	file.writeByte(this->systemConfig.regulatorPowerLimit);
 	file.writeByte(this->systemConfig.regulatorHighTemperature);
 	file.writeByte(this->systemConfig.regulatorCutoffTemperature);
@@ -304,8 +286,6 @@ bool TesLight::Configuration::save()
 	file.writeWord(this->getSimpleHash());
 
 	file.close();
-
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Configuration saved."));
 	return true;
 }
 
@@ -315,14 +295,15 @@ bool TesLight::Configuration::save()
  */
 uint16_t TesLight::Configuration::getSimpleHash()
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Calculate hash of the configuration."));
 	uint16_t hash = 7;
 	hash = hash * 31 + this->configurationVersion;
 	hash = hash * 31 + this->systemConfig.logLevel;
 	hash = hash * 31 + this->systemConfig.lightSensorMode;
 	hash = hash * 31 + this->systemConfig.lightSensorThreshold;
-	hash = hash * 31 + this->systemConfig.lightSensorMinValue;
-	hash = hash * 31 + this->systemConfig.lightSensorMaxValue;
+	hash = hash * 31 + this->systemConfig.lightSensorMinAmbientBrightness;
+	hash = hash * 31 + this->systemConfig.lightSensorMaxAmbientBrightness;
+	hash = hash * 31 + this->systemConfig.lightSensorMinLedBrightness;
+	hash = hash * 31 + this->systemConfig.lightSensorMaxLedBrightness;
 	hash = hash * 31 + this->systemConfig.regulatorPowerLimit;
 	hash = hash * 31 + this->systemConfig.regulatorHighTemperature;
 	hash = hash * 31 + this->systemConfig.regulatorCutoffTemperature;
@@ -366,7 +347,6 @@ uint16_t TesLight::Configuration::getSimpleHash()
  */
 uint16_t TesLight::Configuration::getSimpleStringHash(const String input)
 {
-	TesLight::Logger::log(TesLight::Logger::DEBUG, SOURCE_LOCATION, F("Calculate hash of the string."));
 	uint16_t hash = 7;
 	for (uint16_t i = 0; i < input.length(); i++)
 	{

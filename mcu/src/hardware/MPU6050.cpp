@@ -14,7 +14,6 @@
  */
 TesLight::MPU6050::MPU6050(const uint8_t deviceAddress)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize MPU6050 instance."));
 	this->deviceAddress = deviceAddress;
 	this->accScale = TesLight::MPU6050::MPU6050AccScale::SCALE_2G;
 	this->gyScale = TesLight::MPU6050::MPU6050GyScale::SCALE_250DS;
@@ -28,7 +27,6 @@ TesLight::MPU6050::MPU6050(const uint8_t deviceAddress)
  */
 TesLight::MPU6050::MPU6050(const uint8_t deviceAddress, const TesLight::MPU6050::MPU6050AccScale accScale, const TesLight::MPU6050::MPU6050GyScale gyScale)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Delete DS18B20 instance and free resources."));
 	this->deviceAddress = deviceAddress;
 	this->accScale = accScale;
 	this->gyScale = gyScale;
@@ -49,29 +47,24 @@ TesLight::MPU6050::~MPU6050()
  */
 bool TesLight::MPU6050::begin()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initializing MPU6050 sensor."));
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Wake up sensor."));
 	if (!this->wake())
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to wake MPU6050."));
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set acc scale."));
 	if (!this->setAccScale(this->accScale))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to wake MPU6050."));
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set gyro scale."));
 	if (!this->setGyScale(this->gyScale))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to wake MPU6050."));
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("MPU6050 initialized."));
 	return true;
 }
 
@@ -82,7 +75,6 @@ bool TesLight::MPU6050::begin()
  */
 bool TesLight::MPU6050::wake()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Wake up MPU6050 sensor."));
 	Wire.beginTransmission(this->deviceAddress);
 	Wire.write(0x6B);
 	Wire.write(0B00000000);
@@ -101,7 +93,6 @@ bool TesLight::MPU6050::wake()
  */
 bool TesLight::MPU6050::sleep()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Put MPU6050 sensor into sleep mode."));
 	Wire.beginTransmission(this->deviceAddress);
 	Wire.write(0x6B);
 	Wire.write(0B01000000);
@@ -121,7 +112,6 @@ bool TesLight::MPU6050::sleep()
  */
 bool TesLight::MPU6050::setAccScale(TesLight::MPU6050::MPU6050AccScale accScale)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set acceleration scale of the MPU6050 sensor."));
 	this->accScale = accScale;
 	Wire.beginTransmission(this->deviceAddress);
 	Wire.write(0x1C);
@@ -140,7 +130,6 @@ bool TesLight::MPU6050::setAccScale(TesLight::MPU6050::MPU6050AccScale accScale)
  */
 TesLight::MPU6050::MPU6050AccScale TesLight::MPU6050::getAccScale()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get acc scale of MPU6050 sensor."));
 	return this->accScale;
 }
 
@@ -152,7 +141,6 @@ TesLight::MPU6050::MPU6050AccScale TesLight::MPU6050::getAccScale()
  */
 bool TesLight::MPU6050::setGyScale(TesLight::MPU6050::MPU6050GyScale gyScale)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Set gyro scale of the MPU6050 sensor."));
 	this->gyScale = gyScale;
 	Wire.beginTransmission(this->deviceAddress);
 	Wire.write(0x1B);
@@ -171,7 +159,6 @@ bool TesLight::MPU6050::setGyScale(TesLight::MPU6050::MPU6050GyScale gyScale)
  */
 TesLight::MPU6050::MPU6050GyScale TesLight::MPU6050::getGyScale()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get gyro scale of MPU6050 sensor."));
 	return this->gyScale;
 }
 
@@ -183,8 +170,6 @@ TesLight::MPU6050::MPU6050GyScale TesLight::MPU6050::getGyScale()
  */
 bool TesLight::MPU6050::getData(TesLight::MPU6050::MPU6050MotionData &motionData)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Reading data registers of the MPU6050 sensor."));
-
 	// Request the 6 acc registers
 	Wire.beginTransmission(this->deviceAddress);
 	Wire.write(0x3B);

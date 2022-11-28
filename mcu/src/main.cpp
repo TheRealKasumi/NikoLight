@@ -164,8 +164,7 @@ void intializeI2C()
 void initializeFanController()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize fan controller."));
-	const TesLight::Configuration::SystemConfig systemConfig = configuration->getSystemConfig();
-	fanController = new TesLight::FanController(FAN_PWM_PIN, systemConfig.fanMinPwmValue, systemConfig.fanMaxPwmValue, systemConfig.fanMinTemperature, systemConfig.fanMaxTemperature);
+	fanController = new TesLight::FanController(FAN_PWM_PIN, configuration);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Fan controller initialized."));
 }
 
@@ -196,8 +195,7 @@ void initializeTemperatureSensor()
 void initializeLightSensor()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize light sensor."));
-	const TesLight::Configuration::SystemConfig systemConfig = configuration->getSystemConfig();
-	lightSensor = new TesLight::LightSensor(systemConfig.lightSensorMode, systemConfig.lightSensorThreshold / 4096.0f, systemConfig.lightSensorMinValue / 4096.0f, systemConfig.lightSensorMaxValue / 4096.0f);
+	lightSensor = new TesLight::LightSensor(configuration);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Light sensor initialized."));
 }
 
@@ -325,8 +323,8 @@ void handleUpdate()
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Install system update from update package."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Set fan speed to maximum during the update."));
-	TesLight::FanController fanController(FAN_PWM_PIN, 0, 255, 0, 10);
-	fanController.setTemperature(255);
+	pinMode(FAN_PWM_PIN, OUTPUT);
+	digitalWrite(FAN_PWM_PIN, HIGH);
 
 	if (TesLight::Updater::install(&SD, (String)UPDATE_DIRECTORY + F("/") + UPDATE_FILE_NAME))
 	{
@@ -418,7 +416,7 @@ void setup()
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Updating log level from configuration."));
 	const TesLight::Configuration::SystemConfig systemConfig = configuration->getSystemConfig();
-	TesLight::Logger::setMinLogLevel(systemConfig.logLevel);
+	TesLight::Logger::setMinLogLevel((TesLight::Logger::LogLevel)systemConfig.logLevel);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Log level updated from configuration."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize I²C bus."));
@@ -496,19 +494,18 @@ void setup()
 void loop()
 {
 	// Handle the LEDs
-	if (micros() - ledTimer >= ledManager->getTargetFrameTime())
+	if (micros() >= ledTimer)
 	{
-		ledTimer = micros() - (micros() - ledTimer - ledManager->getTargetFrameTime());
+		ledTimer += ledManager->getTargetFrameTime();
 		ledManager->render();
 		ledManager->show();
 		ledFrameCounter++;
 	}
 
 	// Handle the light sensor
-	if (micros() - lightSensorTimer >= LIGHT_SENSOR_CYCLE_TIME)
+	if (micros() >= lightSensorTimer)
 	{
-		lightSensorTimer = micros() - (micros() - lightSensorTimer - LIGHT_SENSOR_CYCLE_TIME);
-
+		lightSensorTimer += LIGHT_SENSOR_CYCLE_TIME;
 		float brightness;
 		if (ledManager->getAmbientBrightness(brightness) && lightSensor->getBrightness(brightness))
 		{
@@ -522,9 +519,9 @@ void loop()
 	}
 
 	// Handle the motion sensor
-	if (micros() - motionSensorTimer >= MOTION_SENSOR_CYCLE_TIME)
+	if (micros() >= motionSensorTimer)
 	{
-		motionSensorTimer = micros() - (micros() - motionSensorTimer - MOTION_SENSOR_CYCLE_TIME);
+		motionSensorTimer += MOTION_SENSOR_CYCLE_TIME;
 		if (motionSensor->run())
 		{
 			ledManager->setMotionSensorData(motionSensor->getMotion());
@@ -537,17 +534,16 @@ void loop()
 	}
 
 	// Handle web server requests
-	if (micros() - webServerTimer >= WEB_SERVER_CYCLE_TIME)
+	if (micros() >= webServerTimer)
 	{
-		webServerTimer = micros() - (micros() - webServerTimer - WEB_SERVER_CYCLE_TIME);
+		webServerTimer += WEB_SERVER_CYCLE_TIME;
 		webServerManager->handleRequest();
 	}
 
 	// Measure the FPS
-	if (micros() - statusTimer >= STATUS_CYCLE_TIME)
+	if (micros() >= statusTimer)
 	{
-		statusTimer = micros() - (micros() - statusTimer - STATUS_CYCLE_TIME);
-
+		statusTimer += STATUS_CYCLE_TIME;
 		const float fps = (float)ledFrameCounter / (STATUS_CYCLE_TIME / 1000000);
 		const float powerDraw = ledManager->getLedPowerDraw();
 		float temperature;
@@ -561,10 +557,9 @@ void loop()
 	}
 
 	// Handle the temperature measurement and fan controller
-	if (micros() - temperatureTimer >= TEMP_CYCLE_TIME)
+	if (micros() >= temperatureTimer)
 	{
-		temperatureTimer = micros() - (micros() - temperatureTimer - TEMP_CYCLE_TIME);
-
+		temperatureTimer += TEMP_CYCLE_TIME;
 		float temp;
 		if (temperatureSensor->getMaxTemperature(temp))
 		{
@@ -588,15 +583,7 @@ bool applySystemConfig()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System configuration has changed. Updating system configuration."));
 	const TesLight::Configuration::SystemConfig systemConfig = configuration->getSystemConfig();
-	TesLight::Logger::setMinLogLevel(systemConfig.logLevel);
-	lightSensor->setLightSensorMode(systemConfig.lightSensorMode);
-	lightSensor->setThreshold(systemConfig.lightSensorThreshold / 4096.0f);
-	lightSensor->setMinValue(systemConfig.lightSensorMinValue / 4096.0f);
-	lightSensor->setMaxValue(systemConfig.lightSensorMaxValue / 4096.0f);
-	fanController->setPwmMin(systemConfig.fanMinPwmValue);
-	fanController->setPwmMax(systemConfig.fanMaxPwmValue);
-	fanController->setTempMin(systemConfig.fanMinTemperature);
-	fanController->setTempMax(systemConfig.fanMaxTemperature);
+	TesLight::Logger::setMinLogLevel((TesLight::Logger::LogLevel)systemConfig.logLevel);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System configuration updated."));
 	initializeTimers();
 	return true;

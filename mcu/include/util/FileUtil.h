@@ -11,7 +11,6 @@
 
 #include <FS.h>
 #include "configuration/SystemConfiguration.h"
-#include "logging/Logger.h"
 
 namespace TesLight
 {

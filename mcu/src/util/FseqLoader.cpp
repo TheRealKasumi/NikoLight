@@ -14,7 +14,6 @@
  */
 TesLight::FseqLoader::FseqLoader(FS *fileSystem)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize fseq loader."));
 	this->fileSystem = fileSystem;
 }
 
@@ -23,7 +22,6 @@ TesLight::FseqLoader::FseqLoader(FS *fileSystem)
  */
 TesLight::FseqLoader::~FseqLoader()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Delete fseq loader and close resources."));
 	this->close();
 }
 
@@ -35,7 +33,6 @@ TesLight::FseqLoader::~FseqLoader()
  */
 bool TesLight::FseqLoader::loadFromFile(const String fileName)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Load fseq file ") + fileName + F("."));
 	this->file = this->fileSystem->open(fileName, FILE_READ);
 	if (!this->file)
 	{
@@ -55,7 +52,6 @@ bool TesLight::FseqLoader::loadFromFile(const String fileName)
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Reading file header."));
 	this->initFseqHeader();
 	this->file.readBytes((char *)&this->fseqHeader.identifier[0], 4);
 	this->file.readBytes((char *)&this->fseqHeader.channelDataOffset, 2);
@@ -72,10 +68,8 @@ bool TesLight::FseqLoader::loadFromFile(const String fileName)
 	this->file.readBytes((char *)&this->fseqHeader.colorEncoding, 1);
 	this->file.readBytes((char *)&this->fseqHeader.reserved, 2);
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Check if the file is valid."));
 	if (this->isValid())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("File is valid."));
 		this->moveToStart();
 		return true;
 	}
@@ -93,7 +87,6 @@ bool TesLight::FseqLoader::loadFromFile(const String fileName)
  */
 size_t TesLight::FseqLoader::available()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get number of pixels available in fseq animation file."));
 	return this->file ? this->file.available() / 3 : 0;
 }
 
@@ -102,7 +95,6 @@ size_t TesLight::FseqLoader::available()
  */
 void TesLight::FseqLoader::moveToStart()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Move to the begin of the data section."));
 	if (this->file)
 	{
 		this->file.seek(this->fseqHeader.channelDataOffset);
@@ -118,7 +110,6 @@ void TesLight::FseqLoader::moveToStart()
  */
 void TesLight::FseqLoader::close()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Close fseq file."));
 	if (this->file)
 	{
 		this->file.close();
@@ -131,7 +122,6 @@ void TesLight::FseqLoader::close()
  */
 TesLight::FseqLoader::FseqHeader TesLight::FseqLoader::getHeader()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Get fseq file header."));
 	return this->fseqHeader;
 }
 
@@ -144,17 +134,14 @@ TesLight::FseqLoader::FseqHeader TesLight::FseqLoader::getHeader()
  */
 bool TesLight::FseqLoader::readPixelbuffer(CRGB *pixelBuffer, const size_t bufferSize)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read pixel buffer from the fseq file."));
 	if (this->file && this->available() >= bufferSize)
 	{
 		if (this->file.read((uint8_t *)pixelBuffer, bufferSize * 3) == bufferSize * 3)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Pixel read from the fseq file."));
 			return true;
 		}
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read pixel buffer from fseq file."));
 	return false;
 }
 
@@ -163,7 +150,6 @@ bool TesLight::FseqLoader::readPixelbuffer(CRGB *pixelBuffer, const size_t buffe
  */
 void TesLight::FseqLoader::initFseqHeader()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize fseq header with null values."));
 	this->fseqHeader.identifier[0] = 0;
 	this->fseqHeader.identifier[1] = 0;
 	this->fseqHeader.identifier[2] = 0;
@@ -190,8 +176,6 @@ void TesLight::FseqLoader::initFseqHeader()
  */
 bool TesLight::FseqLoader::isValid()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Check if the fseq file is valid."));
-
 	// Check the identifier
 	if (this->fseqHeader.identifier[0] != 'P' || this->fseqHeader.identifier[1] != 'S' || this->fseqHeader.identifier[2] != 'E' || this->fseqHeader.identifier[3] != 'Q')
 	{
@@ -230,6 +214,5 @@ bool TesLight::FseqLoader::isValid()
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("The fseq file is valid."));
 	return true;
 }
