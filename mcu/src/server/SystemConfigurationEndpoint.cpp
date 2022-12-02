@@ -29,7 +29,7 @@ void TesLight::SystemConfigurationEndpoint::begin(TesLight::Configuration *_conf
 void TesLight::SystemConfigurationEndpoint::getSystemConfig()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the system configuration."));
-	TesLight::InMemoryBinaryFile binary(14);
+	TesLight::InMemoryBinaryFile binary(15);
 	binary.writeByte((uint8_t)TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().logLevel);
 	binary.writeByte((uint8_t)TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMode);
 	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorThreshold);
@@ -37,6 +37,7 @@ void TesLight::SystemConfigurationEndpoint::getSystemConfig()
 	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxAmbientBrightness);
 	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinLedBrightness);
 	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxLedBrightness);
+	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorDuration);
 	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorPowerLimit);
 	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorHighTemperature);
 	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorCutoffTemperature);
@@ -81,11 +82,11 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 		return;
 	}
 
-	if (length != 14)
+	if (length != 15)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Length of decoded data is invalid."));
 		delete[] decoded;
-		webServer->send(400, F("text/plain"), F("The length of the decoded data must be exactly 14 bytes."));
+		webServer->send(400, F("text/plain"), F("The length of the decoded data must be exactly 15 bytes."));
 		return;
 	}
 
@@ -101,6 +102,7 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 	config.lightSensorMaxAmbientBrightness = binary.readByte();
 	config.lightSensorMinLedBrightness = binary.readByte();
 	config.lightSensorMaxLedBrightness = binary.readByte();
+	config.lightSensorDuration = binary.readByte();
 	config.regulatorPowerLimit = binary.readByte();
 	config.regulatorHighTemperature = binary.readByte();
 	config.regulatorCutoffTemperature = binary.readByte();
@@ -237,7 +239,7 @@ bool TesLight::SystemConfigurationEndpoint::validateLogLevel(const uint8_t value
  */
 bool TesLight::SystemConfigurationEndpoint::validateLightSensorMode(const uint8_t value)
 {
-	return value <= 5;
+	return value <= 6;
 }
 
 /**

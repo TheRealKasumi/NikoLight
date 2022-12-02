@@ -17,7 +17,7 @@ TesLight::Configuration::Configuration(FS *fileSystem, const String fileName)
 {
 	this->fileSystem = fileSystem;
 	this->fileName = fileName;
-	this->configurationVersion = 5;
+	this->configurationVersion = 6;
 	this->loadDefaults();
 }
 
@@ -97,6 +97,7 @@ void TesLight::Configuration::loadDefaults()
 	this->systemConfig.lightSensorMaxAmbientBrightness = LIGHT_SENSOR_DEFAULT_MAX_AMBIENT;
 	this->systemConfig.lightSensorMinLedBrightness = LIGHT_SENSOR_DEFAULT_MIN_LED;
 	this->systemConfig.lightSensorMaxLedBrightness = LIGHT_SENSOR_DEFAULT_MAX_LED;
+	this->systemConfig.lightSensorDuration = LIGHT_SENSOR_DEFAULT_DURATION;
 	this->systemConfig.regulatorPowerLimit = REGULATOR_POWER_LIMIT * REGULATOR_COUNT;
 	this->systemConfig.regulatorHighTemperature = REGULATOR_HIGH_TEMP;
 	this->systemConfig.regulatorCutoffTemperature = REGULATOR_CUT_OFF_TEMP;
@@ -169,6 +170,7 @@ bool TesLight::Configuration::load()
 	this->systemConfig.lightSensorMaxAmbientBrightness = file.readByte();
 	this->systemConfig.lightSensorMinLedBrightness = file.readByte();
 	this->systemConfig.lightSensorMaxLedBrightness = file.readByte();
+	this->systemConfig.lightSensorDuration = file.readByte();
 	this->systemConfig.regulatorPowerLimit = file.readByte();
 	this->systemConfig.regulatorHighTemperature = file.readByte();
 	this->systemConfig.regulatorCutoffTemperature = file.readByte();
@@ -244,6 +246,7 @@ bool TesLight::Configuration::save()
 	file.writeByte(this->systemConfig.lightSensorMaxAmbientBrightness);
 	file.writeByte(this->systemConfig.lightSensorMinLedBrightness);
 	file.writeByte(this->systemConfig.lightSensorMaxLedBrightness);
+	file.writeByte(this->systemConfig.lightSensorDuration);
 	file.writeByte(this->systemConfig.regulatorPowerLimit);
 	file.writeByte(this->systemConfig.regulatorHighTemperature);
 	file.writeByte(this->systemConfig.regulatorCutoffTemperature);

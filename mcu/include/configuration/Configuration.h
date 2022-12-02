@@ -30,6 +30,7 @@ namespace TesLight
 			uint8_t lightSensorMaxAmbientBrightness; // Maximum brightness of the ambient
 			uint8_t lightSensorMinLedBrightness;	 // Minimum brightness of the LEDs for brightnes control
 			uint8_t lightSensorMaxLedBrightness;	 // Maximum brightness of the LEDs for brightness control
+			uint8_t lightSensorDuration;			 // Time after which the lights are turning off when using the motion sensor (x5 seconds)
 			uint8_t regulatorPowerLimit;			 // Limit in W
 			uint8_t regulatorHighTemperature;		 // Temp in °C where brightness is reduced
 			uint8_t regulatorCutoffTemperature;		 // Temp in °C where LEDs are turned off

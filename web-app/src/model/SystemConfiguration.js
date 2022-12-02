@@ -14,6 +14,7 @@ class SystemConfiguration {
 		this.lightSensorMaxAmbientBrightness = 255;
 		this.lightSensorMinLedBrightness = 5;
 		this.lightSensorMaxLedBrightness = 255;
+		this.lightSensorDuration = 6;
 		this.systemPowerLimit = 10;
 		this.regulatorHighTemperature = 80;
 		this.regulatorCutoffTemperature = 90;
@@ -93,6 +94,14 @@ class SystemConfiguration {
 	};
 
 	/**
+	 * Get the light sensor duration.
+	 * @returns light sensor duration
+	 */
+	getLightSensorDuration = () => {
+		return this.lightSensorDuration;
+	};
+
+	/**
 	 * Get the system power limit in W.
 	 * @returns system power limit
 	 */
@@ -168,7 +177,7 @@ class SystemConfiguration {
 	 * @returns true when valid, false when invalid
 	 */
 	setLightSensorMode = (lightSensorMode) => {
-		if (typeof lightSensorMode === "number" && lightSensorMode >= 0 && lightSensorMode < 6) {
+		if (typeof lightSensorMode === "number" && lightSensorMode >= 0 && lightSensorMode < 7) {
 			this.lightSensorMode = lightSensorMode;
 			this.changed = true;
 			return true;
@@ -260,6 +269,20 @@ class SystemConfiguration {
 			lightSensorMaxLedBrightness > this.lightSensorMinLedBrightness
 		) {
 			this.lightSensorMaxLedBrightness = lightSensorMaxLedBrightness;
+			this.changed = true;
+			return true;
+		}
+		return false;
+	};
+
+	/**
+	 * Set the light sensor duration.
+	 * @param {number} lightSensorDuration light sensor duration
+	 * @returns true when valid, false when invalid
+	 */
+	setLightSensorDuration = (lightSensorDuration) => {
+		if (typeof lightSensorDuration === "number" && lightSensorDuration >= 0 && lightSensorDuration < 256) {
+			this.lightSensorDuration = lightSensorDuration;
 			this.changed = true;
 			return true;
 		}
@@ -379,6 +402,7 @@ class SystemConfiguration {
 		this.lightSensorMaxAmbientBrightness = systemConfiguration.lightSensorMaxAmbientBrightness;
 		this.lightSensorMinLedBrightness = systemConfiguration.lightSensorMinLedBrightness;
 		this.lightSensorMaxLedBrightness = systemConfiguration.lightSensorMaxLedBrightness;
+		this.lightSensorDuration = systemConfiguration.lightSensorDuration;
 		this.systemPowerLimit = systemConfiguration.systemPowerLimit;
 		this.regulatorHighTemperature = systemConfiguration.regulatorHighTemperature;
 		this.regulatorCutoffTemperature = systemConfiguration.regulatorCutoffTemperature;
@@ -402,6 +426,7 @@ class SystemConfiguration {
 		clone.lightSensorMaxAmbientBrightness = this.lightSensorMaxAmbientBrightness;
 		clone.lightSensorMinLedBrightness = this.lightSensorMinLedBrightness;
 		clone.lightSensorMaxLedBrightness = this.lightSensorMaxLedBrightness;
+		clone.lightSensorDuration = this.lightSensorDuration;
 		clone.systemPowerLimit = this.systemPowerLimit;
 		clone.regulatorHighTemperature = this.regulatorHighTemperature;
 		clone.regulatorCutoffTemperature = this.regulatorCutoffTemperature;

@@ -8,20 +8,15 @@
  */
 #include <Arduino.h>
 #include <SD.h>
-
+#include <esp_task_wdt.h>
 #include "configuration/SystemConfiguration.h"
-
 #include "logging/Logger.h"
 #include "configuration/Configuration.h"
-
 #include "hardware/FanController.h"
-
 #include "led/LedManager.h"
-
 #include "sensor/TemperatureSensor.h"
 #include "sensor/LightSensor.h"
 #include "sensor/MotionSensor.h"
-
 #include "wifi/WiFiManager.h"
 #include "server/WebServerManager.h"
 #include "server/ConnectionTestEndpoint.h"
@@ -32,7 +27,6 @@
 #include "server/LogEndpoint.h"
 #include "server/UpdateEndpoint.h"
 #include "server/ResetEndpoint.h"
-
 #include "util/FileUtil.h"
 #include "update/Updater.h"
 
@@ -53,6 +47,7 @@ unsigned long webServerTimer = 0;
 unsigned long statusTimer = 0;
 unsigned long temperatureTimer = 0;
 uint16_t ledFrameCounter = 0;
+float ledPowerCounter = 0.0f;
 
 // Initialization functions
 void printLogo();
@@ -69,7 +64,7 @@ void initializeWiFiManager();
 void initializeWebServerManager();
 void initializeRestApi();
 void initializeTimers();
-void stop();
+bool checkTimer(unsigned long &timer, unsigned long cycleTime);
 
 // System update
 bool updateAvilable();
@@ -286,13 +281,20 @@ void initializeTimers()
 }
 
 /**
- * @brief Stop the program.
+ * @brief Check if a timer expired.
+ * @param timer timer value
+ * @param cycleTime cycle time of the timer
+ * @return true when the timer expired
+ * @return false when the timer is not expired yet
  */
-void stop(const String reason)
+bool checkTimer(unsigned long &timer, unsigned long cycleTime)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Programm stopped because: ") + reason);
-	while (1)
-		;
+	if (micros() - timer >= cycleTime)
+	{
+		timer += cycleTime;
+		return true;
+	}
+	return false;
 }
 
 /**
@@ -376,8 +378,8 @@ void setup()
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize SD card."));
-		stop(F("Failed to initialize SD card."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize SD card. Try reboot."));
+		TesLight::Updater::reboot("SD mount failure.");
 	}
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Switching to SD card logger."));
@@ -388,8 +390,8 @@ void setup()
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to switch to SD card logger."));
-		stop(F("Failed to switch to SD card logger."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to switch to SD card logger. Try reboot."));
+		TesLight::Updater::reboot("SD logger failure.");
 	}
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Check if system update is available."));
@@ -485,6 +487,11 @@ void setup()
 	initializeTimers();
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Timers initialized."));
 
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize watchdog."));
+	esp_task_wdt_init(WATCHDOG_RESET_TIME, true);
+	esp_task_wdt_add(NULL);
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Watchdog initialized."));
+
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("TesLight initialized successfully, going into work mode."));
 }
 
@@ -494,20 +501,19 @@ void setup()
 void loop()
 {
 	// Handle the LEDs
-	if (micros() >= ledTimer)
+	if (checkTimer(ledTimer, ledManager->getTargetFrameTime()))
 	{
-		ledTimer += ledManager->getTargetFrameTime();
 		ledManager->render();
 		ledManager->show();
 		ledFrameCounter++;
+		ledPowerCounter += ledManager->getLedPowerDraw();
 	}
 
 	// Handle the light sensor
-	if (micros() >= lightSensorTimer)
+	if (checkTimer(lightSensorTimer, LIGHT_SENSOR_CYCLE_TIME))
 	{
-		lightSensorTimer += LIGHT_SENSOR_CYCLE_TIME;
 		float brightness;
-		if (ledManager->getAmbientBrightness(brightness) && lightSensor->getBrightness(brightness))
+		if (ledManager->getAmbientBrightness(brightness) && lightSensor->getBrightness(brightness, motionSensor))
 		{
 			ledManager->setAmbientBrightness(brightness);
 		}
@@ -519,9 +525,8 @@ void loop()
 	}
 
 	// Handle the motion sensor
-	if (micros() >= motionSensorTimer)
+	if (checkTimer(motionSensorTimer, MOTION_SENSOR_CYCLE_TIME))
 	{
-		motionSensorTimer += MOTION_SENSOR_CYCLE_TIME;
 		if (motionSensor->run())
 		{
 			ledManager->setMotionSensorData(motionSensor->getMotion());
@@ -534,32 +539,32 @@ void loop()
 	}
 
 	// Handle web server requests
-	if (micros() >= webServerTimer)
+	if (checkTimer(webServerTimer, WEB_SERVER_CYCLE_TIME))
 	{
-		webServerTimer += WEB_SERVER_CYCLE_TIME;
+		esp_task_wdt_delete(NULL);
 		webServerManager->handleRequest();
+		esp_task_wdt_init(WATCHDOG_RESET_TIME, true);
+		esp_task_wdt_add(NULL);
 	}
 
 	// Measure the FPS
-	if (micros() >= statusTimer)
+	if (checkTimer(statusTimer, STATUS_CYCLE_TIME))
 	{
-		statusTimer += STATUS_CYCLE_TIME;
 		const float fps = (float)ledFrameCounter / (STATUS_CYCLE_TIME / 1000000);
-		const float powerDraw = ledManager->getLedPowerDraw();
+		const float powerDraw = ledPowerCounter / ledFrameCounter;
 		float temperature;
 		if (!temperatureSensor->getMaxTemperature(temperature))
 		{
 			temperature = 0.0f;
 		}
-
-		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("LEDs: ") + fps + F("FPS      Power: ") + powerDraw + F("W      Regulators: ") + temperature + F("°C"));
 		ledFrameCounter = 0;
+		ledPowerCounter = 0.0f;
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("LEDs: ") + fps + F("FPS      Average Power: ") + powerDraw + F("W      Regulators: ") + temperature + F("°C"));
 	}
 
 	// Handle the temperature measurement and fan controller
-	if (micros() >= temperatureTimer)
+	if (checkTimer(temperatureTimer, TEMP_CYCLE_TIME))
 	{
-		temperatureTimer += TEMP_CYCLE_TIME;
 		float temp;
 		if (temperatureSensor->getMaxTemperature(temp))
 		{
@@ -572,6 +577,9 @@ void loop()
 			temperatureTimer += 5000000;
 		}
 	}
+
+	// Reset the watchdog timer
+	esp_task_wdt_reset();
 }
 
 /**
