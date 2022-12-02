@@ -17,6 +17,8 @@
 #include "hardware/BH1750.h"
 #include "logging/Logger.h"
 
+#include "sensor/MotionSensor.h"
+
 namespace TesLight
 {
 	class LightSensor
@@ -29,18 +31,21 @@ namespace TesLight
 			AUTO_ON_OFF_ADC = 2,
 			AUTO_BRIGHTNESS_ADC = 3,
 			AUTO_ON_OFF_BH1750 = 4,
-			AUTO_BRIGHTNESS_BH1750 = 5
+			AUTO_BRIGHTNESS_BH1750 = 5,
+			AUTO_ON_OFF_MPU6050 = 6
 		};
 
 		LightSensor(TesLight::Configuration *configuration);
 		~LightSensor();
 
-		bool getBrightness(float &brightness);
+		bool getBrightness(float &brightness, TesLight::MotionSensor *motionSensor = nullptr);
 
 	private:
 		TesLight::Configuration *configuration;
 		TesLight::ESP32ADC *esp32adc;
 		TesLight::BH1750 *bh1750;
+		TesLight::MotionSensor::MotionSensorData motionData;
+		unsigned long motionSensorTriggerTime;
 	};
 }
 

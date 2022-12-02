@@ -88,6 +88,16 @@ class SettingsPage extends React.Component {
 	};
 
 	/**
+	 * Set the light sensor duration.
+	 * @param {string} value value of the selection
+	 */
+	setLightSensorDuration = (value) => {
+		const state = this.state;
+		state.systemConfigurationCopy.setLightSensorDuration(value);
+		this.setState(state);
+	};
+
+	/**
 	 * Set the access point ssid.
 	 * @param {string} value value of the selection
 	 */
@@ -259,68 +269,90 @@ class SettingsPage extends React.Component {
 							{ value: "3", name: "Automatic Brightness ADC" },
 							{ value: "4", name: "Automatic On/Off BH1750" },
 							{ value: "5", name: "Automatic Brightness BH1750" },
+							{ value: "6", name: "Automatic On/Off MPU6050" },
 						]}
 						onChange={this.setLightSensorMode}
 					/>
 					<div className="spacer"></div>
 
-					<Slider
-						key={`settings-page-input-key-${this.state.inputKey + 1}`}
-						title="Threshold"
-						min={1}
-						max={255}
-						value={this.state.systemConfigurationCopy.getLightSensorThreshold()}
-						step={1}
-						icon={process.env.PUBLIC_URL + "/img/icon/sensor.svg"}
-						onChange={this.setLightSensorThreshold}
-					/>
-					<div className="spacer"></div>
+					{[2, 3, 4, 5, 6].includes(this.state.systemConfigurationCopy.getLightSensorMode()) ? (
+						<>
+							<Slider
+								key={`settings-page-input-key-${this.state.inputKey + 1}`}
+								title="Threshold"
+								min={1}
+								max={255}
+								value={this.state.systemConfigurationCopy.getLightSensorThreshold()}
+								step={1}
+								icon={process.env.PUBLIC_URL + "/img/icon/sensor.svg"}
+								onChange={this.setLightSensorThreshold}
+							/>
+							<div className="spacer"></div>
+						</>
+					) : null}
 
-					<Slider
-						key={`settings-page-input-key-${this.state.inputKey + 2}`}
-						title="Minimum Brightness"
-						min={1}
-						max={255}
-						value={this.state.systemConfigurationCopy.getLightSensorMinAmbientBrightness()}
-						step={1}
-						icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
-						onChange={this.setLightSensorMinAmbientBrightness}
-					/>
-					<div className="spacer"></div>
+					{[3, 5].includes(this.state.systemConfigurationCopy.getLightSensorMode()) ? (
+						<>
+							<Slider
+								key={`settings-page-input-key-${this.state.inputKey + 2}`}
+								title="Minimum Brightness"
+								min={1}
+								max={255}
+								value={this.state.systemConfigurationCopy.getLightSensorMinAmbientBrightness()}
+								step={1}
+								icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
+								onChange={this.setLightSensorMinAmbientBrightness}
+							/>
+							<div className="spacer"></div>
+							<Slider
+								key={`settings-page-input-key-${this.state.inputKey + 3}`}
+								title="Maximum Brightness"
+								min={1}
+								max={255}
+								value={this.state.systemConfigurationCopy.getLightSensorMaxAmbientBrightness()}
+								step={1}
+								icon={process.env.PUBLIC_URL + "/img/icon/brightness-max.svg"}
+								onChange={this.setLightSensorMaxAmbientBrightness}
+							/>
+							<Slider
+								key={`settings-page-input-key-${this.state.inputKey + 4}`}
+								title="Minimum LED Brightness"
+								min={1}
+								max={255}
+								value={this.state.systemConfigurationCopy.getLightSensorMinLedBrightness()}
+								step={1}
+								icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
+								onChange={this.setLightSensorMinLedBrightness}
+							/>
+							<div className="spacer"></div>
+							<Slider
+								key={`settings-page-input-key-${this.state.inputKey + 5}`}
+								title="Maximum LED Brightness"
+								min={1}
+								max={255}
+								value={this.state.systemConfigurationCopy.getLightSensorMaxLedBrightness()}
+								step={1}
+								icon={process.env.PUBLIC_URL + "/img/icon/brightness-max.svg"}
+								onChange={this.setLightSensorMaxLedBrightness}
+							/>
+						</>
+					) : null}
 
-					<Slider
-						key={`settings-page-input-key-${this.state.inputKey + 3}`}
-						title="Maximum Brightness"
-						min={1}
-						max={255}
-						value={this.state.systemConfigurationCopy.getLightSensorMaxAmbientBrightness()}
-						step={1}
-						icon={process.env.PUBLIC_URL + "/img/icon/brightness-max.svg"}
-						onChange={this.setLightSensorMaxAmbientBrightness}
-					/>
-
-					<Slider
-						key={`settings-page-input-key-${this.state.inputKey + 4}`}
-						title="Minimum LED Brightness"
-						min={1}
-						max={255}
-						value={this.state.systemConfigurationCopy.getLightSensorMinLedBrightness()}
-						step={1}
-						icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
-						onChange={this.setLightSensorMinLedBrightness}
-					/>
-					<div className="spacer"></div>
-
-					<Slider
-						key={`settings-page-input-key-${this.state.inputKey + 5}`}
-						title="Maximum LED Brightness"
-						min={1}
-						max={255}
-						value={this.state.systemConfigurationCopy.getLightSensorMaxLedBrightness()}
-						step={1}
-						icon={process.env.PUBLIC_URL + "/img/icon/brightness-max.svg"}
-						onChange={this.setLightSensorMaxLedBrightness}
-					/>
+					{[6].includes(this.state.systemConfigurationCopy.getLightSensorMode()) ? (
+						<>
+							<Slider
+								key={`settings-page-input-key-${this.state.inputKey + 16}`}
+								title="Duration"
+								min={1}
+								max={255}
+								value={this.state.systemConfigurationCopy.getLightSensorDuration()}
+								step={1}
+								icon={process.env.PUBLIC_URL + "/img/icon/brightness-min.svg"}
+								onChange={this.setLightSensorDuration}
+							/>
+							<div className="spacer"></div>
+						</>
+					) : null}
 				</details>
 
 				<div className="spacer"></div>
