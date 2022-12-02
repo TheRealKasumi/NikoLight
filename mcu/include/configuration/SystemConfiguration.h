@@ -68,6 +68,7 @@
 #define LIGHT_SENSOR_DEFAULT_MAX_AMBIENT 255	// Maximum brightness of the ambient
 #define LIGHT_SENSOR_DEFAULT_MIN_LED 0			// Minimum brightness of the LEDs for brightnes control
 #define LIGHT_SENSOR_DEFAULT_MAX_LED 255		// Maximum brightness of the LEDs for brightness control
+#define LIGHT_SENSOR_DEFAULT_DURATION 6 		// Time after which the lights are turning off when using the motion sensor (x5 seconds)
 #define LIGHT_SENSOR_ADC_PIN 35					// Physical pin for the analog voltage sensor
 #define IIC_ADDRESS_BH1750 0x23					// I²C Adress of the BH1750 brightness sensor
 
@@ -93,10 +94,11 @@
 // Timer configuration
 #define LED_FRAME_TIME 16666		   // Cycle time for the LEDs in µs
 #define TEMP_CYCLE_TIME 250000		   // Cycle time for reading temperatures and run fan controll in µs
-#define LIGHT_SENSOR_CYCLE_TIME 20000  // Cycle time for the light sensor in µs
+#define LIGHT_SENSOR_CYCLE_TIME 40000  // Cycle time for the light sensor in µs
 #define MOTION_SENSOR_CYCLE_TIME 20000 // Cycle time for the motion sensor in µs
 #define WEB_SERVER_CYCLE_TIME 20000	   // Cycle time for the web server to accept conenctions in µs
-#define STATUS_CYCLE_TIME 10000000	   // Cycle time for printing the current status in µs
+#define STATUS_CYCLE_TIME 5000000	   // Cycle time for printing the current status in µs
+#define WATCHDOG_RESET_TIME 5		   // Time until a watchdog reset is triggered
 
 // FSEQ configuration
 #define FSEQ_DIRECTORY "/fseq" // Directory for fseq files

@@ -23,6 +23,26 @@ TesLight::LightSensor::LightSensor(TesLight::Configuration *configuration)
 		delete this->bh1750;
 		this->bh1750 = nullptr;
 	}
+	this->motionData.accXRaw = 0;
+	this->motionData.accYRaw = 0;
+	this->motionData.accZRaw = 0;
+	this->motionData.gyroXRaw = 0;
+	this->motionData.gyroYRaw = 0;
+	this->motionData.gyroZRaw = 0;
+	this->motionData.accXG = 0.0f;
+	this->motionData.accYG = 0.0f;
+	this->motionData.accZG = 0.0f;
+	this->motionData.gyroXDeg = 0.0f;
+	this->motionData.gyroYDeg = 0.0f;
+	this->motionData.gyroZDeg = 0.0f;
+	this->motionData.pitch = 0.0f;
+	this->motionData.roll = 0.0f;
+	this->motionData.yaw = 0.0f;
+	this->motionData.rollCompensatedAccXG = 0.0f;
+	this->motionData.pitchCompensatedAccYG = 0.0f;
+	this->motionData.temperatureRaw = 0;
+	this->motionData.temperatureDeg = 0;
+	this->motionSensorTriggerTime = millis();
 }
 
 /**
@@ -42,10 +62,11 @@ TesLight::LightSensor::~LightSensor()
 /**
  * @brief Return the brightness of the lights based on the sensors mode.
  * @param brightness 0.0 for minimum brightness up to 1.0 for maximum brightness
+ * @param motionSensor reference to a {@link TesLight::MotionSensor} instance
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::LightSensor::getBrightness(float &brightness)
+bool TesLight::LightSensor::getBrightness(float &brightness, TesLight::MotionSensor *motionSensor)
 {
 	const TesLight::Configuration::SystemConfig systemConfig = this->configuration->getSystemConfig();
 	const float antiFlickerThreshold = 0.002f;
@@ -55,6 +76,7 @@ bool TesLight::LightSensor::getBrightness(float &brightness)
 	const float maxAmbientBrightness = systemConfig.lightSensorMaxAmbientBrightness / 255.0f;
 	const float minLedBrightness = systemConfig.lightSensorMinLedBrightness / 255.0f;
 	const float maxLedBrightness = systemConfig.lightSensorMaxLedBrightness / 255.0f;
+	const uint8_t duration = systemConfig.lightSensorDuration;
 
 	// Always off
 	if (lightSensorMode == TesLight::LightSensor::LightSensorMode::ALWAYS_OFF)
@@ -195,6 +217,27 @@ bool TesLight::LightSensor::getBrightness(float &brightness)
 			{
 				brightness = 1.0f;
 			}
+		}
+
+		return true;
+	}
+
+	// Auto on/off using motion sensor mpu6050
+	else if (lightSensorMode == TesLight::LightSensor::LightSensorMode::AUTO_ON_OFF_MPU6050 && motionSensor)
+	{
+		const TesLight::MotionSensor::MotionSensorData motionData = motionSensor->getMotion();
+		float trigger = sqrt(pow(motionData.accXG * 150.0f - this->motionData.accXG * 150.0f, 2) + pow(motionData.accYG * 150.0f - this->motionData.accYG * 150.0f, 2) + pow(motionData.accZG * 150.0f - this->motionData.accZG * 150.0f, 2));
+		trigger += sqrt(pow(motionData.gyroXDeg - this->motionData.gyroXDeg, 2) + pow(motionData.gyroYDeg - this->motionData.gyroYDeg, 2) + pow(motionData.gyroZDeg - this->motionData.gyroZDeg, 2));
+		this->motionData = motionData;
+
+		if (trigger > threshold * 20.0f)
+		{
+			brightness = 1.0f;
+			this->motionSensorTriggerTime = millis();
+		}
+		else if (millis() - motionSensorTriggerTime > duration * 5000)
+		{
+			brightness = 0.0f;
 		}
 
 		return true;

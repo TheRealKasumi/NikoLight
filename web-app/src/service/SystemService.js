@@ -42,6 +42,7 @@ class SystemService {
 				systemConfig.setLightSensorMaxAmbientBrightness(stream.readByte());
 				systemConfig.setLightSensorMinLedBrightness(stream.readByte());
 				systemConfig.setLightSensorMaxLedBrightness(stream.readByte());
+				systemConfig.setLightSensorDuration(stream.readByte());
 				systemConfig.setSystemPowerLimit(stream.readByte());
 				systemConfig.setRegulatorHighTemperature(stream.readByte());
 				systemConfig.setRegulatorCutoffTemperature(stream.readByte());
@@ -63,7 +64,7 @@ class SystemService {
 	 */
 	postSystemConfiguration = (systemConfig) => {
 		return new Promise(async (resolve, reject) => {
-			const stream = new BinaryStream(14);
+			const stream = new BinaryStream(15);
 
 			try {
 				stream.writeByte(systemConfig.getLogLevel());
@@ -73,6 +74,7 @@ class SystemService {
 				stream.writeByte(systemConfig.getLightSensorMaxAmbientBrightness());
 				stream.writeByte(systemConfig.getLightSensorMinLedBrightness());
 				stream.writeByte(systemConfig.getLightSensorMaxLedBrightness());
+				stream.writeByte(systemConfig.getLightSensorDuration());
 				stream.writeByte(systemConfig.getSystemPowerLimit());
 				stream.writeByte(systemConfig.getRegulatorHighTemperature());
 				stream.writeByte(systemConfig.getRegulatorCutoffTemperature());
