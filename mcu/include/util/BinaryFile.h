@@ -25,14 +25,32 @@ namespace TesLight
 		bool open(const String fileName, const char *mode);
 		void close();
 
-		bool writeByte(const uint8_t byte);
-		uint8_t readByte();
+		/**
+		 * @brief Write a value to the binary file.
+		 * @param value value to write
+		 * @return true when succesful
+		 * @return false when there was an error
+		 */
+		template <typename T>
+		bool write(const T value)
+		{
+			return this->file.write((uint8_t *)&value, sizeof(value)) == sizeof(value);
+		}
 
-		bool writeWord(const uint16_t word);
-		uint16_t readWord();
+		/**
+		 * @brief Read a value from the file.
+		 * @param value reference to the variable which will hold the value
+		 * @return true when successful
+		 * @return false when there was an error
+		 */
+		template <typename T>
+		bool read(T &value)
+		{
+			return this->file.read((uint8_t *)&value, sizeof(value)) == sizeof(value);
+		}
 
 		bool writeString(const String string);
-		String readString();
+		bool readString(String &string);
 
 	private:
 		FS *fileSystem;

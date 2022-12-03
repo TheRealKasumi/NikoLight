@@ -17,7 +17,7 @@ TesLight::Configuration::Configuration(FS *fileSystem, const String fileName)
 {
 	this->fileSystem = fileSystem;
 	this->fileName = fileName;
-	this->configurationVersion = 6;
+	this->configurationVersion = 7;
 	this->loadDefaults();
 }
 
@@ -85,6 +85,24 @@ void TesLight::Configuration::setWiFiConfig(TesLight::Configuration::WiFiConfig 
 }
 
 /**
+ * @brief Get the motion sensor calibration data.
+ * @return calibration data of the motion sensor
+ */
+TesLight::Configuration::MotionSensorCalibration TesLight::Configuration::getMotionSensorCalibration()
+{
+	return this->motionSensorCalibration;
+}
+
+/**
+ * @brief Set the motion sensor calibration data.
+ * @param calibration calibration data of the motion sensor
+ */
+void TesLight::Configuration::setMotionSensorCalibration(const TesLight::Configuration::MotionSensorCalibration calibration)
+{
+	this->motionSensorCalibration = calibration;
+}
+
+/**
  * @brief Load the default configuration.
  */
 void TesLight::Configuration::loadDefaults()
@@ -137,6 +155,20 @@ void TesLight::Configuration::loadDefaults()
 	this->wifiConfig.accessPointMaxConnections = AP_DEFAULT_MAX_CONN;
 	this->wifiConfig.wifiSsid = F(WIFI_DEFAULT_SSID);
 	this->wifiConfig.wifiPassword = F(WIFI_DEFAULT_PASSWORD);
+
+	// Motion sensor calibration
+	this->motionSensorCalibration.accXRaw = 0;
+	this->motionSensorCalibration.accYRaw = 0;
+	this->motionSensorCalibration.accZRaw = 0;
+	this->motionSensorCalibration.gyroXRaw = 0;
+	this->motionSensorCalibration.gyroYRaw = 0;
+	this->motionSensorCalibration.gyroZRaw = 0;
+	this->motionSensorCalibration.accXG = 0.0f;
+	this->motionSensorCalibration.accYG = 0.0f;
+	this->motionSensorCalibration.accZG = 0.0f;
+	this->motionSensorCalibration.gyroXDeg = 0.0f;
+	this->motionSensorCalibration.gyroYDeg = 0.0f;
+	this->motionSensorCalibration.gyroZDeg = 0.0f;
 }
 
 /**
@@ -155,7 +187,8 @@ bool TesLight::Configuration::load()
 	}
 
 	// Check the configuration file version
-	if (file.readWord() != this->configurationVersion)
+	uint16_t configFileVersion = 0;
+	if (!file.read(configFileVersion) || configFileVersion != this->configurationVersion)
 	{
 		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, F("Configuration file version does not match."));
 		file.close();
@@ -163,54 +196,69 @@ bool TesLight::Configuration::load()
 	}
 
 	// System config
-	this->systemConfig.logLevel = file.readByte();
-	this->systemConfig.lightSensorMode = file.readByte();
-	this->systemConfig.lightSensorThreshold = file.readByte();
-	this->systemConfig.lightSensorMinAmbientBrightness = file.readByte();
-	this->systemConfig.lightSensorMaxAmbientBrightness = file.readByte();
-	this->systemConfig.lightSensorMinLedBrightness = file.readByte();
-	this->systemConfig.lightSensorMaxLedBrightness = file.readByte();
-	this->systemConfig.lightSensorDuration = file.readByte();
-	this->systemConfig.regulatorPowerLimit = file.readByte();
-	this->systemConfig.regulatorHighTemperature = file.readByte();
-	this->systemConfig.regulatorCutoffTemperature = file.readByte();
-	this->systemConfig.fanMinPwmValue = file.readByte();
-	this->systemConfig.fanMaxPwmValue = file.readByte();
-	this->systemConfig.fanMinTemperature = file.readByte();
-	this->systemConfig.fanMaxTemperature = file.readByte();
+	file.read(this->systemConfig.logLevel);
+	file.read(this->systemConfig.lightSensorMode);
+	file.read(this->systemConfig.lightSensorThreshold);
+	file.read(this->systemConfig.lightSensorMinAmbientBrightness);
+	file.read(this->systemConfig.lightSensorMaxAmbientBrightness);
+	file.read(this->systemConfig.lightSensorMinLedBrightness);
+	file.read(this->systemConfig.lightSensorMaxLedBrightness);
+	file.read(this->systemConfig.lightSensorDuration);
+	file.read(this->systemConfig.regulatorPowerLimit);
+	file.read(this->systemConfig.regulatorHighTemperature);
+	file.read(this->systemConfig.regulatorCutoffTemperature);
+	file.read(this->systemConfig.fanMinPwmValue);
+	file.read(this->systemConfig.fanMaxPwmValue);
+	file.read(this->systemConfig.fanMinTemperature);
+	file.read(this->systemConfig.fanMaxTemperature);
 
 	// LED config
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		this->ledConfig[i].ledPin = file.readByte();
-		this->ledConfig[i].ledCount = file.readWord();
-		this->ledConfig[i].type = file.readByte();
-		this->ledConfig[i].speed = file.readByte();
-		this->ledConfig[i].offset = file.readWord();
-		this->ledConfig[i].brightness = file.readByte();
-		this->ledConfig[i].reverse = file.readByte();
-		this->ledConfig[i].fadeSpeed = file.readByte();
+		file.read(this->ledConfig[i].ledPin);
+		file.read(this->ledConfig[i].ledCount);
+		file.read(this->ledConfig[i].type);
+		file.read(this->ledConfig[i].speed);
+		file.read(this->ledConfig[i].offset);
+		file.read(this->ledConfig[i].brightness);
+		file.read(this->ledConfig[i].reverse);
+		file.read(this->ledConfig[i].fadeSpeed);
 		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
 		{
-			this->ledConfig[i].customField[j] = file.readByte();
+			file.read(this->ledConfig[i].customField[j]);
 		}
-		this->ledConfig[i].ledVoltage = file.readByte();
-		this->ledConfig[i].ledChannelCurrent[0] = file.readByte();
-		this->ledConfig[i].ledChannelCurrent[1] = file.readByte();
-		this->ledConfig[i].ledChannelCurrent[2] = file.readByte();
+		file.read(this->ledConfig[i].ledVoltage);
+		file.read(this->ledConfig[i].ledChannelCurrent[0]);
+		file.read(this->ledConfig[i].ledChannelCurrent[1]);
+		file.read(this->ledConfig[i].ledChannelCurrent[2]);
 	}
 
 	// WiFi config
-	this->wifiConfig.accessPointSsid = file.readString();
-	this->wifiConfig.accessPointPassword = file.readString();
-	this->wifiConfig.accessPointChannel = file.readByte();
-	this->wifiConfig.accessPointHidden = file.readByte();
-	this->wifiConfig.accessPointMaxConnections = file.readByte();
-	this->wifiConfig.wifiSsid = file.readString();
-	this->wifiConfig.wifiPassword = file.readString();
+	file.readString(this->wifiConfig.accessPointSsid);
+	file.readString(this->wifiConfig.accessPointPassword);
+	file.read(this->wifiConfig.accessPointChannel);
+	file.read(this->wifiConfig.accessPointHidden);
+	file.read(this->wifiConfig.accessPointMaxConnections);
+	file.readString(this->wifiConfig.wifiSsid);
+	file.readString(this->wifiConfig.wifiPassword);
+
+	// Motion sensor calibration
+	file.read(this->motionSensorCalibration.accXRaw);
+	file.read(this->motionSensorCalibration.accYRaw);
+	file.read(this->motionSensorCalibration.accZRaw);
+	file.read(this->motionSensorCalibration.gyroXRaw);
+	file.read(this->motionSensorCalibration.gyroYRaw);
+	file.read(this->motionSensorCalibration.gyroZRaw);
+	file.read(this->motionSensorCalibration.accXG);
+	file.read(this->motionSensorCalibration.accYG);
+	file.read(this->motionSensorCalibration.accZG);
+	file.read(this->motionSensorCalibration.gyroXDeg);
+	file.read(this->motionSensorCalibration.gyroYDeg);
+	file.read(this->motionSensorCalibration.gyroZDeg);
 
 	// Check the hash
-	if (file.readWord() != this->getSimpleHash())
+	uint16_t fileHash = 0;
+	if (!file.read(fileHash) || fileHash != this->getSimpleHash())
 	{
 		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, F("Configuration file hash does not match."));
 		file.close();
@@ -236,57 +284,71 @@ bool TesLight::Configuration::save()
 	}
 
 	// Write the configuration file version
-	file.writeWord(this->configurationVersion);
+	file.write(this->configurationVersion);
 
 	// System cofiguration
-	file.writeByte((uint8_t)this->systemConfig.logLevel);
-	file.writeByte((uint8_t)this->systemConfig.lightSensorMode);
-	file.writeByte(this->systemConfig.lightSensorThreshold);
-	file.writeByte(this->systemConfig.lightSensorMinAmbientBrightness);
-	file.writeByte(this->systemConfig.lightSensorMaxAmbientBrightness);
-	file.writeByte(this->systemConfig.lightSensorMinLedBrightness);
-	file.writeByte(this->systemConfig.lightSensorMaxLedBrightness);
-	file.writeByte(this->systemConfig.lightSensorDuration);
-	file.writeByte(this->systemConfig.regulatorPowerLimit);
-	file.writeByte(this->systemConfig.regulatorHighTemperature);
-	file.writeByte(this->systemConfig.regulatorCutoffTemperature);
-	file.writeByte(this->systemConfig.fanMinPwmValue);
-	file.writeByte(this->systemConfig.fanMaxPwmValue);
-	file.writeByte(this->systemConfig.fanMinTemperature);
-	file.writeByte(this->systemConfig.fanMaxTemperature);
+	file.write((uint8_t)this->systemConfig.logLevel);
+	file.write((uint8_t)this->systemConfig.lightSensorMode);
+	file.write(this->systemConfig.lightSensorThreshold);
+	file.write(this->systemConfig.lightSensorMinAmbientBrightness);
+	file.write(this->systemConfig.lightSensorMaxAmbientBrightness);
+	file.write(this->systemConfig.lightSensorMinLedBrightness);
+	file.write(this->systemConfig.lightSensorMaxLedBrightness);
+	file.write(this->systemConfig.lightSensorDuration);
+	file.write(this->systemConfig.regulatorPowerLimit);
+	file.write(this->systemConfig.regulatorHighTemperature);
+	file.write(this->systemConfig.regulatorCutoffTemperature);
+	file.write(this->systemConfig.fanMinPwmValue);
+	file.write(this->systemConfig.fanMaxPwmValue);
+	file.write(this->systemConfig.fanMinTemperature);
+	file.write(this->systemConfig.fanMaxTemperature);
 
 	// LED configuration
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		file.writeByte(this->ledConfig[i].ledPin);
-		file.writeWord(this->ledConfig[i].ledCount);
-		file.writeByte(this->ledConfig[i].type);
-		file.writeByte(this->ledConfig[i].speed);
-		file.writeWord(this->ledConfig[i].offset);
-		file.writeByte(this->ledConfig[i].brightness);
-		file.writeByte(this->ledConfig[i].reverse);
-		file.writeByte(this->ledConfig[i].fadeSpeed);
+		file.write(this->ledConfig[i].ledPin);
+		file.write(this->ledConfig[i].ledCount);
+		file.write(this->ledConfig[i].type);
+		file.write(this->ledConfig[i].speed);
+		file.write(this->ledConfig[i].offset);
+		file.write(this->ledConfig[i].brightness);
+		file.write(this->ledConfig[i].reverse);
+		file.write(this->ledConfig[i].fadeSpeed);
 		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
 		{
-			file.writeByte(this->ledConfig[i].customField[j]);
+			file.write(this->ledConfig[i].customField[j]);
 		}
-		file.writeByte(this->ledConfig[i].ledVoltage);
-		file.writeByte(this->ledConfig[i].ledChannelCurrent[0]);
-		file.writeByte(this->ledConfig[i].ledChannelCurrent[1]);
-		file.writeByte(this->ledConfig[i].ledChannelCurrent[2]);
+		file.write(this->ledConfig[i].ledVoltage);
+		file.write(this->ledConfig[i].ledChannelCurrent[0]);
+		file.write(this->ledConfig[i].ledChannelCurrent[1]);
+		file.write(this->ledConfig[i].ledChannelCurrent[2]);
 	}
 
 	// WiFi configuration
 	file.writeString(this->wifiConfig.accessPointSsid);
 	file.writeString(this->wifiConfig.accessPointPassword);
-	file.writeByte(this->wifiConfig.accessPointChannel);
-	file.writeByte(this->wifiConfig.accessPointHidden);
-	file.writeByte(this->wifiConfig.accessPointMaxConnections);
+	file.write(this->wifiConfig.accessPointChannel);
+	file.write(this->wifiConfig.accessPointHidden);
+	file.write(this->wifiConfig.accessPointMaxConnections);
 	file.writeString(this->wifiConfig.wifiSsid);
 	file.writeString(this->wifiConfig.wifiPassword);
 
+	// Motion sensor calibration
+	file.write(this->motionSensorCalibration.accXRaw);
+	file.write(this->motionSensorCalibration.accYRaw);
+	file.write(this->motionSensorCalibration.accZRaw);
+	file.write(this->motionSensorCalibration.gyroXRaw);
+	file.write(this->motionSensorCalibration.gyroYRaw);
+	file.write(this->motionSensorCalibration.gyroZRaw);
+	file.write(this->motionSensorCalibration.accXG);
+	file.write(this->motionSensorCalibration.accYG);
+	file.write(this->motionSensorCalibration.accZG);
+	file.write(this->motionSensorCalibration.gyroXDeg);
+	file.write(this->motionSensorCalibration.gyroYDeg);
+	file.write(this->motionSensorCalibration.gyroZDeg);
+
 	// Write the hash
-	file.writeWord(this->getSimpleHash());
+	file.write(this->getSimpleHash());
 
 	file.close();
 	return true;
@@ -340,6 +402,18 @@ uint16_t TesLight::Configuration::getSimpleHash()
 	hash = hash * 31 + this->wifiConfig.accessPointMaxConnections;
 	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.wifiSsid);
 	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.wifiPassword);
+	hash = hash * 31 + this->motionSensorCalibration.accXRaw;
+	hash = hash * 31 + this->motionSensorCalibration.accYRaw;
+	hash = hash * 31 + this->motionSensorCalibration.accZRaw;
+	hash = hash * 31 + this->motionSensorCalibration.gyroXRaw;
+	hash = hash * 31 + this->motionSensorCalibration.gyroYRaw;
+	hash = hash * 31 + this->motionSensorCalibration.gyroZRaw;
+	hash = hash * 31 + this->motionSensorCalibration.accXG;
+	hash = hash * 31 + this->motionSensorCalibration.accYG;
+	hash = hash * 31 + this->motionSensorCalibration.accZG;
+	hash = hash * 31 + this->motionSensorCalibration.gyroXDeg;
+	hash = hash * 31 + this->motionSensorCalibration.gyroYDeg;
+	hash = hash * 31 + this->motionSensorCalibration.gyroZDeg;
 	return hash;
 }
 

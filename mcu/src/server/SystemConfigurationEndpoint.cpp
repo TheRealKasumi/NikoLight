@@ -30,23 +30,23 @@ void TesLight::SystemConfigurationEndpoint::getSystemConfig()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the system configuration."));
 	TesLight::InMemoryBinaryFile binary(15);
-	binary.writeByte((uint8_t)TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().logLevel);
-	binary.writeByte((uint8_t)TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMode);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorThreshold);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinAmbientBrightness);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxAmbientBrightness);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinLedBrightness);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxLedBrightness);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorDuration);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorPowerLimit);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorHighTemperature);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorCutoffTemperature);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMinPwmValue);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMaxPwmValue);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMinTemperature);
-	binary.writeByte(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMaxTemperature);
+	binary.write((uint8_t)TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().logLevel);
+	binary.write((uint8_t)TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMode);
+	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorThreshold);
+	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinAmbientBrightness);
+	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxAmbientBrightness);
+	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinLedBrightness);
+	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxLedBrightness);
+	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorDuration);
+	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorPowerLimit);
+	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorHighTemperature);
+	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorCutoffTemperature);
+	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMinPwmValue);
+	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMaxPwmValue);
+	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMinTemperature);
+	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMaxTemperature);
 
-	String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
+	const String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
 	if (encoded == F("BASE64_ERROR"))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to encode response."));
@@ -95,21 +95,21 @@ void TesLight::SystemConfigurationEndpoint::postSystemConfig()
 	delete[] decoded;
 
 	TesLight::Configuration::SystemConfig config;
-	config.logLevel = binary.readByte();
-	config.lightSensorMode = binary.readByte();
-	config.lightSensorThreshold = binary.readByte();
-	config.lightSensorMinAmbientBrightness = binary.readByte();
-	config.lightSensorMaxAmbientBrightness = binary.readByte();
-	config.lightSensorMinLedBrightness = binary.readByte();
-	config.lightSensorMaxLedBrightness = binary.readByte();
-	config.lightSensorDuration = binary.readByte();
-	config.regulatorPowerLimit = binary.readByte();
-	config.regulatorHighTemperature = binary.readByte();
-	config.regulatorCutoffTemperature = binary.readByte();
-	config.fanMinPwmValue = binary.readByte();
-	config.fanMaxPwmValue = binary.readByte();
-	config.fanMinTemperature = binary.readByte();
-	config.fanMaxTemperature = binary.readByte();
+	binary.write(config.logLevel);
+	binary.write(config.lightSensorMode);
+	binary.write(config.lightSensorThreshold);
+	binary.write(config.lightSensorMinAmbientBrightness);
+	binary.write(config.lightSensorMaxAmbientBrightness);
+	binary.write(config.lightSensorMinLedBrightness);
+	binary.write(config.lightSensorMaxLedBrightness);
+	binary.write(config.lightSensorDuration);
+	binary.write(config.regulatorPowerLimit);
+	binary.write(config.regulatorHighTemperature);
+	binary.write(config.regulatorCutoffTemperature);
+	binary.write(config.fanMinPwmValue);
+	binary.write(config.fanMaxPwmValue);
+	binary.write(config.fanMinTemperature);
+	binary.write(config.fanMaxTemperature);
 
 	if (!TesLight::SystemConfigurationEndpoint::validateLogLevel((uint8_t)config.logLevel))
 	{
