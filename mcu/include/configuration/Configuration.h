@@ -66,6 +66,22 @@ namespace TesLight
 			String wifiPassword;			   // Password of a WiFi network
 		};
 
+		struct MotionSensorCalibration
+		{
+			int16_t accXRaw;  // Raw x acceleration
+			int16_t accYRaw;  // Raw y acceleration
+			int16_t accZRaw;  // Raw z acceleration
+			int16_t gyroXRaw; // Raw x rotation
+			int16_t gyroYRaw; // Raw y rotation
+			int16_t gyroZRaw; // Raw z rotation
+			float accXG;	  // X acceleration in g
+			float accYG;	  // Y acceleration in g
+			float accZG;	  // Z acceleration in g
+			float gyroXDeg;	  // X rotation in deg/s
+			float gyroYDeg;	  // Y rotation in deg/s
+			float gyroZDeg;	  // Z rotation in deg/s
+		};
+
 		Configuration(FS *fileSystem, const String fileName);
 		~Configuration();
 
@@ -77,6 +93,9 @@ namespace TesLight
 
 		TesLight::Configuration::WiFiConfig getWiFiConfig();
 		void setWiFiConfig(TesLight::Configuration::WiFiConfig wifiConfig);
+
+		TesLight::Configuration::MotionSensorCalibration getMotionSensorCalibration();
+		void setMotionSensorCalibration(const TesLight::Configuration::MotionSensorCalibration calibration);
 
 		void loadDefaults();
 		bool load();
@@ -90,6 +109,7 @@ namespace TesLight
 		TesLight::Configuration::SystemConfig systemConfig;
 		TesLight::Configuration::LedConfig ledConfig[LED_NUM_ZONES];
 		TesLight::Configuration::WiFiConfig wifiConfig;
+		TesLight::Configuration::MotionSensorCalibration motionSensorCalibration;
 
 		uint16_t getSimpleHash();
 		uint16_t getSimpleStringHash(const String input);

@@ -79,73 +79,7 @@ size_t TesLight::InMemoryBinaryFile::getBytesWritten()
 }
 
 /**
- * @brief Write a single byte to the buffer.
- * @param byte data to write
- * @return true when successful
- * @return false when there was an error
- */
-bool TesLight::InMemoryBinaryFile::writeByte(const uint8_t byte)
-{
-	if (this->index >= this->size)
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to write to in memory binary File because the data exceeds the buffer size."));
-		return false;
-	}
-	this->buffer[this->index++] = byte;
-	return true;
-}
-
-/**
- * @brief Read a single byte from the file.
- * @return uint8_t read byte
- */
-uint8_t TesLight::InMemoryBinaryFile::readByte()
-{
-	if (this->index >= this->size)
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read from in memory binary File because the end is reached."));
-		return 0;
-	}
-	return this->buffer[this->index++];
-}
-
-/**
- * @brief Write a word (2 byte) to the buffer.
- * @param word data to write
- * @return true when successful
- * @return false when there was an error
- */
-bool TesLight::InMemoryBinaryFile::writeWord(const uint16_t word)
-{
-	if (this->index + sizeof(word) - 1 >= this->size)
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to write to in memory binary File because the data exceeds the buffer size."));
-		return false;
-	}
-	this->buffer[this->index++] = ((uint8_t *)&word)[0];
-	this->buffer[this->index++] = ((uint8_t *)&word)[1];
-	return true;
-}
-
-/**
- * @brief Read a word (2 byte) from the file.
- * @return uint16_t read data
- */
-uint16_t TesLight::InMemoryBinaryFile::readWord()
-{
-	if (this->index + sizeof(uint16_t) - 1 >= this->size)
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read from in memory binary File because the end is reached."));
-		return 0;
-	}
-	uint16_t word;
-	((uint8_t *)&word)[0] = this->buffer[this->index++];
-	((uint8_t *)&word)[1] = this->buffer[this->index++];
-	return word;
-}
-
-/**
- * @brief Write a string (variable lengt) to the buffer.
+ * @brief Write a string of variable length to the buffer.
  * @param string string to write
  * @return true when successful
  * @return false when there was an error
@@ -153,13 +87,12 @@ uint16_t TesLight::InMemoryBinaryFile::readWord()
 bool TesLight::InMemoryBinaryFile::writeString(const String string)
 {
 	const uint16_t length = string.length();
-	if (this->index + sizeof(uint16_t) + length - 1 >= this->size)
+	if (this->index + sizeof(length) + length - 1 >= this->size || !this->write(length))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to write to in memory binary File because the data exceeds the buffer size."));
 		return false;
 	}
 
-	this->writeWord(length);
 	for (uint16_t i = 0; i < length; i++)
 	{
 		this->buffer[this->index++] = string.charAt(i);
@@ -170,24 +103,30 @@ bool TesLight::InMemoryBinaryFile::writeString(const String string)
 
 /**
  * @brief Read a string (variable length) from the buffer.
- * @return String read string
+ * @param string reference variable to hold the string
+ * @return true when successful
+ * @return false when there was an error
  */
-String TesLight::InMemoryBinaryFile::readString()
+bool TesLight::InMemoryBinaryFile::readString(String &string)
 {
-	if (this->index + sizeof(uint16_t) >= this->size)
+	uint16_t length = 0;
+	if (this->index + sizeof(uint16_t) >= this->size || !this->read(length))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read from in memory binary File because the end is reached."));
-		return "";
+		return false;
 	}
 
-	const uint16_t length = this->readWord();
-
-	String string;
+	string.clear();
 	string.reserve(length);
 	for (uint16_t i = 0; i < length && this->index < this->size; i++)
 	{
-		string += (char)this->readByte();
+		char c;
+		if (!this->read(c))
+		{
+			return false;
+		}
+		string += c;
 	}
 
-	return string;
+	return true;
 }

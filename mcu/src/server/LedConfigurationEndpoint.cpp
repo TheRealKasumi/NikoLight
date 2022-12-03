@@ -32,25 +32,25 @@ void TesLight::LedConfigurationEndpoint::getLedConfig()
 	TesLight::InMemoryBinaryFile binary(232);
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledPin);
-		binary.writeWord(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledCount);
-		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).type);
-		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).speed);
-		binary.writeWord(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).offset);
-		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).brightness);
-		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).reverse);
-		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).fadeSpeed);
+		binary.write(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledPin);
+		binary.write(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledCount);
+		binary.write(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).type);
+		binary.write(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).speed);
+		binary.write(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).offset);
+		binary.write(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).brightness);
+		binary.write(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).reverse);
+		binary.write(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).fadeSpeed);
 		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
 		{
-			binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).customField[j]);
+			binary.write(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).customField[j]);
 		}
-		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledVoltage);
-		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledChannelCurrent[0]);
-		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledChannelCurrent[1]);
-		binary.writeByte(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledChannelCurrent[2]);
+		binary.write(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledVoltage);
+		binary.write(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledChannelCurrent[0]);
+		binary.write(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledChannelCurrent[1]);
+		binary.write(TesLight::LedConfigurationEndpoint::configuration->getLedConfig(i).ledChannelCurrent[2]);
 	}
 
-	String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
+	const String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
 	if (encoded == F("BASE64_ERROR"))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to encode response."));
@@ -101,22 +101,22 @@ void TesLight::LedConfigurationEndpoint::postLedConfig()
 	TesLight::Configuration::LedConfig config[LED_NUM_ZONES];
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		config[i].ledPin = binary.readByte();
-		config[i].ledCount = binary.readWord();
-		config[i].type = binary.readByte();
-		config[i].speed = binary.readByte();
-		config[i].offset = binary.readWord();
-		config[i].brightness = binary.readByte();
-		config[i].reverse = binary.readByte();
-		config[i].fadeSpeed = binary.readByte();
+		binary.read(config[i].ledPin);
+		binary.read(config[i].ledCount);
+		binary.read(config[i].type);
+		binary.read(config[i].speed);
+		binary.read(config[i].offset);
+		binary.read(config[i].brightness);
+		binary.read(config[i].reverse);
+		binary.read(config[i].fadeSpeed);
 		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
 		{
-			config[i].customField[j] = binary.readByte();
+			binary.read(config[i].customField[j]);
 		}
-		config[i].ledVoltage = binary.readByte();
-		config[i].ledChannelCurrent[0] = binary.readByte();
-		config[i].ledChannelCurrent[1] = binary.readByte();
-		config[i].ledChannelCurrent[2] = binary.readByte();
+		binary.read(config[i].ledVoltage);
+		binary.read(config[i].ledChannelCurrent[0]);
+		binary.read(config[i].ledChannelCurrent[1]);
+		binary.read(config[i].ledChannelCurrent[2]);
 
 		if (!validateLedPin(config[i].ledPin) || !validateLedCount(config[i].ledCount) || !validateAnimatorType(config[i].type))
 		{

@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include "configuration/SystemConfiguration.h"
+#include "configuration/Configuration.h"
 #include "hardware/MPU6050.h"
 #include "logging/Logger.h"
 
@@ -43,22 +44,6 @@ namespace TesLight
 			TEMP_DEG
 		};
 
-		struct CalibrationData
-		{
-			int16_t accXRaw;
-			int16_t accYRaw;
-			int16_t accZRaw;
-			int16_t gyroXRaw;
-			int16_t gyroYRaw;
-			int16_t gyroZRaw;
-			float accXG;
-			float accYG;
-			float accZG;
-			float gyroXDeg;
-			float gyroYDeg;
-			float gyroZDeg;
-		};
-
 		struct MotionSensorData
 		{
 			int16_t accXRaw;
@@ -82,21 +67,17 @@ namespace TesLight
 			float temperatureDeg;
 		};
 
-		MotionSensor(const uint8_t sensorAddress);
+		MotionSensor(const uint8_t sensorAddress, TesLight::Configuration *configuration);
 		~MotionSensor();
 
 		bool begin();
 		bool run();
 		uint8_t calibrate(const bool failOnTemperature);
-
-		void setCalibration(TesLight::MotionSensor::CalibrationData calibrationData);
-		TesLight::MotionSensor::CalibrationData getCalibration();
-
 		TesLight::MotionSensor::MotionSensorData getMotion();
 
 	private:
 		TesLight::MPU6050 *mpu6050;
-		TesLight::MotionSensor::CalibrationData calibrationData;
+		TesLight::Configuration *configuration;
 		TesLight::MotionSensor::MotionSensorData motionData;
 		unsigned long lastMeasure;
 	};

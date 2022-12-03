@@ -32,13 +32,13 @@ void TesLight::WiFiConfigurationEndpoint::getWiFiConfig()
 	TesLight::InMemoryBinaryFile binary(256);
 	binary.writeString(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointSsid);
 	binary.writeString(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointPassword);
-	binary.writeByte(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointChannel);
-	binary.writeByte(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointHidden);
-	binary.writeByte(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointMaxConnections);
+	binary.write(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointChannel);
+	binary.write(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointHidden);
+	binary.write(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointMaxConnections);
 	binary.writeString(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().wifiSsid);
 	binary.writeString(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().wifiPassword);
 
-	String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
+	const String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
 	if (encoded == F("BASE64_ERROR"))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to encode response."));
@@ -87,13 +87,13 @@ void TesLight::WiFiConfigurationEndpoint::postWiFiConfig()
 	delete[] decoded;
 
 	TesLight::Configuration::WiFiConfig config;
-	config.accessPointSsid = binary.readString();
-	config.accessPointPassword = binary.readString();
-	config.accessPointChannel = binary.readByte();
-	config.accessPointHidden = binary.readByte();
-	config.accessPointMaxConnections = binary.readByte();
-	config.wifiSsid = binary.readString();
-	config.wifiPassword = binary.readString();
+	binary.readString(config.accessPointSsid);
+	binary.readString(config.accessPointPassword);
+	binary.write(config.accessPointChannel);
+	binary.write(config.accessPointHidden);
+	binary.write(config.accessPointMaxConnections);
+	binary.readString(config.wifiSsid);
+	binary.readString(config.wifiPassword);
 
 	if (!validateWiFiSsid(config.accessPointSsid) || !validateWiFiPassword(config.accessPointPassword) || !validateWiFiChannel(config.accessPointChannel) ||
 		!validateWiFiMaxConnections(config.accessPointMaxConnections))
