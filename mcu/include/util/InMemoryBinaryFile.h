@@ -26,14 +26,55 @@ namespace TesLight
 
 		size_t getBytesWritten();
 
-		bool writeByte(const uint8_t byte);
-		uint8_t readByte();
+		/**
+		 * @brief Write a value to the binary file.
+		 * @param value value to write
+		 * @return true when succesful
+		 * @return false when there was an error
+		 */
+		template <typename T>
+		bool write(const T value)
+		{
+			if (this->index + sizeof(value) - 1 >= this->size)
+			{
+				TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to write to in memory binary File because the data exceeds the buffer size."));
+				return false;
+			}
 
-		bool writeWord(const uint16_t word);
-		uint16_t readWord();
+			for (uint16_t i = 0; i < sizeof(value); i++)
+			{
+				this->buffer[this->index++] = ((uint8_t *)&value)[i];
+			}
+
+			return true;
+		}
+
+		/**
+		 * @brief Read a value from the file.
+		 * @param value reference to the variable which will hold the value
+		 * @return true when successful
+		 * @return false when there was an error
+		 */
+		template <typename T>
+		bool read(T &value)
+		{
+			if (this->index + sizeof(value) - 1 >= this->size)
+			{
+				TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read from in memory binary File because the end is reached."));
+				return false;
+			}
+
+			uint8_t *valuePtr = (uint8_t *)&value;
+			for (uint16_t i = 0; i < sizeof(value); i++)
+			{
+				valuePtr[i] = this->buffer[this->index++];
+			}
+
+			return true;
+		}
 
 		bool writeString(const String string);
-		String readString();
+		bool readString(String &string);
 
 	private:
 		uint8_t *buffer;

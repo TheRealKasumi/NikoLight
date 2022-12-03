@@ -11,22 +11,12 @@
 /**
  * @brief Create a new instance of {@link TesLight::MotionSensor}.
  * @param sensorAddress address of the sensor on the I²C bus
+ * @param configuration configuration of TesLight
  */
-TesLight::MotionSensor::MotionSensor(const uint8_t sensorAddress)
+TesLight::MotionSensor::MotionSensor(const uint8_t sensorAddress, TesLight::Configuration *configuration)
 {
 	this->mpu6050 = new TesLight::MPU6050(sensorAddress);
-	this->calibrationData.accXRaw = 0;
-	this->calibrationData.accYRaw = 0;
-	this->calibrationData.accZRaw = 0;
-	this->calibrationData.gyroXRaw = 0;
-	this->calibrationData.gyroYRaw = 0;
-	this->calibrationData.gyroZRaw = 0;
-	this->calibrationData.accXG = 0.0f;
-	this->calibrationData.accYG = 0.0f;
-	this->calibrationData.accZG = 0.0f;
-	this->calibrationData.gyroXDeg = 0.0f;
-	this->calibrationData.gyroYDeg = 0.0f;
-	this->calibrationData.gyroZDeg = 0.0f;
+	this->configuration = configuration;
 	this->motionData.accXRaw = 0;
 	this->motionData.accYRaw = 0;
 	this->motionData.accZRaw = 0;
@@ -100,22 +90,23 @@ bool TesLight::MotionSensor::run()
 		return false;
 	}
 
+	const TesLight::Configuration::MotionSensorCalibration calibrationData = this->configuration->getMotionSensorCalibration();
 	const unsigned long timeStep = this->lastMeasure == 0 ? 0.0f : (micros() - this->lastMeasure);
 	const float timeScale = timeStep / 1000000.0f;
 	this->lastMeasure = micros();
 
-	this->motionData.accXRaw = sensorData.accXRaw - this->calibrationData.accXRaw;
-	this->motionData.accYRaw = sensorData.accYRaw - this->calibrationData.accYRaw;
-	this->motionData.accZRaw = sensorData.accZRaw - this->calibrationData.accZRaw;
-	this->motionData.gyroXRaw = sensorData.gyroXRaw - this->calibrationData.gyroXRaw;
-	this->motionData.gyroYRaw = sensorData.gyroYRaw - this->calibrationData.gyroYRaw;
-	this->motionData.gyroZRaw = sensorData.gyroZRaw - this->calibrationData.gyroZRaw;
-	this->motionData.accXG = sensorData.accXG - this->calibrationData.accXG;
-	this->motionData.accYG = sensorData.accYG - this->calibrationData.accYG;
-	this->motionData.accZG = sensorData.accZG - this->calibrationData.accZG;
-	this->motionData.gyroXDeg = sensorData.gyroXDeg - this->calibrationData.gyroXDeg;
-	this->motionData.gyroYDeg = sensorData.gyroYDeg - this->calibrationData.gyroYDeg;
-	this->motionData.gyroZDeg = sensorData.gyroZDeg - this->calibrationData.gyroZDeg;
+	this->motionData.accXRaw = sensorData.accXRaw - calibrationData.accXRaw;
+	this->motionData.accYRaw = sensorData.accYRaw - calibrationData.accYRaw;
+	this->motionData.accZRaw = sensorData.accZRaw - calibrationData.accZRaw;
+	this->motionData.gyroXRaw = sensorData.gyroXRaw - calibrationData.gyroXRaw;
+	this->motionData.gyroYRaw = sensorData.gyroYRaw - calibrationData.gyroYRaw;
+	this->motionData.gyroZRaw = sensorData.gyroZRaw - calibrationData.gyroZRaw;
+	this->motionData.accXG = sensorData.accXG - calibrationData.accXG;
+	this->motionData.accYG = sensorData.accYG - calibrationData.accYG;
+	this->motionData.accZG = sensorData.accZG - calibrationData.accZG;
+	this->motionData.gyroXDeg = sensorData.gyroXDeg - calibrationData.gyroXDeg;
+	this->motionData.gyroYDeg = sensorData.gyroYDeg - calibrationData.gyroYDeg;
+	this->motionData.gyroZDeg = sensorData.gyroZDeg - calibrationData.gyroZDeg;
 	this->motionData.temperatureRaw = sensorData.temperatureRaw;
 	this->motionData.temperatureDeg = sensorData.temperatureDeg;
 
@@ -167,7 +158,7 @@ uint8_t TesLight::MotionSensor::calibrate(const bool failOnTemperature)
 	}
 
 	double calibrationData[12] = {0.0f};
-	for (uint16_t i = 0; i < 100; i++)
+	for (uint16_t i = 0; i < 1000; i++)
 	{
 		TesLight::MPU6050::MPU6050MotionData sensorData;
 		if (!this->mpu6050->getData(sensorData))
@@ -176,52 +167,36 @@ uint8_t TesLight::MotionSensor::calibrate(const bool failOnTemperature)
 			return 1;
 		}
 
-		calibrationData[0] += sensorData.accXRaw / 100.0f;
-		calibrationData[1] += sensorData.accYRaw / 100.0f;
-		calibrationData[2] += sensorData.accZRaw / 100.0f;
-		calibrationData[3] += sensorData.gyroXRaw / 100.0f;
-		calibrationData[4] += sensorData.gyroYRaw / 100.0f;
-		calibrationData[5] += sensorData.gyroZRaw / 100.0f;
-		calibrationData[6] += sensorData.accXG / 100.0f;
-		calibrationData[7] += sensorData.accYG / 100.0f;
-		calibrationData[8] += sensorData.accZG / 100.0f;
-		calibrationData[9] += sensorData.gyroXDeg / 100.0f;
-		calibrationData[10] += sensorData.gyroYDeg / 100.0f;
-		calibrationData[11] += sensorData.gyroZDeg / 100.0f;
+		calibrationData[0] += sensorData.accXRaw / 1000.0f;
+		calibrationData[1] += sensorData.accYRaw / 1000.0f;
+		calibrationData[2] += sensorData.accZRaw / 1000.0f;
+		calibrationData[3] += sensorData.gyroXRaw / 1000.0f;
+		calibrationData[4] += sensorData.gyroYRaw / 1000.0f;
+		calibrationData[5] += sensorData.gyroZRaw / 1000.0f;
+		calibrationData[6] += sensorData.accXG / 1000.0f;
+		calibrationData[7] += sensorData.accYG / 1000.0f;
+		calibrationData[8] += sensorData.accZG / 1000.0f;
+		calibrationData[9] += sensorData.gyroXDeg / 1000.0f;
+		calibrationData[10] += sensorData.gyroYDeg / 1000.0f;
+		calibrationData[11] += sensorData.gyroZDeg / 1000.0f;
 	}
 
-	this->calibrationData.accXRaw = calibrationData[0];
-	this->calibrationData.accYRaw = calibrationData[1];
-	// this->calibrationData.accZRaw = calibrationData[2];
-	this->calibrationData.gyroXRaw = calibrationData[3];
-	this->calibrationData.gyroYRaw = calibrationData[4];
-	this->calibrationData.gyroZRaw = calibrationData[5];
-	this->calibrationData.accXG = calibrationData[6];
-	this->calibrationData.accYG = calibrationData[7];
-	// this->calibrationData.accZG = calibrationData[8];
-	this->calibrationData.gyroXDeg = calibrationData[9];
-	this->calibrationData.gyroYDeg = calibrationData[10];
-	this->calibrationData.gyroZDeg = calibrationData[11];
+	TesLight::Configuration::MotionSensorCalibration calibration = this->configuration->getMotionSensorCalibration();
+	calibration.accXRaw = calibrationData[0];
+	calibration.accYRaw = calibrationData[1];
+	// calibration.accZRaw = calibrationData[2];
+	calibration.gyroXRaw = calibrationData[3];
+	calibration.gyroYRaw = calibrationData[4];
+	calibration.gyroZRaw = calibrationData[5];
+	calibration.accXG = calibrationData[6];
+	calibration.accYG = calibrationData[7];
+	// calibration.accZG = calibrationData[8];
+	calibration.gyroXDeg = calibrationData[9];
+	calibration.gyroYDeg = calibrationData[10];
+	calibration.gyroZDeg = calibrationData[11];
+	this->configuration->setMotionSensorCalibration(calibration);
 
 	return 0;
-}
-
-/**
- * @brief Set the calibration data of the motion sensor.
- * @param calibrationData full set of calibration data
- */
-void TesLight::MotionSensor::setCalibration(TesLight::MotionSensor::CalibrationData calibrationData)
-{
-	this->calibrationData = calibrationData;
-}
-
-/**
- * @brief Get the current calibration data.
- * @return full set of calibration data
- */
-TesLight::MotionSensor::CalibrationData TesLight::MotionSensor::getCalibration()
-{
-	return this->calibrationData;
 }
 
 /**

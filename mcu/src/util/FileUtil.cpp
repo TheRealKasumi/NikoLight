@@ -156,7 +156,7 @@ bool TesLight::FileUtil::getFileList(FS *fileSystem, const String directory, Str
 		return false;
 	}
 
-	fileList = String();
+	fileList.clear();
 	bool hasNext = true;
 	while (hasNext)
 	{
@@ -234,7 +234,7 @@ bool TesLight::FileUtil::getFileNameFromIndex(FS *fileSystem, const String direc
 		}
 		else
 		{
-			fileName = String();
+			fileName.clear();
 			hasNext = false;
 		}
 	}
@@ -287,7 +287,7 @@ bool TesLight::FileUtil::getFileNameFromIdentifier(FS *fileSystem, const String 
 		}
 		else
 		{
-			fileName = String();
+			fileName.clear();
 			hasNext = false;
 		}
 	}

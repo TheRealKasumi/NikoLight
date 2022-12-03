@@ -65,51 +65,6 @@ void TesLight::BinaryFile::close()
 }
 
 /**
- * @brief Write a single byte to the file.
- * @param byte data to write
- * @return true when successful
- * @return false when there was an error
- */
-bool TesLight::BinaryFile::writeByte(const uint8_t byte)
-{
-	return this->file.write(byte) == sizeof(byte);
-}
-
-/**
- * @brief Read a single byte from the file.
- * @return uint8_t read byte
- */
-uint8_t TesLight::BinaryFile::readByte()
-{
-	uint8_t byte;
-	this->file.read(&byte, sizeof(byte));
-	return byte;
-}
-
-/**
- * @brief Write a word (2 byte) to the file.
- * @param word data to write
- * @return true when successful
- * @return false when there was an error
- */
-bool TesLight::BinaryFile::writeWord(const uint16_t word)
-{
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Write word ") + String(word) + F(" to binary file."));
-	return this->file.write((uint8_t *)&word, sizeof(word)) == sizeof(word);
-}
-
-/**
- * @brief Read a word (2 byte) from the file.
- * @return uint16_t read data
- */
-uint16_t TesLight::BinaryFile::readWord()
-{
-	uint16_t word;
-	this->file.read((uint8_t *)&word, sizeof(word));
-	return word;
-}
-
-/**
  * @brief Write a string (variable lengt) to the file.
  * @param string string to write
  * @return true when successful
@@ -118,14 +73,14 @@ uint16_t TesLight::BinaryFile::readWord()
 bool TesLight::BinaryFile::writeString(const String string)
 {
 	const uint16_t length = string.length();
-	if (!this->writeWord(length))
+	if (!this->write(length))
 	{
 		return false;
 	}
 
 	for (uint16_t i = 0; i < length; i++)
 	{
-		if (!this->writeByte(string.charAt(i)))
+		if (!this->write(string.charAt(i)))
 		{
 			return false;
 		}
@@ -134,19 +89,30 @@ bool TesLight::BinaryFile::writeString(const String string)
 }
 
 /**
- * @brief Read a string (variable length) from the file.
- * @return String read string
+ * @brief Read a string of variable length from the file.
+ * @param string reference variable to hold the string
+ * @return true when successful
+ * @return false when there was an error
  */
-String TesLight::BinaryFile::readString()
+bool TesLight::BinaryFile::readString(String &string)
 {
-	const uint16_t length = this->readWord();
+	uint16_t length;
+	if (!this->read(length))
+	{
+		return false;
+	}
 
-	String string;
+	string.clear();
 	string.reserve(length);
 	for (uint16_t i = 0; i < length; i++)
 	{
-		string += (char)this->readByte();
+		char c;
+		if (!this->read(c))
+		{
+			return false;
+		}
+		string += c;
 	}
 
-	return string;
+	return true;
 }

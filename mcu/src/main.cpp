@@ -27,6 +27,7 @@
 #include "server/LogEndpoint.h"
 #include "server/UpdateEndpoint.h"
 #include "server/ResetEndpoint.h"
+#include "server/MotionSensorEndpoint.h"
 #include "util/FileUtil.h"
 #include "update/Updater.h"
 
@@ -202,8 +203,8 @@ void initializeLightSensor()
 bool initializeMotionSensor()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Initialize motion sensor at with I²C address") + String(IIC_ADDRESS_MPU6050) + F("."));
-	motionSensor = new TesLight::MotionSensor(IIC_ADDRESS_MPU6050);
-	if (motionSensor->begin() && motionSensor->calibrate(false) == 0)
+	motionSensor = new TesLight::MotionSensor(IIC_ADDRESS_MPU6050, configuration);
+	if (motionSensor->begin())
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Motion sensor initialized."));
 		return true;
@@ -257,6 +258,8 @@ void initializeRestApi()
 	TesLight::UpdateEndpoint::begin(&SD);
 	TesLight::ResetEndpoint::init(webServerManager, F("/api/"));
 	TesLight::ResetEndpoint::begin(&SD);
+	TesLight::MotionSensorEndpoint::init(webServerManager, F("/api/"));
+	TesLight::MotionSensorEndpoint::begin(configuration, motionSensor);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("REST API initialized."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Starting web server."));
