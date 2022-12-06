@@ -36,7 +36,10 @@ The first regulator will drive the channels 2, 4, 6, 8 and the second regulator 
 The dual regulator build is always recommended to be more flexible and have more headroom.
 When properly configured, the software will now also keep an eye on your power consumption.
 The power draw is calculated and limited for each regulator by limiting the LED brightness.
-Also two temperature sensors can be added to the regulators.
+Also two temperature sensors can be added to the regulators. For Temperature Sensor Install Position see following picture: 
+
+<a href="media/build/install_temperature_sensor.jpg"><img src="media/build/install_temperature_sensor.jpg" alt="Temperature Sensor Install Position" style="width:150px"></a>
+
 The software will then also check for the temperature, control a cooling fan and reduce the power output if necessary.
 For even more protection there is a fuse and a poly fuse in place.
 
