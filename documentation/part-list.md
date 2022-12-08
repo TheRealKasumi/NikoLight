@@ -75,6 +75,7 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 | Cooling Fan 30x30       | 1       | [Reichelt][fan]    | Not required but nice to have                   |
 | Shrinking tube          | depends | [Amazon][tubes]    | Will help you to have a cleaner and safer build |
 | Fabric tape             | depends | [Amazon][tape]     | Will help you to have a cleaner and safer build |
+| 3 wire cable            | depends | [Amazon][3-wire-cable]     | you can use this 3 wire cable to connect the LEDs |
 
 [jlcpcb]: https://cart.jlcpcb.com/quote?orderType=1&stencilLayer=2&stencilWidth=100&stencilLength=100
 [esp32]: https://www.amazon.de/AZDelivery-NodeMCU-Development-Nachfolgermodell-ESP8266/dp/B071P98VTG/ref=sr_1_3?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=3U1PNFQJDSD0A&keywords=az%2Besp32&qid=1661668180&sprefix=az%2Besp32%2Caps%2C82&sr=8-3&th=1
@@ -111,3 +112,4 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 [fan]: https://www.amazon.de/gp/product/B071JN6HKM/ref=ppx_yo_dt_b_asin_title_o08_s00?ie=UTF8&psc=1
 [tubes]: https://www.amazon.de/ChiliTec-12000058-Chilitec-Schrumpfschlauch-Sortiment-100-teilig/dp/B003H9CJ1Y/ref=sr_1_20_mod_primary_new?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1Q5IY5D32HNLR&keywords=schrumpfschlauch&qid=1662189028&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&sprefix=schrumpfschlauch%2Caps%2C115&sr=8-20
 [tape]: https://www.amazon.de/tesa-Gewebeband-Witterungsbest%C3%A4ndiges-Panzertape-Befestigen/dp/B000KT7E0U/ref=sr_1_5?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1U7SK4BSKYGK0&keywords=Gewebeband&qid=1662189088&sprefix=gewebeban%2Caps%2C94&sr=8-5
+[3-wire-cable]: https://www.amazon.de/dp/B0999BVQYL
