@@ -120,6 +120,10 @@ The pin can be used with analog voltages and also PWM signals due to the low-pas
 It is recommended to not measure voltages above 19V with this controller.
 There is an overvoltage protection in place and exceeding this limit for a short period should be possible but not recommended.
 Instead the resistor `R9` and `R10` of the voltage devider can be adjusted accordingly.
+Use an "electricity thief" to get the signal of the factory build footwell lights without harm. It could look like this if you add the correct plugs to get the signal without any harm. See [part list](part-list.md).
+
+<a href="media/build/get_signal_of_footwell_lights_without_harm.jpg"><img src="media/build/get_signal_of_footwell_lights_without_harm.jpg" alt="get signal of footwell lights without harm" style="width:150px"></a>
+<a href="media/build/get_signal_of_footwell_lights_without_harm_2.jpg"><img src="media/build/get_signal_of_footwell_lights_without_harm_2.jpg" alt="get signal of footwell lights without harm 2" style="width:150px"></a>
 
 Another 2 pin XH connector is for powering an optinal, 5V cooling fan.
 

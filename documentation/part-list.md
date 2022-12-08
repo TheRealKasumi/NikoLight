@@ -77,6 +77,16 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 | Fabric tape             | depends | [Amazon][tape]     | Will help you to have a cleaner and safer build |
 | 3 wire cable            | depends | [Amazon][3-wire-cable]     | you can use this 3 wire cable to connect the LEDs |
 
+### How to get the signal of the factory build footwell lights without any harm
+
+| Part                    | Count   | Source             | Comment                                         |
+| ----------------------- | ------- | ------------------ | ----------------------------------------------- |
+| electricity thief/T-Connector | 2/1 | [Amazon][T-connector] | to get the car signal |
+| Female Connector  | 1 | [Mouser][female-connector] | TE Connectivity / AMP P/N: 1534111-1, car side uses this |
+| Male Connector | 1 | [Mouser][memale-connector] | TE Connectivity / AMP P/N: 1-1534155-1, factory build footwell LED’s use this |
+| Retainer / Cover for Connectors | 2 |  [Mouser][retainer] | TE Connectivity / AMP P/N: 1534027-1, each connector needs one |
+| Pin Connectors | 4 | [Mouser][pin-connectors] | TE Connectivity / AMP P/N: 1-928918-1 (Cut Strip), 2 per plug |
+
 [jlcpcb]: https://cart.jlcpcb.com/quote?orderType=1&stencilLayer=2&stencilWidth=100&stencilLength=100
 [esp32]: https://www.amazon.de/AZDelivery-NodeMCU-Development-Nachfolgermodell-ESP8266/dp/B071P98VTG/ref=sr_1_3?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=3U1PNFQJDSD0A&keywords=az%2Besp32&qid=1661668180&sprefix=az%2Besp32%2Caps%2C82&sr=8-3&th=1
 [mpu6050]: https://www.reichelt.de/entwicklerboards-beschleunigung-gyroskop-3-achsen-mpu-6050-debo-sens-3axis-p253987.html?&trstct=pos_0&nbc=1
@@ -113,3 +123,8 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 [tubes]: https://www.amazon.de/ChiliTec-12000058-Chilitec-Schrumpfschlauch-Sortiment-100-teilig/dp/B003H9CJ1Y/ref=sr_1_20_mod_primary_new?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1Q5IY5D32HNLR&keywords=schrumpfschlauch&qid=1662189028&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&sprefix=schrumpfschlauch%2Caps%2C115&sr=8-20
 [tape]: https://www.amazon.de/tesa-Gewebeband-Witterungsbest%C3%A4ndiges-Panzertape-Befestigen/dp/B000KT7E0U/ref=sr_1_5?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1U7SK4BSKYGK0&keywords=Gewebeband&qid=1662189088&sprefix=gewebeban%2Caps%2C94&sr=8-5
 [3-wire-cable]: https://www.amazon.de/dp/B0999BVQYL
+[T-connector]: https://www.amazon.de/dp/B07F3SGJXR
+[female-connector]: https://www.mouser.com/ProductDetail/TE-Connectivity-AMP/1534111-1?qs=%2Fha2pyFaduiexECXuMzaAIQHOcZu%252BI25DS0iBamxYRg%3D
+[memale-connector]: https://www.mouser.com/ProductDetail/571-1-1534155-1
+[retainer]: https://www.mouser.com/ProductDetail/571-1534027-1
+[pin-connectors]:https://www.mouser.com/ProductDetail/571-1-928918-1-CT
