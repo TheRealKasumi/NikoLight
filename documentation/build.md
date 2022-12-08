@@ -385,10 +385,12 @@ Once again, this is how the connections should look at the end.
 ## Attach Wires to Light Bars (optional for Light Bars)
 
 Since the light bars also only use an LED strip internally, the procedure is the same as for the LED strips above.
-However depending on the light bars, the polarity might be different.
-It is highly recommended to open the light bar at the cable end to check on the polarity.
+However, depending on the light bars, the polarity might be different.
+It is highly recommended, to open the light bar at the cable end to check on the polarity.
 We already encountered the same type of light bars with different cable colors for the connections.
 So please be careful and don't trust the cable colours.
+How to check: The middle cable (green?) should always be data. Then plug one cable to GND and connect the other one with a 220 Ohm resistor to 5 V. If the strip turns on, then everything is good. If not, try the other way around. There should be no current flowing through the resistor high enough to damage the strip.
+
 At the end the 3 pin XH connectors must have the following pinout.
 
 ![LED XH Pinout](media/build/led-pinout.jpg)
