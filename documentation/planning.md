@@ -75,7 +75,7 @@ This is the same configuration as shown in the following video (click to open).
 
 [![TesLight Demo](https://img.youtube.com/vi/_N5h1IViB-E/0.jpg)](https://www.youtube.com/watch?v=_N5h1IViB-E)
 
-The following table assumes that the TesLight controller is placed below the center console for easy access and wiring.
+The following table assumes that the TesLight controller is placed below the center console for easy access and wiring. (It would be best if the antenna of the ESP32 points to the front and the USB port to the back of the vehicle. This way we ensure consistent acceleration directions from the sensor for all users.)
 
 | Zone              | LEDs | Type                      | Cable Length | Physical Channel |
 | ----------------- | ---- | ------------------------- | ------------ | ---------------- |

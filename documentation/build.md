@@ -36,7 +36,7 @@ The first regulator will drive the channels 2, 4, 6, 8 and the second regulator 
 The dual regulator build is always recommended to be more flexible and have more headroom.
 When properly configured, the software will now also keep an eye on your power consumption.
 The power draw is calculated and limited for each regulator by limiting the LED brightness.
-Also two temperature sensors can be added to the regulators. For Temperature Sensor Install Position see following picture: 
+Also two temperature sensors can be added to the regulators. For Temperature Sensor Install Position see following picture:
 
 <a href="media/build/install_temperature_sensor.jpg"><img src="media/build/install_temperature_sensor.jpg" alt="Temperature Sensor Install Position" style="width:150px"></a>
 
@@ -141,14 +141,14 @@ As an alternative you can also go to the releases and download one of them.
 
 ### Using Git
 
--  Open a terminal in your destination folder
--  Run `git clone https://github.com/TheRealKasumi/TesLight.git`
--  A folder `TesLight` will be created, containing all project files
+- Open a terminal in your destination folder
+- Run `git clone https://github.com/TheRealKasumi/TesLight.git`
+- A folder `TesLight` will be created, containing all project files
 
 ### Download as Zip
 
--  Click the [download link](https://github.com/TheRealKasumi/TesLight/archive/refs/heads/main.zip)
--  Extract the TesLight folder
+- Click the [download link](https://github.com/TheRealKasumi/TesLight/archive/refs/heads/main.zip)
+- Extract the TesLight folder
 
 ## Order the PCB and 3D Printed Parts
 
@@ -196,17 +196,17 @@ At first you need to chose one of their assembly services.
 
 Economic:
 
--  Cheaper
--  Collection of boards of different customers are created together
--  No borders required
--  Takes longer
+- Cheaper
+- Collection of boards of different customers are created together
+- No borders required
+- Takes longer
 
 Standard:
 
--  More expensive
--  Your boards are checked, adjusted and produced individually
--  Borders and markers are required
--  Faster production
+- More expensive
+- Your boards are checked, adjusted and produced individually
+- Borders and markers are required
+- Faster production
 
 Once more, choice is yours but `Economic` is recommended.
 Assembly side must always be `top`.
@@ -225,7 +225,7 @@ It is used for the correct component placement.
 Make sure to upload the correct files, matching your board version.
 Click next to move to the following step.
 
-### Select the parts that should be placed.
+### Select the parts that should be placed
 
 On this page you should check if all parts are available.
 Also you can select whcih components should be installed.
@@ -331,6 +331,10 @@ Solder them to the PCB and you are done.
 When you are done, the TesLight controller should look similar to this (some components might look a little different):
 ![Controller](media/build/pcb-finished.png)
 
+## Install position in car
+
+It would be best if the antenna of the ESP32 points to the front and the USB port to the back of the vehicle. This way we ensure consistent acceleration directions from the sensor for all users.
+
 ## Assemble the LED Injectors (optional for fiber cables)
 
 First of all you should make sure to have the correct number of cases and LEDs.
@@ -392,11 +396,11 @@ At the end the 3 pin XH connectors must have the following pinout.
 Uploading the software is the final step before you can test your work.
 Please install the following software and extension for the upload procedure:
 
--  [Git](https://git-scm.com/downloads)
--  [VS Code](https://code.visualstudio.com/download)
--  [PlatformIO](https://platformio.org/install/ide?install=vscode)
--  [NodeJS](https://nodejs.org)
--  [NPM (comes with NodeJS)](https://www.npmjs.com/)
+- [Git](https://git-scm.com/downloads)
+- [VS Code](https://code.visualstudio.com/download)
+- [PlatformIO](https://platformio.org/install/ide?install=vscode)
+- [NodeJS](https://nodejs.org)
+- [NPM (comes with NodeJS)](https://www.npmjs.com/)
 
 Start VS Code and then open the [mcu](/mcu/) folder of the project.
 You can do so by clicking `File` -> `Open Folder...`.
@@ -422,20 +426,20 @@ Please navigate to [include/configuration](/mcu/include/configuration) and open 
 
 If you decided to only install one voltage regulator, please do the following changes:
 
--  `#define REGULATOR_COUNT 1`
--  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
+- `#define REGULATOR_COUNT 1`
+- `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
 
 Also depending on the board version, the following changes are required.
 
 Board version 1.0 (@luap):
 
--  `#define REGULATOR_COUNT 1`
--  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
+- `#define REGULATOR_COUNT 1`
+- `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
 
 Board version 2.0 (@PhilippDen):
 
--  `#define LED_OUTPUT_PINS {13, 15, 17, 22, 14, 16, 21, 25}`
--  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
+- `#define LED_OUTPUT_PINS {13, 15, 17, 22, 14, 16, 21, 25}`
+- `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
 
 Save the files and then click the upload button in the bottom left.
 
@@ -450,7 +454,7 @@ Now open the serial monitor by clicking the "plug" button, near to the upload bu
 
 You should see the TesLight controller starting up, but then stops with `Failed to initialize SD card`.
 
-```
+```shell
 ████████╗███████╗███████╗██╗     ██╗ ██████╗ ██╗  ██╗████████╗
 ╚══██╔══╝██╔════╝██╔════╝██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
    ██║   █████╗  ███████╗██║     ██║██║  ███╗███████║   ██║
@@ -491,14 +495,14 @@ Create a new folder called `web-app` in the root of your SD card.
 Copy the content of [build](/web-app/build/) into the newly created folder.
 Eject the SD card from your computer and insert it into the micro SD card slot of the TesLight controller.
 
-## Let's test it!
+## Let's test it
 
 Now that everything is ready, it's time for a short test.
 Connect the board back to your computer and fire up the serial monitor.
 If required, press the reset button on the ESP32 board.
 If everything works, you should see the following (or similar) output:
 
-```
+```shell
 ████████╗███████╗███████╗██╗     ██╗ ██████╗ ██╗  ██╗████████╗
 ╚══██╔══╝██╔════╝██╔════╝██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
    ██║   █████╗  ███████╗██║     ██║██║  ███╗███████║   ██║
