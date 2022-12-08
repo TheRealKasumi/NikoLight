@@ -86,7 +86,7 @@ The following table assumes that the TesLight controller is placed below the cen
 | Footwell lighting | 4    | LED strip or single LEDs  | 100 cm        | 7, 8             |
 
 So for this build we have a total of around 784 LEDs and need ~20 m cable with 3 wires.
-Also, 5 m of fibre cable is recommended for use around the centre console.
+Also, ~2.5 m of fibre cable is recommended for use around the centre console.
 Make sure to measure the required lengths carefully for individual build.
 
 ### Recommended length of light bars
