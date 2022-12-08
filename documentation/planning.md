@@ -53,9 +53,9 @@ So each LED per zone will get a number from 0 to n, where n is the last LED in t
 Now you have to make an important choice between three options for each part of the car.
 They are all fully supported by TesLight.
 
--  Use a basic WS2812 LED strip
--  Use a fiber tube and 2 WS2812 LEDs as light injectors
--  Use a light bar which looks cleaner than a fiber tube and allows awesome animations
+- Use a basic WS2812 LED strip
+- Use a fiber tube and 2 WS2812 LEDs as light injectors
+- Use a light bar which looks cleaner than a fiber tube and allows awesome animations
 
 The recommendation is to use a normal LED strip under the dashboard.
 The fiber tubes are working well for the center console or around the seats.
@@ -89,7 +89,21 @@ So for this build we have a total of around 784 LEDs and need ~20 m cable with 3
 Also, 5 m of fibre cable is recommended for use around the centre console.
 Make sure to measure the required lengths carefully for individual build.
 
-# Power Consumption
+### Recommended length of light bars
+
+If you are using the light bars, these are the recommended length of the light bars:
+| Location | length of light bars |
+| ------------- | ------------- |
+| Front Doors top (MY 2019) | 100 cm, and shorten about 10 cm  |
+|  Rear Doors top | 75 cm, and shorten a bit  |
+| Front and Rear Doors around handle | 100 cm  |
+| Dashboard | 130 cm, connect 2* 75 cm in series and shorten a bit  |
+| Center console MY2019 (with cover above mobile phone holder) | 2* 85 cm (100 cm, and shorten about 15 cm) |
+| Center console MY2021 | Fibre Wire, tbd light bar |
+
+Make sure to measure the required lengths carefully for individual build.
+
+## Power Consumption
 
 Since this project can make use of many LEDs, the power consumption plays an important role.
 TesLight can (and should) be built with an onboard regulator.
