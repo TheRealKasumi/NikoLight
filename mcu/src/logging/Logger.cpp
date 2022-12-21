@@ -88,12 +88,12 @@ void TesLight::Logger::setMinLogLevel(const TesLight::Logger::LogLevel logLevel)
  */
 void TesLight::Logger::log(const TesLight::Logger::LogLevel logLevel, const char *file, const char *function, const int line, const String message)
 {
-	const String logString = getTimeString() + F(" [") + getLogLevelString(logLevel) + F("] (") + String(file) + F(") (") + String(function) + F(") (") + String(line) + F("): ") + message + F("\r\n");
-
 	if (logLevel < minLogLevel)
 	{
 		return;
 	}
+
+	const String logString = getTimeString() + F(" [") + getLogLevelString(logLevel) + F("] (") + String(file) + F(") (") + String(function) + F(") (") + String(line) + F("): ") + message + F("\r\n");
 
 	if (logToSerial)
 	{

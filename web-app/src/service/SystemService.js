@@ -37,10 +37,19 @@ class SystemService {
 				const systemConfig = new SystemConfiguration();
 				systemConfig.setLogLevel(stream.readByte());
 				systemConfig.setLightSensorMode(stream.readByte());
-				systemConfig.setLightSensorThreshold(stream.readWord());
-				systemConfig.setLightSensorMinValue(stream.readWord());
-				systemConfig.setLightSensorMaxValue(stream.readWord());
+				systemConfig.setLightSensorThreshold(stream.readByte());
+				systemConfig.setLightSensorMinAmbientBrightness(stream.readByte());
+				systemConfig.setLightSensorMaxAmbientBrightness(stream.readByte());
+				systemConfig.setLightSensorMinLedBrightness(stream.readByte());
+				systemConfig.setLightSensorMaxLedBrightness(stream.readByte());
+				systemConfig.setLightSensorDuration(stream.readByte());
 				systemConfig.setSystemPowerLimit(stream.readByte());
+				systemConfig.setRegulatorHighTemperature(stream.readByte());
+				systemConfig.setRegulatorCutoffTemperature(stream.readByte());
+				systemConfig.setFanMinPwmValue(stream.readByte());
+				systemConfig.setFanMaxPwmValue(stream.readByte());
+				systemConfig.setFanMinTemperature(stream.readByte());
+				systemConfig.setFanMaxTemperature(stream.readByte());
 				systemConfig.hasChanged(true);
 				resolve(systemConfig);
 			} catch (ex) {
@@ -51,19 +60,28 @@ class SystemService {
 
 	/**
 	 * Send the system configuration to the TesLight controller.
-	 * @param {SystemConfiguration} systemConfiguration system configuration to send to the TesLight controller
+	 * @param {SystemConfiguration} systemConfig system configuration to send to the TesLight controller
 	 */
-	postSystemConfiguration = (systemConfiguration) => {
+	postSystemConfiguration = (systemConfig) => {
 		return new Promise(async (resolve, reject) => {
-			const stream = new BinaryStream(9);
+			const stream = new BinaryStream(15);
 
 			try {
-				stream.writeByte(systemConfiguration.getLogLevel());
-				stream.writeByte(systemConfiguration.getLightSensorMode());
-				stream.writeWord(systemConfiguration.getLightSensorThreshold());
-				stream.writeWord(systemConfiguration.getLightSensorMinValue());
-				stream.writeWord(systemConfiguration.getLightSensorMaxValue());
-				stream.writeByte(systemConfiguration.getSystemPowerLimit());
+				stream.writeByte(systemConfig.getLogLevel());
+				stream.writeByte(systemConfig.getLightSensorMode());
+				stream.writeByte(systemConfig.getLightSensorThreshold());
+				stream.writeByte(systemConfig.getLightSensorMinAmbientBrightness());
+				stream.writeByte(systemConfig.getLightSensorMaxAmbientBrightness());
+				stream.writeByte(systemConfig.getLightSensorMinLedBrightness());
+				stream.writeByte(systemConfig.getLightSensorMaxLedBrightness());
+				stream.writeByte(systemConfig.getLightSensorDuration());
+				stream.writeByte(systemConfig.getSystemPowerLimit());
+				stream.writeByte(systemConfig.getRegulatorHighTemperature());
+				stream.writeByte(systemConfig.getRegulatorCutoffTemperature());
+				stream.writeByte(systemConfig.getFanMinPwmValue());
+				stream.writeByte(systemConfig.getFanMaxPwmValue());
+				stream.writeByte(systemConfig.getFanMinTemperature());
+				stream.writeByte(systemConfig.getFanMaxTemperature());
 			} catch (ex) {
 				reject(new SystemServiceException("Failed to write binary data to the stream."));
 				return;

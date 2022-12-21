@@ -51,13 +51,13 @@ void TesLight::RainbowAnimator::init()
  */
 void TesLight::RainbowAnimator::render()
 {
-	const uint16_t middle = this->pixelCount / 2;
+	const float middle = this->pixelCount / 2;
 	for (uint16_t i = 0; i < this->pixelCount; i++)
 	{
 		float redAngle = 0.0f;
 		float greenAngle = 0.0f;
 		float blueAngle = 0.0f;
-		const float offset = this->offset / 50.0f;
+		const float offset = this->offset / 25.0f;
 
 		if (this->rainbowMode == TesLight::RainbowAnimator::RainbowMode::RAINBOW_SOLID)
 		{

@@ -14,7 +14,6 @@
  */
 TesLight::BinaryFile::BinaryFile(FS *fileSystem)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize Binary File."));
 	this->fileSystem = fileSystem;
 }
 
@@ -23,7 +22,6 @@ TesLight::BinaryFile::BinaryFile(FS *fileSystem)
  */
 TesLight::BinaryFile::~BinaryFile()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Delete Binary File and close resources."));
 	if (this->file)
 	{
 		this->file.close();
@@ -39,7 +37,6 @@ TesLight::BinaryFile::~BinaryFile()
  */
 bool TesLight::BinaryFile::open(const String fileName, const char *mode)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Open binary file ") + fileName + F(" with mode ") + String(mode) + F("."));
 	this->file = this->fileSystem->open(fileName, mode);
 	if (!this->file)
 	{
@@ -53,7 +50,6 @@ bool TesLight::BinaryFile::open(const String fileName, const char *mode)
 		return false;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Binary file opened."));
 	return true;
 }
 
@@ -62,59 +58,10 @@ bool TesLight::BinaryFile::open(const String fileName, const char *mode)
  */
 void TesLight::BinaryFile::close()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Closing binary file."));
 	if (this->file)
 	{
 		this->file.close();
 	}
-}
-
-/**
- * @brief Write a single byte to the file.
- * @param byte data to write
- * @return true when successful
- * @return false when there was an error
- */
-bool TesLight::BinaryFile::writeByte(const uint8_t byte)
-{
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Write byte ") + String(byte) + F(" to binary file."));
-	return this->file.write(byte) == sizeof(byte);
-}
-
-/**
- * @brief Read a single byte from the file.
- * @return uint8_t read byte
- */
-uint8_t TesLight::BinaryFile::readByte()
-{
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read byte from binary file."));
-	uint8_t byte;
-	this->file.read(&byte, sizeof(byte));
-	return byte;
-}
-
-/**
- * @brief Write a word (2 byte) to the file.
- * @param word data to write
- * @return true when successful
- * @return false when there was an error
- */
-bool TesLight::BinaryFile::writeWord(const uint16_t word)
-{
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Write word ") + String(word) + F(" to binary file."));
-	return this->file.write((uint8_t *)&word, sizeof(word)) == sizeof(word);
-}
-
-/**
- * @brief Read a word (2 byte) from the file.
- * @return uint16_t read data
- */
-uint16_t TesLight::BinaryFile::readWord()
-{
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read word from binary file."));
-	uint16_t word;
-	this->file.read((uint8_t *)&word, sizeof(word));
-	return word;
 }
 
 /**
@@ -125,16 +72,15 @@ uint16_t TesLight::BinaryFile::readWord()
  */
 bool TesLight::BinaryFile::writeString(const String string)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Write string \"") + string + F("\" to binary file."));
 	const uint16_t length = string.length();
-	if (!this->writeWord(length))
+	if (!this->write(length))
 	{
 		return false;
 	}
 
 	for (uint16_t i = 0; i < length; i++)
 	{
-		if (!this->writeByte(string.charAt(i)))
+		if (!this->write(string.charAt(i)))
 		{
 			return false;
 		}
@@ -143,20 +89,30 @@ bool TesLight::BinaryFile::writeString(const String string)
 }
 
 /**
- * @brief Read a string (variable length) from the file.
- * @return String read string
+ * @brief Read a string of variable length from the file.
+ * @param string reference variable to hold the string
+ * @return true when successful
+ * @return false when there was an error
  */
-String TesLight::BinaryFile::readString()
+bool TesLight::BinaryFile::readString(String &string)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Read string from binary file."));
-	const uint16_t length = this->readWord();
+	uint16_t length;
+	if (!this->read(length))
+	{
+		return false;
+	}
 
-	String string;
+	string.clear();
 	string.reserve(length);
 	for (uint16_t i = 0; i < length; i++)
 	{
-		string += (char)this->readByte();
+		char c;
+		if (!this->read(c))
+		{
+			return false;
+		}
+		string += c;
 	}
 
-	return string;
+	return true;
 }

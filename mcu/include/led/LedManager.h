@@ -33,11 +33,11 @@ namespace TesLight
 	class LedManager
 	{
 	public:
-		LedManager();
+		LedManager(TesLight::Configuration *config);
 		~LedManager();
 
-		bool loadFromConfiguration(TesLight::Configuration *config);
-		void clear();
+		bool reloadAnimations();
+		void clearAnimations();
 
 		void setAmbientBrightness(const float ambientBrightness);
 		bool getAmbientBrightness(float &ambientBrightness);
@@ -45,40 +45,37 @@ namespace TesLight
 		void setTargetFrameTime(const uint32_t targetFrameTime);
 		uint32_t getTargetFrameTime();
 
-		void setSystemPowerLimit(const uint8_t systemPowerLimit);
-		uint8_t getSystemPowerLimit();
-
-		void setLedVoltage(const uint8_t zoneIndex, const uint8_t ledVoltage);
-		uint8_t getLedVoltage(const uint8_t zoneIndex);
-
-		void setLedChannelCurrent(const uint8_t zoneIndex, const uint8_t redCurrent, const uint8_t greenCurrent, const uint8_t blueCurrent);
-		uint8_t getLedRedChannelCurrent(const uint8_t zoneIndex);
-		uint8_t getLedGreenChannelCurrent(const uint8_t zoneIndex);
-		uint8_t getLedBlueChannelCurrent(const uint8_t zoneIndex);
-
 		void setMotionSensorData(const TesLight::MotionSensor::MotionSensorData motionSensorData);
 		bool getMotionSensorData(TesLight::MotionSensor::MotionSensorData &motionSensorData);
 
-		void render();
+		void setRegulatorTemperature(const float regulatorTemperature);
+		float getRegulatorTemperature();
+
+		float getLedPowerDraw();
+
+		bool render();
 		void show();
 
 	private:
+		TesLight::Configuration *config;
+
 		CRGB *ledData[LED_NUM_ZONES];
 		TesLight::LedAnimator *ledAnimator[LED_NUM_ZONES];
 		TesLight::FseqLoader *fseqLoader = nullptr;
 		uint32_t targetFrameTime;
 
-		uint8_t systemPowerLimit;
-		uint8_t ledVoltage[LED_NUM_ZONES];
-		uint8_t ledChannelCurrent[LED_NUM_ZONES][3];
+		float regulatorTemperature;
 
-		bool createLedData(TesLight::Configuration *config);
-		bool createAnimators(TesLight::Configuration *config);
-		bool loadCalculatedAnimations(TesLight::Configuration *config);
-		bool loadCustomAnimation(TesLight::Configuration *config);
+		bool createLedData();
+		bool createAnimators();
+		bool loadCalculatedAnimations();
+		bool loadCustomAnimation();
 
 		bool calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_COUNT]);
 		bool limitPowerConsumption();
+		bool limitRegulatorTemperature();
+
+		uint8_t getRegulatorIndexFromPin(const uint8_t pin);
 	};
 }
 

@@ -16,10 +16,7 @@ FS *TesLight::LogEndpoint::fileSystem = nullptr;
  */
 void TesLight::LogEndpoint::begin(FS *_fileSystem)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize Log Endpoint."));
 	TesLight::LogEndpoint::fileSystem = _fileSystem;
-
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register Log Endpoints."));
 	webServerManager->addRequestHandler((getBaseUri() + F("log/size")).c_str(), http_method::HTTP_GET, TesLight::LogEndpoint::getLogSize);
 	webServerManager->addRequestHandler((getBaseUri() + F("log")).c_str(), http_method::HTTP_GET, TesLight::LogEndpoint::getLog);
 	webServerManager->addRequestHandler((getBaseUri() + F("log")).c_str(), http_method::HTTP_DELETE, TesLight::LogEndpoint::clearLog);
@@ -31,7 +28,6 @@ void TesLight::LogEndpoint::begin(FS *_fileSystem)
 void TesLight::LogEndpoint::getLogSize()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the log size."));
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Open log file."));
 	File file = TesLight::LogEndpoint::fileSystem->open(LOG_FILE_NAME, FILE_READ);
 	if (!file)
 	{
@@ -47,7 +43,6 @@ void TesLight::LogEndpoint::getLogSize()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Reading log size in bytes and closing file."));
 	const size_t logSize = file.size();
 	file.close();
 
@@ -68,11 +63,6 @@ void TesLight::LogEndpoint::getLog()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Reading start and count parameters."));
-	const size_t start = webServer->arg(F("start")).toInt();
-	const size_t count = webServer->arg(F("count")).toInt();
-
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Open log file."));
 	File file = TesLight::LogEndpoint::fileSystem->open(LOG_FILE_NAME, FILE_READ);
 	if (!file)
 	{
@@ -88,10 +78,9 @@ void TesLight::LogEndpoint::getLog()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Reading log size in bytes and closing file."));
+	const size_t start = webServer->arg(F("start")).toInt();
+	const size_t count = webServer->arg(F("count")).toInt();
 	const size_t logSize = file.size();
-
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking start and count parameters."));
 	if (start > logSize || start + count > logSize)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The start or count parameters are invalid."));
@@ -100,7 +89,6 @@ void TesLight::LogEndpoint::getLog()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Sending chunked response."));
 	webServer->setContentLength(count);
 	webServer->send(200, F("text/plain"), F(""));
 
@@ -129,6 +117,6 @@ void TesLight::LogEndpoint::clearLog()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to clear the log file."));
 	TesLight::Logger::clearLog();
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Sending the response."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
 	webServer->send(200, F("text/plain"), F("Log cleared."));
 }

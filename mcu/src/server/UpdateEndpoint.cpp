@@ -17,13 +17,13 @@ File TesLight::UpdateEndpoint::uploadFile = File();
  */
 void TesLight::UpdateEndpoint::begin(FS *_fileSystem)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize Update Endpoint."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize update endpoint."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Create storage directory for package file."));
 	TesLight::UpdateEndpoint::fileSystem = _fileSystem;
 	TesLight::UpdateEndpoint::fileSystem->mkdir(UPDATE_DIRECTORY);
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register Update Endpoints."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register update endpoints."));
 	webServerManager->addUploadRequestHandler((getBaseUri() + F("update")).c_str(), http_method::HTTP_POST, TesLight::UpdateEndpoint::postPackage, TesLight::UpdateEndpoint::packageUpload);
 }
 
@@ -64,7 +64,6 @@ void TesLight::UpdateEndpoint::packageUpload()
 	}
 	else if (upload.status == UPLOAD_FILE_WRITE)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Writing chunk of data."));
 		if (TesLight::UpdateEndpoint::uploadFile.write(upload.buf, upload.currentSize) != upload.currentSize)
 		{
 			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to write chunk to file. Not all bytes were written."));
@@ -74,12 +73,11 @@ void TesLight::UpdateEndpoint::packageUpload()
 	}
 	else if (upload.status == UPLOAD_FILE_END)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Received end of upload."));
 		TesLight::UpdateEndpoint::uploadFile.close();
 	}
 	else if (upload.status == UPLOAD_FILE_ABORTED)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Upload was aborted."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The upload was aborted by the client."));
 		TesLight::UpdateEndpoint::uploadFile.close();
 		webServer->send(400, F("text/plain"), F("Upload was aborted by the client."));
 	}

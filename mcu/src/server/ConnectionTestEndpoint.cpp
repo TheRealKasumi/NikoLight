@@ -13,7 +13,6 @@
  */
 void TesLight::ConnectionTestEndpoint::begin()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register Connection Test Endpoint."));
 	webServerManager->addRequestHandler((getBaseUri() + F("connection_test")).c_str(), http_method::HTTP_GET, TesLight::ConnectionTestEndpoint::handleConnectionTest);
 }
 
@@ -22,6 +21,5 @@ void TesLight::ConnectionTestEndpoint::begin()
  */
 void TesLight::ConnectionTestEndpoint::handleConnectionTest()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Received request to connection test endpoint."));
 	webServer->send(200, F("application/text"), (String)F("Hey there, I am running. Current runtime: ") + String(millis()));
 }

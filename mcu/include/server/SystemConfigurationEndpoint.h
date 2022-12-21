@@ -32,9 +32,14 @@ namespace TesLight
 
 		static void getSystemConfig();
 		static void postSystemConfig();
-		static bool validateLogLevel(const uint8_t logLevel);
-		static bool validateLightSensorMode(const uint8_t lightSensorMode);
 		static bool validateMinMax(const uint16_t min, const uint16_t max);
+		static bool validateLogLevel(const uint8_t value);
+		static bool validateLightSensorMode(const uint8_t value);
+		static bool validateRegulatorPowerLimit(const uint8_t value);
+		static bool validateRegulatorHighTemperature(const uint8_t value);
+		static bool validateRegulatorCutoffTemperature(const uint8_t value);
+		static bool validateMinFanTemperature(const uint8_t value);
+		static bool validateMaxFanTemperature(const uint8_t value);
 	};
 }
 

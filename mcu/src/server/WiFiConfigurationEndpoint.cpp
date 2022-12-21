@@ -17,7 +17,6 @@ std::function<bool()> TesLight::WiFiConfigurationEndpoint::configChangedCallback
  */
 void TesLight::WiFiConfigurationEndpoint::begin(TesLight::Configuration *_configuration, std::function<bool()> _configChangedCallback)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register WiFi Configuration Endpoints."));
 	TesLight::WiFiConfigurationEndpoint::configuration = _configuration;
 	TesLight::WiFiConfigurationEndpoint::configChangedCallback = _configChangedCallback;
 	webServerManager->addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_GET, TesLight::WiFiConfigurationEndpoint::getWiFiConfig);
@@ -33,23 +32,21 @@ void TesLight::WiFiConfigurationEndpoint::getWiFiConfig()
 	TesLight::InMemoryBinaryFile binary(256);
 	binary.writeString(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointSsid);
 	binary.writeString(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointPassword);
-	binary.writeByte(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointChannel);
-	binary.writeByte(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointHidden);
-	binary.writeByte(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointMaxConnections);
+	binary.write(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointChannel);
+	binary.write(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointHidden);
+	binary.write(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointMaxConnections);
 	binary.writeString(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().wifiSsid);
 	binary.writeString(TesLight::WiFiConfigurationEndpoint::configuration->getWiFiConfig().wifiPassword);
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Preparing base64 response."));
-	String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
+	const String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
 	if (encoded == F("BASE64_ERROR"))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to encode response."));
 		webServer->send(500, F("application/octet-stream"), F("Failed to encode response."));
 		return;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Base64 response prepared."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Sending the response."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
 	webServer->send(200, F("octet-stream"), encoded);
 }
 
@@ -60,7 +57,6 @@ void TesLight::WiFiConfigurationEndpoint::postWiFiConfig()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the WiFi configuration."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking request."));
 	if (!webServer->hasArg(F("data")) || webServer->arg(F("data")).length() == 0)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a x-www-form-urlencoded body parameter \"data\" with the base64 encoded WiFi data."));
@@ -68,7 +64,6 @@ void TesLight::WiFiConfigurationEndpoint::postWiFiConfig()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Decoding base64 request."));
 	const String encoded = webServer->arg(F("data"));
 	size_t length;
 	uint8_t *decoded = TesLight::Base64Util::decode(encoded, length);
@@ -78,9 +73,7 @@ void TesLight::WiFiConfigurationEndpoint::postWiFiConfig()
 		webServer->send(500, F("application/octet-stream"), F("Failed to decode request."));
 		return;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Request decoded."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Checking length of the decoded data."));
 	if (length > 256)
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Length of decoded data is invalid."));
@@ -89,22 +82,19 @@ void TesLight::WiFiConfigurationEndpoint::postWiFiConfig()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Decoded data is ok, loading into binary buffer."));
 	TesLight::InMemoryBinaryFile binary(length);
 	binary.loadFrom(decoded, length);
 	delete[] decoded;
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Parsing new WiFi configuration."));
 	TesLight::Configuration::WiFiConfig config;
-	config.accessPointSsid = binary.readString();
-	config.accessPointPassword = binary.readString();
-	config.accessPointChannel = binary.readByte();
-	config.accessPointHidden = binary.readByte();
-	config.accessPointMaxConnections = binary.readByte();
-	config.wifiSsid = binary.readString();
-	config.wifiPassword = binary.readString();
+	binary.readString(config.accessPointSsid);
+	binary.readString(config.accessPointPassword);
+	binary.write(config.accessPointChannel);
+	binary.write(config.accessPointHidden);
+	binary.write(config.accessPointMaxConnections);
+	binary.readString(config.wifiSsid);
+	binary.readString(config.wifiPassword);
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Validating WiFi configuration."));
 	if (!validateWiFiSsid(config.accessPointSsid) || !validateWiFiPassword(config.accessPointPassword) || !validateWiFiChannel(config.accessPointChannel) ||
 		!validateWiFiMaxConnections(config.accessPointMaxConnections))
 	{
@@ -120,14 +110,11 @@ void TesLight::WiFiConfigurationEndpoint::postWiFiConfig()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("WiFi configuration is valid. Saving WiFi configuration."));
 	TesLight::WiFiConfigurationEndpoint::configuration->setWiFiConfig(config);
 	if (TesLight::WiFiConfigurationEndpoint::configuration->save())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("WiFi configuration saved."));
 		if (TesLight::WiFiConfigurationEndpoint::configChangedCallback)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Calling callback function."));
 			if (!TesLight::WiFiConfigurationEndpoint::configChangedCallback())
 			{
 				TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The callback function returned with an error."));
@@ -143,7 +130,7 @@ void TesLight::WiFiConfigurationEndpoint::postWiFiConfig()
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("WiFi configuration saved. Sending the response."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("WiFi configuration saved. Sending the response."));
 	webServer->send(200);
 }
 

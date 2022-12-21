@@ -8,17 +8,15 @@
  */
 #include <Arduino.h>
 #include <SD.h>
-
+#include <esp_task_wdt.h>
 #include "configuration/SystemConfiguration.h"
-
 #include "logging/Logger.h"
 #include "configuration/Configuration.h"
-
+#include "hardware/FanController.h"
 #include "led/LedManager.h"
-
+#include "sensor/TemperatureSensor.h"
 #include "sensor/LightSensor.h"
 #include "sensor/MotionSensor.h"
-
 #include "wifi/WiFiManager.h"
 #include "server/WebServerManager.h"
 #include "server/ConnectionTestEndpoint.h"
@@ -29,14 +27,14 @@
 #include "server/LogEndpoint.h"
 #include "server/UpdateEndpoint.h"
 #include "server/ResetEndpoint.h"
-
+#include "server/MotionSensorEndpoint.h"
 #include "util/FileUtil.h"
 #include "update/Updater.h"
 
-#define MAX_ULONG_VALUE 0xffffffff
-
 TesLight::Configuration *configuration = nullptr;
+TesLight::FanController *fanController = nullptr;
 TesLight::LedManager *ledManager = nullptr;
+TesLight::TemperatureSensor *temperatureSensor = nullptr;
 TesLight::LightSensor *lightSensor = nullptr;
 TesLight::MotionSensor *motionSensor = nullptr;
 TesLight::WiFiManager *wifiManager = nullptr;
@@ -46,23 +44,28 @@ TesLight::WebServerManager *webServerManager = nullptr;
 unsigned long ledTimer = 0;
 unsigned long lightSensorTimer = 0;
 unsigned long motionSensorTimer = 0;
-unsigned long fpsTimer = 0;
 unsigned long webServerTimer = 0;
+unsigned long statusTimer = 0;
+unsigned long temperatureTimer = 0;
 uint16_t ledFrameCounter = 0;
+float ledPowerCounter = 0.0f;
 
 // Initialization functions
 void printLogo();
 bool initializeLogger(bool sdLogging);
 bool initializeSdCard();
 bool initializeConfiguration();
+void intializeI2C();
+void initializeFanController();
 void initializeLedManager();
+void initializeTemperatureSensor();
 void initializeLightSensor();
 bool initializeMotionSensor();
 void initializeWiFiManager();
 void initializeWebServerManager();
 void initializeRestApi();
 void initializeTimers();
-void stop();
+bool checkTimer(unsigned long &timer, unsigned long cycleTime);
 
 // System update
 bool updateAvilable();
@@ -143,13 +146,43 @@ bool initializeConfiguration()
 }
 
 /**
+ * @brief Initialize the I²C bus.
+ */
+void intializeI2C()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize I²C bus."));
+	Wire.begin((int)IIC_SDA_PIN, (int)IIC_SCL_PIN);
+}
+
+/**
+ * @brief Initialize the {@link TesLight::FanController} to handle the cooling fan.
+ */
+void initializeFanController()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize fan controller."));
+	fanController = new TesLight::FanController(FAN_PWM_PIN, configuration);
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Fan controller initialized."));
+}
+
+/**
  * @brief Initialize the {@link TesLight::LedManager} to handle the LEDs and animators.
  */
 void initializeLedManager()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize LED Manager."));
-	ledManager = new TesLight::LedManager();
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("LED Manager initialized."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize LED manager."));
+	ledManager = new TesLight::LedManager(configuration);
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("LED manager initialized."));
+}
+
+/**
+ * @brief Initialize the {@link TesLight::TemperatureSensor} to read all detected sensors on the bus.
+ */
+void initializeTemperatureSensor()
+{
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize temperatuer sensor."));
+	temperatureSensor = new TesLight::TemperatureSensor();
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("There are ") + temperatureSensor->getNumSensors() + F(" sensors on the OneWire bus."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Temperature sensor initialized."));
 }
 
 /**
@@ -157,21 +190,20 @@ void initializeLedManager()
  */
 void initializeLightSensor()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Initializing light sensor at pin ") + String(LIGHT_SENSOR_PIN) + F(" with buffer size ") + String(LIGHT_SENSOR_BUFFER_SIZE) + F("."));
-	const TesLight::Configuration::SystemConfig systemConfig = configuration->getSystemConfig();
-	lightSensor = new TesLight::LightSensor(LIGHT_SENSOR_PIN, LIGHT_SENSOR_BUFFER_SIZE, systemConfig.lightSensorMode, systemConfig.lightSensorThreshold, systemConfig.lightSensorMinValue, systemConfig.lightSensorMaxValue);
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Initialize light sensor."));
+	lightSensor = new TesLight::LightSensor(configuration);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Light sensor initialized."));
 }
 
 /**
- * @brief Initialize the motion sensor. In case the initialization fails the motion sensor pointer will be set to {@code nullptr}.
+ * @brief Initialize the motion sensor.
  * @return true when successful
  * @return false when there was an error
  */
 bool initializeMotionSensor()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Initializing motion sensor at ") + String(MOTION_SENSOR_I2C_ADDRESS) + F(" with buffer size ") + String(MOTION_SENSOR_BUFFER_SIZE) + F("."));
-	motionSensor = new TesLight::MotionSensor(MOTION_SENSOR_I2C_ADDRESS, SDA_PIN, SCL_PIN, MOTION_SENSOR_BUFFER_SIZE);
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Initialize motion sensor at with I²C address") + String(IIC_ADDRESS_MPU6050) + F("."));
+	motionSensor = new TesLight::MotionSensor(IIC_ADDRESS_MPU6050, configuration);
 	if (motionSensor->begin())
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Motion sensor initialized."));
@@ -180,8 +212,6 @@ bool initializeMotionSensor()
 	else
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize motion sensor."));
-		delete motionSensor;
-		motionSensor = nullptr;
 		return false;
 	}
 }
@@ -228,6 +258,8 @@ void initializeRestApi()
 	TesLight::UpdateEndpoint::begin(&SD);
 	TesLight::ResetEndpoint::init(webServerManager, F("/api/"));
 	TesLight::ResetEndpoint::begin(&SD);
+	TesLight::MotionSensorEndpoint::init(webServerManager, F("/api/"));
+	TesLight::MotionSensorEndpoint::begin(configuration, motionSensor);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("REST API initialized."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Starting web server."));
@@ -241,22 +273,31 @@ void initializeRestApi()
 void initializeTimers()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize timers."));
-	ledFrameCounter = 0;
 	ledTimer = micros();
 	lightSensorTimer = micros();
 	motionSensorTimer = micros();
-	fpsTimer = micros();
 	webServerTimer = micros();
+	statusTimer = micros();
+	temperatureTimer = micros();
+	ledFrameCounter = 0;
+	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Timers initialized."));
 }
 
 /**
- * @brief Stop the program.
+ * @brief Check if a timer expired.
+ * @param timer timer value
+ * @param cycleTime cycle time of the timer
+ * @return true when the timer expired
+ * @return false when the timer is not expired yet
  */
-void stop(const String reason)
+bool checkTimer(unsigned long &timer, unsigned long cycleTime)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::DEBUG, SOURCE_LOCATION, (String)F("Programm stopped because: ") + reason);
-	while (1)
-		;
+	if (micros() - timer >= cycleTime)
+	{
+		timer += cycleTime;
+		return true;
+	}
+	return false;
 }
 
 /**
@@ -284,7 +325,12 @@ bool updateAvilable()
  */
 void handleUpdate()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Installing system update from update package."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Install system update from update package."));
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Set fan speed to maximum during the update."));
+	pinMode(FAN_PWM_PIN, OUTPUT);
+	digitalWrite(FAN_PWM_PIN, HIGH);
+
 	if (TesLight::Updater::install(&SD, (String)UPDATE_DIRECTORY + F("/") + UPDATE_FILE_NAME))
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update installed successfully. Rebooting. Good luck ;) !"));
@@ -335,8 +381,8 @@ void setup()
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize SD card."));
-		stop(F("Failed to initialize SD card."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize SD card. Try reboot."));
+		TesLight::Updater::reboot("SD mount failure.");
 	}
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Switching to SD card logger."));
@@ -347,8 +393,8 @@ void setup()
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to switch to SD card logger."));
-		stop(F("Failed to switch to SD card logger."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to switch to SD card logger. Try reboot."));
+		TesLight::Updater::reboot("SD logger failure.");
 	}
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Check if system update is available."));
@@ -375,12 +421,24 @@ void setup()
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Updating log level from configuration."));
 	const TesLight::Configuration::SystemConfig systemConfig = configuration->getSystemConfig();
-	TesLight::Logger::setMinLogLevel(systemConfig.logLevel);
+	TesLight::Logger::setMinLogLevel((TesLight::Logger::LogLevel)systemConfig.logLevel);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Log level updated from configuration."));
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize I²C bus."));
+	intializeI2C();
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("I²C bus initialized."));
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize Fan Controller."));
+	initializeFanController();
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Fan Controller initialized."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize LED Manager."));
 	initializeLedManager();
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("LED Manager initialized."));
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize temperature sensor."));
+	initializeTemperatureSensor();
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Temperature sensor initialized."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize light sensor."));
 	initializeLightSensor();
@@ -393,7 +451,7 @@ void setup()
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to initialize motion sensor. Continue without motion sensor data."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize motion sensor. Continue without motion sensor data."));
 	}
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize WiFiManager."));
@@ -404,18 +462,18 @@ void setup()
 	initializeWebServerManager();
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Webserver started on port ") + WEB_SERVER_PORT + F("."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initializing REST api."));
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize REST api."));
 	initializeRestApi();
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("REST api initialized."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Load LEDs and animators from configuration using the LED Manager."));
-	if (ledManager->loadFromConfiguration(configuration))
+	if (ledManager->reloadAnimations())
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("LEDs and animators loaded."));
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to load LEDs and animators. Continue without rendering LEDs."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to load LEDs and animators. Continue without rendering LEDs."));
 	}
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Creating to WiFi network."));
@@ -425,12 +483,17 @@ void setup()
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to create WiFi network. Continuing without WiFi network. The REST API might be inaccessible."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to create WiFi network. Continuing without WiFi network. The REST API might be inaccessible."));
 	}
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize timers."));
 	initializeTimers();
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Timers initialized."));
+
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize watchdog."));
+	esp_task_wdt_init(WATCHDOG_RESET_TIME, true);
+	esp_task_wdt_add(NULL);
+	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Watchdog initialized."));
 
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("TesLight initialized successfully, going into work mode."));
 }
@@ -441,60 +504,85 @@ void setup()
 void loop()
 {
 	// Handle the LEDs
-	if (micros() - ledTimer >= ledManager->getTargetFrameTime() && ledTimer != MAX_ULONG_VALUE)
+	if (checkTimer(ledTimer, ledManager->getTargetFrameTime()))
 	{
-		ledTimer = micros() - (micros() - ledTimer - ledManager->getTargetFrameTime());
 		ledManager->render();
 		ledManager->show();
 		ledFrameCounter++;
+		ledPowerCounter += ledManager->getLedPowerDraw();
 	}
 
 	// Handle the light sensor
-	if (micros() - lightSensorTimer >= LIGHT_SENSOR_CYCLE_TIME && lightSensorTimer != MAX_ULONG_VALUE)
+	if (checkTimer(lightSensorTimer, LIGHT_SENSOR_CYCLE_TIME))
 	{
-		lightSensorTimer = micros() - (micros() - lightSensorTimer - LIGHT_SENSOR_CYCLE_TIME);
-		if (lightSensor != nullptr)
+		float brightness;
+		if (ledManager->getAmbientBrightness(brightness) && lightSensor->getBrightness(brightness, motionSensor))
 		{
-			const float brightness = lightSensor->getBrightness();
 			ledManager->setAmbientBrightness(brightness);
 		}
 		else
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to read light sensor data. Light sensor is disabled now."));
-			lightSensorTimer = MAX_ULONG_VALUE;
+			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read light sensor data. Delaying next read by 10s."));
+			lightSensorTimer += 10000000;
 		}
 	}
 
 	// Handle the motion sensor
-	if (micros() - motionSensorTimer >= MOTION_SENSOR_CYCLE_TIME && motionSensorTimer != MAX_ULONG_VALUE)
+	if (checkTimer(motionSensorTimer, MOTION_SENSOR_CYCLE_TIME))
 	{
-		motionSensorTimer = micros() - (micros() - motionSensorTimer - MOTION_SENSOR_CYCLE_TIME);
-		if (motionSensor != nullptr && motionSensor->readData())
+		if (motionSensor->run())
 		{
-			ledManager->setMotionSensorData(motionSensor->getData());
+			ledManager->setMotionSensorData(motionSensor->getMotion());
 		}
 		else
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to read motion sensor data. Motion sensor is disabled now."));
-			motionSensorTimer = MAX_ULONG_VALUE;
+			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read motion sensor data. Delaying next read by 10s"));
+			motionSensorTimer += 10000000;
 		}
 	}
 
-	// Measure the FPS
-	if (micros() - fpsTimer >= FPS_CYCLE_TIME)
+	// Handle web server requests
+	if (checkTimer(webServerTimer, WEB_SERVER_CYCLE_TIME))
 	{
-		fpsTimer = micros() - (micros() - fpsTimer - FPS_CYCLE_TIME);
-		ledFrameCounter /= FPS_CYCLE_TIME / 1000000;
-		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("LEDs running at an average of ") + ledFrameCounter + F(" FPS"));
-		ledFrameCounter = 0;
+		esp_task_wdt_delete(NULL);
+		webServerManager->handleRequest();
+		esp_task_wdt_init(WATCHDOG_RESET_TIME, true);
+		esp_task_wdt_add(NULL);
 	}
 
-	// Handle web server requests
-	if (micros() - webServerTimer >= WEB_SERVER_CYCLE_TIME)
+	// Measure the FPS
+	if (checkTimer(statusTimer, STATUS_CYCLE_TIME))
 	{
-		webServerTimer = micros() - (micros() - webServerTimer - WEB_SERVER_CYCLE_TIME);
-		webServerManager->handleRequest();
+		const float fps = (float)ledFrameCounter / (STATUS_CYCLE_TIME / 1000000);
+		const float powerDraw = ledPowerCounter / ledFrameCounter;
+		float temperature;
+		if (!temperatureSensor->getMaxTemperature(temperature))
+		{
+			temperature = 0.0f;
+		}
+		ledFrameCounter = 0;
+		ledPowerCounter = 0.0f;
+		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("LEDs: ") + fps + F("FPS      Average Power: ") + powerDraw + F("W      Regulators: ") + temperature + F("°C"));
 	}
+
+	// Handle the temperature measurement and fan controller
+	if (checkTimer(temperatureTimer, TEMP_CYCLE_TIME))
+	{
+		float temp;
+		if (temperatureSensor->getMaxTemperature(temp))
+		{
+			ledManager->setRegulatorTemperature(temp);
+			fanController->setTemperature(temp > -75.0f ? temp : configuration->getSystemConfig().fanMaxTemperature);
+		}
+		else
+		{
+			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read temperature sensor. Delaying next read by 5s"));
+			temperatureTimer += 5000000;
+		}
+	}
+
+	// Reset the watchdog timer
+	esp_task_wdt_reset();
 }
 
 /**
@@ -506,15 +594,7 @@ bool applySystemConfig()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System configuration has changed. Updating system configuration."));
 	const TesLight::Configuration::SystemConfig systemConfig = configuration->getSystemConfig();
-	TesLight::Logger::setMinLogLevel(systemConfig.logLevel);
-	if (lightSensor != nullptr)
-	{
-		lightSensor->setThreshold(systemConfig.lightSensorThreshold);
-		lightSensor->setMinValue(systemConfig.lightSensorMinValue);
-		lightSensor->setMaxValue(systemConfig.lightSensorMaxValue);
-		lightSensor->setLightSensorMode(systemConfig.lightSensorMode);
-	}
-	ledManager->setSystemPowerLimit(systemConfig.systemPowerLimit);
+	TesLight::Logger::setMinLogLevel((TesLight::Logger::LogLevel)systemConfig.logLevel);
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System configuration updated."));
 	initializeTimers();
 	return true;
@@ -528,7 +608,7 @@ bool applySystemConfig()
 bool applyLedConfig()
 {
 	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("LED configuration has changed. Reload LEDs and animators using the LED Manager."));
-	if (ledManager->loadFromConfiguration(configuration))
+	if (ledManager->reloadAnimations())
 	{
 		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("LEDs and animators reloaded."));
 		initializeTimers();
@@ -536,7 +616,7 @@ bool applyLedConfig()
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to reload LEDs and animators. Continue without rendering LEDs."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to reload LEDs and animators. Continue without rendering LEDs."));
 		initializeTimers();
 		return false;
 	}
@@ -558,7 +638,7 @@ bool applyWifiConfig()
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to create WiFi network. Continuing without WiFi network. The REST API might be inaccessible."));
+		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to create WiFi network. Continuing without WiFi network. The REST API might be inaccessible."));
 		initializeTimers();
 		return false;
 	}

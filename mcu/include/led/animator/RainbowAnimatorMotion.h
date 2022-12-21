@@ -39,6 +39,8 @@ namespace TesLight
 		float angle;
 		TesLight::RainbowAnimatorMotion::RainbowMode rainbowMode;
 		TesLight::MotionSensor::MotionSensorValue motionSensorValue;
+
+		float getMotionSpeed();
 	};
 }
 
