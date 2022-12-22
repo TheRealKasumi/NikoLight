@@ -145,14 +145,14 @@ As an alternative you can also go to the releases and download one of them.
 
 ### Using Git
 
-- Open a terminal in your destination folder
-- Run `git clone https://github.com/TheRealKasumi/TesLight.git`
-- A folder `TesLight` will be created, containing all project files
+-  Open a terminal in your destination folder
+-  Run `git clone https://github.com/TheRealKasumi/TesLight.git`
+-  A folder `TesLight` will be created, containing all project files
 
 ### Download as Zip
 
-- Click the [download link](https://github.com/TheRealKasumi/TesLight/archive/refs/heads/main.zip)
-- Extract the TesLight folder
+-  Click the [download link](https://github.com/TheRealKasumi/TesLight/archive/refs/heads/main.zip)
+-  Extract the TesLight folder
 
 ## Order the PCB and 3D Printed Parts
 
@@ -200,17 +200,17 @@ At first you need to chose one of their assembly services.
 
 Economic:
 
-- Cheaper
-- Collection of boards of different customers are created together
-- No borders required
-- Takes longer
+-  Cheaper
+-  Collection of boards of different customers are created together
+-  No borders required
+-  Takes longer
 
 Standard:
 
-- More expensive
-- Your boards are checked, adjusted and produced individually
-- Borders and markers are required
-- Faster production
+-  More expensive
+-  Your boards are checked, adjusted and produced individually
+-  Borders and markers are required
+-  Faster production
 
 Once more, choice is yours but `Economic` is recommended.
 Assembly side must always be `top`.
@@ -236,20 +236,27 @@ Also you can select whcih components should be installed.
 If you want to install a few components on you own, you can unselect them here.
 Once done click next and add the items to your shopping cart.
 
-### Upload 3D Files
+### Upload or Print 3D Files
 
-This works very similar to the steps described above.
+Ordering works very similar to the steps described above.
 Go back to the [order page](https://cart.jlcpcb.com/quote) and select `3D-Printing` at the top of the page.
-The 3D files can be found in the [/models](/models/) folder of the project.
+The 3D files can be found in the [/model](/model/) folder of the project.
 
-Depending on your previous choices you have to select the right files for the printing.
-Pick the right case for you selected board version and proceed.
+In a normal build you will need both, the [TesLight_Case.stl](/model/TesLight_Case.stl) and the [TesLight_Case_Cover.stl](/model/TesLight_Case_Cover.stl).
+The all-in-one verion [TesLight_Case_AIO.stl](/model/TesLight_Case_AIO.stl) can be used as an alternative.
+When you are using a smaller 30x30x6mm fan, the [TesLight_Fan_Adapter.stl](/model/TesLight_Fan_Adapter.stl) is recommended.
+If you plan to use fiber cables and LED injectors, the [TesLight_LED_Case.stl](TesLight_LED_Case.stl) should be ordered as well.
+The number depends on the number of light injectors you want to use for the fibre tubes.
 
-If you want to use fiber cables and LED injectors, the corresponding cases should be ordered as well.
-Depending on the number of light injectors for the fibre tubes, you will need a certain number of the [led-case.stl](/models/led-case.stl) model.
-The material choice shouldn't be a metal.
-The material must **NOT** be electrically conductive but is otherwise up to you.
-When you are done, add the 3D prints to the shopping cart.
+Generally the material choice shouldn't be a metal.
+The cases must **NOT** be electrically conductive but it is otherwise up to you.
+A recommendation is to use a more heat resistant material like ABS or PETG.
+Ideally a flame-retardant material is used.
+
+When you plan to print the case yourself, the following setup is recommended:
+
+-  Nozzle: 0.4 - 0.6mm
+-  Layerheight 0.1 - 0.2mm
 
 ### Order
 
@@ -402,11 +409,11 @@ At the end the 3 pin XH connectors must have the following pinout.
 Uploading the software is the final step before you can test your work.
 Please install the following software and extension for the upload procedure:
 
-- [Git](https://git-scm.com/downloads)
-- [VS Code](https://code.visualstudio.com/download)
-- [PlatformIO](https://platformio.org/install/ide?install=vscode)
-- [NodeJS](https://nodejs.org)
-- [NPM (comes with NodeJS)](https://www.npmjs.com/)
+-  [Git](https://git-scm.com/downloads)
+-  [VS Code](https://code.visualstudio.com/download)
+-  [PlatformIO](https://platformio.org/install/ide?install=vscode)
+-  [NodeJS](https://nodejs.org)
+-  [NPM (comes with NodeJS)](https://www.npmjs.com/)
 
 Start VS Code and then open the [mcu](/mcu/) folder of the project.
 You can do so by clicking `File` -> `Open Folder...`.
@@ -432,20 +439,20 @@ Please navigate to [include/configuration](/mcu/include/configuration) and open 
 
 If you decided to only install one voltage regulator, please do the following changes:
 
-- `#define REGULATOR_COUNT 1`
-- `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
+-  `#define REGULATOR_COUNT 1`
+-  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
 
 Also depending on the board version, the following changes are required.
 
 Board version 1.0 (@luap):
 
-- `#define REGULATOR_COUNT 1`
-- `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
+-  `#define REGULATOR_COUNT 1`
+-  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
 
 Board version 2.0 (@PhilippDen):
 
-- `#define LED_OUTPUT_PINS {13, 15, 17, 22, 14, 16, 21, 25}`
-- `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
+-  `#define LED_OUTPUT_PINS {13, 15, 17, 22, 14, 16, 21, 25}`
+-  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
 
 Save the files and then click the upload button in the bottom left.
 
