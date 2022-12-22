@@ -1,0 +1,20 @@
+{
+  "background_color": "#161717",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    },
+    {
+      "src": "logo-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "name": "TesLight",
+  "short_name": "TesLight",
+  "start_url": ".",
+  "theme_color": "#161717"
+}
