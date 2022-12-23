@@ -90,7 +90,6 @@
 // Webserver configuration
 #define WEB_SERVER_PORT 80					   // Port of the web server
 #define WEB_SERVER_STATIC_CONTENT "/ui/"  // Static content location for the UI
-#define WEB_SERVER_SWAGGER_CONTENT "/swagger/" // Location for swagger api documentation
 
 // Timer configuration
 #define LED_FRAME_TIME 16666			// Cycle time for the LEDs in µs

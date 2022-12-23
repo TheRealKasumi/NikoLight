@@ -93,9 +93,7 @@ void TL::WebServerManager::init()
 
 	this->webServer->onNotFound([this](){ this->handleNotFound(); });
 	this->webServer->serveStatic(WEB_SERVER_STATIC_CONTENT, *this->fileSystem, WEB_SERVER_STATIC_CONTENT);
-	this->webServer->serveStatic("/open-api/swagger/", *this->fileSystem, WEB_SERVER_SWAGGER_CONTENT);
 	this->webServer->on("/", http_method::HTTP_GET, [this](){this->webServer->sendHeader("Location", "/ui/index.html"); this->webServer->send(301); });
-	this->webServer->on("/swagger", http_method::HTTP_GET, [this](){this->webServer->sendHeader("Location", "/open-api/swagger/index.html"); this->webServer->send(301); });
 }
 
 /**
