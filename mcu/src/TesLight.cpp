@@ -28,7 +28,8 @@ unsigned long TesLight::motionSensorTimer = 0;
 unsigned long TesLight::webServerTimer = 0;
 unsigned long TesLight::statusTimer = 0;
 unsigned long TesLight::temperatureTimer = 0;
-uint16_t TesLight::ledFrameCounter = 0;
+uint16_t TesLight::ledRenderFrameCounter = 0;
+uint16_t TesLight::ledDrawFrameCounter = 0;
 float TesLight::ledPowerCounter = 0.0f;
 
 /**
@@ -187,20 +188,21 @@ void TesLight::run()
 	bool skipFrame = false;
 
 	// Handle the LEDs
-	if (checkTimer(ledTimer, ledInterval, skipFrame))
+	if (checkTimer(ledTimer, ledInterval, skipFrame, false))
 	{
 		ledInterval = ledManager->getTargetFrameTime();
 		ledManager->render();
+		ledRenderFrameCounter++;
 		if (!skipFrame)
 		{
 			ledManager->show();
-			ledFrameCounter++;
+			ledDrawFrameCounter++;
 			ledPowerCounter += ledManager->getLedPowerDraw();
 		}
 	}
 
 	// Handle the light sensor
-	if (checkTimer(lightSensorTimer, lightSensorInterval, skipFrame) && !skipFrame)
+	if (checkTimer(lightSensorTimer, lightSensorInterval, skipFrame, true))
 	{
 		lightSensorInterval = LIGHT_SENSOR_INTERVAL;
 		float brightness;
@@ -216,7 +218,7 @@ void TesLight::run()
 	}
 
 	// Handle the motion sensor
-	if (checkTimer(motionSensorTimer, motionSensorInterval, skipFrame) && !skipFrame)
+	if (checkTimer(motionSensorTimer, motionSensorInterval, skipFrame, true))
 	{
 		motionSensorInterval = MOTION_SENSOR_INTERVAL;
 		if (motionSensor->run())
@@ -231,7 +233,7 @@ void TesLight::run()
 	}
 
 	// Handle web server requests
-	if (checkTimer(webServerTimer, webServerInterval, skipFrame) && !skipFrame)
+	if (checkTimer(webServerTimer, webServerInterval, skipFrame, true))
 	{
 		webServerInterval = WEB_SERVER_INTERVAL;
 		if (!TL::WatchDog::deleteTaskWatchdog())
@@ -246,12 +248,14 @@ void TesLight::run()
 	}
 
 	// Measure the FPS and print status message
-	if (checkTimer(statusTimer, statusInterval, skipFrame) && !skipFrame)
+	if (checkTimer(statusTimer, statusInterval, skipFrame, true))
 	{
 		statusInterval = STATUS_INTERVAL;
-		const float fps = (float)ledFrameCounter / (STATUS_INTERVAL / 1000000);
-		const float powerDraw = ledPowerCounter / ledFrameCounter;
-		ledFrameCounter = 0;
+		const float renderfps = (float)ledRenderFrameCounter / (STATUS_INTERVAL / 1000000);
+		const float drawfps = (float)ledDrawFrameCounter / (STATUS_INTERVAL / 1000000);
+		const float powerDraw = ledPowerCounter / ledDrawFrameCounter;
+		ledRenderFrameCounter = 0;
+		ledDrawFrameCounter = 0;
 		ledPowerCounter = 0.0f;
 		float temperature;
 		if (!temperatureSensor->getMaxTemperature(temperature))
@@ -259,11 +263,11 @@ void TesLight::run()
 			temperature = 0.0f;
 		}
 		uint32_t freeHeap = ESP.getFreeHeap() / 1024;
-		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("LEDs: ") + fps + F("FPS      Average Power: ") + powerDraw + F("W      Regulators: ") + temperature + F("°C      Memory: ") + freeHeap + F("kB"));
+		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Renderer: ") + renderfps + F("FPS      LED: ") + drawfps + F("FPS      Average Power: ") + powerDraw + F("W      Regulators: ") + temperature + F("°C      Memory: ") + freeHeap + F("kB"));
 	}
 
 	// Handle the temperature measurement and fan controller
-	if (checkTimer(temperatureTimer, temperatureInterval, skipFrame) && !skipFrame)
+	if (checkTimer(temperatureTimer, temperatureInterval, skipFrame, true))
 	{
 		temperatureInterval = TEMP_INTERVAL;
 		float temp;
@@ -483,7 +487,8 @@ void TesLight::initializeTimers()
 	webServerTimer = micros();
 	statusTimer = micros();
 	temperatureTimer = micros();
-	ledFrameCounter = 0;
+	ledRenderFrameCounter = 0;
+	ledDrawFrameCounter = 0;
 	TL::Logger::log(TL::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Timers initialized."));
 }
 
@@ -492,19 +497,24 @@ void TesLight::initializeTimers()
  * @param timer timer value
  * @param cycleTime cycle time of the timer
  * @param skipFrame is set to true when frames should be skipped because the controller cant keep up
+ * @param resetOnSkip resets the timer when a frame is skipped
  * @return true when the timer expired
  * @return false when the timer is not expired yet
  */
-bool TesLight::checkTimer(unsigned long &timer, unsigned long cycleTime, bool &skipFrame)
+bool TesLight::checkTimer(unsigned long &timer, unsigned long cycleTime, bool &skipFrame, bool resetOnSkip)
 {
 	skipFrame = false;
 	unsigned long mic = micros();
 	if (mic - timer > cycleTime)
 	{
 		timer += cycleTime;
-		if (mic - timer > cycleTime * 2)
+		if (mic - timer > cycleTime * 5)
 		{
 			skipFrame = true;
+			if (resetOnSkip)
+			{
+				timer = mic + cycleTime;
+			}
 		}
 		return true;
 	}

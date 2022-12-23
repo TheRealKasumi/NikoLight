@@ -22,8 +22,5 @@ void setup()
  */
 void loop()
 {
-	while (1)
-	{
-		TesLight::run();
-	}
+	TesLight::run();
 }

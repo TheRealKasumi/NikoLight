@@ -69,7 +69,8 @@ private:
 	static unsigned long webServerTimer;
 	static unsigned long statusTimer;
 	static unsigned long temperatureTimer;
-	static uint16_t ledFrameCounter;
+	static uint16_t ledRenderFrameCounter;
+	static uint16_t ledDrawFrameCounter;
 	static float ledPowerCounter;
 
 	// Initialization functions
@@ -87,7 +88,7 @@ private:
 	static void initializeWebServerManager();
 	static void initializeRestApi();
 	static void initializeTimers();
-	static bool checkTimer(unsigned long &timer, unsigned long cycleTime, bool &skipFrame);
+	static bool checkTimer(unsigned long &timer, unsigned long cycleTime, bool &skipFrame, bool resetOnSkip = false);
 
 	// System update functions
 	static bool updateAvilable();
