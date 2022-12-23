@@ -451,8 +451,8 @@ Board version 1.0 (@luap):
 
 Board version 2.0 (@PhilippDen):
 
--  `#define LED_OUTPUT_PINS {13, 15, 17, 22, 14, 16, 21, 25}`
--  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
+-  `#define LED_DEFAULT_OUTPUT_PINS {13, 17, 14, 21, 15, 22, 16, 25}`
+-  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {17, 1}, {14, 0}, {21, 1}, {15, 0}, {22, 1}, {16, 0}, {25, 1}}`
 
 Save the files and then click the upload button in the bottom left.
 
