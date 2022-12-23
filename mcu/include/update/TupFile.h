@@ -13,7 +13,7 @@
 #include <FS.h>
 #include "logging/Logger.h"
 
-namespace TesLight
+namespace TL
 {
 	class TupFile
 	{
@@ -49,11 +49,11 @@ namespace TesLight
 		bool unpack(FS *fileSystem, const String root);
 		void close();
 
-		TesLight::TupFile::TupHeader getHeader();
+		TL::TupFile::TupHeader getHeader();
 
 	private:
 		File file;
-		TesLight::TupFile::TupHeader tupHeader;
+		TL::TupFile::TupHeader tupHeader;
 
 		void initHeader();
 		bool loadTupHeader();

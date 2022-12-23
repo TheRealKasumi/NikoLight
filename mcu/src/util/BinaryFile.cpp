@@ -1,7 +1,7 @@
 /**
  * @file BinaryFile.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TesLight::BianryFile}.
+ * @brief Implementation of the {@link TL::BianryFile}.
  *
  * @copyright Copyright (c) 2022
  *
@@ -9,18 +9,18 @@
 #include "util/BinaryFile.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::BinaryFile}.
+ * @brief Create a new instance of {@link TL::BinaryFile}.
  * @param fileSystem file system to use
  */
-TesLight::BinaryFile::BinaryFile(FS *fileSystem)
+TL::BinaryFile::BinaryFile(FS *fileSystem)
 {
 	this->fileSystem = fileSystem;
 }
 
 /**
- * @brief Destroy the {@link TesLight::BinaryFile} instance.
+ * @brief Destroy the {@link TL::BinaryFile} instance.
  */
-TesLight::BinaryFile::~BinaryFile()
+TL::BinaryFile::~BinaryFile()
 {
 	if (this->file)
 	{
@@ -35,17 +35,17 @@ TesLight::BinaryFile::~BinaryFile()
  * @return true when successful
  * @return false when the file could not be opened
  */
-bool TesLight::BinaryFile::open(const String fileName, const char *mode)
+bool TL::BinaryFile::open(const String fileName, const char *mode)
 {
 	this->file = this->fileSystem->open(fileName, mode);
 	if (!this->file)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open binary file."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open binary file."));
 		return false;
 	}
 	else if (this->file.isDirectory())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open binary file because it is a directory."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open binary file because it is a directory."));
 		this->file.close();
 		return false;
 	}
@@ -56,7 +56,7 @@ bool TesLight::BinaryFile::open(const String fileName, const char *mode)
 /**
  * @brief Close the file when it was opened.
  */
-void TesLight::BinaryFile::close()
+void TL::BinaryFile::close()
 {
 	if (this->file)
 	{
@@ -70,7 +70,7 @@ void TesLight::BinaryFile::close()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::BinaryFile::writeString(const String string)
+bool TL::BinaryFile::writeString(const String string)
 {
 	const uint16_t length = string.length();
 	if (!this->write(length))
@@ -94,7 +94,7 @@ bool TesLight::BinaryFile::writeString(const String string)
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::BinaryFile::readString(String &string)
+bool TL::BinaryFile::readString(String &string)
 {
 	uint16_t length;
 	if (!this->read(length))

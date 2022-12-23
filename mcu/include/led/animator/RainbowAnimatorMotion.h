@@ -9,11 +9,11 @@
 #ifndef RAINBOW_ANIMATOR_MOTION_H
 #define RAINBOW_ANIMATOR_MOTION_H
 
-#include <math.h>
+#include <vector>
 #include "led/animator/LedAnimator.h"
 #include "sensor/MotionSensor.h"
 
-namespace TesLight
+namespace TL
 {
 	class RainbowAnimatorMotion : public LedAnimator
 	{
@@ -26,19 +26,19 @@ namespace TesLight
 		};
 
 		RainbowAnimatorMotion();
-		RainbowAnimatorMotion(const TesLight::RainbowAnimatorMotion::RainbowMode rainbowMode, const TesLight::MotionSensor::MotionSensorValue motionSensorValue);
+		RainbowAnimatorMotion(const TL::RainbowAnimatorMotion::RainbowMode rainbowMode, const TL::MotionSensor::MotionSensorValue motionSensorValue);
 		~RainbowAnimatorMotion();
 
-		void init();
-		void render();
+		void init(std::vector<CRGB> &pixels);
+		void render(std::vector<CRGB> &pixels);
 
-		void setRainbowMode(const TesLight::RainbowAnimatorMotion::RainbowMode rainbowMode);
-		void setMotionSensorValue(const TesLight::MotionSensor::MotionSensorValue motionSensorValue);
+		void setRainbowMode(const TL::RainbowAnimatorMotion::RainbowMode rainbowMode);
+		void setMotionSensorValue(const TL::MotionSensor::MotionSensorValue motionSensorValue);
 
 	private:
 		float angle;
-		TesLight::RainbowAnimatorMotion::RainbowMode rainbowMode;
-		TesLight::MotionSensor::MotionSensorValue motionSensorValue;
+		TL::RainbowAnimatorMotion::RainbowMode rainbowMode;
+		TL::MotionSensor::MotionSensorValue motionSensorValue;
 
 		float getMotionSpeed();
 	};

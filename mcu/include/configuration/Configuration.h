@@ -16,7 +16,7 @@
 #include "util/BinaryFile.h"
 #include "logging/Logger.h"
 
-namespace TesLight
+namespace TL
 {
 	class Configuration
 	{
@@ -51,7 +51,7 @@ namespace TesLight
 			bool reverse;									 // Reverse the animation
 			uint8_t fadeSpeed;								 // Fading speed when turning on/off
 			uint8_t customField[ANIMATOR_NUM_CUSTOM_FIELDS]; // Custom fields for the animation
-			uint8_t ledVoltage;								 // Voltage of the LED x10
+			float ledVoltage;								 // Voltage of the LEDs
 			uint8_t ledChannelCurrent[3];					 // Current for each LED channel per LED in mA
 		};
 
@@ -85,17 +85,17 @@ namespace TesLight
 		Configuration(FS *fileSystem, const String fileName);
 		~Configuration();
 
-		TesLight::Configuration::SystemConfig getSystemConfig();
-		void setSystemConfig(TesLight::Configuration::SystemConfig systemConfig);
+		TL::Configuration::SystemConfig getSystemConfig();
+		void setSystemConfig(TL::Configuration::SystemConfig &systemConfig);
 
-		TesLight::Configuration::LedConfig getLedConfig(const uint8_t index);
-		void setLedConfig(const TesLight::Configuration::LedConfig ledConfig, const uint8_t index);
+		TL::Configuration::LedConfig getLedConfig(const uint8_t index);
+		void setLedConfig(const TL::Configuration::LedConfig &ledConfig, const uint8_t index);
 
-		TesLight::Configuration::WiFiConfig getWiFiConfig();
-		void setWiFiConfig(TesLight::Configuration::WiFiConfig wifiConfig);
+		TL::Configuration::WiFiConfig getWiFiConfig();
+		void setWiFiConfig(TL::Configuration::WiFiConfig &wifiConfig);
 
-		TesLight::Configuration::MotionSensorCalibration getMotionSensorCalibration();
-		void setMotionSensorCalibration(const TesLight::Configuration::MotionSensorCalibration calibration);
+		TL::Configuration::MotionSensorCalibration getMotionSensorCalibration();
+		void setMotionSensorCalibration(const TL::Configuration::MotionSensorCalibration &calibration);
 
 		void loadDefaults();
 		bool load();
@@ -106,10 +106,10 @@ namespace TesLight
 		String fileName;
 		uint16_t configurationVersion;
 
-		TesLight::Configuration::SystemConfig systemConfig;
-		TesLight::Configuration::LedConfig ledConfig[LED_NUM_ZONES];
-		TesLight::Configuration::WiFiConfig wifiConfig;
-		TesLight::Configuration::MotionSensorCalibration motionSensorCalibration;
+		TL::Configuration::SystemConfig systemConfig;
+		TL::Configuration::LedConfig ledConfig[LED_NUM_ZONES];
+		TL::Configuration::WiFiConfig wifiConfig;
+		TL::Configuration::MotionSensorCalibration motionSensorCalibration;
 
 		uint16_t getSimpleHash();
 		uint16_t getSimpleStringHash(const String input);

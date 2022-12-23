@@ -1,7 +1,7 @@
 /**
  * @file FanController.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TesLight::FanController}.
+ * @brief Implementation of the {@link TL::FanController}.
  *
  * @copyright Copyright (c) 2022
  *
@@ -9,11 +9,11 @@
 #include "hardware/FanController.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::FanController} and initialize the hardware.
+ * @brief Create a new instance of {@link TL::FanController} and initialize the hardware.
  * @param fanPin output pin for the pwm signal to controll the fan
  * @param configuration reference to the configuration of the controller
  */
-TesLight::FanController::FanController(const uint8_t fanPin, TesLight::Configuration *configuration)
+TL::FanController::FanController(const uint8_t fanPin, TL::Configuration *configuration)
 {
 	this->fanPin = fanPin;
 	this->configuration = configuration;
@@ -22,9 +22,9 @@ TesLight::FanController::FanController(const uint8_t fanPin, TesLight::Configura
 }
 
 /**
- * @brief Destroy the {@link TesLight::FanController} instance and free resources.
+ * @brief Destroy the {@link TL::FanController} instance and free resources.
  */
-TesLight::FanController::~FanController()
+TL::FanController::~FanController()
 {
 	ledcDetachPin(this->fanPin);
 }
@@ -33,9 +33,9 @@ TesLight::FanController::~FanController()
  * @brief Set the temperature to calculate the new fan speed.
  * @param temp current temperature
  */
-void TesLight::FanController::setTemperature(const uint8_t temp)
+void TL::FanController::setTemperature(const uint8_t temp)
 {
-	const TesLight::Configuration::SystemConfig systemConfig = this->configuration->getSystemConfig();
+	const TL::Configuration::SystemConfig systemConfig = this->configuration->getSystemConfig();
 
 	// Convert the temperature into a value between 0 and 1 within the min/max limits
 	float temperature = temp;

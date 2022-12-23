@@ -10,13 +10,14 @@
 #define FSEQ_LOADER_H
 
 #include <stdint.h>
+#include <vector>
 #include <FS.h>
 
 #include "logging/Logger.h"
 
 #include "FastLED.h"
 
-namespace TesLight
+namespace TL
 {
 	class FseqLoader
 	{
@@ -49,7 +50,7 @@ namespace TesLight
 		void close();
 
 		FseqHeader getHeader();
-		bool readPixelbuffer(CRGB *pixelBuffer, const size_t bufferSize);
+		bool readPixelBuffer(std::vector<CRGB> &pixels);
 
 	private:
 		FS *fileSystem;

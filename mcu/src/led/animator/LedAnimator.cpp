@@ -1,7 +1,7 @@
 /**
  * @file LedAnimator.cpp
  * @author TheRealKasumi
- * @brief Contains the implementation of {@link TesLight::LedAnimator}.
+ * @brief Contains the implementation of {@link TL::LedAnimator}.
  *
  * @copyright Copyright (c) 2022
  *
@@ -9,13 +9,10 @@
 #include "led/animator/LedAnimator.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::LedAnimator}.
+ * @brief Create a new instance of {@link TL::LedAnimator}.
  */
-TesLight::LedAnimator::LedAnimator()
+TL::LedAnimator::LedAnimator()
 {
-	this->pixels = nullptr;
-	this->pixelCount = 0;
-
 	this->speed = 0;
 	this->offset = 0;
 	this->animationBrightness = 0.0f;
@@ -39,53 +36,17 @@ TesLight::LedAnimator::LedAnimator()
 }
 
 /**
- * @brief Destroy the {@link TesLight::LedAnimator} instance.
+ * @brief Destroy the {@link TL::LedAnimator} instance.
  */
-TesLight::LedAnimator::~LedAnimator()
+TL::LedAnimator::~LedAnimator()
 {
-}
-
-/**
- * @brief Set the {@link CRGB} array reference for the {@link LedAnimator}.
- * @param pixels reference to the {@link CRGB} array
- */
-void TesLight::LedAnimator::setPixels(CRGB *pixels)
-{
-	this->pixels = pixels;
-}
-
-/**
- * @brief Get the reference to the {@link CRGB} array.
- * @return Reference to the {@link CRGB} array
- */
-CRGB *TesLight::LedAnimator::getPixels()
-{
-	return this->pixels;
-}
-
-/**
- * @brief Set the number of pixels to render.
- * @param pixelCount number of pixels.
- */
-void TesLight::LedAnimator::setPixelCount(const uint16_t pixelCount)
-{
-	this->pixelCount = pixelCount;
-}
-
-/**
- * @brief Get the number of {@link CRGB} that are used by the {@link LedAnimator}.
- * @return uint16_t number of {@link CRGB}
- */
-uint16_t TesLight::LedAnimator::getPixelCount()
-{
-	return this->pixelCount;
 }
 
 /**
  * @brief Set the animation speed.
  * @param speed animation speed
  */
-void TesLight::LedAnimator::setSpeed(const uint8_t speed)
+void TL::LedAnimator::setSpeed(const uint8_t speed)
 {
 	this->speed = speed;
 }
@@ -94,7 +55,7 @@ void TesLight::LedAnimator::setSpeed(const uint8_t speed)
  * @brief Get the animation speed.
  * @return uint8_t animation speed
  */
-uint8_t TesLight::LedAnimator::getSpeed()
+uint8_t TL::LedAnimator::getSpeed()
 {
 	return this->speed;
 }
@@ -103,16 +64,16 @@ uint8_t TesLight::LedAnimator::getSpeed()
  * @brief Set the animation offset.
  * @param offset animation offset
  */
-void TesLight::LedAnimator::setOffset(const uint16_t offset)
+void TL::LedAnimator::setOffset(const uint16_t offset)
 {
 	this->offset = offset;
 }
 
 /**
  * @brief Get the animation offset.
- * @return uint16_t animation offset
+ * @return animation offset
  */
-uint16_t TesLight::LedAnimator::getOffset()
+uint16_t TL::LedAnimator::getOffset()
 {
 	return this->offset;
 }
@@ -121,7 +82,7 @@ uint16_t TesLight::LedAnimator::getOffset()
  * @brief Set the animation brightness.
  * @param animationBrightness brightness of the animation from 0.0 to 1.0
  */
-void TesLight::LedAnimator::setAnimationBrightness(const float animationBrightness)
+void TL::LedAnimator::setAnimationBrightness(const float animationBrightness)
 {
 	this->animationBrightness = animationBrightness;
 	if (this->animationBrightness < 0.0f)
@@ -136,9 +97,9 @@ void TesLight::LedAnimator::setAnimationBrightness(const float animationBrightne
 
 /**
  * @brief Get the animation brightness.
- * @return float animation brightness from 0.0 to 1.0
+ * @return animation brightness from 0.0 to 1.0
  */
-float TesLight::LedAnimator::getAnimationBrightness()
+float TL::LedAnimator::getAnimationBrightness()
 {
 	return this->animationBrightness;
 }
@@ -147,7 +108,7 @@ float TesLight::LedAnimator::getAnimationBrightness()
  * @brief Set the ambient brightness.
  * @param ambientBrightness ambient brightness from 0.0 to 1.0
  */
-void TesLight::LedAnimator::setAmbientBrightness(const float ambientBrightness)
+void TL::LedAnimator::setAmbientBrightness(const float ambientBrightness)
 {
 	this->ambientBrightness = ambientBrightness;
 	if (this->ambientBrightness < 0.0f)
@@ -162,9 +123,9 @@ void TesLight::LedAnimator::setAmbientBrightness(const float ambientBrightness)
 
 /**
  * @brief Get the ambient brightness.
- * @return float ambient brightness from 0.0 to 1.0
+ * @return ambient brightness from 0.0 to 1.0
  */
-float TesLight::LedAnimator::getAmbientBrightness()
+float TL::LedAnimator::getAmbientBrightness()
 {
 	return this->ambientBrightness;
 }
@@ -173,7 +134,7 @@ float TesLight::LedAnimator::getAmbientBrightness()
  * @brief Set the fading speed.
  * @param fadeSpeed fading speed from 0.0 to 1.0
  */
-void TesLight::LedAnimator::setFadeSpeed(const float fadeSpeed)
+void TL::LedAnimator::setFadeSpeed(const float fadeSpeed)
 {
 	this->fadeSpeed = fadeSpeed;
 	if (this->fadeSpeed < 0.0f)
@@ -188,9 +149,9 @@ void TesLight::LedAnimator::setFadeSpeed(const float fadeSpeed)
 
 /**
  * @brief Get the fading speed.
- * @return float fading speed from 0.0 to 1.0
+ * @return fading speed from 0.0 to 1.0
  */
-float TesLight::LedAnimator::getFadeSpeed()
+float TL::LedAnimator::getFadeSpeed()
 {
 	return this->fadeSpeed;
 }
@@ -199,7 +160,7 @@ float TesLight::LedAnimator::getFadeSpeed()
  * @brief Reverse the animation.
  * @param reverse {@code true} to reverse, {@code false} to not reverse
  */
-void TesLight::LedAnimator::setReverse(const bool reverse)
+void TL::LedAnimator::setReverse(const bool reverse)
 {
 	this->reverse = reverse;
 }
@@ -209,16 +170,16 @@ void TesLight::LedAnimator::setReverse(const bool reverse)
  * @return true reversed
  * @return false not reversed
  */
-bool TesLight::LedAnimator::getReverse()
+bool TL::LedAnimator::getReverse()
 {
 	return this->reverse;
 }
 
 /**
  * @brief Set the motion sensor data.
- * @param motionSensorData instance of {@link TesLight::MotionSensor::MotionSensorData}
+ * @param motionSensorData instance of {@link TL::MotionSensor::MotionSensorData}
  */
-void TesLight::LedAnimator::setMotionSensorData(const TesLight::MotionSensor::MotionSensorData motionSensorData)
+void TL::LedAnimator::setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData)
 {
 	this->motionSensorData = motionSensorData;
 }
@@ -227,15 +188,16 @@ void TesLight::LedAnimator::setMotionSensorData(const TesLight::MotionSensor::Mo
  * @brief Get the currently set and used motion sensor data.
  * @return currently set and used motion sensor data
  */
-TesLight::MotionSensor::MotionSensorData TesLight::LedAnimator::getMotionSensorData()
+TL::MotionSensor::MotionSensorData TL::LedAnimator::getMotionSensorData()
 {
 	return this->motionSensorData;
 }
 
 /**
  * @brief Apply the brightness settings to all pixels.
+ * @param pixels reference to the vector holding the LED pixel data
  */
-void TesLight::LedAnimator::applyBrightness()
+void TL::LedAnimator::applyBrightness(std::vector<CRGB> &pixels)
 {
 	if (this->smoothedAmbBrightness < this->ambientBrightness)
 	{
@@ -255,9 +217,9 @@ void TesLight::LedAnimator::applyBrightness()
 	}
 
 	const float totalBrightness = this->animationBrightness * this->smoothedAmbBrightness;
-	for (uint16_t i = 0; i < this->pixelCount; i++)
+	for (size_t i = 0; i < pixels.size(); i++)
 	{
-		this->pixels[i].setRGB(this->pixels[i].r * totalBrightness, this->pixels[i].g * totalBrightness, this->pixels[i].b * totalBrightness);
+		pixels.at(i).setRGB(pixels.at(i).r * totalBrightness, pixels.at(i).g * totalBrightness, pixels.at(i).b * totalBrightness);
 	}
 }
 
@@ -266,7 +228,7 @@ void TesLight::LedAnimator::applyBrightness()
  * @param angle input angle in degree
  * @return float value between 0.0 and 1.0 representing the trapezoid
  */
-float TesLight::LedAnimator::trapezoid(float angle)
+float TL::LedAnimator::trapezoid(float angle)
 {
 	// This will limit the angle to [0...360]
 	float factor = angle / 360.0f;
@@ -306,7 +268,7 @@ float TesLight::LedAnimator::trapezoid(float angle)
  * @param angle input angle in degree
  * @return float value between 0.0 and 1.0 representing the trapezoid
  */
-float TesLight::LedAnimator::trapezoid2(float angle)
+float TL::LedAnimator::trapezoid2(float angle)
 {
 	// This will limit the angle to [0...360]
 	float factor = angle / 360.0f;

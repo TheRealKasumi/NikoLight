@@ -10,13 +10,11 @@
 #define LOG_ENDPOINT_H
 
 #include <FS.h>
-#include <esp_task_wdt.h>
-
 #include "configuration/SystemConfiguration.h"
 #include "server/RestEndpoint.h"
 #include "logging/Logger.h"
 
-namespace TesLight
+namespace TL
 {
 	class LogEndpoint : public RestEndpoint
 	{

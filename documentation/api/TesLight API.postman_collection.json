@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "c834c289-81fc-4aea-a654-b4fbe727232e",
-		"name": "TesLight",
+		"_postman_id": "7e57b9b5-edb4-4b23-91b3-e033376642b6",
+		"name": "TesLight API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "12963851"
 	},
@@ -62,14 +62,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "data",
-									"value": "AQEeAB4AAAgK",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\r\n    \"systemConfig\": {\r\n        \"logLevel\": 1,\r\n        \"lightSensorMode\": 1,\r\n        \"lightSensorThreshold\": 5,\r\n        \"lightSensorMinAmbientBrightness\": 5,\r\n        \"lightSensorMaxAmbientBrightness\": 255,\r\n        \"lightSensorMinLedBrightness\": 0,\r\n        \"lightSensorMaxLedBrightness\": 255,\r\n        \"lightSensorDuration\": 6,\r\n        \"regulatorPowerLimit\": 24,\r\n        \"regulatorHighTemperature\": 70,\r\n        \"regulatorCutoffTemperature\": 85,\r\n        \"fanMinPwmValue\": 75,\r\n        \"fanMaxPwmValue\": 255,\r\n        \"fanMinTemperature\": 60,\r\n        \"fanMaxTemperature\": 80\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/config/system",
@@ -120,14 +119,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "data",
-                  							"value": "DQIAADIKADIAHgAAAAAAAAAAAAAAAAAAADIMDAwRAgAAMgoAMgAeAAAAAAAAAAAAAAAAAAAAMgwMDA4CAAAyCgAyAB4AAAAAAAAAAAAAAAAAAAAyDAwMFQIAADIKADIAHgAAAAAAAAAAAAAAAAAAADIMDAwPAgAAMgoAMgAeAAAAAAAAAAAAAAAAAAAAMgwMDBYCAAAyCgAyAB4AAAAAAAAAAAAAAAAAAAAyDAwMEAIAADIKADIAHgAAAAAAAAAAAAAAAAAAADIMDAwZAgAAMgoAMgAeAAAAAAAAAAAAAAAAAAAAMgwMDA==",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\"ledConfig\":[{\"ledPin\":13,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]},{\"ledPin\":14,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]},{\"ledPin\":15,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]},{\"ledPin\":16,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]},{\"ledPin\":17,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]},{\"ledPin\":21,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]},{\"ledPin\":22,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]},{\"ledPin\":25,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]}]}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/config/led",
@@ -175,14 +173,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "data",
-									"value": "CABUZXNMaWdodAoAVGVzTGlnaHRQVwEAAQAAAAA=",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\r\n    \"wifiConfig\": {\r\n        \"accessPointSsid\": \"TesLight\",\r\n        \"accessPointPassword\": \"TesLightPW\",\r\n        \"accessPointChannel\": 1,\r\n        \"accessPointHidden\": false,\r\n        \"accessPointMaxConnections\": 1\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "http://{{TESLIGHTIP}}/api/config/wifi",
@@ -232,8 +229,9 @@
 							"mode": "formdata",
 							"formdata": [
 								{
-									"key": "",
-									"type": "file"
+									"key": "file",
+									"type": "file",
+									"src": []
 								}
 							]
 						},
@@ -313,7 +311,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/log?start=0&count=197",
+							"raw": "http://{{TESLIGHTIP}}/api/log?start=0&count=1024",
 							"protocol": "http",
 							"host": [
 								"{{TESLIGHTIP}}"
@@ -329,7 +327,7 @@
 								},
 								{
 									"key": "count",
-                 							"value": "128"
+									"value": "1024"
 								}
 							]
 						}
@@ -369,8 +367,9 @@
 							"mode": "formdata",
 							"formdata": [
 								{
-									"key": "",
-									"type": "file"
+									"key": "file",
+									"type": "file",
+									"src": []
 								}
 							]
 						},
@@ -428,6 +427,86 @@
 								"api",
 								"reset",
 								"hard"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Motion Sensor",
+			"item": [
+				{
+					"name": "Get Motion Sensor Calibration",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/motion",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"motion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Motion Sensor Calibration",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"motionSensorCalibration\": {\r\n        \"accXRaw\": 0,\r\n        \"accYRaw\": 0,\r\n        \"accZRaw\": 0,\r\n        \"gyroXRaw\": 0,\r\n        \"gyroYRaw\": 0,\r\n        \"gyroZRaw\": 0,\r\n        \"accXG\": 0,\r\n        \"accYG\": 0,\r\n        \"accZG\": 0,\r\n        \"gyroXDeg\": 0,\r\n        \"gyroYDeg\": 0,\r\n        \"gyroZDeg\": 0\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/motion",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"motion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Calibrate Motion Sensor",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/motion",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"motion"
 							]
 						}
 					},

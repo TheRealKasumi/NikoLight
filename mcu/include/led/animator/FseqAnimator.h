@@ -9,26 +9,27 @@
 #ifndef FSEQ_ANIMATOR_H
 #define FSEQ_ANIMATOR_H
 
+#include <vector>
 #include "led/animator/LedAnimator.h"
 #include "util/FseqLoader.h"
 
-namespace TesLight
+namespace TL
 {
 	class FseqAnimator : public LedAnimator
 	{
 	public:
 		FseqAnimator();
-		FseqAnimator(TesLight::FseqLoader *fseqLoader, const bool loop = false);
+		FseqAnimator(TL::FseqLoader *fseqLoader, const bool loop = false);
 		~FseqAnimator();
 
-		void setFseqLoader(TesLight::FseqLoader *fseqLoader);
+		void setFseqLoader(TL::FseqLoader *fseqLoader);
 		void setLoop(const bool loop);
 
-		void init();
-		void render();
+		void init(std::vector<CRGB> &pixels);
+		void render(std::vector<CRGB> &pixels);
 
 	private:
-		TesLight::FseqLoader *fseqLoader;
+		TL::FseqLoader *fseqLoader;
 		bool loop;
 	};
 }

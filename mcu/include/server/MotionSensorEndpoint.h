@@ -12,26 +12,27 @@
 #include "server/RestEndpoint.h"
 #include "configuration/Configuration.h"
 #include "configuration/SystemConfiguration.h"
-#include "util/InMemoryBinaryFile.h"
 #include "logging/Logger.h"
 #include "sensor/MotionSensor.h"
 
-namespace TesLight
+namespace TL
 {
 	class MotionSensorEndpoint : public RestEndpoint
 	{
 	public:
-		static void begin(TesLight::Configuration *_configuration, TesLight::MotionSensor *_motionSensor);
+		static void begin(TL::Configuration *_configuration, TL::MotionSensor *_motionSensor);
 
 	private:
 		MotionSensorEndpoint();
 
-		static TesLight::Configuration *configuration;
-		static TesLight::MotionSensor *motionSensor;
+		static TL::Configuration *configuration;
+		static TL::MotionSensor *motionSensor;
 
 		static void getCalibrationData();
 		static void postCalibrationData();
 		static void runCalibration();
+
+		static bool validateConfiguration(const JsonObject &jsonObject);
 	};
 }
 

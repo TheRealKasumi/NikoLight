@@ -11,23 +11,18 @@
 
 #include <stdint.h>
 #include <math.h>
+#include <vector>
 
 #include "FastLED.h"
 #include "sensor/MotionSensor.h"
 
-namespace TesLight
+namespace TL
 {
 	class LedAnimator
 	{
 	public:
 		LedAnimator();
 		virtual ~LedAnimator() = 0;
-
-		void setPixels(CRGB *pixels);
-		CRGB *getPixels();
-
-		void setPixelCount(const uint16_t pixelCount);
-		uint16_t getPixelCount();
 
 		void setSpeed(const uint8_t speed);
 		uint8_t getSpeed();
@@ -47,16 +42,13 @@ namespace TesLight
 		void setReverse(const bool reverse);
 		bool getReverse();
 
-		void setMotionSensorData(const TesLight::MotionSensor::MotionSensorData motionSensorData);
-		TesLight::MotionSensor::MotionSensorData getMotionSensorData();
+		void setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData);
+		TL::MotionSensor::MotionSensorData getMotionSensorData();
 
-		virtual void init() = 0;
-		virtual void render() = 0;
+		virtual void init(std::vector<CRGB> &pixels) = 0;
+		virtual void render(std::vector<CRGB> &pixels) = 0;
 
 	protected:
-		CRGB *pixels;
-		uint16_t pixelCount;
-
 		uint8_t speed;
 		uint16_t offset;
 		float animationBrightness;
@@ -65,9 +57,9 @@ namespace TesLight
 		float fadeSpeed;
 		bool reverse;
 
-		TesLight::MotionSensor::MotionSensorData motionSensorData;
+		TL::MotionSensor::MotionSensorData motionSensorData;
 
-		void applyBrightness();
+		void applyBrightness(std::vector<CRGB> &pixels);
 		static float trapezoid(float angle);
 		static float trapezoid2(float angle);
 	};

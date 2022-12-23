@@ -9,10 +9,10 @@
 #ifndef STATIC_COLOR_ANIMATOR_H
 #define STATIC_COLOR_ANIMATOR_H
 
-#include <math.h>
+#include <vector>
 #include "led/animator/LedAnimator.h"
 
-namespace TesLight
+namespace TL
 {
 	class StaticColorAnimator : public LedAnimator
 	{
@@ -21,8 +21,8 @@ namespace TesLight
 		StaticColorAnimator(const CRGB color);
 		~StaticColorAnimator();
 
-		void init();
-		void render();
+		void init(std::vector<CRGB> &pixels);
+		void render(std::vector<CRGB> &pixels);
 
 		void setColor(const CRGB color);
 

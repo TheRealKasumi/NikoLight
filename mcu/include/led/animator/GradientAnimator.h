@@ -9,10 +9,10 @@
 #ifndef GRADIENT_ANIMATOR_H
 #define GRADIENT_ANIMATOR_H
 
-#include <math.h>
+#include <vector>
 #include "led/animator/LedAnimator.h"
 
-namespace TesLight
+namespace TL
 {
 	class GradientAnimator : public LedAnimator
 	{
@@ -24,17 +24,17 @@ namespace TesLight
 		};
 
 		GradientAnimator();
-		GradientAnimator(const TesLight::GradientAnimator::GradientMode gradientMode, const CRGB color1, const CRGB color2);
+		GradientAnimator(const TL::GradientAnimator::GradientMode gradientMode, const CRGB color1, const CRGB color2);
 		~GradientAnimator();
 
-		void init();
-		void render();
+		void init(std::vector<CRGB> &pixels);
+		void render(std::vector<CRGB> &pixels);
 
-		void setGradientMode(const TesLight::GradientAnimator::GradientMode gradientMode);
+		void setGradientMode(const TL::GradientAnimator::GradientMode gradientMode);
 		void setColor(const CRGB color1, const CRGB color2);
 
 	private:
-		TesLight::GradientAnimator::GradientMode gradientMode;
+		TL::GradientAnimator::GradientMode gradientMode;
 		CRGB color[2];
 	};
 }
