@@ -752,7 +752,7 @@ components:
                         format: uint32
                         example: 33430436
                      fileId:
-                        type: interger
+                        type: integer
                         format: uint32
                         example: 2839768
       LogSize:
