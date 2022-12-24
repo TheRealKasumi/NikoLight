@@ -92,13 +92,14 @@
 #define WEB_SERVER_STATIC_CONTENT "/ui/"  // Static content location for the UI
 
 // Timer configuration
-#define LED_FRAME_TIME 16666			// Cycle time for the LEDs in µs
-#define TEMP_INTERVAL 250000			// Cycle time for reading temperatures and run fan controll in µs
-#define LIGHT_SENSOR_INTERVAL 40000		// Cycle time for the light sensor in µs
-#define MOTION_SENSOR_INTERVAL 20000	// Cycle time for the motion sensor in µs
-#define WEB_SERVER_INTERVAL 20000		// Cycle time for the web server to accept conenctions in µs
-#define STATUS_INTERVAL 5000000			// Cycle time for printing the current status in µs
-#define WATCHDOG_RESET_TIME 2			// Time until a watchdog reset is triggered
+#define RENDER_INTERVAL 16666			// Interval for rendering the pixels in µs
+#define FRAME_INTERVAL 16666			// Interval for outputting to the LEDs in µs
+#define TEMP_INTERVAL 250000			// Interval for reading temperatures and run fan controll in µs
+#define LIGHT_SENSOR_INTERVAL 40000		// Interval for the light sensor in µs
+#define MOTION_SENSOR_INTERVAL 20000	// Interval for the motion sensor in µs
+#define WEB_SERVER_INTERVAL 20000		// Interval for the web server to accept conenctions in µs
+#define STATUS_INTERVAL 5000000			// Interval for printing the current status in µs
+#define WATCHDOG_RESET_TIME 3			// Time until a watchdog reset is triggered
 
 // FSEQ configuration
 #define FSEQ_DIRECTORY "/fseq" // Directory for fseq files

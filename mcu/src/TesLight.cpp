@@ -16,20 +16,24 @@ std::unique_ptr<TL::LightSensor> TesLight::lightSensor = nullptr;
 std::unique_ptr<TL::MotionSensor> TesLight::motionSensor = nullptr;
 std::unique_ptr<TL::WiFiManager> TesLight::wifiManager = nullptr;
 std::unique_ptr<TL::WebServerManager> TesLight::webServerManager = nullptr;
-unsigned long TesLight::ledInterval = LED_FRAME_TIME;
+
+unsigned long TesLight::renderInterval = RENDER_INTERVAL;
+unsigned long TesLight::frameInterval = FRAME_INTERVAL;
 unsigned long TesLight::lightSensorInterval = LIGHT_SENSOR_INTERVAL;
 unsigned long TesLight::motionSensorInterval = MOTION_SENSOR_INTERVAL;
-unsigned long TesLight::webServerInterval = WEB_SERVER_INTERVAL;
-unsigned long TesLight::statusInterval = STATUS_INTERVAL;
 unsigned long TesLight::temperatureInterval = TEMP_INTERVAL;
-unsigned long TesLight::ledTimer = 0;
+unsigned long TesLight::statusInterval = STATUS_INTERVAL;
+unsigned long TesLight::webServerInterval = WEB_SERVER_INTERVAL;
+unsigned long TesLight::renderTimer = 0;
+unsigned long TesLight::frameTimer = 0;
 unsigned long TesLight::lightSensorTimer = 0;
 unsigned long TesLight::motionSensorTimer = 0;
-unsigned long TesLight::webServerTimer = 0;
-unsigned long TesLight::statusTimer = 0;
 unsigned long TesLight::temperatureTimer = 0;
-uint16_t TesLight::ledRenderFrameCounter = 0;
-uint16_t TesLight::ledDrawFrameCounter = 0;
+unsigned long TesLight::statusTimer = 0;
+unsigned long TesLight::webServerTimer = 0;
+
+uint16_t TesLight::renderCounter = 0;
+uint16_t TesLight::frameCounter = 0;
 float TesLight::ledPowerCounter = 0.0f;
 
 /**
@@ -149,6 +153,10 @@ void TesLight::begin()
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to load LEDs and animators. Continue without rendering LEDs."));
 	}
 
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Get render and frame interval from LED Manager."));
+	renderInterval = ledManager->getRenderInterval();
+	frameInterval = ledManager->getFrameInterval();
+
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Creating to WiFi network."));
 	if (createtWiFiNetwork())
 	{
@@ -185,30 +193,29 @@ void TesLight::begin()
  */
 void TesLight::run()
 {
-	bool skipFrame = false;
+	// Handle the pixel rendering
+	if (checkTimer(renderTimer, renderInterval))
+	{
+		ledManager->render();
+		renderCounter++;
+	}
 
 	// Handle the LEDs
-	if (checkTimer(ledTimer, ledInterval, skipFrame, false))
+	if (checkTimer(frameTimer, frameInterval))
 	{
-		ledInterval = ledManager->getTargetFrameTime();
-		ledManager->render();
-		ledRenderFrameCounter++;
-		if (!skipFrame)
-		{
-			ledManager->show();
-			ledDrawFrameCounter++;
-			ledPowerCounter += ledManager->getLedPowerDraw();
-		}
+		ledManager->show();
+		frameCounter++;
+		ledPowerCounter += ledManager->getLedPowerDraw();
 	}
 
 	// Handle the light sensor
-	if (checkTimer(lightSensorTimer, lightSensorInterval, skipFrame, true))
+	if (checkTimer(lightSensorTimer, lightSensorInterval))
 	{
-		lightSensorInterval = LIGHT_SENSOR_INTERVAL;
 		float brightness;
 		if (lightSensor->getBrightness(brightness, motionSensor.get()))
 		{
 			ledManager->setAmbientBrightness(brightness);
+			lightSensorInterval = LIGHT_SENSOR_INTERVAL;
 		}
 		else
 		{
@@ -218,12 +225,12 @@ void TesLight::run()
 	}
 
 	// Handle the motion sensor
-	if (checkTimer(motionSensorTimer, motionSensorInterval, skipFrame, true))
+	if (checkTimer(motionSensorTimer, motionSensorInterval))
 	{
-		motionSensorInterval = MOTION_SENSOR_INTERVAL;
 		if (motionSensor->run())
 		{
 			ledManager->setMotionSensorData(motionSensor->getMotion());
+			motionSensorInterval = MOTION_SENSOR_INTERVAL;
 		}
 		else
 		{
@@ -232,48 +239,14 @@ void TesLight::run()
 		}
 	}
 
-	// Handle web server requests
-	if (checkTimer(webServerTimer, webServerInterval, skipFrame, true))
-	{
-		webServerInterval = WEB_SERVER_INTERVAL;
-		if (!TL::WatchDog::deleteTaskWatchdog())
-		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to delete task watchdog before handling webserver."));
-		}
-		webServerManager->handleRequest();
-		if (!TL::WatchDog::initializeTaskWatchdog())
-		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize task watchdog after handling webserver."));
-		}
-	}
-
-	// Measure the FPS and print status message
-	if (checkTimer(statusTimer, statusInterval, skipFrame, true))
-	{
-		statusInterval = STATUS_INTERVAL;
-		const float renderfps = (float)ledRenderFrameCounter / (STATUS_INTERVAL / 1000000);
-		const float drawfps = (float)ledDrawFrameCounter / (STATUS_INTERVAL / 1000000);
-		const float powerDraw = ledPowerCounter / ledDrawFrameCounter;
-		ledRenderFrameCounter = 0;
-		ledDrawFrameCounter = 0;
-		ledPowerCounter = 0.0f;
-		float temperature;
-		if (!temperatureSensor->getMaxTemperature(temperature))
-		{
-			temperature = 0.0f;
-		}
-		uint32_t freeHeap = ESP.getFreeHeap() / 1024;
-		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Renderer: ") + renderfps + F("FPS      LED: ") + drawfps + F("FPS      Average Power: ") + powerDraw + F("W      Regulators: ") + temperature + F("°C      Memory: ") + freeHeap + F("kB"));
-	}
-
 	// Handle the temperature measurement and fan controller
-	if (checkTimer(temperatureTimer, temperatureInterval, skipFrame, true))
+	if (checkTimer(temperatureTimer, temperatureInterval))
 	{
-		temperatureInterval = TEMP_INTERVAL;
 		float temp;
 		if (temperatureSensor->getMaxTemperature(temp))
 		{
 			ledManager->setRegulatorTemperature(temp);
+			temperatureInterval = TEMP_INTERVAL;
 		}
 		else
 		{
@@ -281,6 +254,46 @@ void TesLight::run()
 			temperatureInterval += 5000000;
 		}
 		fanController->setTemperature(temp > -75.0f ? temp : configuration->getSystemConfig().fanMaxTemperature);
+	}
+
+	// Measure the FPS and print status message
+	if (checkTimer(statusTimer, statusInterval))
+	{
+		const float renderfps = (float)renderCounter / (STATUS_INTERVAL / 1000000);
+		const float outputfps = (float)frameCounter / (STATUS_INTERVAL / 1000000);
+		const float powerDraw = ledPowerCounter / frameCounter;
+		renderCounter = 0;
+		frameCounter = 0;
+		ledPowerCounter = 0.0f;
+		float temperature;
+		if (!temperatureSensor->getMaxTemperature(temperature))
+		{
+			temperature = 0.0f;
+		}
+		uint32_t freeHeap = ESP.getFreeHeap() / 1024;
+		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Renderer: ") + renderfps + F("FPS      LED: ") + outputfps + F("FPS      Average Power: ") + powerDraw + F("W      Regulators: ") + temperature + F("°C      Memory: ") + freeHeap + F("kB"));
+	}
+
+	// Handle web server requests
+	if (checkTimer(webServerTimer, webServerInterval))
+	{
+		if (!TL::WatchDog::deleteTaskWatchdog())
+		{
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to delete task watchdog before handling webserver."));
+		}
+
+		unsigned long start = millis();
+		webServerManager->handleRequest();
+		unsigned long executionTime = millis() - start;
+		if (executionTime > 2000)
+		{
+			initializeTimers();
+		}
+
+		if (!TL::WatchDog::initializeTaskWatchdog())
+		{
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize task watchdog after handling webserver."));
+		}
 	}
 
 	// Reset the task watchdog timer
@@ -481,41 +494,31 @@ void TesLight::initializeRestApi()
 void TesLight::initializeTimers()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize timers."));
-	ledTimer = micros();
-	lightSensorTimer = micros();
-	motionSensorTimer = micros();
-	webServerTimer = micros();
-	statusTimer = micros();
-	temperatureTimer = micros();
-	ledRenderFrameCounter = 0;
-	ledDrawFrameCounter = 0;
-	TL::Logger::log(TL::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Timers initialized."));
+	unsigned long mic = micros();
+	renderTimer = mic;
+	frameTimer = mic;
+	lightSensorTimer = mic;
+	motionSensorTimer = mic;
+	temperatureTimer = mic;
+	statusTimer = mic;
+	webServerTimer = mic;
+	renderCounter = 0;
+	frameCounter = 0;
 }
 
 /**
  * @brief Check if a timer expired.
  * @param timer timer value
  * @param cycleTime cycle time of the timer
- * @param skipFrame is set to true when frames should be skipped because the controller cant keep up
- * @param resetOnSkip resets the timer when a frame is skipped
  * @return true when the timer expired
  * @return false when the timer is not expired yet
  */
-bool TesLight::checkTimer(unsigned long &timer, unsigned long cycleTime, bool &skipFrame, bool resetOnSkip)
+bool TesLight::checkTimer(unsigned long &timer, unsigned long cycleTime)
 {
-	skipFrame = false;
 	unsigned long mic = micros();
 	if (mic - timer > cycleTime)
 	{
 		timer += cycleTime;
-		if (mic - timer > cycleTime * 5)
-		{
-			skipFrame = true;
-			if (resetOnSkip)
-			{
-				timer = mic + cycleTime;
-			}
-		}
 		return true;
 	}
 	return false;
@@ -600,7 +603,6 @@ bool TesLight::applySystemConfig()
 	const TL::Configuration::SystemConfig systemConfig = configuration->getSystemConfig();
 	TL::Logger::setMinLogLevel((TL::Logger::LogLevel)systemConfig.logLevel);
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System configuration updated."));
-	initializeTimers();
 	return true;
 }
 
@@ -615,12 +617,16 @@ bool TesLight::applyLedConfig()
 	if (ledManager->reloadAnimations())
 	{
 		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("LEDs and animators reloaded."));
+		renderInterval = ledManager->getRenderInterval();
+		frameInterval = ledManager->getFrameInterval();
 		initializeTimers();
 		return true;
 	}
 	else
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to reload LEDs and animators. Continue without rendering LEDs."));
+		renderInterval = ledManager->getRenderInterval();
+		frameInterval = ledManager->getFrameInterval();
 		initializeTimers();
 		return false;
 	}
@@ -637,13 +643,11 @@ bool TesLight::applyWifiConfig()
 	if (createtWiFiNetwork())
 	{
 		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("WiFi configuration updated."));
-		initializeTimers();
 		return true;
 	}
 	else
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to create WiFi network. Continuing without WiFi network. The REST API might be inaccessible."));
-		initializeTimers();
 		return false;
 	}
 }

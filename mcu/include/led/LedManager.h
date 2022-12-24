@@ -42,11 +42,18 @@ namespace TL
 		void clearAnimations();
 
 		void setAmbientBrightness(const float ambientBrightness);
-		void setTargetFrameTime(const uint32_t targetFrameTime);
-		uint32_t getTargetFrameTime();
+
+		void setRenderInterval(const uint32_t renderInterval);
+		uint32_t getRenderInterval();
+
+		void setFrameInterval(const uint32_t frameInterval);
+		uint32_t getFrameInterval();
+
 		void setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData);
 		void setRegulatorTemperature(const float regulatorTemperature);
+
 		float getLedPowerDraw();
+		size_t getLedCount();
 
 		void render();
 		void show();
@@ -57,7 +64,8 @@ namespace TL
 		std::vector<std::unique_ptr<TL::LedAnimator>> ledAnimator;
 		std::unique_ptr<TL::FseqLoader> fseqLoader;
 
-		uint32_t targetFrameTime;
+		uint32_t renderInterval;
+		uint32_t frameInterval;
 		float regulatorTemperature;
 
 		bool createLedData();

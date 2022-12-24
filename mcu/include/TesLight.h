@@ -56,21 +56,25 @@ private:
 	static std::unique_ptr<TL::WiFiManager> wifiManager;
 	static std::unique_ptr<TL::WebServerManager> webServerManager;
 
-	// Timer and counter
-	static unsigned long ledInterval;
+	// Timer
+	static unsigned long renderInterval;
+	static unsigned long frameInterval;
 	static unsigned long lightSensorInterval;
 	static unsigned long motionSensorInterval;
-	static unsigned long webServerInterval;
-	static unsigned long statusInterval;
 	static unsigned long temperatureInterval;
-	static unsigned long ledTimer;
+	static unsigned long statusInterval;
+	static unsigned long webServerInterval;
+	static unsigned long renderTimer;
+	static unsigned long frameTimer;
 	static unsigned long lightSensorTimer;
 	static unsigned long motionSensorTimer;
-	static unsigned long webServerTimer;
-	static unsigned long statusTimer;
 	static unsigned long temperatureTimer;
-	static uint16_t ledRenderFrameCounter;
-	static uint16_t ledDrawFrameCounter;
+	static unsigned long statusTimer;
+	static unsigned long webServerTimer;
+
+	// Counter
+	static uint16_t renderCounter;
+	static uint16_t frameCounter;
 	static float ledPowerCounter;
 
 	// Initialization functions
@@ -88,7 +92,7 @@ private:
 	static void initializeWebServerManager();
 	static void initializeRestApi();
 	static void initializeTimers();
-	static bool checkTimer(unsigned long &timer, unsigned long cycleTime, bool &skipFrame, bool resetOnSkip = false);
+	static bool checkTimer(unsigned long &timer, unsigned long cycleTime);
 
 	// System update functions
 	static bool updateAvilable();

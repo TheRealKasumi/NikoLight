@@ -16,7 +16,8 @@
 TL::LedManager::LedManager(TL::Configuration *config)
 {
 	this->config = config;
-	this->targetFrameTime = LED_FRAME_TIME;
+	this->renderInterval = RENDER_INTERVAL;
+	this->frameInterval = FRAME_INTERVAL;
 	this->regulatorTemperature = 0.0f;
 }
 
@@ -69,29 +70,48 @@ void TL::LedManager::clearAnimations()
  */
 void TL::LedManager::setAmbientBrightness(const float ambientBrightness)
 {
-	for (uint8_t i = 0; i < this->ledAnimator.size(); i++)
+	for (size_t i = 0; i < this->ledAnimator.size(); i++)
 	{
 		this->ledAnimator.at(i)->setAmbientBrightness(ambientBrightness);
 	}
 }
 
 /**
- * @brief Set the targeted frame time for rendering the LEDs.
- * The minimum frame time is currently limited to 10ms.
- * @param targetFrameTime target frame time in microseconds
+ * @brief Set the interval for rendering the pixels in µs.
+ * The minimum frame time is currently limited to 10000µs.
+ * @param renderInterval target frame time in µs
  */
-void TL::LedManager::setTargetFrameTime(const uint32_t targetFrameTime)
+void TL::LedManager::setRenderInterval(const uint32_t renderInterval)
 {
-	this->targetFrameTime = targetFrameTime > 10 ? targetFrameTime : 10;
+	this->renderInterval = renderInterval >= 10000 ? renderInterval : 10000;
 }
 
 /**
- * @brief Get the targeted frame time for rendering the LEDs.
- * @return targeted frame time in microseconds
+ * @brief Get the interval for rendering the pixels.
+ * @return interval in microseconds
  */
-uint32_t TL::LedManager::getTargetFrameTime()
+uint32_t TL::LedManager::getRenderInterval()
 {
-	return this->targetFrameTime;
+	return this->renderInterval;
+}
+
+/**
+ * @brief Set the interval for outputting to the LEDs in µs.
+ * The minimum frame time is currently limited to 10000µs.
+ * @param frameInterval target frame time in µs
+ */
+void TL::LedManager::setFrameInterval(const uint32_t frameInterval)
+{
+	this->frameInterval = frameInterval >= 10000 ? frameInterval : 10000;
+}
+
+/**
+ * @brief Get the interval for outputting to the LEDs.
+ * @return interval in microseconds
+ */
+uint32_t TL::LedManager::getFrameInterval()
+{
+	return this->frameInterval;
 }
 
 /**
@@ -100,7 +120,7 @@ uint32_t TL::LedManager::getTargetFrameTime()
  */
 void TL::LedManager::setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData)
 {
-	for (uint8_t i = 0; i < this->ledAnimator.size(); i++)
+	for (size_t i = 0; i < this->ledAnimator.size(); i++)
 	{
 		this->ledAnimator.at(i)->setMotionSensorData(motionSensorData);
 	}
@@ -130,6 +150,20 @@ float TL::LedManager::getLedPowerDraw()
 		sum += regulatorPower[i];
 	}
 	return sum;
+}
+
+/**
+ * @brief Get the total number of LEDs.
+ * @return total number of LEDs
+ */
+size_t TL::LedManager::getLedCount()
+{
+	size_t count = 0;
+	for (size_t i = 0; i < this->ledData.size(); i++)
+	{
+		count += this->ledData.at(i).size();
+	}
+	return count;
 }
 
 /**
@@ -215,7 +249,26 @@ bool TL::LedManager::createAnimators()
 	memcpy(&identifier, &this->config->getLedConfig(0).customField[10], sizeof(identifier));
 	if (!customAnimation)
 	{
-		this->setTargetFrameTime(LED_FRAME_TIME);
+		const size_t ledCount = this->getLedCount();
+		if (ledCount <= 850)
+		{
+			// 60 FPS
+			this->setRenderInterval(RENDER_INTERVAL);
+			this->setFrameInterval(FRAME_INTERVAL);
+		}
+		else if (ledCount > 850 && ledCount <= 1000)
+		{
+			// 40 FPS
+			this->setRenderInterval(RENDER_INTERVAL);
+			this->setFrameInterval(FRAME_INTERVAL * 1.5f);
+		}
+		else
+		{
+			// 30 FPS
+			this->setRenderInterval(RENDER_INTERVAL);
+			this->setFrameInterval(FRAME_INTERVAL * 2.0f);
+		}
+
 		return this->loadCalculatedAnimations();
 	}
 	else
@@ -237,7 +290,8 @@ bool TL::LedManager::createAnimators()
 			return false;
 		}
 
-		this->setTargetFrameTime((uint32_t)this->fseqLoader->getHeader().stepTime * 1000);
+		this->setRenderInterval((uint32_t)this->fseqLoader->getHeader().stepTime * 1000);
+		this->setFrameInterval((uint32_t)this->fseqLoader->getHeader().stepTime * 1000);
 		return this->loadCustomAnimation();
 	}
 }
@@ -398,14 +452,7 @@ bool TL::LedManager::loadCalculatedAnimations()
  */
 bool TL::LedManager::loadCustomAnimation()
 {
-	uint32_t totalLedCount = 0;
-	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
-	{
-		const TL::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
-		totalLedCount += ledConfig.ledCount;
-	}
-
-	if (this->fseqLoader->getHeader().channelCount != totalLedCount * 3)
+	if (this->fseqLoader->getHeader().channelCount != this->getLedCount() * 3)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The fseq file can not be used with the current LED configuration because the LED count doesn't match the channel count."));
 		return false;
