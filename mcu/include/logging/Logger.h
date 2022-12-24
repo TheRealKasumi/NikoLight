@@ -1,7 +1,7 @@
 /**
  * @file Logger.h
  * @author TheRealKasumi
- * @brief Static class containing the {@link TesLight::Logger}.
+ * @brief Static class containing the {@link TL::Logger}.
  *
  * @copyright Copyright (c) 2022
  *
@@ -14,7 +14,7 @@
 
 #define SOURCE_LOCATION __FILE__, __func__, __LINE__
 
-namespace TesLight
+namespace TL
 {
 
 	class Logger
@@ -33,9 +33,9 @@ namespace TesLight
 		static bool begin(FS *fs, const String fn);
 		static bool begin(uint32_t baudRate, FS *fs, const String fn);
 
-		static void setMinLogLevel(const TesLight::Logger::LogLevel logLevel);
+		static void setMinLogLevel(const TL::Logger::LogLevel logLevel);
 
-		static void log(const TesLight::Logger::LogLevel logLevel, const char *file, const char *function, const int line, const String message);
+		static void log(const TL::Logger::LogLevel logLevel, const char *file, const char *function, const int line, const String message);
 
 		static size_t getLogSize();
 		static void readLog(uint8_t *buffer, const size_t start, const size_t bufferSize);
@@ -46,12 +46,12 @@ namespace TesLight
 		static bool logToFile;
 		static FS *fileSystem;
 		static String fileName;
-		static TesLight::Logger::LogLevel minLogLevel;
+		static TL::Logger::LogLevel minLogLevel;
 
 		Logger(){};
 
 		static bool testOpenFile(FS *fs, const String fn);
-		static String getLogLevelString(const TesLight::Logger::LogLevel logLevel);
+		static String getLogLevelString(const TL::Logger::LogLevel logLevel);
 		static String getTimeString();
 	};
 }

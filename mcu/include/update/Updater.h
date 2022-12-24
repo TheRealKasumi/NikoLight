@@ -16,18 +16,20 @@
 #include "update/TupFile.h"
 #include "util/FileUtil.h"
 
-namespace TesLight
+namespace TL
 {
 	class Updater
 	{
 	public:
 		static bool install(FS *fileSystem, const String packageFileName);
-		static void reboot(const String reason);
+		static void reboot(const String reason, const uint16_t delayMillis);
 
 	private:
 		Updater();
+		~Updater();
 
 		static bool installFirmware(FS *fileSystem, const String firmwareFileName);
+		static void rebootInt(void *params);
 	};
 }
 

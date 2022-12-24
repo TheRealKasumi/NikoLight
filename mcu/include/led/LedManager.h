@@ -9,6 +9,8 @@
 #ifndef LED_MANAGER_H
 #define LED_MANAGER_H
 
+#include <vector>
+#include <memory>
 #include <SD.h>
 
 #include "configuration/SystemConfiguration.h"
@@ -28,42 +30,42 @@
 
 #include "sensor/MotionSensor.h"
 
-namespace TesLight
+namespace TL
 {
 	class LedManager
 	{
 	public:
-		LedManager(TesLight::Configuration *config);
+		LedManager(TL::Configuration *config);
 		~LedManager();
 
 		bool reloadAnimations();
 		void clearAnimations();
 
 		void setAmbientBrightness(const float ambientBrightness);
-		bool getAmbientBrightness(float &ambientBrightness);
 
-		void setTargetFrameTime(const uint32_t targetFrameTime);
-		uint32_t getTargetFrameTime();
+		void setRenderInterval(const uint32_t renderInterval);
+		uint32_t getRenderInterval();
 
-		void setMotionSensorData(const TesLight::MotionSensor::MotionSensorData motionSensorData);
-		bool getMotionSensorData(TesLight::MotionSensor::MotionSensorData &motionSensorData);
+		void setFrameInterval(const uint32_t frameInterval);
+		uint32_t getFrameInterval();
 
+		void setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData);
 		void setRegulatorTemperature(const float regulatorTemperature);
-		float getRegulatorTemperature();
 
 		float getLedPowerDraw();
+		size_t getLedCount();
 
-		bool render();
+		void render();
 		void show();
 
 	private:
-		TesLight::Configuration *config;
+		TL::Configuration *config;
+		std::vector<std::vector<CRGB>> ledData;
+		std::vector<std::unique_ptr<TL::LedAnimator>> ledAnimator;
+		std::unique_ptr<TL::FseqLoader> fseqLoader;
 
-		CRGB *ledData[LED_NUM_ZONES];
-		TesLight::LedAnimator *ledAnimator[LED_NUM_ZONES];
-		TesLight::FseqLoader *fseqLoader = nullptr;
-		uint32_t targetFrameTime;
-
+		uint32_t renderInterval;
+		uint32_t frameInterval;
 		float regulatorTemperature;
 
 		bool createLedData();
@@ -71,9 +73,9 @@ namespace TesLight
 		bool loadCalculatedAnimations();
 		bool loadCustomAnimation();
 
-		bool calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_COUNT]);
-		bool limitPowerConsumption();
-		bool limitRegulatorTemperature();
+		void calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_COUNT]);
+		void limitPowerConsumption();
+		void limitRegulatorTemperature();
 
 		uint8_t getRegulatorIndexFromPin(const uint8_t pin);
 	};

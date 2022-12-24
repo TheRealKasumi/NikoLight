@@ -10,10 +10,13 @@
 #define DS18B20_H
 
 #include <stdint.h>
+#include <memory>
+#include <vector>
+
 #include "OneWire.h"
 #include "logging/Logger.h"
 
-namespace TesLight
+namespace TL
 {
 	class DS18B20
 	{
@@ -31,25 +34,24 @@ namespace TesLight
 
 		bool begin();
 
-		uint8_t getNumSensors();
-		uint64_t getSensorAddress(const uint8_t sensorIndex);
+		size_t getNumSensors();
+		uint64_t getSensorAddress(const size_t sensorIndex);
 
-		bool setResolution(const uint8_t sensorIndex, const TesLight::DS18B20::DS18B20Res resolution);
-		bool getResolution(const uint8_t sensorIndex, TesLight::DS18B20::DS18B20Res &resolution);
+		bool setResolution(const size_t sensorIndex, const TL::DS18B20::DS18B20Res resolution);
+		bool getResolution(const size_t sensorIndex, TL::DS18B20::DS18B20Res &resolution);
 
-		bool startMeasurement(const uint8_t sensorIndex);
-		bool isMeasurementReady(const uint8_t sensorIndex);
-		bool getTemperature(const uint8_t sensorIndex, float &temp);
+		bool startMeasurement(const size_t sensorIndex);
+		bool isMeasurementReady(const size_t sensorIndex);
+		bool getTemperature(const size_t sensorIndex, float &temp);
 
 	private:
-		OneWire *oneWire;
-		uint8_t numSensors;
-		uint64_t *sensorAddress;
-		TesLight::DS18B20::DS18B20Res *resolution;
-		float *lastMeasurement;
-		unsigned long *measurementReadyTime;
+		std::unique_ptr<OneWire> oneWire;
+		std::vector<uint64_t> sensorAddress;
+		std::vector<TL::DS18B20::DS18B20Res> resolution;
+		std::vector<float> lastMeasurement;
+		std::vector<unsigned long> measurementReadyTime;
 
-		bool getSensors(uint8_t &sensorCount, uint64_t sensorAddresses[], const uint8_t bufferSize);
+		bool getSensors(std::vector<uint64_t> &sensorAddress);
 	};
 }
 

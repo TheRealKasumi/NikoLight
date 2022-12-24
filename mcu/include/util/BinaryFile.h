@@ -14,7 +14,7 @@
 
 #include "logging/Logger.h"
 
-namespace TesLight
+namespace TL
 {
 	class BinaryFile
 	{

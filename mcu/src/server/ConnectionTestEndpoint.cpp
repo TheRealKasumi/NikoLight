@@ -9,17 +9,17 @@
 #include "server/ConnectionTestEndpoint.h"
 
 /**
- * @brief Add all request handler for this {@link TesLight::RestEndpoint} to the {@link TesLight::WebServerManager}.
+ * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
  */
-void TesLight::ConnectionTestEndpoint::begin()
+void TL::ConnectionTestEndpoint::begin()
 {
-	webServerManager->addRequestHandler((getBaseUri() + F("connection_test")).c_str(), http_method::HTTP_GET, TesLight::ConnectionTestEndpoint::handleConnectionTest);
+	TL::ConnectionTestEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("connection_test")).c_str(), http_method::HTTP_GET, TL::ConnectionTestEndpoint::handleConnectionTest);
 }
 
 /**
  * @brief Handler function for the connection test.
  */
-void TesLight::ConnectionTestEndpoint::handleConnectionTest()
+void TL::ConnectionTestEndpoint::handleConnectionTest()
 {
-	webServer->send(200, F("application/text"), (String)F("Hey there, I am running. Current runtime: ") + String(millis()));
+	TL::ConnectionTestEndpoint::sendSimpleResponse(200, F("I am doing alright, thanks for asking :3 !"));
 }

@@ -1,7 +1,7 @@
 /**
  * @file FileUtil.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TesLight::FileUtil}.
+ * @brief Implementation of the {@link TL::FileUtil}.
  *
  * @copyright Copyright (c) 2022
  *
@@ -15,7 +15,7 @@
  * @return true when the file exists
  * @return false when the file does not exist
  */
-bool TesLight::FileUtil::fileExists(FS *fileSystem, const String fileName)
+bool TL::FileUtil::fileExists(FS *fileSystem, const String fileName)
 {
 	File file = fileSystem->open(fileName, FILE_READ);
 	if (!file)
@@ -39,7 +39,7 @@ bool TesLight::FileUtil::fileExists(FS *fileSystem, const String fileName)
  * @return true when the directory exists
  * @return false when the directory does not exist
  */
-bool TesLight::FileUtil::directoryExists(FS *fileSystem, const String path)
+bool TL::FileUtil::directoryExists(FS *fileSystem, const String path)
 {
 	File file = fileSystem->open(path, FILE_READ);
 	if (!file)
@@ -64,7 +64,7 @@ bool TesLight::FileUtil::directoryExists(FS *fileSystem, const String path)
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::FileUtil::getFileIdentifier(FS *fileSystem, const String fileName, uint32_t &identifier)
+bool TL::FileUtil::getFileIdentifier(FS *fileSystem, const String fileName, uint32_t &identifier)
 {
 	File file = fileSystem->open(fileName, FILE_READ);
 	if (!file)
@@ -98,7 +98,7 @@ bool TesLight::FileUtil::getFileIdentifier(FS *fileSystem, const String fileName
  * @return true when the counting was successful
  * @return false when there was an error counting
  */
-bool TesLight::FileUtil::countFiles(FS *fileSystem, const String directory, uint16_t &count, const bool includeDirs)
+bool TL::FileUtil::countFiles(FS *fileSystem, const String directory, uint16_t &count, const bool includeDirs)
 {
 	File dir = fileSystem->open(directory, FILE_READ);
 	if (!dir)
@@ -135,15 +135,15 @@ bool TesLight::FileUtil::countFiles(FS *fileSystem, const String directory, uint
 }
 
 /**
- * @brief Get a list of all files, optinally directories and their file size in bytes. The list is seperated by newline.
+ * @brief Get a list of all files, optinally directories and their file size in bytes.
  * @param fileSystem where the root directory is located
  * @param directory root directory for the search
- * @param fileList reference variable, the list is stored here
+ * @param callback callback function is called for each found file
  * @param includeDirs true to include directories, false to only list files
  * @return true when the list was created successfully
  * @return false when there was an error
  */
-bool TesLight::FileUtil::getFileList(FS *fileSystem, const String directory, String &fileList, const bool includeDirs)
+bool TL::FileUtil::listFiles(FS *fileSystem, const String directory, std::function<void(const String fileName, const size_t fileSize)> callback, const bool includeDirs)
 {
 	File dir = fileSystem->open(directory, FILE_READ);
 	if (!dir)
@@ -156,7 +156,6 @@ bool TesLight::FileUtil::getFileList(FS *fileSystem, const String directory, Str
 		return false;
 	}
 
-	fileList.clear();
 	bool hasNext = true;
 	while (hasNext)
 	{
@@ -166,11 +165,9 @@ bool TesLight::FileUtil::getFileList(FS *fileSystem, const String directory, Str
 			if (includeDirs || !file.isDirectory())
 			{
 				uint32_t id = 0;
-				if (TesLight::FileUtil::getFileIdentifier(fileSystem, directory + F("/") + file.name(), id))
+				if (TL::FileUtil::getFileIdentifier(fileSystem, directory + F("/") + file.name(), id))
 				{
-					fileList += String(file.name()) + F(";");
-					fileList += String(file.size()) + F(";");
-					fileList += String(id) + F("\n");
+					callback(file.name(), file.size());
 				}
 			}
 			file.close();
@@ -182,12 +179,6 @@ bool TesLight::FileUtil::getFileList(FS *fileSystem, const String directory, Str
 	}
 
 	dir.close();
-
-	if (fileList.length() > 0)
-	{
-		fileList = fileList.substring(0, fileList.length() - 1);
-	}
-
 	return true;
 }
 
@@ -201,7 +192,7 @@ bool TesLight::FileUtil::getFileList(FS *fileSystem, const String directory, Str
  * @return true when the seach was successful
  * @return false when there was an error
  */
-bool TesLight::FileUtil::getFileNameFromIndex(FS *fileSystem, const String directory, const uint16_t fileIndex, String &fileName, const bool includeDirs)
+bool TL::FileUtil::getFileNameFromIndex(FS *fileSystem, const String directory, const uint16_t fileIndex, String &fileName, const bool includeDirs)
 {
 	File dir = fileSystem->open(directory, FILE_READ);
 	if (!dir)
@@ -252,7 +243,7 @@ bool TesLight::FileUtil::getFileNameFromIndex(FS *fileSystem, const String direc
  * @return true when the search was successful
  * @return false when there was an error
  */
-bool TesLight::FileUtil::getFileNameFromIdentifier(FS *fileSystem, const String directory, const uint32_t identifier, String &fileName)
+bool TL::FileUtil::getFileNameFromIdentifier(FS *fileSystem, const String directory, const uint32_t identifier, String &fileName)
 {
 	File dir = fileSystem->open(directory, FILE_READ);
 	if (!dir)
@@ -274,7 +265,7 @@ bool TesLight::FileUtil::getFileNameFromIdentifier(FS *fileSystem, const String 
 			if (!file.isDirectory())
 			{
 				uint32_t id = 0;
-				if (TesLight::FileUtil::getFileIdentifier(fileSystem, directory + F("/") + file.name(), id))
+				if (TL::FileUtil::getFileIdentifier(fileSystem, directory + F("/") + file.name(), id))
 				{
 					if (id == identifier)
 					{
@@ -304,10 +295,10 @@ bool TesLight::FileUtil::getFileNameFromIdentifier(FS *fileSystem, const String 
  * @return true when the directory was deleted
  * @return false when there was an error
  */
-bool TesLight::FileUtil::deleteDirectory(FS *fileSystem, const String directory, const bool removeDir)
+bool TL::FileUtil::deleteDirectory(FS *fileSystem, const String directory, const bool removeDir)
 {
 	uint16_t fileCount = 0;
-	if (!TesLight::FileUtil::countFiles(fileSystem, directory, fileCount, true))
+	if (!TL::FileUtil::countFiles(fileSystem, directory, fileCount, true))
 	{
 		return false;
 	}
@@ -315,7 +306,7 @@ bool TesLight::FileUtil::deleteDirectory(FS *fileSystem, const String directory,
 	for (uint16_t i = 0; i < fileCount; i++)
 	{
 		String name;
-		if (!TesLight::FileUtil::getFileNameFromIndex(fileSystem, directory, i, name, true))
+		if (!TL::FileUtil::getFileNameFromIndex(fileSystem, directory, i, name, true))
 		{
 			return false;
 		}
@@ -326,16 +317,16 @@ bool TesLight::FileUtil::deleteDirectory(FS *fileSystem, const String directory,
 			continue;
 		}
 
-		if (TesLight::FileUtil::directoryExists(fileSystem, name))
+		if (TL::FileUtil::directoryExists(fileSystem, name))
 		{
-			if (!TesLight::FileUtil::deleteDirectory(fileSystem, name, true))
+			if (!TL::FileUtil::deleteDirectory(fileSystem, name, true))
 			{
 				return false;
 			}
 			i--;
 			fileCount--;
 		}
-		else if (TesLight::FileUtil::fileExists(fileSystem, name))
+		else if (TL::FileUtil::fileExists(fileSystem, name))
 		{
 			if (!fileSystem->remove(name))
 			{
@@ -364,7 +355,7 @@ bool TesLight::FileUtil::deleteDirectory(FS *fileSystem, const String directory,
  * @return true when cleared successfully
  * @return false when there was an error
  */
-bool TesLight::FileUtil::clearRoot(FS *filesSystem)
+bool TL::FileUtil::clearRoot(FS *filesSystem)
 {
-	return TesLight::FileUtil::deleteDirectory(filesSystem, F("/"), false);
+	return TL::FileUtil::deleteDirectory(filesSystem, F("/"), false);
 }

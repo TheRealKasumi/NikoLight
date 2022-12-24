@@ -10,19 +10,19 @@
 #define WEBSERVER_MANAGER_H
 
 #include <stdint.h>
-
+#include <memory>
 #include <HTTP_Method.h>
 #include <WebServer.h>
 #include <FS.h>
-
+#include "configuration/SystemConfiguration.h"
 #include "logging/Logger.h"
 
-namespace TesLight
+namespace TL
 {
 	class WebServerManager
 	{
 	public:
-		WebServerManager(const uint16_t port, FS *fileSystem, const String staticContentLocation);
+		WebServerManager(FS *fileSystem);
 		~WebServerManager();
 
 		WebServer *getWebServer();
@@ -36,9 +36,8 @@ namespace TesLight
 		void handleRequest();
 
 	private:
-		WebServer *webServer;
+		std::unique_ptr<WebServer> webServer;
 		FS *fileSystem;
-		String staticContentLocation;
 
 		void init();
 		void handleNotFound();

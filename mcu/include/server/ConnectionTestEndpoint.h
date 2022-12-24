@@ -11,7 +11,7 @@
 
 #include "server/RestEndpoint.h"
 
-namespace TesLight
+namespace TL
 {
 	class ConnectionTestEndpoint : public RestEndpoint
 	{

@@ -14,7 +14,7 @@
 
 #include "logging/Logger.h"
 
-namespace TesLight
+namespace TL
 {
 	class MPU6050
 	{
@@ -54,7 +54,7 @@ namespace TesLight
 		};
 
 		MPU6050(const uint8_t deviceAddress);
-		MPU6050(const uint8_t deviceAddress, const TesLight::MPU6050::MPU6050AccScale accScale, const TesLight::MPU6050::MPU6050GyScale gyScale);
+		MPU6050(const uint8_t deviceAddress, const TL::MPU6050::MPU6050AccScale accScale, const TL::MPU6050::MPU6050GyScale gyScale);
 		~MPU6050();
 
 		bool begin();
@@ -62,21 +62,21 @@ namespace TesLight
 		bool wake();
 		bool sleep();
 
-		bool setAccScale(TesLight::MPU6050::MPU6050AccScale accScale);
-		TesLight::MPU6050::MPU6050AccScale getAccScale();
+		bool setAccScale(TL::MPU6050::MPU6050AccScale accScale);
+		TL::MPU6050::MPU6050AccScale getAccScale();
 
-		bool setGyScale(TesLight::MPU6050::MPU6050GyScale gyScale);
-		TesLight::MPU6050::MPU6050GyScale getGyScale();
+		bool setGyScale(TL::MPU6050::MPU6050GyScale gyScale);
+		TL::MPU6050::MPU6050GyScale getGyScale();
 
-		bool getData(TesLight::MPU6050::MPU6050MotionData &motionData);
+		bool getData(TL::MPU6050::MPU6050MotionData &motionData);
 
 	private:
 		uint8_t deviceAddress;
-		TesLight::MPU6050::MPU6050AccScale accScale;
-		TesLight::MPU6050::MPU6050GyScale gyScale;
+		TL::MPU6050::MPU6050AccScale accScale;
+		TL::MPU6050::MPU6050GyScale gyScale;
 
-		float getScaleDiv(const TesLight::MPU6050::MPU6050AccScale accScale);
-		float getScaleDiv(const TesLight::MPU6050::MPU6050GyScale gyScale);
+		float getScaleDiv(const TL::MPU6050::MPU6050AccScale accScale);
+		float getScaleDiv(const TL::MPU6050::MPU6050GyScale gyScale);
 	};
 }
 

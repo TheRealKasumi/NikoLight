@@ -1,7 +1,7 @@
 /**
  * @file BH1750.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TesLight::BH1750}.
+ * @brief Implementation of the {@link TL::BH1750}.
  *
  * @copyright Copyright (c) 2022
  *
@@ -9,30 +9,30 @@
 #include "hardware/BH1750.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::BH1750}.
+ * @brief Create a new instance of {@link TL::BH1750}.
  * @param deviceAddress I²C address of the device
  */
-TesLight::BH1750::BH1750(const uint8_t deviceAddress)
+TL::BH1750::BH1750(const uint8_t deviceAddress)
 {
 	this->deviceAddress = deviceAddress;
-	this->resolution = TesLight::BH1750::BH1750Res::BH1750_HIGH;
+	this->resolution = TL::BH1750::BH1750Res::BH1750_HIGH;
 }
 
 /**
- * @brief Create a new instance of {@link TesLight::BH1750}.
+ * @brief Create a new instance of {@link TL::BH1750}.
  * @param deviceAddress I²C address of the device
  * @param resolution resolution can be high or low
  */
-TesLight::BH1750::BH1750(const uint8_t deviceAddress, const TesLight::BH1750::BH1750Res resolution)
+TL::BH1750::BH1750(const uint8_t deviceAddress, const TL::BH1750::BH1750Res resolution)
 {
 	this->deviceAddress = deviceAddress;
 	this->resolution = resolution;
 }
 
 /**
- * @brief Delete the {@link TesLight::BH1750} instance.
+ * @brief Delete the {@link TL::BH1750} instance.
  */
-TesLight::BH1750::~BH1750()
+TL::BH1750::~BH1750()
 {
 }
 
@@ -41,7 +41,7 @@ TesLight::BH1750::~BH1750()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::BH1750::begin()
+bool TL::BH1750::begin()
 {
 	if (!this->setResolution(this->resolution))
 	{
@@ -57,7 +57,7 @@ bool TesLight::BH1750::begin()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::BH1750::setResolution(const TesLight::BH1750::BH1750Res resolution)
+bool TL::BH1750::setResolution(const TL::BH1750::BH1750Res resolution)
 {
 	this->resolution = resolution;
 	if (!this->write(this->resolution))
@@ -72,7 +72,7 @@ bool TesLight::BH1750::setResolution(const TesLight::BH1750::BH1750Res resolutio
  * @brief Get the currently set resolution.
  * @return resolution value
  */
-TesLight::BH1750::BH1750Res TesLight::BH1750::getResolution()
+TL::BH1750::BH1750Res TL::BH1750::getResolution()
 {
 	return this->resolution;
 }
@@ -83,7 +83,7 @@ TesLight::BH1750::BH1750Res TesLight::BH1750::getResolution()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::BH1750::getLux(float &lux)
+bool TL::BH1750::getLux(float &lux)
 {
 	uint16_t raw;
 	if (!this->read(raw))
@@ -102,7 +102,7 @@ bool TesLight::BH1750::getLux(float &lux)
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::BH1750::write(const uint8_t command)
+bool TL::BH1750::write(const uint8_t command)
 {
 	Wire.beginTransmission(this->deviceAddress);
 
@@ -125,7 +125,7 @@ bool TesLight::BH1750::write(const uint8_t command)
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::BH1750::read(uint16_t &value)
+bool TL::BH1750::read(uint16_t &value)
 {
 	uint8_t *bytes = (uint8_t *)&value;
 	if (Wire.requestFrom(this->deviceAddress, 2) != 2)

@@ -10,11 +10,13 @@
 #define TEMPERATURE_SENSOR_H
 
 #include <stdint.h>
+#include <memory>
+
 #include "configuration/SystemConfiguration.h"
 #include "hardware/DS18B20.h"
 #include "logging/Logger.h"
 
-namespace TesLight
+namespace TL
 {
 	class TemperatureSensor
 	{
@@ -28,7 +30,7 @@ namespace TesLight
 		bool getAverageTemperature(float &temp);
 
 	private:
-		TesLight::DS18B20 *ds18b20;
+		std::unique_ptr<TL::DS18B20> ds18b20;
 	};
 }
 
