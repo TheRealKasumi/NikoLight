@@ -17,7 +17,8 @@
   },
   "engines": {
     "node": "18",
-    "pnpm": "7"
+    "pnpm": "7",
+    "npm": "8"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.13",
