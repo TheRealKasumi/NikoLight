@@ -9,10 +9,10 @@
 #ifndef RAINBOW_ANIMATOR_H
 #define RAINBOW_ANIMATOR_H
 
-#include <math.h>
+#include <vector>
 #include "led/animator/LedAnimator.h"
 
-namespace TesLight
+namespace TL
 {
 	class RainbowAnimator : public LedAnimator
 	{
@@ -25,17 +25,17 @@ namespace TesLight
 		};
 
 		RainbowAnimator();
-		RainbowAnimator(const TesLight::RainbowAnimator::RainbowMode rainbowMode);
+		RainbowAnimator(const TL::RainbowAnimator::RainbowMode rainbowMode);
 		~RainbowAnimator();
 
-		void init();
-		void render();
+		void init(std::vector<CRGB> &pixels);
+		void render(std::vector<CRGB> &pixels);
 
-		void setRainbowMode(const TesLight::RainbowAnimator::RainbowMode rainbowMode);
+		void setRainbowMode(const TL::RainbowAnimator::RainbowMode rainbowMode);
 
 	private:
 		float angle;
-		TesLight::RainbowAnimator::RainbowMode rainbowMode;
+		TL::RainbowAnimator::RainbowMode rainbowMode;
 	};
 }
 

@@ -9,58 +9,60 @@
 #include "led/animator/StaticColorAnimator.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::StaticColorAnimator}.
+ * @brief Create a new instance of {@link TL::StaticColorAnimator}.
  */
-TesLight::StaticColorAnimator::StaticColorAnimator()
+TL::StaticColorAnimator::StaticColorAnimator()
 {
 	this->color = CRGB::Black;
 }
 
 /**
- * @brief Create a new instance of {@link TesLight::StaticColorAnimator}.
+ * @brief Create a new instance of {@link TL::StaticColorAnimator}.
  * @param color color to display
  */
-TesLight::StaticColorAnimator::StaticColorAnimator(const CRGB color)
+TL::StaticColorAnimator::StaticColorAnimator(const CRGB color)
 {
 	this->color = color;
 }
 
 /**
- * @brief Destroy the {@link TesLight::StaticColorAnimator}.
+ * @brief Destroy the {@link TL::StaticColorAnimator}.
  */
-TesLight::StaticColorAnimator::~StaticColorAnimator()
+TL::StaticColorAnimator::~StaticColorAnimator()
 {
 }
 
 /**
  * @brief Initialize the {@link StaticColorAnimator}.
+ * @param pixels reference to the vector holding the LED pixel data
  */
-void TesLight::StaticColorAnimator::init()
+void TL::StaticColorAnimator::init(std::vector<CRGB> &pixels)
 {
-	for (uint16_t i = 0; i < this->pixelCount; i++)
+	for (size_t i = 0; i < pixels.size(); i++)
 	{
-		this->pixels[i] = CRGB::Black;
+		pixels.at(i) = CRGB::Black;
 	}
 }
 
 /**
- * @brief Render the static color to the {@link TesLight::Pixel} array.
+ * @brief Render the static color to the vector holding the LED pixel data
+ * @param pixels reference to the vector holding the LED pixel data
  */
-void TesLight::StaticColorAnimator::render()
+void TL::StaticColorAnimator::render(std::vector<CRGB> &pixels)
 {
-	for (uint16_t i = 0; i < this->pixelCount; i++)
+	for (size_t i = 0; i < pixels.size(); i++)
 	{
-		this->pixels[i] = this->color;
+		pixels.at(i) = this->color;
 	}
 
-	this->applyBrightness();
+	this->applyBrightness(pixels);
 }
 
 /**
  * @brief Set the static color.
  * @param color color to display
  */
-void TesLight::StaticColorAnimator::setColor(const CRGB color)
+void TL::StaticColorAnimator::setColor(const CRGB color)
 {
 	this->color = color;
 }

@@ -10,17 +10,17 @@
 #define REST_ENDPOINT_H
 
 #include <WebServer.h>
+#include <ArduinoJson.h>
 #include "server/WebServerManager.h"
-#include "util/Base64Util.h"
 
-namespace TesLight
+namespace TL
 {
 	class RestEndpoint
 	{
 	public:
-		static void init(TesLight::WebServerManager *_webServerManager, String _baseUri);
+		static void init(TL::WebServerManager *_webServerManager, String _baseUri);
 
-		static TesLight::WebServerManager *getServerManager();
+		static TL::WebServerManager *getServerManager();
 		static WebServer *getServer();
 		static String getBaseUri();
 
@@ -28,9 +28,13 @@ namespace TesLight
 		RestEndpoint();
 
 	protected:
-		static TesLight::WebServerManager *webServerManager;
+		static TL::WebServerManager *webServerManager;
 		static WebServer *webServer;
 		static String baseUri;
+
+		static void sendSimpleResponse(const int code, const String &message);
+		static void sendJsonDocument(const int code, const String &message, DynamicJsonDocument &jsonDocument);
+		static bool parseJsonDocument(DynamicJsonDocument &jsonDocument, const String &json);
 	};
 }
 

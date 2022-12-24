@@ -12,7 +12,7 @@
 #include <Arduino.h>
 #include "logging/Logger.h"
 
-namespace TesLight
+namespace TL
 {
 	class ESP32ADC
 	{

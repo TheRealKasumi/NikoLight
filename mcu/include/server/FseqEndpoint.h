@@ -10,7 +10,6 @@
 #define FSEQ_ENDPOINT_H
 
 #include <FS.h>
-
 #include "server/RestEndpoint.h"
 #include "configuration/SystemConfiguration.h"
 #include "configuration/Configuration.h"
@@ -18,18 +17,18 @@
 #include "util/FileUtil.h"
 #include "util/FseqLoader.h"
 
-namespace TesLight
+namespace TL
 {
 	class FseqEndpoint : public RestEndpoint
 	{
 	public:
-		static void begin(FS *_fileSystem, TesLight::Configuration *_configuration);
+		static void begin(FS *_fileSystem, TL::Configuration *_configuration);
 
 	private:
 		FseqEndpoint();
 
 		static FS *fileSystem;
-		static TesLight::Configuration *configuration;
+		static TL::Configuration *configuration;
 		static File uploadFile;
 
 		static void getFseqList();
@@ -37,8 +36,8 @@ namespace TesLight
 		static void fseqUpload();
 		static void deleteFseq();
 
-		static bool verifyFileName(const String fileName);
-		static bool verifyFseqFile(const String fileName);
+		static bool validateFileName(const String fileName);
+		static bool validateFseqFile(const String fileName);
 	};
 }
 

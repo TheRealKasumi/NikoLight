@@ -10,14 +10,13 @@
 #define UPDATE_ENDPOINT_H
 
 #include <FS.h>
-
 #include "configuration/SystemConfiguration.h"
 #include "server/RestEndpoint.h"
 #include "logging/Logger.h"
 #include "util/FileUtil.h"
 #include "update/Updater.h"
 
-namespace TesLight
+namespace TL
 {
 	class UpdateEndpoint : public RestEndpoint
 	{

@@ -14,7 +14,7 @@
 #include "logging/Logger.h"
 #include "update/Updater.h"
 
-namespace TesLight
+namespace TL
 {
 	class ResetEndpoint : public RestEndpoint
 	{

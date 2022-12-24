@@ -9,11 +9,11 @@
 #ifndef GRADIENT_ANIMATOR_MOTION_H
 #define GRADIENT_ANIMATOR_MOTION_H
 
-#include <math.h>
+#include <vector>
 #include "led/animator/LedAnimator.h"
 #include "sensor/MotionSensor.h"
 
-namespace TesLight
+namespace TL
 {
 	class GradientAnimatorMotion : public LedAnimator
 	{
@@ -25,20 +25,20 @@ namespace TesLight
 		};
 
 		GradientAnimatorMotion();
-		GradientAnimatorMotion(const TesLight::GradientAnimatorMotion::GradientMode gradientMode, TesLight::MotionSensor::MotionSensorValue motionSensorValue, const CRGB color1, const CRGB color2);
+		GradientAnimatorMotion(const TL::GradientAnimatorMotion::GradientMode gradientMode, TL::MotionSensor::MotionSensorValue motionSensorValue, const CRGB color1, const CRGB color2);
 		~GradientAnimatorMotion();
 
-		void init();
-		void render();
+		void init(std::vector<CRGB> &pixels);
+		void render(std::vector<CRGB> &pixels);
 
-		void setGradientMode(const TesLight::GradientAnimatorMotion::GradientMode gradientMode);
+		void setGradientMode(const TL::GradientAnimatorMotion::GradientMode gradientMode);
 		void setColor(const CRGB color1, const CRGB color2);
-		void setMotionSensorValue(const TesLight::MotionSensor::MotionSensorValue motionSensorValue);
+		void setMotionSensorValue(const TL::MotionSensor::MotionSensorValue motionSensorValue);
 
 	private:
-		TesLight::GradientAnimatorMotion::GradientMode gradientMode;
+		TL::GradientAnimatorMotion::GradientMode gradientMode;
 		CRGB color[2];
-		TesLight::MotionSensor::MotionSensorValue motionSensorValue;
+		TL::MotionSensor::MotionSensorValue motionSensorValue;
 
 		float getMotionOffset();
 	};

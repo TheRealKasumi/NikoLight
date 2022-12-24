@@ -9,9 +9,10 @@
 #ifndef COLOR_BAR_ANIMATOR_H
 #define COLOR_BAR_ANIMATOR_H
 
+#include <vector>
 #include "led/animator/LedAnimator.h"
 
-namespace TesLight
+namespace TL
 {
 	class ColorBarAnimator : public LedAnimator
 	{
@@ -25,18 +26,18 @@ namespace TesLight
 		};
 
 		ColorBarAnimator();
-		ColorBarAnimator(const TesLight::ColorBarAnimator::ColorBarMode colorBarMode, const CRGB color1, const CRGB color2);
+		ColorBarAnimator(const TL::ColorBarAnimator::ColorBarMode colorBarMode, const CRGB color1, const CRGB color2);
 		~ColorBarAnimator();
 
-		void init();
-		void render();
+		void init(std::vector<CRGB> &pixels);
+		void render(std::vector<CRGB> &pixels);
 
-		void setColorBarMode(const TesLight::ColorBarAnimator::ColorBarMode colorBarMode);
+		void setColorBarMode(const TL::ColorBarAnimator::ColorBarMode colorBarMode);
 		void setColor(const CRGB color1, const CRGB color2);
 
 	private:
 		float angle;
-		TesLight::ColorBarAnimator::ColorBarMode colorBarMode;
+		TL::ColorBarAnimator::ColorBarMode colorBarMode;
 		CRGB color[2];
 	};
 }

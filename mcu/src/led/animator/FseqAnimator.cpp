@@ -1,7 +1,7 @@
 /**
  * @file FseqAnimator.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TesLight::FseqAnimator}.
+ * @brief Implementation of the {@link TL::FseqAnimator}.
  *
  * @copyright Copyright (c) 2022
  *
@@ -9,28 +9,28 @@
 #include "led/animator/FseqAnimator.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::FseqAnimator}.
+ * @brief Create a new instance of {@link TL::FseqAnimator}.
  */
-TesLight::FseqAnimator::FseqAnimator()
+TL::FseqAnimator::FseqAnimator()
 {
 	this->fseqLoader = nullptr;
 	this->loop = false;
 }
 
 /**
- * @brief Create a new instance of {@link TesLight::FseqAnimator}.
- * @param fseqLoader reference to a {@link TesLight::FseqLoader} instance
+ * @brief Create a new instance of {@link TL::FseqAnimator}.
+ * @param fseqLoader reference to a {@link TL::FseqLoader} instance
  */
-TesLight::FseqAnimator::FseqAnimator(TesLight::FseqLoader *fseqLoader, const bool loop)
+TL::FseqAnimator::FseqAnimator(TL::FseqLoader *fseqLoader, const bool loop)
 {
 	this->fseqLoader = fseqLoader;
 	this->loop = loop;
 }
 
 /**
- * @brief Destroy the {@link TesLight::FseqAnimator}.
+ * @brief Destroy the {@link TL::FseqAnimator}.
  */
-TesLight::FseqAnimator::~FseqAnimator()
+TL::FseqAnimator::~FseqAnimator()
 {
 }
 
@@ -39,42 +39,44 @@ TesLight::FseqAnimator::~FseqAnimator()
  * @param loop on or off
  * @param loop loop the animation
  */
-void TesLight::FseqAnimator::setLoop(const bool loop)
+void TL::FseqAnimator::setLoop(const bool loop)
 {
 	this->loop = loop;
 }
 
 /**
- * @brief Set the reference to a {@link TesLight::FseqLoader} instance
- * @param fseqLoader reference to the {@link TesLight::FseqLoader} instance
+ * @brief Set the reference to a {@link TL::FseqLoader} instance
+ * @param fseqLoader reference to the {@link TL::FseqLoader} instance
  */
-void TesLight::FseqAnimator::setFseqLoader(TesLight::FseqLoader *fseqLoader)
+void TL::FseqAnimator::setFseqLoader(TL::FseqLoader *fseqLoader)
 {
 	this->fseqLoader = fseqLoader;
 }
 
 /**
  * @brief Initialize the {@link FseqAnimator}.
+ * @param pixels reference to the vector holding the LED pixel data
  */
-void TesLight::FseqAnimator::init()
+void TL::FseqAnimator::init(std::vector<CRGB> &pixels)
 {
-	for (uint16_t i = 0; i < this->pixelCount; i++)
+	for (size_t i = 0; i < pixels.size(); i++)
 	{
-		this->pixels[i] = CRGB::Black;
+		pixels.at(i) = CRGB::Black;
 	}
 }
 
 /**
- * @brief Render the values from the fseq file to the {@link TesLight::Pixel} array.
+ * @brief Render the values from the fseq file to the vector holding the LED pixel data
+ * @param pixels reference to the vector holding the LED pixel data
  */
-void TesLight::FseqAnimator::render()
+void TL::FseqAnimator::render(std::vector<CRGB> &pixels)
 {
 	if (this->fseqLoader == nullptr)
 	{
 		return;
 	}
 
-	if (this->fseqLoader->available() < this->pixelCount)
+	if (this->fseqLoader->available() < pixels.size())
 	{
 		if (this->loop)
 		{
@@ -86,24 +88,23 @@ void TesLight::FseqAnimator::render()
 		}
 	}
 
-	if (!this->fseqLoader->readPixelbuffer(this->pixels, this->pixelCount))
+	if (!this->fseqLoader->readPixelBuffer(pixels))
 	{
-		for (uint16_t i = 0; i < this->pixelCount; i++)
+		for (size_t i = 0; i < pixels.size(); i++)
 		{
-			this->pixels[i] = CRGB::Black;
+			pixels.at(i) = CRGB::Black;
 		}
 	}
 
 	if (this->reverse)
 	{
-
-		for (uint16_t i = 0, j = this->pixelCount - 1; i < j; i++, j--)
+		for (uint16_t i = 0, j = pixels.size() - 1; i < j; i++, j--)
 		{
-			CRGB temp = this->pixels[i];
-			this->pixels[i] = this->pixels[j];
-			this->pixels[j] = temp;
+			CRGB temp = pixels.at(i);
+			pixels.at(i) = pixels.at(j);
+			pixels.at(j) = temp;
 		}
 	}
 
-	this->applyBrightness();
+	this->applyBrightness(pixels);
 }

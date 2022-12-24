@@ -13,7 +13,7 @@
 #include <Wire.h>
 #include "logging/Logger.h"
 
-namespace TesLight
+namespace TL
 {
 	class BH1750
 	{
@@ -25,19 +25,19 @@ namespace TesLight
 		};
 
 		BH1750(const uint8_t deviceAddress);
-		BH1750(const uint8_t deviceAddress, const TesLight::BH1750::BH1750Res resolution);
+		BH1750(const uint8_t deviceAddress, const TL::BH1750::BH1750Res resolution);
 		~BH1750();
 
 		bool begin();
 
-		bool setResolution(const TesLight::BH1750::BH1750Res resolution);
-		TesLight::BH1750::BH1750Res getResolution();
+		bool setResolution(const TL::BH1750::BH1750Res resolution);
+		TL::BH1750::BH1750Res getResolution();
 
 		bool getLux(float &lux);
 
 	private:
 		uint8_t deviceAddress;
-		TesLight::BH1750::BH1750Res resolution;
+		TL::BH1750::BH1750Res resolution;
 
 		bool write(const uint8_t command);
 		bool read(uint16_t &value);

@@ -1,7 +1,7 @@
 /**
  * @file WebServerManager.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TesLight::WebServerManager}.
+ * @brief Implementation of the {@link TL::WebServerManager}.
  *
  * @copyright Copyright (c) 2022
  *
@@ -9,36 +9,31 @@
 #include "server/WebServerManager.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::WebServerManager}.
- *
- * @param port port to run the server on
+ * @brief Create a new instance of {@link TL::WebServerManager}.
  * @param fileSystem instance of {@link FS}
- * @param staticContentLocation location of the static content on the sd card
  */
-TesLight::WebServerManager::WebServerManager(const uint16_t port, FS *fileSystem, const String staticContentLocation)
+TL::WebServerManager::WebServerManager(FS *fileSystem)
 {
-	this->webServer = new WebServer(port);
+	this->webServer.reset(new WebServer(WEB_SERVER_PORT));
 	this->fileSystem = fileSystem;
-	this->staticContentLocation = staticContentLocation;
 	this->init();
 }
 
 /**
- * @brief Destroy the {@link TesLight::WebServerManager} instance and shut down the web server.
+ * @brief Destroy the {@link TL::WebServerManager} instance and shut down the web server.
  */
-TesLight::WebServerManager::~WebServerManager()
+TL::WebServerManager::~WebServerManager()
 {
 	this->stop();
-	delete this->webServer;
 }
 
 /**
  * @brief Get a reference to the {@link WebServer} instance.
  * @return WebServer* reference to the instance
  */
-WebServer *TesLight::WebServerManager::getWebServer()
+WebServer *TL::WebServerManager::getWebServer()
 {
-	return this->webServer;
+	return this->webServer.get();
 }
 
 /**
@@ -47,7 +42,7 @@ WebServer *TesLight::WebServerManager::getWebServer()
  * @param uri uri of the endpoint
  * @param handler handler function
  */
-void TesLight::WebServerManager::addRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction handler)
+void TL::WebServerManager::addRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction handler)
 {
 	this->webServer->on(uri, method, handler);
 }
@@ -59,7 +54,7 @@ void TesLight::WebServerManager::addRequestHandler(const char *uri, http_method 
  * @param requestHandler handler function is called after the upload
  * @param uploadHandler handler function for receiving upload data
  */
-void TesLight::WebServerManager::addUploadRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction requestHandler, WebServer::THandlerFunction uploadHandler)
+void TL::WebServerManager::addUploadRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction requestHandler, WebServer::THandlerFunction uploadHandler)
 {
 	this->webServer->on(uri, method, requestHandler, uploadHandler);
 }
@@ -67,7 +62,7 @@ void TesLight::WebServerManager::addUploadRequestHandler(const char *uri, http_m
 /**
  * @brief Start the web server. Before starting the server, all endpoints must be added.
  */
-void TesLight::WebServerManager::begin()
+void TL::WebServerManager::begin()
 {
 	this->webServer->begin();
 }
@@ -75,7 +70,7 @@ void TesLight::WebServerManager::begin()
 /**
  * @brief Stop the web server.
  */
-void TesLight::WebServerManager::stop()
+void TL::WebServerManager::stop()
 {
 	this->webServer->stop();
 }
@@ -83,27 +78,28 @@ void TesLight::WebServerManager::stop()
 /**
  * @brief Function must be called regularly to accept new conenctions and handle client.
  */
-void TesLight::WebServerManager::handleRequest()
+void TL::WebServerManager::handleRequest()
 {
 	this->webServer->handleClient();
 }
 
 /**
- * @brief Initialize the {@link TesLight::WebServerManager} and start serving static files.
+ * @brief Initialize the {@link TL::WebServerManager} and start serving static files.
  */
-void TesLight::WebServerManager::init()
+void TL::WebServerManager::init()
 {
-	this->webServer->onNotFound([this]()
-								{ this->handleNotFound(); });
-	this->webServer->serveStatic("/web-app/", *this->fileSystem, this->staticContentLocation.c_str());
-	this->webServer->on("/", http_method::HTTP_GET, [this]()
-						{this->webServer->sendHeader("Location", "/web-app/index.html"); this->webServer->send(301); });
+	const char *headerKeys[1] = {"content-type"};
+	webServer->collectHeaders(headerKeys, 1);
+
+	this->webServer->onNotFound([this](){ this->handleNotFound(); });
+	this->webServer->serveStatic(WEB_SERVER_STATIC_CONTENT, *this->fileSystem, WEB_SERVER_STATIC_CONTENT);
+	this->webServer->on("/", http_method::HTTP_GET, [this](){this->webServer->sendHeader("Location", "/ui/index.html"); this->webServer->send(301); });
 }
 
 /**
  * @brief Handle not found error.
  */
-void TesLight::WebServerManager::handleNotFound()
+void TL::WebServerManager::handleNotFound()
 {
 	if (this->webServer->method() == HTTP_OPTIONS)
 	{

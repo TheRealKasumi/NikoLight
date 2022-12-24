@@ -1,7 +1,7 @@
 /**
  * @file Configuration.cpp
  * @author TheRealKasumi
- * @brief Contains the implementation of {@link TesLight::Configuration}.
+ * @brief Contains the implementation of {@link TL::Configuration}.
  *
  * @copyright Copyright (c) 2022
  *
@@ -9,30 +9,30 @@
 #include "configuration/Configuration.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::Configuration}.
+ * @brief Create a new instance of {@link TL::Configuration}.
  * @param fileSystem pointer to a {@link FS}
  * @param fileName file name of the configuration file
  */
-TesLight::Configuration::Configuration(FS *fileSystem, const String fileName)
+TL::Configuration::Configuration(FS *fileSystem, const String fileName)
 {
 	this->fileSystem = fileSystem;
 	this->fileName = fileName;
-	this->configurationVersion = 7;
+	this->configurationVersion = 8;
 	this->loadDefaults();
 }
 
 /**
- * @brief Destroy the {@link TesLight::Configuration} instance.
+ * @brief Destroy the {@link TL::Configuration} instance.
  */
-TesLight::Configuration::~Configuration()
+TL::Configuration::~Configuration()
 {
 }
 
 /**
  * @brief Get the System config.
- * @return instance of {@link TesLight::Configuration::SystemConfig}
+ * @return instance of {@link TL::Configuration::SystemConfig}
  */
-TesLight::Configuration::SystemConfig TesLight::Configuration::getSystemConfig()
+TL::Configuration::SystemConfig TL::Configuration::getSystemConfig()
 {
 	return this->systemConfig;
 }
@@ -41,36 +41,36 @@ TesLight::Configuration::SystemConfig TesLight::Configuration::getSystemConfig()
  * @brief Set the System config.
  * @param SystemConfig config to set
  */
-void TesLight::Configuration::setSystemConfig(TesLight::Configuration::SystemConfig systemConfig)
+void TL::Configuration::setSystemConfig(TL::Configuration::SystemConfig &systemConfig)
 {
 	this->systemConfig = systemConfig;
 }
 
 /**
- * @brief Get the {@link TesLight::Configuration::LedConfig}.
+ * @brief Get the {@link TL::Configuration::LedConfig}.
  * @param index index of the config
- * @return instance of {TesLight::Configuration::LedConfig}
+ * @return instance of {TL::Configuration::LedConfig}
  */
-TesLight::Configuration::LedConfig TesLight::Configuration::getLedConfig(const uint8_t index)
+TL::Configuration::LedConfig TL::Configuration::getLedConfig(const uint8_t index)
 {
 	return this->ledConfig[index];
 }
 
 /**
- * @brief Set the {@link TesLight::Configuration::LedConfig}.
- * @param ledConfig instance of {@link TesLight::Configuration::LedConfig}
+ * @brief Set the {@link TL::Configuration::LedConfig}.
+ * @param ledConfig instance of {@link TL::Configuration::LedConfig}
  * @param index index of the config
  */
-void TesLight::Configuration::setLedConfig(const TesLight::Configuration::LedConfig ledConfig, const uint8_t index)
+void TL::Configuration::setLedConfig(const TL::Configuration::LedConfig &ledConfig, const uint8_t index)
 {
 	this->ledConfig[index] = ledConfig;
 }
 
 /**
  * @brief Get the WiFi config.
- * @return instance of {@link TesLight::Configuration::WiFiConfig}
+ * @return instance of {@link TL::Configuration::WiFiConfig}
  */
-TesLight::Configuration::WiFiConfig TesLight::Configuration::getWiFiConfig()
+TL::Configuration::WiFiConfig TL::Configuration::getWiFiConfig()
 {
 	return this->wifiConfig;
 }
@@ -79,7 +79,7 @@ TesLight::Configuration::WiFiConfig TesLight::Configuration::getWiFiConfig()
  * @brief Set the WiFi config.
  * @param wifionfig config to set
  */
-void TesLight::Configuration::setWiFiConfig(TesLight::Configuration::WiFiConfig wifiConfig)
+void TL::Configuration::setWiFiConfig(TL::Configuration::WiFiConfig &wifiConfig)
 {
 	this->wifiConfig = wifiConfig;
 }
@@ -88,7 +88,7 @@ void TesLight::Configuration::setWiFiConfig(TesLight::Configuration::WiFiConfig 
  * @brief Get the motion sensor calibration data.
  * @return calibration data of the motion sensor
  */
-TesLight::Configuration::MotionSensorCalibration TesLight::Configuration::getMotionSensorCalibration()
+TL::Configuration::MotionSensorCalibration TL::Configuration::getMotionSensorCalibration()
 {
 	return this->motionSensorCalibration;
 }
@@ -97,7 +97,7 @@ TesLight::Configuration::MotionSensorCalibration TesLight::Configuration::getMot
  * @brief Set the motion sensor calibration data.
  * @param calibration calibration data of the motion sensor
  */
-void TesLight::Configuration::setMotionSensorCalibration(const TesLight::Configuration::MotionSensorCalibration calibration)
+void TL::Configuration::setMotionSensorCalibration(const TL::Configuration::MotionSensorCalibration &calibration)
 {
 	this->motionSensorCalibration = calibration;
 }
@@ -105,7 +105,7 @@ void TesLight::Configuration::setMotionSensorCalibration(const TesLight::Configu
 /**
  * @brief Load the default configuration.
  */
-void TesLight::Configuration::loadDefaults()
+void TL::Configuration::loadDefaults()
 {
 	// System config
 	this->systemConfig.logLevel = LOG_DEFAULT_LEVEL;
@@ -177,12 +177,12 @@ void TesLight::Configuration::loadDefaults()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::Configuration::load()
+bool TL::Configuration::load()
 {
-	TesLight::BinaryFile file(this->fileSystem);
+	TL::BinaryFile file(this->fileSystem);
 	if (!file.open(this->fileName, FILE_READ))
 	{
-		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, (String)F("Failed to load configuration file: ") + fileName);
+		TL::Logger::log(TL::Logger::ERROR, SOURCE_LOCATION, (String)F("Failed to load configuration file: ") + fileName);
 		return false;
 	}
 
@@ -190,7 +190,7 @@ bool TesLight::Configuration::load()
 	uint16_t configFileVersion = 0;
 	if (!file.read(configFileVersion) || configFileVersion != this->configurationVersion)
 	{
-		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, F("Configuration file version does not match."));
+		TL::Logger::log(TL::Logger::ERROR, SOURCE_LOCATION, F("Configuration file version does not match."));
 		file.close();
 		return false;
 	}
@@ -260,7 +260,7 @@ bool TesLight::Configuration::load()
 	uint16_t fileHash = 0;
 	if (!file.read(fileHash) || fileHash != this->getSimpleHash())
 	{
-		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, F("Configuration file hash does not match."));
+		TL::Logger::log(TL::Logger::ERROR, SOURCE_LOCATION, F("Configuration file hash does not match."));
 		file.close();
 		return false;
 	}
@@ -274,12 +274,12 @@ bool TesLight::Configuration::load()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::Configuration::save()
+bool TL::Configuration::save()
 {
-	TesLight::BinaryFile file(this->fileSystem);
+	TL::BinaryFile file(this->fileSystem);
 	if (!file.open(this->fileName, FILE_WRITE))
 	{
-		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, F("Failed to open configuration file."));
+		TL::Logger::log(TL::Logger::ERROR, SOURCE_LOCATION, F("Failed to open configuration file."));
 		return false;
 	}
 
@@ -358,7 +358,7 @@ bool TesLight::Configuration::save()
  * @brief Calculate a very simple hash to check the config file.
  * @return uint16_t 2 byte hash
  */
-uint16_t TesLight::Configuration::getSimpleHash()
+uint16_t TL::Configuration::getSimpleHash()
 {
 	uint16_t hash = 7;
 	hash = hash * 31 + this->configurationVersion;
@@ -422,7 +422,7 @@ uint16_t TesLight::Configuration::getSimpleHash()
  * @param input input string
  * @return uint16_t 2 byte hash
  */
-uint16_t TesLight::Configuration::getSimpleStringHash(const String input)
+uint16_t TL::Configuration::getSimpleStringHash(const String input)
 {
 	uint16_t hash = 7;
 	for (uint16_t i = 0; i < input.length(); i++)

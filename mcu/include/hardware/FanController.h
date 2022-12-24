@@ -14,19 +14,19 @@
 #include "configuration/Configuration.h"
 #include "logging/Logger.h"
 
-namespace TesLight
+namespace TL
 {
 	class FanController
 	{
 	public:
-		FanController(const uint8_t fanPin, TesLight::Configuration *configuration);
+		FanController(const uint8_t fanPin, TL::Configuration *configuration);
 		~FanController();
 
 		void setTemperature(const uint8_t temp);
 
 	private:
 		uint8_t fanPin;
-		TesLight::Configuration *configuration;
+		TL::Configuration *configuration;
 	};
 }
 
