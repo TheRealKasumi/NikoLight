@@ -3,11 +3,6 @@
 ![PlatformIO Build](https://github.com/TheRealKasumi/TesLight/actions/workflows/PlatformIO-Build.yml/badge.svg?branch=main)
 ![UI](https://github.com/TheRealKasumi/TesLight/actions/workflows/ui.yml/badge.svg?branch=main)
 
-## Beta Warning
-
-Currently, this project is still in a beta stage, but we are quickly approaching a first release version.
-Some minor bugs and missing documentation are to be expected.
-
 ## Introduction
 
 TesLight is an open source ambient light that you can build yourself.
