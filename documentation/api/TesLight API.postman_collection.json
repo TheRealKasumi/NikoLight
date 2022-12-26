@@ -1,6 +1,5 @@
 {
 	"info": {
-		"_postman_id": "7e57b9b5-edb4-4b23-91b3-e033376642b6",
 		"name": "TesLight API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "12963851"
@@ -231,7 +230,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": []
+									"src": ""
 								}
 							]
 						},
@@ -507,6 +506,63 @@
 								"api",
 								"config",
 								"motion"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UI Configuration",
+			"item": [
+				{
+					"name": "Get UI Configuration",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/ui",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"ui"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set UI Configuration",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uiConfig\": {\r\n        \"language\": \"en\",\r\n        \"theme\": \"dark\",\r\n        \"expertMode\": false\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/ui",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"ui"
 							]
 						}
 					},
