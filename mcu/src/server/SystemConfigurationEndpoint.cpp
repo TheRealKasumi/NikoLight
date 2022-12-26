@@ -24,7 +24,7 @@ void TL::SystemConfigurationEndpoint::begin(TL::Configuration *_configuration, s
 }
 
 /**
- * @brief Return the system configuration to the client as binary data.
+ * @brief Return the system configuration to the client.
  */
 void TL::SystemConfigurationEndpoint::getSystemConfig()
 {
@@ -68,8 +68,8 @@ void TL::SystemConfigurationEndpoint::postSystemConfig()
 
 	if (!TL::SystemConfigurationEndpoint::webServer->hasArg(F("plain")))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There most be a valid json body with the system configuration."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("There most be a valid json body with the system configuration."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body with the system configuration."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("There must be a valid json body with the system configuration."));
 		return;
 	}
 
