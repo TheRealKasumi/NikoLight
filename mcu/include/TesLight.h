@@ -32,6 +32,7 @@
 #include "server/UpdateEndpoint.h"
 #include "server/ResetEndpoint.h"
 #include "server/MotionSensorEndpoint.h"
+#include "server/UIConfigurationEndpoint.h"
 #include "util/FileUtil.h"
 #include "util/WatchDog.h"
 #include "update/Updater.h"

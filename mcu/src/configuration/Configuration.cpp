@@ -17,7 +17,7 @@ TL::Configuration::Configuration(FS *fileSystem, const String fileName)
 {
 	this->fileSystem = fileSystem;
 	this->fileName = fileName;
-	this->configurationVersion = 8;
+	this->configurationVersion = CONFIGURATION_FILE_VERSION;
 	this->loadDefaults();
 }
 
@@ -103,6 +103,24 @@ void TL::Configuration::setMotionSensorCalibration(const TL::Configuration::Moti
 }
 
 /**
+ * @brief Get the UI configuration.
+ * @return UI configuration
+ */
+TL::Configuration::UIConfiguration TL::Configuration::getUIConfiguration()
+{
+	return this->uiConfiguration;
+}
+
+/**
+ * @brief Set the UI configuration.
+ * @param uiConfiguration configuration of the UI
+ */
+void TL::Configuration::setUIConfiguration(const TL::Configuration::UIConfiguration &uiConfiguration)
+{
+	this->uiConfiguration = uiConfiguration;
+}
+
+/**
  * @brief Load the default configuration.
  */
 void TL::Configuration::loadDefaults()
@@ -169,6 +187,12 @@ void TL::Configuration::loadDefaults()
 	this->motionSensorCalibration.gyroXDeg = 0.0f;
 	this->motionSensorCalibration.gyroYDeg = 0.0f;
 	this->motionSensorCalibration.gyroZDeg = 0.0f;
+
+	// UI configuration
+	this->uiConfiguration.firmware = FW_VERSION;
+	this->uiConfiguration.language = UI_DEFAULT_LANGUAGE;
+	this->uiConfiguration.theme = UI_DEFAULT_THEME;
+	this->uiConfiguration.expertMode = UI_DEFAULT_EXPERT;
 }
 
 /**
@@ -255,6 +279,11 @@ bool TL::Configuration::load()
 	file.read(this->motionSensorCalibration.gyroXDeg);
 	file.read(this->motionSensorCalibration.gyroYDeg);
 	file.read(this->motionSensorCalibration.gyroZDeg);
+
+	// UI configuration
+	file.readString(this->uiConfiguration.language);
+	file.readString(this->uiConfiguration.theme);
+	file.read(this->uiConfiguration.expertMode);
 
 	// Check the hash
 	uint16_t fileHash = 0;
@@ -347,6 +376,11 @@ bool TL::Configuration::save()
 	file.write(this->motionSensorCalibration.gyroYDeg);
 	file.write(this->motionSensorCalibration.gyroZDeg);
 
+	// UI configuration
+	file.writeString(this->uiConfiguration.language);
+	file.writeString(this->uiConfiguration.theme);
+	file.write(this->uiConfiguration.expertMode);
+
 	// Write the hash
 	file.write(this->getSimpleHash());
 
@@ -361,7 +395,11 @@ bool TL::Configuration::save()
 uint16_t TL::Configuration::getSimpleHash()
 {
 	uint16_t hash = 7;
+
+	// Configuration file version
 	hash = hash * 31 + this->configurationVersion;
+
+	// System configuration
 	hash = hash * 31 + this->systemConfig.logLevel;
 	hash = hash * 31 + this->systemConfig.lightSensorMode;
 	hash = hash * 31 + this->systemConfig.lightSensorThreshold;
@@ -376,6 +414,8 @@ uint16_t TL::Configuration::getSimpleHash()
 	hash = hash * 31 + this->systemConfig.fanMaxPwmValue;
 	hash = hash * 31 + this->systemConfig.fanMinTemperature;
 	hash = hash * 31 + this->systemConfig.fanMaxTemperature;
+
+	// LED configuration
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		hash = hash * 31 + this->ledConfig[i].ledPin;
@@ -395,6 +435,8 @@ uint16_t TL::Configuration::getSimpleHash()
 		hash = hash * 31 + this->ledConfig[i].ledChannelCurrent[1];
 		hash = hash * 31 + this->ledConfig[i].ledChannelCurrent[2];
 	}
+
+	// WiFi configuration
 	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.accessPointSsid);
 	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.accessPointPassword);
 	hash = hash * 31 + this->wifiConfig.accessPointChannel;
@@ -402,6 +444,8 @@ uint16_t TL::Configuration::getSimpleHash()
 	hash = hash * 31 + this->wifiConfig.accessPointMaxConnections;
 	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.wifiSsid);
 	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.wifiPassword);
+
+	// Motion sensor calibration
 	hash = hash * 31 + this->motionSensorCalibration.accXRaw;
 	hash = hash * 31 + this->motionSensorCalibration.accYRaw;
 	hash = hash * 31 + this->motionSensorCalibration.accZRaw;
@@ -414,6 +458,12 @@ uint16_t TL::Configuration::getSimpleHash()
 	hash = hash * 31 + this->motionSensorCalibration.gyroXDeg;
 	hash = hash * 31 + this->motionSensorCalibration.gyroYDeg;
 	hash = hash * 31 + this->motionSensorCalibration.gyroZDeg;
+
+	// UI configuration
+	hash = hash * 32 + this->getSimpleStringHash(this->uiConfiguration.language);
+	hash = hash * 32 + this->getSimpleStringHash(this->uiConfiguration.theme);
+	hash = hash * 32 + this->uiConfiguration.expertMode;
+
 	return hash;
 }
 

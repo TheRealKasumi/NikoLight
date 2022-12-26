@@ -24,7 +24,7 @@ void TL::LedConfigurationEndpoint::begin(TL::Configuration *_configuration, std:
 }
 
 /**
- * @brief Return the LED configuration to the client as binary data.
+ * @brief Return the LED configuration to the client.
  */
 void TL::LedConfigurationEndpoint::getLedConfig()
 {
@@ -78,8 +78,8 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 
 	if (!TL::LedConfigurationEndpoint::webServer->hasArg(F("plain")))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There most be a valid json body with the LED configuration."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, F("There most be a valid json body with the LED configuration."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body with the LED configuration."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, F("There must be a valid json body with the LED configuration."));
 		return;
 	}
 
