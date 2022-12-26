@@ -26,7 +26,7 @@ void TL::MotionSensorEndpoint::begin(TL::Configuration *_configuration, TL::Moti
 }
 
 /**
- * @brief Return the calibration data to the client as binary data.
+ * @brief Return the calibration data to the client.
  */
 void TL::MotionSensorEndpoint::getCalibrationData()
 {
@@ -67,8 +67,8 @@ void TL::MotionSensorEndpoint::postCalibrationData()
 
 	if (!TL::MotionSensorEndpoint::webServer->hasArg(F("plain")))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There most be a valid json body with the motion sensor calibration."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("There most be a valid json body with the motion sensor calibration."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body with the motion sensor calibration."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("There must be a valid json body with the motion sensor calibration."));
 		return;
 	}
 

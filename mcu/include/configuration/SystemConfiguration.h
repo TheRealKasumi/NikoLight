@@ -9,6 +9,9 @@
 #ifndef SYSTEM_CONFIGURATION_H
 #define SYSTEM_CONFIGURATION_H
 
+// Firmware version
+#define FW_VERSION "1.0.0" // Firmware version of the MCU
+
 // SD configuration
 #define SD_CS_PIN 5			 // CS pin for the SD card
 #define SD_SPI_SPEED 4000000 // SPI data rate
@@ -21,6 +24,7 @@
 #define LOG_DEFAULT_LEVEL 1 			// Default log level
 
 // Configuration of the runtime configuration
+#define CONFIGURATION_FILE_VERSION 9		   // Version of the configuration file
 #define CONFIGURATION_FILE_NAME "/config.tli" // File name of the configuration file
 
 // LED and animator configuration
@@ -40,7 +44,7 @@
 #define REGULATOR_POWER_LIMIT 12																		// W per regulator
 #define REGULATOR_COUNT 2																				// Number of regulators
 #define REGULATOR_DEFAULT_VOLTAGE 5.0f																	// Output Voltage 
-#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 1}, {15, 0}, {16, 1}, {17,0}, {21, 1}, {22, 0}, {25, 1}}	// Map a output pin to a regulator index
+#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 1}, {15, 0}, {16, 1}, {17, 0}, {21, 1}, {22, 0}, {25, 1}}	// Map a output pin to a regulator index
 #define REGULATOR_HIGH_TEMP 70																			// Temp in °C where brightness is reduced
 #define REGULATOR_CUT_OFF_TEMP 85																		// Temp in °C where LEDs are turned off
 
@@ -107,5 +111,10 @@
 // Update configuration
 #define UPDATE_DIRECTORY "/update"	  // Update folder
 #define UPDATE_FILE_NAME "update.tup" // Update package file name
+
+// UI configuration
+#define UI_DEFAULT_LANGUAGE "en" // Default language of the UI
+#define UI_DEFAULT_THEME "dark"	 // Default theme of the UI
+#define UI_DEFAULT_EXPERT false  // Deafult setting for the expert mode of the UI
 
 #endif

@@ -82,6 +82,14 @@ namespace TL
 			float gyroZDeg;	  // Z rotation in deg/s
 		};
 
+		struct UIConfiguration
+		{
+			String firmware;
+			String language;
+			String theme;
+			bool expertMode;
+		};
+
 		Configuration(FS *fileSystem, const String fileName);
 		~Configuration();
 
@@ -97,6 +105,9 @@ namespace TL
 		TL::Configuration::MotionSensorCalibration getMotionSensorCalibration();
 		void setMotionSensorCalibration(const TL::Configuration::MotionSensorCalibration &calibration);
 
+		TL::Configuration::UIConfiguration getUIConfiguration();
+		void setUIConfiguration(const TL::Configuration::UIConfiguration &uiConfiguration);
+
 		void loadDefaults();
 		bool load();
 		bool save();
@@ -110,6 +121,7 @@ namespace TL
 		TL::Configuration::LedConfig ledConfig[LED_NUM_ZONES];
 		TL::Configuration::WiFiConfig wifiConfig;
 		TL::Configuration::MotionSensorCalibration motionSensorCalibration;
+		TL::Configuration::UIConfiguration uiConfiguration;
 
 		uint16_t getSimpleHash();
 		uint16_t getSimpleStringHash(const String input);

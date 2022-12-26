@@ -481,6 +481,8 @@ void TesLight::initializeRestApi()
 	TL::ResetEndpoint::begin(&SD);
 	TL::MotionSensorEndpoint::init(webServerManager.get(), F("/api/"));
 	TL::MotionSensorEndpoint::begin(configuration.get(), motionSensor.get());
+	TL::UIConfigurationEndpoint::init(webServerManager.get(), F("/api/"));
+	TL::UIConfigurationEndpoint::begin(configuration.get());
 	TL::Logger::log(TL::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("REST API initialized."));
 
 	TL::Logger::log(TL::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Starting web server."));

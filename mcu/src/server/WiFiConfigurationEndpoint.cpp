@@ -60,8 +60,8 @@ void TL::WiFiConfigurationEndpoint::postWiFiConfig()
 
 	if (!TL::WiFiConfigurationEndpoint::webServer->hasArg(F("plain")))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There most be a valid json body with the system configuration."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("There most be a valid json body with the system configuration."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body with the system configuration."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("There must be a valid json body with the system configuration."));
 		return;
 	}
 
