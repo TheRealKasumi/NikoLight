@@ -1,6 +1,8 @@
 # TesLight
 
+[![latest release](https://img.shields.io/github/v/release/TheRealKasumi/TesLight)](https://github.com/TheRealKasumi/TesLight/releases/latest)
 ![PlatformUI Build](https://github.com/TheRealKasumi/TesLight/actions/workflows/PlatformIO-Build.yml/badge.svg?branch=main)
+[![GitHub Super-Linter](https://github.com/TheRealKasumi/TesLight/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
 
 ## Beta Warning
 
