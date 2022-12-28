@@ -159,7 +159,7 @@ As an alternative you can also go to the releases and download one of them.
 Like already mentioned in the [part list](part-list.md), the PCB and 3D printed parts can be ordered at [JLCPCB](https://jlcpcb.com/).
 But of course you are free to order the parts somewhere else or create them by yourself.
 
-Open their website and click on [Order Now](https://cart.jlcpcb.com/quote) on the right, top of the page.
+Open their site and click on [Order Now](https://cart.jlcpcb.com/quote) on the right, top of the page.
 This should bring you to the configuration page where you can upload the files and configure the PCB.
 
 ### Upload Gerber Files
