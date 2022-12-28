@@ -1,13 +1,9 @@
 # TesLight
 
 [![latest release](https://img.shields.io/github/v/release/TheRealKasumi/TesLight)](https://github.com/TheRealKasumi/TesLight/releases/latest)
-![PlatformUI Build](https://github.com/TheRealKasumi/TesLight/actions/workflows/PlatformIO-Build.yml/badge.svg?branch=main)
+![PlatformIO Build](https://github.com/TheRealKasumi/TesLight/actions/workflows/PlatformIO-Build.yml/badge.svg?branch=main)
+![UI](https://github.com/TheRealKasumi/TesLight/actions/workflows/ui.yml/badge.svg?branch=main)
 [![GitHub Super-Linter](https://github.com/TheRealKasumi/TesLight/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
-
-## Beta Warning
-
-Currently, this project is still in a beta stage, but we are quickly approaching a first release version.
-Some minor bugs and missing documentation are to be expected.
 
 ## Introduction
 
@@ -43,20 +39,20 @@ The project is therefore mostly platform-independent.
 
 **Here is a short summary of the currently most interesting features:**
 
--  Individual control of each LED installed in the car
--  Hundreds of LEDs are possible
--  Compatible with all WS2812-type LEDs (and LEDs with the same protocol)
--  Fiber cables, light bars and normal LED strips are supported
--  Up to 8 individual zones
--  Currently 18 different effects that can be selected and further customized for each zone
--  Browser based user interface
--  Switching on/off as well as dynamic brightness via the existing lighting in the footwell
--  Rotation and acceleration sensors
--  Interactive effects
--  Light shows
--  Fully customized animations can be created on your PC (playback of fseq 1.0 files from [xLights](https://xlights.org/))
--  OTA (wireless) updates
--  Hardware is upgradeable via extensions in the future
+- Individual control of each LED installed in the car
+- Hundreds of LEDs are possible
+- Compatible with all WS2812-type LEDs (and LEDs with the same protocol)
+- Fiber cables, light bars and normal LED strips are supported
+- Up to 8 individual zones
+- Currently 18 different effects that can be selected and further customized for each zone
+- Browser based user interface
+- Switching on/off as well as dynamic brightness via the existing lighting in the footwell
+- Rotation and acceleration sensors
+- Interactive effects
+- Light shows
+- Fully customized animations can be created on your PC (playback of fseq 1.0 files from [xLights](https://xlights.org/))
+- OTA (wireless) updates
+- Hardware is upgradeable via extensions in the future
 
 ## Some Videos and Pictures
 
