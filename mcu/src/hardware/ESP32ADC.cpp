@@ -1,18 +1,31 @@
 /**
  * @file ESP32ADC.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TesLight::ESP32ADC}.
+ * @brief Implementation of the {@link TL::ESP32ADC}.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #include "hardware/ESP32ADC.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::ESP32ADC}.
+ * @brief Create a new instance of {@link TL::ESP32ADC}.
  * @param inputPin physical input pin
  */
-TesLight::ESP32ADC::ESP32ADC(const uint8_t inputPin)
+TL::ESP32ADC::ESP32ADC(const uint8_t inputPin)
 {
 	this->inputPin = inputPin;
 	this->inputMode = INPUT;
@@ -21,11 +34,11 @@ TesLight::ESP32ADC::ESP32ADC(const uint8_t inputPin)
 }
 
 /**
- * @brief Create a new instance of {@link TesLight::ESP32ADC}.
+ * @brief Create a new instance of {@link TL::ESP32ADC}.
  * @param inputPin physical input pin
  * @param inputMode input mode, INPUT, INPUT_PULLUP, INPUT_PULLDOWN
  */
-TesLight::ESP32ADC::ESP32ADC(const uint8_t inputPin, const uint8_t inputMode)
+TL::ESP32ADC::ESP32ADC(const uint8_t inputPin, const uint8_t inputMode)
 {
 	this->inputPin = inputPin;
 	this->inputMode = inputMode;
@@ -34,12 +47,12 @@ TesLight::ESP32ADC::ESP32ADC(const uint8_t inputPin, const uint8_t inputMode)
 }
 
 /**
- * @brief Create a new instance of {@link TesLight::ESP32ADC}.
+ * @brief Create a new instance of {@link TL::ESP32ADC}.
  * @param inputPin physical input pin
  * @param inputMode input mode, INPUT, INPUT_PULLUP, INPUT_PULLDOWN
  * @param maxVoltage maximum voltage value, used to convert from analog value to voltage
  */
-TesLight::ESP32ADC::ESP32ADC(const uint8_t inputPin, const uint8_t inputMode, const float maxVoltage)
+TL::ESP32ADC::ESP32ADC(const uint8_t inputPin, const uint8_t inputMode, const float maxVoltage)
 {
 	this->inputPin = inputPin;
 	this->inputMode = inputMode;
@@ -48,9 +61,9 @@ TesLight::ESP32ADC::ESP32ADC(const uint8_t inputPin, const uint8_t inputMode, co
 }
 
 /**
- * @brief Delete the {@link TesLight::ESP32ADC} instance and release the pin.
+ * @brief Delete the {@link TL::ESP32ADC} instance and release the pin.
  */
-TesLight::ESP32ADC::~ESP32ADC()
+TL::ESP32ADC::~ESP32ADC()
 {
 	pinMode(this->inputPin, INPUT);
 }
@@ -59,7 +72,7 @@ TesLight::ESP32ADC::~ESP32ADC()
  * @brief Set the input pin.
  * @param inputPin physical pin for the input
  */
-void TesLight::ESP32ADC::setInputPin(const uint8_t inputPin)
+void TL::ESP32ADC::setInputPin(const uint8_t inputPin)
 {
 	this->inputPin = inputPin;
 	this->setupPin();
@@ -69,7 +82,7 @@ void TesLight::ESP32ADC::setInputPin(const uint8_t inputPin)
  * @brief Get the phcysical input pin currently used.
  * @return uint8_t physical pin number
  */
-uint8_t TesLight::ESP32ADC::getInputPin()
+uint8_t TL::ESP32ADC::getInputPin()
 {
 	return this->inputPin;
 }
@@ -78,7 +91,7 @@ uint8_t TesLight::ESP32ADC::getInputPin()
  * @brief Set the input mode.
  * @param inputMode input mode, INPUT, INPUT_PULLUP, INPUT_PULLDOWN
  */
-void TesLight::ESP32ADC::setInputMode(const uint8_t inputMode)
+void TL::ESP32ADC::setInputMode(const uint8_t inputMode)
 {
 	this->inputMode = inputMode;
 	this->setupPin();
@@ -88,7 +101,7 @@ void TesLight::ESP32ADC::setInputMode(const uint8_t inputMode)
  * @brief Get the currently set input mode.
  * @return uint8_t input mode
  */
-uint8_t TesLight::ESP32ADC::getInputMode()
+uint8_t TL::ESP32ADC::getInputMode()
 {
 	return this->inputMode;
 }
@@ -97,7 +110,7 @@ uint8_t TesLight::ESP32ADC::getInputMode()
  * @brief Set the maximum voltage value, used to convert from analog value to voltage.
  * @param maxVoltage maximum voltage value, used to convert from analog value to voltage
  */
-void TesLight::ESP32ADC::setMaxVoltage(const float maxVoltage)
+void TL::ESP32ADC::setMaxVoltage(const float maxVoltage)
 {
 	this->maxVoltage = maxVoltage;
 }
@@ -106,7 +119,7 @@ void TesLight::ESP32ADC::setMaxVoltage(const float maxVoltage)
  * @brief Get the maximum voltage value, used to convert from analog value to voltage.
  * @return float maximum voltage value, used to convert from analog value to voltage
  */
-float TesLight::ESP32ADC::getMaxVoltage()
+float TL::ESP32ADC::getMaxVoltage()
 {
 	return this->maxVoltage;
 }
@@ -115,7 +128,7 @@ float TesLight::ESP32ADC::getMaxVoltage()
  * @brief Get the raw analog value.
  * @return uint16_t raw analog value
  */
-uint16_t TesLight::ESP32ADC::getAnalogValue()
+uint16_t TL::ESP32ADC::getAnalogValue()
 {
 	return analogRead(this->inputPin);
 }
@@ -125,7 +138,7 @@ uint16_t TesLight::ESP32ADC::getAnalogValue()
  * @param usePolynomialCorrection use a polynomial curve to correct the ADC values
  * @return float analog voltage
  */
-float TesLight::ESP32ADC::getAnalogVoltage(const bool usePolynomialCorrection)
+float TL::ESP32ADC::getAnalogVoltage(const bool usePolynomialCorrection)
 {
 	const double analogValue = this->getAnalogValue();
 	if (analogValue < 1.0f || analogValue > 4095.0f)
@@ -147,7 +160,7 @@ float TesLight::ESP32ADC::getAnalogVoltage(const bool usePolynomialCorrection)
 /**
  * @brief Configure the input pin.
  */
-void TesLight::ESP32ADC::setupPin()
+void TL::ESP32ADC::setupPin()
 {
 	pinMode(this->inputPin, this->inputMode);
 	analogReadResolution(12);

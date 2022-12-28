@@ -1,0 +1,1085 @@
+openapi: 3.0.3
+
+info:
+   title: TesLight API Documentation
+   description: |-
+      This is the interactive API documentation for TesLight. Below all REST endpoints are documented and ready to be tried out.
+   contact:
+      name: TesLight on GitHub
+      url: https://github.com/TheRealKasumi/TesLight
+   version: 1.0.0
+
+servers:
+   - url: http://192.168.4.1/api
+
+tags:
+   - name: Connection Test
+     description: Test the connection to the TesLight controller
+   - name: System Configuration
+     description: Read and update the system configuration
+   - name: LED/Zone Configuration
+     description: Read and update the LED/zone configuration
+   - name: WiFi Configuration
+     description: Read and update the WiFi configuration
+   - name: Motion Sensor Calibration Configuration
+     description: Read, update and run the motion sensor calibration
+   - name: UI Configuration
+     description: Read and update the ui configuration
+   - name: FSEQ Management
+     description: List, upload and delete FSEQ files for playback
+   - name: Update
+     description: Upload update packages to update the controller
+   - name: Log
+     description: Get and clear the log
+   - name: Reset
+     description: Restart or \"factory reset\" the controller
+
+paths:
+   "/connection_test":
+      get:
+         tags:
+            - Connection Test
+         summary: Send a test request to check the connection to the controller.
+         description: |-
+            Send a test request to check the connection to the controller.
+            When the controller responds with status code 200, everything is up and running.
+         operationId: testConnection
+         responses:
+            "200":
+               description: Controller is connected and the REST API can be used
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+
+   "/config/system":
+      get:
+         tags:
+            - System Configuration
+         summary: Get system configuration.
+         description: Get the current system configuration from the controller.
+         operationId: getSystemConfig
+         responses:
+            "200":
+               description: Response contains the current system configuration.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/SystemConfiguration"
+      post:
+         tags:
+            - System Configuration
+         summary: Update system configuration.
+         description: Update the current system configuration on the controller.
+         operationId: setSystemConfig
+         requestBody:
+            $ref: "#/components/requestBodies/SystemConfiguration"
+         responses:
+            "200":
+               description: The configuration was updated.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is invalid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+
+   "/config/led":
+      get:
+         tags:
+            - LED/Zone Configuration
+         summary: Get LED/zone configuration.
+         description: Get the current LED/zone configuration from the controller.
+         operationId: getLedConfig
+         responses:
+            "200":
+               description: Response contains the current LED/zone configuration.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/LedConfiguration"
+      post:
+         tags:
+            - LED/Zone Configuration
+         summary: Update LED/zone configuration.
+         description: Update the current LED/zone configuration on the controller.
+         operationId: setLedConfig
+         requestBody:
+            $ref: "#/components/requestBodies/LedConfiguration"
+         responses:
+            "200":
+               description: The configuration was updated.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is invalid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+
+   "/config/wifi":
+      get:
+         tags:
+            - WiFi Configuration
+         summary: WiFi configuration.
+         description: Get the current WiFi configuration from the controller.
+         operationId: getWifiConfig
+         responses:
+            "200":
+               description: Response contains the current WiFi configuration.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/WiFiConfiguration"
+      post:
+         tags:
+            - WiFi Configuration
+         summary: Update WiFi configuration.
+         description: Update the current WiFi configuration on the controller.
+         operationId: setWiFiConfig
+         requestBody:
+            $ref: "#/components/requestBodies/WiFiConfiguration"
+         responses:
+            "200":
+               description: The configuration was updated.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is invalid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+
+   "/config/motion":
+      get:
+         tags:
+            - Motion Sensor Calibration Configuration
+         summary: Read the motion sensor calibration.
+         description: Read the motion sensor calibration.
+         operationId: getMotionSensorCalibration
+         responses:
+            "200":
+               description: Response contains the current motion sensor calibration.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/MotionSensorCalibration"
+      post:
+         tags:
+            - Motion Sensor Calibration Configuration
+         summary: Update the motion sensor calibration.
+         description: Update the current motion sensor calibration on the controller.
+         operationId: setMotionSensorCalibration
+         requestBody:
+            $ref: "#/components/requestBodies/MotionSensorCalibration"
+         responses:
+            "200":
+               description: The calibration data was updated.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is invalid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+      patch:
+         tags:
+            - Motion Sensor Calibration Configuration
+         summary: Automatically run the motion sensor calibration.
+         description: Automatically run the current motion sensor calibration on the controller.
+         operationId: calibrateMotionSensor
+         responses:
+            "200":
+               description: The calibration data was updated.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "412":
+               description: The motion sensor is not ready to be calibrated.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+
+   "/config/ui":
+      get:
+         tags:
+            - UI Configuration
+         summary: Get UI configuration.
+         description: Get the current UI configuration from the controller.
+         operationId: getUIConfig
+         responses:
+            "200":
+               description: Response contains the current UI configuration.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/UIConfiguration"
+      post:
+         tags:
+            - UI Configuration
+         summary: Update UI configuration.
+         description: Update the current UI configuration on the controller.
+         operationId: setUIConfig
+         requestBody:
+            $ref: "#/components/requestBodies/UIConfiguration"
+         responses:
+            "200":
+               description: The configuration was updated.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is invalid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+
+   "/fseq":
+      get:
+         tags:
+            - FSEQ Management
+         summary: List all FSEQ files on the controller.
+         description: List all FSEQ files currently stored on the controller and get their file size.
+         operationId: getFSEQList
+         responses:
+            "200":
+               description: Response contains a list of all FSEQ files stored on the controller.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/FSEQList"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+      post:
+         tags:
+            - FSEQ Management
+         summary: Upload a new FSEQ file to the controller.
+         description: Upload a new FSEQ file to the controller and validate it.
+         operationId: uploadFSEQFile
+         parameters:
+            - name: fileName
+              in: query
+              description: File name of the FSEQ file under which it should be stored on the controller.
+              schema:
+                 type: string
+              required: true
+         requestBody:
+            content:
+               multipart/form-data:
+                  schema:
+                     type: object
+                     properties:
+                        file:
+                           type: string
+                           format: binary
+         responses:
+            "200":
+               description: The calibration data was updated.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request or the file is invalid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+      delete:
+         tags:
+            - FSEQ Management
+         summary: Delete an FSEQ file from the controller.
+         description: Delete an FSEQ file from the controller.
+         operationId: deleteFSEQFile
+         parameters:
+            - name: fileName
+              in: query
+              description: File name of the FSEQ file which should be deleted from the controller.
+              schema:
+                 type: string
+              required: true
+         responses:
+            "200":
+               description: The calibration data was updated.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is not valid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "404":
+               description: The file was not found.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+
+   "/update":
+      post:
+         tags:
+            - Update
+         summary: Update the TesLight controller with a new firmware.
+         description: Upload a TesLight update package and update the controller with a new firmware.
+         operationId: uploadTUP
+         requestBody:
+            content:
+               multipart/form-data:
+                  schema:
+                     type: object
+                     properties:
+                        file:
+                           type: string
+                           format: binary
+         responses:
+            "200":
+               description: The upload and validation was successful. Update will be installed after a reboot.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/FSEQList"
+            "400":
+               description: The request is not valid. Probably the update package is corrupted.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+
+   "/log/size":
+      get:
+         tags:
+            - Log
+         summary: Get the size of the log file.
+         description: Get the current size of the log file stored on the controller.
+         operationId: getLogSize
+         responses:
+            "200":
+               description: Response contains the size of the log in bytes.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/LogSize"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+
+   "/log":
+      get:
+         tags:
+            - Log
+         summary: Get a part of the log file.
+         description: Get a part of the log file. Note that this can be slow when a hug part of the file is read.
+         operationId: getLog
+         parameters:
+            - name: start
+              in: query
+              description: Start position from where to start to read the log.
+              schema:
+                 type: integer
+                 format: uint32
+              required: true
+            - name: count
+              in: query
+              description: Number of bytes to read from the log.
+              schema:
+                 type: integer
+                 format: uint32
+              required: true
+         responses:
+            "200":
+               description: Response directly contains a segement of the log.
+               content:
+                  text/plain:
+                     example: Some log data
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+      delete:
+         tags:
+            - Log
+         summary: Clear the log.
+         description: Clear the log file on the controller.
+         operationId: deleteLog
+         responses:
+            "200":
+               description: Positive response.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+
+   "/reset/soft":
+      post:
+         tags:
+            - Reset
+         summary: Restart the controller.
+         description: Restart the controller while keeping the configuration.
+         operationId: restartSoft
+         responses:
+            "200":
+               description: Positive response.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+
+   "/reset/hard":
+      post:
+         tags:
+            - Reset
+         summary: Restart the controller and reset the configuration.
+         description: Restart the controller and reset the configuration to defaults.
+         operationId: restartHard
+         responses:
+            "200":
+               description: Positive response.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+
+components:
+   schemas:
+      ApiResponse:
+         type: object
+         properties:
+            status:
+               type: integer
+               format: int32
+               example: 0
+            message:
+               type: string
+               example: Message or error
+      SystemConfiguration:
+         type: object
+         properties:
+            status:
+               type: integer
+               format: int32
+               example: 200
+            message:
+               type: string
+               example: Message
+            systemConfig:
+               type: object
+               properties:
+                  logLevel:
+                     type: integer
+                     format: uint8
+                     example: 1
+                  lightSensorMode:
+                     type: integer
+                     format: uint8
+                     example: 1
+                  lightSensorThreshold:
+                     type: integer
+                     format: uint8
+                     example: 5
+                  lightSensorMinAmbientBrightness:
+                     type: integer
+                     format: uint8
+                     example: 5
+                  lightSensorMaxAmbientBrightness:
+                     type: integer
+                     format: uint8
+                     example: 255
+                  lightSensorMinLedBrightness:
+                     type: integer
+                     format: uint8
+                     example: 0
+                  lightSensorMaxLedBrightness:
+                     type: integer
+                     format: uint8
+                     example: 255
+                  lightSensorDuration:
+                     type: integer
+                     format: uint8
+                     example: 6
+                  regulatorPowerLimit:
+                     type: integer
+                     format: uint8
+                     example: 24
+                  regulatorHighTemperature:
+                     type: integer
+                     format: uint8
+                     example: 70
+                  regulatorCutoffTemperature:
+                     type: integer
+                     format: uint8
+                     example: 85
+                  fanMinPwmValue:
+                     type: integer
+                     format: uint8
+                     example: 75
+                  fanMaxPwmValue:
+                     type: integer
+                     format: uint8
+                     example: 255
+                  fanMinTemperature:
+                     type: integer
+                     format: uint8
+                     example: 60
+                  fanMaxTemperature:
+                     type: integer
+                     format: uint8
+                     example: 80
+      LedConfiguration:
+         type: object
+         properties:
+            status:
+               type: integer
+               format: int32
+               example: 200
+            message:
+               type: string
+               example: Message
+            ledConfig:
+               type: array
+               minItems: 8
+               maxItems: 8
+               items:
+                  properties:
+                     ledPin:
+                        type: integer
+                        format: uint8
+                        example: 13
+                     ledCount:
+                        type: integer
+                        format: uint8
+                        example: 2
+                     type:
+                        type: integer
+                        format: uint8
+                        example: 0
+                     speed:
+                        type: integer
+                        format: uint8
+                        example: 50
+                     offset:
+                        type: integer
+                        format: uint8
+                        example: 10
+                     brightness:
+                        type: integer
+                        format: uint8
+                        example: 50
+                     reverse:
+                        type: boolean
+                        format: boolean
+                        example: false
+                     fadeSpeed:
+                        type: integer
+                        format: uint8
+                        example: 30
+                     ledVoltage:
+                        type: number
+                        format: float
+                        example: 5
+                     customFields:
+                        type: array
+                        minItems: 15
+                        maxItems: 15
+                        items:
+                           type: integer
+                           format: uint8
+                           example: 0
+                     channelCurrents:
+                        type: array
+                        minItems: 3
+                        maxItems: 3
+                        items:
+                           type: integer
+                           format: uint8
+                           example: 16
+      WiFiConfiguration:
+         type: object
+         properties:
+            status:
+               type: integer
+               format: int32
+               example: 200
+            message:
+               type: string
+               example: Message
+            wifiConfig:
+               type: object
+               properties:
+                  accessPointSsid:
+                     type: string
+                     example: TesLight
+                  accessPointPassword:
+                     type: string
+                     example: TesLightPW
+                  accessPointChannel:
+                     type: integer
+                     format: uint8
+                     example: 1
+                  accessPointHidden:
+                     type: boolean
+                     format: boolean
+                     example: false
+                  accessPointMaxConnections:
+                     type: integer
+                     format: uint8
+                     example: 1
+      MotionSensorCalibration:
+         type: object
+         properties:
+            status:
+               type: integer
+               format: int32
+               example: 200
+            message:
+               type: string
+               example: Message
+            motionSensorCalibration:
+               type: object
+               properties:
+                  accXRaw:
+                     type: integer
+                     format: int16
+                     example: 0
+                  accYRaw:
+                     type: integer
+                     format: int16
+                     example: 0
+                  accZRaw:
+                     type: integer
+                     format: int16
+                     example: 0
+                  gyroXRaw:
+                     type: integer
+                     format: int16
+                     example: 0
+                  gyroYRaw:
+                     type: integer
+                     format: int16
+                     example: 0
+                  gyroZRaw:
+                     type: integer
+                     format: int16
+                     example: 0
+                  accXG:
+                     type: number
+                     format: float
+                     example: 0
+                  accYG:
+                     type: number
+                     format: float
+                     example: 0
+                  accZG:
+                     type: number
+                     format: float
+                     example: 0
+                  gyroXDeg:
+                     type: number
+                     format: float
+                     example: 0
+                  gyroYDeg:
+                     type: number
+                     format: float
+                     example: 0
+                  gyroZDeg:
+                     type: number
+                     format: float
+                     example: 0
+      UIConfiguration:
+         type: object
+         properties:
+            status:
+               type: integer
+               format: int32
+               example: 200
+            message:
+               type: string
+               example: Message
+            uiConfig:
+               type: object
+               properties:
+                  firmware:
+                     type: string
+                     example: 1.0.0
+                  language:
+                     type: string
+                     example: en
+                  theme:
+                     type: string
+                     example: dark
+                  expertMode:
+                     type: boolean
+                     example: false
+      FSEQList:
+         type: object
+         properties:
+            status:
+               type: integer
+               format: int32
+               example: 200
+            message:
+               type: string
+               example: Message
+            fileList:
+               type: array
+               minItems: 0
+               items:
+                  properties:
+                     fileName:
+                        type: string
+                        example: test.fseq
+                     fileSize:
+                        type: integer
+                        format: uint32
+                        example: 33430436
+                     fileId:
+                        type: integer
+                        format: uint32
+                        example: 2839768
+      LogSize:
+         type: object
+         properties:
+            status:
+               type: integer
+               format: int32
+               example: 200
+            message:
+               type: string
+               example: Message
+            log:
+               type: object
+               properties:
+                  size:
+                     type: integer
+                     format: uint32
+                     example: 954861
+
+   requestBodies:
+      SystemConfiguration:
+         description: Update the current system configuration on the controller.
+         content:
+            application/json:
+               schema:
+                  type: object
+                  properties:
+                     systemConfig:
+                        type: object
+                        properties:
+                           logLevel:
+                              type: integer
+                              format: uint8
+                              example: 1
+                           lightSensorMode:
+                              type: integer
+                              format: uint8
+                              example: 1
+                           lightSensorThreshold:
+                              type: integer
+                              format: uint8
+                              example: 5
+                           lightSensorMinAmbientBrightness:
+                              type: integer
+                              format: uint8
+                              example: 5
+                           lightSensorMaxAmbientBrightness:
+                              type: integer
+                              format: uint8
+                              example: 255
+                           lightSensorMinLedBrightness:
+                              type: integer
+                              format: uint8
+                              example: 0
+                           lightSensorMaxLedBrightness:
+                              type: integer
+                              format: uint8
+                              example: 255
+                           lightSensorDuration:
+                              type: integer
+                              format: uint8
+                              example: 6
+                           regulatorPowerLimit:
+                              type: integer
+                              format: uint8
+                              example: 24
+                           regulatorHighTemperature:
+                              type: integer
+                              format: uint8
+                              example: 70
+                           regulatorCutoffTemperature:
+                              type: integer
+                              format: uint8
+                              example: 85
+                           fanMinPwmValue:
+                              type: integer
+                              format: uint8
+                              example: 75
+                           fanMaxPwmValue:
+                              type: integer
+                              format: uint8
+                              example: 255
+                           fanMinTemperature:
+                              type: integer
+                              format: uint8
+                              example: 60
+                           fanMaxTemperature:
+                              type: integer
+                              format: uint8
+                              example: 80
+      LedConfiguration:
+         description: Update the current LED/zone configuration on the controller.
+         content:
+            application/json:
+               schema:
+                  type: object
+                  properties:
+                     ledConfig:
+                        type: array
+                        minItems: 8
+                        maxItems: 8
+                        items:
+                           properties:
+                              ledPin:
+                                 type: integer
+                                 format: uint8
+                                 example: 13
+                              ledCount:
+                                 type: integer
+                                 format: uint8
+                                 example: 2
+                              type:
+                                 type: integer
+                                 format: uint8
+                                 example: 0
+                              speed:
+                                 type: integer
+                                 format: uint8
+                                 example: 50
+                              offset:
+                                 type: integer
+                                 format: uint8
+                                 example: 10
+                              brightness:
+                                 type: integer
+                                 format: uint8
+                                 example: 50
+                              reverse:
+                                 type: boolean
+                                 format: boolean
+                                 example: false
+                              fadeSpeed:
+                                 type: integer
+                                 format: uint8
+                                 example: 30
+                              ledVoltage:
+                                 type: number
+                                 format: float
+                                 example: 5
+                              customFields:
+                                 type: array
+                                 minItems: 15
+                                 maxItems: 15
+                                 items:
+                                    type: integer
+                                    format: uint8
+                                    example: 0
+                              channelCurrents:
+                                 type: array
+                                 minItems: 3
+                                 maxItems: 3
+                                 items:
+                                    type: integer
+                                    format: uint8
+                                    example: 16
+      WiFiConfiguration:
+         description: Update the current WiFi configuration on the controller.
+         content:
+            application/json:
+               schema:
+                  type: object
+                  properties:
+                     wifiConfig:
+                        type: object
+                        properties:
+                           accessPointSsid:
+                              type: string
+                              example: TesLight
+                           accessPointPassword:
+                              type: string
+                              example: TesLightPW
+                           accessPointChannel:
+                              type: integer
+                              format: uint8
+                              example: 1
+                           accessPointHidden:
+                              type: boolean
+                              format: boolean
+                              example: false
+                           accessPointMaxConnections:
+                              type: integer
+                              format: uint8
+                              example: 1
+      MotionSensorCalibration:
+         description: Update the current motion sensor calibration on the controller.
+         content:
+            application/json:
+               schema:
+                  type: object
+                  properties:
+                     motionSensorCalibration:
+                        type: object
+                        properties:
+                           accXRaw:
+                              type: integer
+                              format: int16
+                              example: 0
+                           accYXRaw:
+                              type: integer
+                              format: int16
+                              example: 0
+                           accZRaw:
+                              type: integer
+                              format: int16
+                              example: 0
+                           gyroXRaw:
+                              type: integer
+                              format: int16
+                              example: 0
+                           gyroYRaw:
+                              type: integer
+                              format: int16
+                              example: 0
+                           gyroZRaw:
+                              type: integer
+                              format: int16
+                              example: 0
+                           accXG:
+                              type: number
+                              format: float
+                              example: 0
+                           accYG:
+                              type: number
+                              format: float
+                              example: 0
+                           accZG:
+                              type: number
+                              format: float
+                              example: 0
+                           gyroXDeg:
+                              type: number
+                              format: float
+                              example: 0
+                           gyroYDeg:
+                              type: number
+                              format: float
+                              example: 0
+                           gyroZDeg:
+                              type: number
+                              format: float
+                              example: 0
+      UIConfiguration:
+         description: Update the current UI configuration on the controller.
+         content:
+            application/json:
+               schema:
+                  type: object
+                  properties:
+                     uiConfig:
+                        type: object
+                        properties:
+                           language:
+                              type: string
+                              example: en
+                           theme:
+                              type: string
+                              example: dark
+                           expertMode:
+                              type: boolean
+                              example: false

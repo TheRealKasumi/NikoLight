@@ -1,0 +1,601 @@
+{
+	"info": {
+		"name": "TesLight API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12963851"
+	},
+	"item": [
+		{
+			"name": "Connection Test",
+			"item": [
+				{
+					"name": "Connection Test",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/connection_test",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"connection_test"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "System Configuration",
+			"item": [
+				{
+					"name": "Get System Configuration",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/system",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"system"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set System Configuration",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"systemConfig\": {\r\n        \"logLevel\": 1,\r\n        \"lightSensorMode\": 1,\r\n        \"lightSensorThreshold\": 5,\r\n        \"lightSensorMinAmbientBrightness\": 5,\r\n        \"lightSensorMaxAmbientBrightness\": 255,\r\n        \"lightSensorMinLedBrightness\": 0,\r\n        \"lightSensorMaxLedBrightness\": 255,\r\n        \"lightSensorDuration\": 6,\r\n        \"regulatorPowerLimit\": 24,\r\n        \"regulatorHighTemperature\": 70,\r\n        \"regulatorCutoffTemperature\": 85,\r\n        \"fanMinPwmValue\": 75,\r\n        \"fanMaxPwmValue\": 255,\r\n        \"fanMinTemperature\": 60,\r\n        \"fanMaxTemperature\": 80\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/system",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"system"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "LED Configuration",
+			"item": [
+				{
+					"name": "Get LED Configuration",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/led",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"led"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set LED Configuration",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"ledConfig\":[{\"ledPin\":13,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]},{\"ledPin\":14,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]},{\"ledPin\":15,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]},{\"ledPin\":16,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]},{\"ledPin\":17,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]},{\"ledPin\":21,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]},{\"ledPin\":22,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]},{\"ledPin\":25,\"ledCount\":2,\"type\":0,\"speed\":50,\"offset\":10,\"brightness\":50,\"reverse\":false,\"fadeSpeed\":30,\"ledVoltage\":5,\"customFields\":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\"channelCurrents\":[16,16,16]}]}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/led",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"led"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "WiFi Configuration",
+			"item": [
+				{
+					"name": "Get WiFi Configuration",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/wifi",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"wifi"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set WiFi Configuration",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"wifiConfig\": {\r\n        \"accessPointSsid\": \"TesLight\",\r\n        \"accessPointPassword\": \"TesLightPW\",\r\n        \"accessPointChannel\": 1,\r\n        \"accessPointHidden\": false,\r\n        \"accessPointMaxConnections\": 1\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/wifi",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"wifi"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FSEQ",
+			"item": [
+				{
+					"name": "Get FSEQ List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/fseq",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"fseq"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload FSEQ File",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": ""
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/fseq?fileName=test.fseq",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"fseq"
+							],
+							"query": [
+								{
+									"key": "fileName",
+									"value": "test.fseq"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a FSEQ File",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/fseq?fileName=test.fseq",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"fseq"
+							],
+							"query": [
+								{
+									"key": "fileName",
+									"value": "test.fseq"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Log",
+			"item": [
+				{
+					"name": "Get Log Size",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/log/size",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"log",
+								"size"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Log",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/log?start=0&count=1024",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"log"
+							],
+							"query": [
+								{
+									"key": "start",
+									"value": "0"
+								},
+								{
+									"key": "count",
+									"value": "1024"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clear Log",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/log",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"log"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update",
+			"item": [
+				{
+					"name": "Upload TesLight Update Package",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/update",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"update"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reset",
+			"item": [
+				{
+					"name": "Soft Reset",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/reset/soft",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"reset",
+								"soft"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hard Reset",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/reset/hard",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"reset",
+								"hard"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Motion Sensor",
+			"item": [
+				{
+					"name": "Get Motion Sensor Calibration",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/motion",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"motion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Motion Sensor Calibration",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"motionSensorCalibration\": {\r\n        \"accXRaw\": 0,\r\n        \"accYRaw\": 0,\r\n        \"accZRaw\": 0,\r\n        \"gyroXRaw\": 0,\r\n        \"gyroYRaw\": 0,\r\n        \"gyroZRaw\": 0,\r\n        \"accXG\": 0,\r\n        \"accYG\": 0,\r\n        \"accZG\": 0,\r\n        \"gyroXDeg\": 0,\r\n        \"gyroYDeg\": 0,\r\n        \"gyroZDeg\": 0\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/motion",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"motion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Calibrate Motion Sensor",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/motion",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"motion"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UI Configuration",
+			"item": [
+				{
+					"name": "Get UI Configuration",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/ui",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"ui"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set UI Configuration",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uiConfig\": {\r\n        \"language\": \"en\",\r\n        \"theme\": \"dark\",\r\n        \"expertMode\": false\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/ui",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"ui"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "TESLIGHTIP",
+			"value": "192.168.4.1",
+			"type": "string"
+		}
+	]
+}

@@ -3,23 +3,36 @@
  * @author TheRealKasumi
  * @brief Contains a REST endpoint to test the connection to the controller.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #include "server/ConnectionTestEndpoint.h"
 
 /**
- * @brief Add all request handler for this {@link TesLight::RestEndpoint} to the {@link TesLight::WebServerManager}.
+ * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
  */
-void TesLight::ConnectionTestEndpoint::begin()
+void TL::ConnectionTestEndpoint::begin()
 {
-	webServerManager->addRequestHandler((getBaseUri() + F("connection_test")).c_str(), http_method::HTTP_GET, TesLight::ConnectionTestEndpoint::handleConnectionTest);
+	TL::ConnectionTestEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("connection_test")).c_str(), http_method::HTTP_GET, TL::ConnectionTestEndpoint::handleConnectionTest);
 }
 
 /**
  * @brief Handler function for the connection test.
  */
-void TesLight::ConnectionTestEndpoint::handleConnectionTest()
+void TL::ConnectionTestEndpoint::handleConnectionTest()
 {
-	webServer->send(200, F("application/text"), (String)F("Hey there, I am running. Current runtime: ") + String(millis()));
+	TL::ConnectionTestEndpoint::sendSimpleResponse(200, F("I am doing alright, thanks for asking :3 !"));
 }

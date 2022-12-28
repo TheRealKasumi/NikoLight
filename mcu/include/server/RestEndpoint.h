@@ -3,24 +3,37 @@
  * @author TheRealKasumi
  * @brief Contains a base class for a single REST endpoint.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #ifndef REST_ENDPOINT_H
 #define REST_ENDPOINT_H
 
 #include <WebServer.h>
+#include <ArduinoJson.h>
 #include "server/WebServerManager.h"
-#include "util/Base64Util.h"
 
-namespace TesLight
+namespace TL
 {
 	class RestEndpoint
 	{
 	public:
-		static void init(TesLight::WebServerManager *_webServerManager, String _baseUri);
+		static void init(TL::WebServerManager *_webServerManager, String _baseUri);
 
-		static TesLight::WebServerManager *getServerManager();
+		static TL::WebServerManager *getServerManager();
 		static WebServer *getServer();
 		static String getBaseUri();
 
@@ -28,9 +41,13 @@ namespace TesLight
 		RestEndpoint();
 
 	protected:
-		static TesLight::WebServerManager *webServerManager;
+		static TL::WebServerManager *webServerManager;
 		static WebServer *webServer;
 		static String baseUri;
+
+		static void sendSimpleResponse(const int code, const String &message);
+		static void sendJsonDocument(const int code, const String &message, DynamicJsonDocument &jsonDocument);
+		static bool parseJsonDocument(DynamicJsonDocument &jsonDocument, const String &json);
 	};
 }
 

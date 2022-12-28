@@ -1,28 +1,41 @@
 /**
  * @file LightSensor.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TesLight::LightSensor}.
+ * @brief Implementation of the {@link TL::LightSensor}.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #include "sensor/LightSensor.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::LightSensor}.
+ * @brief Create a new instance of {@link TL::LightSensor}.
  * @param configuration reference to the configuration
  */
-TesLight::LightSensor::LightSensor(TesLight::Configuration *configuration)
+TL::LightSensor::LightSensor(TL::Configuration *configuration)
 {
 	this->configuration = configuration;
-	this->esp32adc = new TesLight::ESP32ADC(LIGHT_SENSOR_ADC_PIN, INPUT, 3.3f);
-	this->bh1750 = new TesLight::BH1750(IIC_ADDRESS_BH1750);
+	this->esp32adc.reset(new TL::ESP32ADC(LIGHT_SENSOR_ADC_PIN, INPUT, 3.3f));
+	this->bh1750.reset(new TL::BH1750(IIC_ADDRESS_BH1750));
 	if (!this->bh1750->begin())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("The bh1750 light sensor was not found on the I²C bus and will not be available."));
-		delete this->bh1750;
-		this->bh1750 = nullptr;
+		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("The bh1750 light sensor was not found on the I²C bus and will not be available."));
+		this->bh1750.reset();
 	}
+	this->lastBrightnessValue = 0.0f;
 	this->motionData.accXRaw = 0;
 	this->motionData.accYRaw = 0;
 	this->motionData.accZRaw = 0;
@@ -46,31 +59,39 @@ TesLight::LightSensor::LightSensor(TesLight::Configuration *configuration)
 }
 
 /**
- * @brief Delete the {@link TesLight::LightSensor} instance and free resoucres.
+ * @brief Delete the {@link TL::LightSensor} instance.
  */
-TesLight::LightSensor::~LightSensor()
+TL::LightSensor::~LightSensor()
 {
-	delete this->esp32adc;
-	this->esp32adc = nullptr;
-	if (this->bh1750)
-	{
-		delete this->bh1750;
-		this->bh1750 = nullptr;
-	}
 }
 
 /**
  * @brief Return the brightness of the lights based on the sensors mode.
  * @param brightness 0.0 for minimum brightness up to 1.0 for maximum brightness
- * @param motionSensor reference to a {@link TesLight::MotionSensor} instance
+ * @param motionSensor reference to a {@link TL::MotionSensor} instance
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::LightSensor::getBrightness(float &brightness, TesLight::MotionSensor *motionSensor)
+bool TL::LightSensor::getBrightness(float &brightness, TL::MotionSensor *motionSensor)
 {
-	const TesLight::Configuration::SystemConfig systemConfig = this->configuration->getSystemConfig();
+	brightness = this->lastBrightnessValue;
+	const bool success = this->getBrightnessInt(brightness, motionSensor);
+	this->lastBrightnessValue = brightness;
+	return success;
+}
+
+/**
+ * @brief Return the brightness of the lights based on the sensors mode.
+ * @param brightness 0.0 for minimum brightness up to 1.0 for maximum brightness
+ * @param motionSensor reference to a {@link TL::MotionSensor} instance
+ * @return true when successful
+ * @return false when there was an error
+ */
+bool TL::LightSensor::getBrightnessInt(float &brightness, TL::MotionSensor *motionSensor)
+{
+	const TL::Configuration::SystemConfig systemConfig = this->configuration->getSystemConfig();
 	const float antiFlickerThreshold = 0.002f;
-	const TesLight::LightSensor::LightSensorMode lightSensorMode = (TesLight::LightSensor::LightSensorMode)systemConfig.lightSensorMode;
+	const TL::LightSensor::LightSensorMode lightSensorMode = (TL::LightSensor::LightSensorMode)systemConfig.lightSensorMode;
 	const float threshold = systemConfig.lightSensorThreshold / 255.0f;
 	const float minAmbientBrightness = systemConfig.lightSensorMinAmbientBrightness / 255.0f;
 	const float maxAmbientBrightness = systemConfig.lightSensorMaxAmbientBrightness / 255.0f;
@@ -79,21 +100,21 @@ bool TesLight::LightSensor::getBrightness(float &brightness, TesLight::MotionSen
 	const uint8_t duration = systemConfig.lightSensorDuration;
 
 	// Always off
-	if (lightSensorMode == TesLight::LightSensor::LightSensorMode::ALWAYS_OFF)
+	if (lightSensorMode == TL::LightSensor::LightSensorMode::ALWAYS_OFF)
 	{
 		brightness = 0.0f;
 		return true;
 	}
 
 	// Always on
-	else if (lightSensorMode == TesLight::LightSensor::LightSensorMode::ALWAYS_ON)
+	else if (lightSensorMode == TL::LightSensor::LightSensorMode::ALWAYS_ON)
 	{
 		brightness = 1.0f;
 		return true;
 	}
 
 	// Auto on/off using ADC
-	else if (lightSensorMode == TesLight::LightSensor::LightSensorMode::AUTO_ON_OFF_ADC)
+	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_ON_OFF_ADC)
 	{
 		float value = 0.0f;
 		for (uint8_t i = 0; i < 10; i++)
@@ -115,7 +136,7 @@ bool TesLight::LightSensor::getBrightness(float &brightness, TesLight::MotionSen
 	}
 
 	// Auto brightness using ADC
-	else if (lightSensorMode == TesLight::LightSensor::LightSensorMode::AUTO_BRIGHTNESS_ADC)
+	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_BRIGHTNESS_ADC)
 	{
 		float value = 0.0f;
 		for (uint8_t i = 0; i < 10; i++)
@@ -156,12 +177,12 @@ bool TesLight::LightSensor::getBrightness(float &brightness, TesLight::MotionSen
 	}
 
 	// Auto on/off using BH1750
-	else if (lightSensorMode == TesLight::LightSensor::LightSensorMode::AUTO_ON_OFF_BH1750 && this->bh1750)
+	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_ON_OFF_BH1750 && this->bh1750)
 	{
 		float lux = 0.0f;
 		if (!this->bh1750->getLux(lux))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Light sensor mode is AUTO_ON_OFF_BH1750 but the BH1750 sensor was not found on the I²C bus."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Light sensor mode is AUTO_ON_OFF_BH1750 but the BH1750 sensor was not found on the I²C bus."));
 			brightness = 1.0f;
 			return false;
 		}
@@ -180,12 +201,12 @@ bool TesLight::LightSensor::getBrightness(float &brightness, TesLight::MotionSen
 	}
 
 	// Auto brightness using BH1750
-	else if (lightSensorMode == TesLight::LightSensor::LightSensorMode::AUTO_BRIGHTNESS_BH1750 && this->bh1750)
+	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_BRIGHTNESS_BH1750 && this->bh1750)
 	{
 		float lux = 0.0f;
 		if (!this->bh1750->getLux(lux))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Light sensor mode is AUTO_BRIGHTNESS_BH1750 but the BH1750 sensor was not found on the I²C bus."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Light sensor mode is AUTO_BRIGHTNESS_BH1750 but the BH1750 sensor was not found on the I²C bus."));
 			brightness = 1.0f;
 			return false;
 		}
@@ -223,9 +244,9 @@ bool TesLight::LightSensor::getBrightness(float &brightness, TesLight::MotionSen
 	}
 
 	// Auto on/off using motion sensor mpu6050
-	else if (lightSensorMode == TesLight::LightSensor::LightSensorMode::AUTO_ON_OFF_MPU6050 && motionSensor)
+	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_ON_OFF_MPU6050 && motionSensor)
 	{
-		const TesLight::MotionSensor::MotionSensorData motionData = motionSensor->getMotion();
+		const TL::MotionSensor::MotionSensorData motionData = motionSensor->getMotion();
 		float trigger = sqrt(pow(motionData.accXG * 150.0f - this->motionData.accXG * 150.0f, 2) + pow(motionData.accYG * 150.0f - this->motionData.accYG * 150.0f, 2) + pow(motionData.accZG * 150.0f - this->motionData.accZG * 150.0f, 2));
 		trigger += sqrt(pow(motionData.gyroXDeg - this->motionData.gyroXDeg, 2) + pow(motionData.gyroYDeg - this->motionData.gyroYDeg, 2) + pow(motionData.gyroZDeg - this->motionData.gyroZDeg, 2));
 		this->motionData = motionData;
@@ -235,7 +256,7 @@ bool TesLight::LightSensor::getBrightness(float &brightness, TesLight::MotionSen
 			brightness = 1.0f;
 			this->motionSensorTriggerTime = millis();
 		}
-		else if (millis() - motionSensorTriggerTime > duration * 5000)
+		else if (millis() - this->motionSensorTriggerTime > duration * 5000L)
 		{
 			brightness = 0.0f;
 		}
@@ -243,7 +264,7 @@ bool TesLight::LightSensor::getBrightness(float &brightness, TesLight::MotionSen
 		return true;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Light sensor mode is unknown or invalid."));
+	TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Light sensor mode is unknown or invalid."));
 	brightness = 0.0f;
 	return false;
 }

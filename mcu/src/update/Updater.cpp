@@ -1,9 +1,22 @@
 /**
  * @file Updater.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TesLight::Updater} class.
+ * @brief Implementation of the {@link TL::Updater} class.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #include "update/Updater.h"
@@ -15,79 +28,82 @@
  * @return true when the update was successful
  * @return false when there was an error
  */
-bool TesLight::Updater::install(FS *fileSystem, const String packageFileName)
+bool TL::Updater::install(FS *fileSystem, const String packageFileName)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Installing system update."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Installing system update."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Checking if update package file was found."));
-	if (!TesLight::FileUtil::fileExists(fileSystem, packageFileName))
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Checking if update package file was found."));
+	if (!TL::FileUtil::fileExists(fileSystem, packageFileName))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Update package was not found."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Update package was not found."));
 		return false;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update package was found."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update package was found."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Loading and verifying update package."));
-	TesLight::TupFile tupFile;
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Loading and verifying update package."));
+	TL::TupFile tupFile;
 	if (!tupFile.load(fileSystem, packageFileName))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Verification of the update package failed. The file must be invalid or is corrupted."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Verification of the update package failed. The file must be invalid or is corrupted."));
 		return false;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update package verified."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update package verified."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Cleaning file system root."));
-	if (!TesLight::FileUtil::clearRoot(fileSystem))
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Cleaning file system root."));
+	if (!TL::FileUtil::clearRoot(fileSystem))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to clean file system root."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to clean file system root."));
 		return false;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("File system root cleaned. All old data removed."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("File system root cleaned. All old data removed."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Unpacking update package."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Unpacking update package."));
 	if (!tupFile.unpack(fileSystem, F("/")))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to unpack update package."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to unpack update package."));
 		fileSystem->remove(packageFileName);
 		return false;
 	}
 	tupFile.close();
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update package was unpacked successfully."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update package was unpacked successfully."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Deleting update package."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Deleting update package."));
 	if (!fileSystem->remove(packageFileName))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to delete update package. You should delete it manually."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to delete update package. You should delete it manually."));
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update package was deleted successfully."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update package was deleted successfully."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Installing firmware file to controller."));
-	if (!TesLight::Updater::installFirmware(fileSystem, F("/firmware.bin")))
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Installing firmware file to controller."));
+	if (!TL::Updater::installFirmware(fileSystem, F("/firmware.bin")))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to install firmware file to controller."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to install firmware file to controller."));
 		fileSystem->remove(F("/firmware.bin"));
 		return false;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Firmware file was installed."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Firmware file was installed."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Deleting firmware file."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Deleting firmware file."));
 	if (!fileSystem->remove(F("/firmware.bin")))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to delete firmware file. You should delete it manually."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to delete firmware file. You should delete it manually."));
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Firmware file was deleted successfully."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Firmware file was deleted successfully."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update completed. Reboot is required."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update completed. Reboot is required."));
 	return true;
 }
 
 /**
- * @brief This function will reboot the controller. It does not return.
+ * @brief This function will reboot the controller. It runs in a own task so a delay can be added.
+ * @param reason String containing the reason for the reboot
+ * @param rebootDelay delay in milliseconds until the controller will reboot
  */
-void TesLight::Updater::reboot(const String reason)
+void TL::Updater::reboot(const String reason, const uint16_t rebootDelay)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Rebooting controller for reason: ") + reason);
-	ESP.restart();
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Rebooting controller in ") + String(rebootDelay / 1000.0f) + F(" seconds for reason: ") + reason);
+	uint16_t *rDelay = new uint16_t(rebootDelay);
+	xTaskCreatePinnedToCore(TL::Updater::rebootInt, ("ResetTask" + String(millis())).c_str(), 1000, (void *)rDelay, 1, NULL, 1);
 }
 
 /**
@@ -97,71 +113,86 @@ void TesLight::Updater::reboot(const String reason)
  * @return true when the update was successful
  * @return false when there was an error installing the firmware
  */
-bool TesLight::Updater::installFirmware(FS *fileSystem, const String firmwareFileName)
+bool TL::Updater::installFirmware(FS *fileSystem, const String firmwareFileName)
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Installing firmware file."));
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Open firmware file."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Installing firmware file."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Open firmware file."));
 	File firmware = fileSystem->open(firmwareFileName, FILE_READ);
 	if (!firmware)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open firmware file. The file was not found."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open firmware file. The file was not found."));
 		return false;
 	}
 	else if (firmware.isDirectory())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open firmware file. It is a directory. No idea how that could happen."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open firmware file. It is a directory. No idea how that could happen."));
 		firmware.close();
 		return false;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Firmware file loaded."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Firmware file loaded."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Checking size of the firmware file."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Checking size of the firmware file."));
 	const size_t firmwareSize = firmware.size();
 	if (firmwareSize == 0)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Firmware file is empty."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Firmware file is empty."));
 		firmware.close();
 		return false;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Firmware file has ") + String(firmwareSize) + F("bytes of date."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Firmware file has ") + String(firmwareSize) + F("bytes of date."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Starting firmware update."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Starting firmware update."));
 	if (!Update.begin(firmwareSize))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Not enought flash memory to install firmware file."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Not enought flash memory to install firmware file."));
 		firmware.close();
 		return false;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Firmware update started."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Firmware update started."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Writing data to flash memory."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Writing data to flash memory."));
 	const size_t writtenBytes = Update.writeStream(firmware);
 	if (writtenBytes != firmwareSize)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Not all data was written. This is not good..."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Not all data was written. This is not good..."));
 		firmware.close();
 		return false;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("All data was written into the flash memory."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("All data was written into the flash memory."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Ending update procedure."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Ending update procedure."));
 	if (!Update.end())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to end update procedure: ") + String(Update.getError()));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to end update procedure: ") + String(Update.getError()));
 		firmware.close();
 		return false;
 	}
 	firmware.close();
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update procedure ended."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Update procedure ended."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Checking for errors."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Checking for errors."));
 	if (!Update.isFinished())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Found the following error: ") + String(Update.getError()));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Found the following error: ") + String(Update.getError()));
 		return false;
 	}
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("No errors found."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("No errors found."));
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Firmware update successful."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Firmware update successful."));
 	return true;
+}
+
+/**
+ * @brief Task function to reboot the controller.
+ * @param params parameters for the function call, should contain only the delay
+ */
+void TL::Updater::rebootInt(void *params)
+{
+	uint16_t *paramPtr = (uint16_t *)params;
+	uint16_t rebootDelay = *paramPtr;
+	delete paramPtr;
+
+	delay(rebootDelay);
+	ESP.restart();
+	vTaskDelete(NULL);
 }

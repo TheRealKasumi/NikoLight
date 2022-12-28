@@ -1,38 +1,51 @@
 /**
  * @file Configuration.cpp
  * @author TheRealKasumi
- * @brief Contains the implementation of {@link TesLight::Configuration}.
+ * @brief Contains the implementation of {@link TL::Configuration}.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #include "configuration/Configuration.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::Configuration}.
+ * @brief Create a new instance of {@link TL::Configuration}.
  * @param fileSystem pointer to a {@link FS}
  * @param fileName file name of the configuration file
  */
-TesLight::Configuration::Configuration(FS *fileSystem, const String fileName)
+TL::Configuration::Configuration(FS *fileSystem, const String fileName)
 {
 	this->fileSystem = fileSystem;
 	this->fileName = fileName;
-	this->configurationVersion = 7;
+	this->configurationVersion = CONFIGURATION_FILE_VERSION;
 	this->loadDefaults();
 }
 
 /**
- * @brief Destroy the {@link TesLight::Configuration} instance.
+ * @brief Destroy the {@link TL::Configuration} instance.
  */
-TesLight::Configuration::~Configuration()
+TL::Configuration::~Configuration()
 {
 }
 
 /**
  * @brief Get the System config.
- * @return instance of {@link TesLight::Configuration::SystemConfig}
+ * @return instance of {@link TL::Configuration::SystemConfig}
  */
-TesLight::Configuration::SystemConfig TesLight::Configuration::getSystemConfig()
+TL::Configuration::SystemConfig TL::Configuration::getSystemConfig()
 {
 	return this->systemConfig;
 }
@@ -41,36 +54,36 @@ TesLight::Configuration::SystemConfig TesLight::Configuration::getSystemConfig()
  * @brief Set the System config.
  * @param SystemConfig config to set
  */
-void TesLight::Configuration::setSystemConfig(TesLight::Configuration::SystemConfig systemConfig)
+void TL::Configuration::setSystemConfig(TL::Configuration::SystemConfig &systemConfig)
 {
 	this->systemConfig = systemConfig;
 }
 
 /**
- * @brief Get the {@link TesLight::Configuration::LedConfig}.
+ * @brief Get the {@link TL::Configuration::LedConfig}.
  * @param index index of the config
- * @return instance of {TesLight::Configuration::LedConfig}
+ * @return instance of {TL::Configuration::LedConfig}
  */
-TesLight::Configuration::LedConfig TesLight::Configuration::getLedConfig(const uint8_t index)
+TL::Configuration::LedConfig TL::Configuration::getLedConfig(const uint8_t index)
 {
 	return this->ledConfig[index];
 }
 
 /**
- * @brief Set the {@link TesLight::Configuration::LedConfig}.
- * @param ledConfig instance of {@link TesLight::Configuration::LedConfig}
+ * @brief Set the {@link TL::Configuration::LedConfig}.
+ * @param ledConfig instance of {@link TL::Configuration::LedConfig}
  * @param index index of the config
  */
-void TesLight::Configuration::setLedConfig(const TesLight::Configuration::LedConfig ledConfig, const uint8_t index)
+void TL::Configuration::setLedConfig(const TL::Configuration::LedConfig &ledConfig, const uint8_t index)
 {
 	this->ledConfig[index] = ledConfig;
 }
 
 /**
  * @brief Get the WiFi config.
- * @return instance of {@link TesLight::Configuration::WiFiConfig}
+ * @return instance of {@link TL::Configuration::WiFiConfig}
  */
-TesLight::Configuration::WiFiConfig TesLight::Configuration::getWiFiConfig()
+TL::Configuration::WiFiConfig TL::Configuration::getWiFiConfig()
 {
 	return this->wifiConfig;
 }
@@ -79,7 +92,7 @@ TesLight::Configuration::WiFiConfig TesLight::Configuration::getWiFiConfig()
  * @brief Set the WiFi config.
  * @param wifionfig config to set
  */
-void TesLight::Configuration::setWiFiConfig(TesLight::Configuration::WiFiConfig wifiConfig)
+void TL::Configuration::setWiFiConfig(TL::Configuration::WiFiConfig &wifiConfig)
 {
 	this->wifiConfig = wifiConfig;
 }
@@ -88,7 +101,7 @@ void TesLight::Configuration::setWiFiConfig(TesLight::Configuration::WiFiConfig 
  * @brief Get the motion sensor calibration data.
  * @return calibration data of the motion sensor
  */
-TesLight::Configuration::MotionSensorCalibration TesLight::Configuration::getMotionSensorCalibration()
+TL::Configuration::MotionSensorCalibration TL::Configuration::getMotionSensorCalibration()
 {
 	return this->motionSensorCalibration;
 }
@@ -97,15 +110,33 @@ TesLight::Configuration::MotionSensorCalibration TesLight::Configuration::getMot
  * @brief Set the motion sensor calibration data.
  * @param calibration calibration data of the motion sensor
  */
-void TesLight::Configuration::setMotionSensorCalibration(const TesLight::Configuration::MotionSensorCalibration calibration)
+void TL::Configuration::setMotionSensorCalibration(const TL::Configuration::MotionSensorCalibration &calibration)
 {
 	this->motionSensorCalibration = calibration;
 }
 
 /**
+ * @brief Get the UI configuration.
+ * @return UI configuration
+ */
+TL::Configuration::UIConfiguration TL::Configuration::getUIConfiguration()
+{
+	return this->uiConfiguration;
+}
+
+/**
+ * @brief Set the UI configuration.
+ * @param uiConfiguration configuration of the UI
+ */
+void TL::Configuration::setUIConfiguration(const TL::Configuration::UIConfiguration &uiConfiguration)
+{
+	this->uiConfiguration = uiConfiguration;
+}
+
+/**
  * @brief Load the default configuration.
  */
-void TesLight::Configuration::loadDefaults()
+void TL::Configuration::loadDefaults()
 {
 	// System config
 	this->systemConfig.logLevel = LOG_DEFAULT_LEVEL;
@@ -169,6 +200,12 @@ void TesLight::Configuration::loadDefaults()
 	this->motionSensorCalibration.gyroXDeg = 0.0f;
 	this->motionSensorCalibration.gyroYDeg = 0.0f;
 	this->motionSensorCalibration.gyroZDeg = 0.0f;
+
+	// UI configuration
+	this->uiConfiguration.firmware = FW_VERSION;
+	this->uiConfiguration.language = UI_DEFAULT_LANGUAGE;
+	this->uiConfiguration.theme = UI_DEFAULT_THEME;
+	this->uiConfiguration.expertMode = UI_DEFAULT_EXPERT;
 }
 
 /**
@@ -177,12 +214,12 @@ void TesLight::Configuration::loadDefaults()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::Configuration::load()
+bool TL::Configuration::load()
 {
-	TesLight::BinaryFile file(this->fileSystem);
+	TL::BinaryFile file(this->fileSystem);
 	if (!file.open(this->fileName, FILE_READ))
 	{
-		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, (String)F("Failed to load configuration file: ") + fileName);
+		TL::Logger::log(TL::Logger::ERROR, SOURCE_LOCATION, (String)F("Failed to load configuration file: ") + fileName);
 		return false;
 	}
 
@@ -190,7 +227,7 @@ bool TesLight::Configuration::load()
 	uint16_t configFileVersion = 0;
 	if (!file.read(configFileVersion) || configFileVersion != this->configurationVersion)
 	{
-		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, F("Configuration file version does not match."));
+		TL::Logger::log(TL::Logger::ERROR, SOURCE_LOCATION, F("Configuration file version does not match."));
 		file.close();
 		return false;
 	}
@@ -256,11 +293,16 @@ bool TesLight::Configuration::load()
 	file.read(this->motionSensorCalibration.gyroYDeg);
 	file.read(this->motionSensorCalibration.gyroZDeg);
 
+	// UI configuration
+	file.readString(this->uiConfiguration.language);
+	file.readString(this->uiConfiguration.theme);
+	file.read(this->uiConfiguration.expertMode);
+
 	// Check the hash
 	uint16_t fileHash = 0;
 	if (!file.read(fileHash) || fileHash != this->getSimpleHash())
 	{
-		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, F("Configuration file hash does not match."));
+		TL::Logger::log(TL::Logger::ERROR, SOURCE_LOCATION, F("Configuration file hash does not match."));
 		file.close();
 		return false;
 	}
@@ -274,12 +316,12 @@ bool TesLight::Configuration::load()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::Configuration::save()
+bool TL::Configuration::save()
 {
-	TesLight::BinaryFile file(this->fileSystem);
+	TL::BinaryFile file(this->fileSystem);
 	if (!file.open(this->fileName, FILE_WRITE))
 	{
-		TesLight::Logger::log(TesLight::Logger::ERROR, SOURCE_LOCATION, F("Failed to open configuration file."));
+		TL::Logger::log(TL::Logger::ERROR, SOURCE_LOCATION, F("Failed to open configuration file."));
 		return false;
 	}
 
@@ -347,6 +389,11 @@ bool TesLight::Configuration::save()
 	file.write(this->motionSensorCalibration.gyroYDeg);
 	file.write(this->motionSensorCalibration.gyroZDeg);
 
+	// UI configuration
+	file.writeString(this->uiConfiguration.language);
+	file.writeString(this->uiConfiguration.theme);
+	file.write(this->uiConfiguration.expertMode);
+
 	// Write the hash
 	file.write(this->getSimpleHash());
 
@@ -358,10 +405,14 @@ bool TesLight::Configuration::save()
  * @brief Calculate a very simple hash to check the config file.
  * @return uint16_t 2 byte hash
  */
-uint16_t TesLight::Configuration::getSimpleHash()
+uint16_t TL::Configuration::getSimpleHash()
 {
 	uint16_t hash = 7;
+
+	// Configuration file version
 	hash = hash * 31 + this->configurationVersion;
+
+	// System configuration
 	hash = hash * 31 + this->systemConfig.logLevel;
 	hash = hash * 31 + this->systemConfig.lightSensorMode;
 	hash = hash * 31 + this->systemConfig.lightSensorThreshold;
@@ -376,6 +427,8 @@ uint16_t TesLight::Configuration::getSimpleHash()
 	hash = hash * 31 + this->systemConfig.fanMaxPwmValue;
 	hash = hash * 31 + this->systemConfig.fanMinTemperature;
 	hash = hash * 31 + this->systemConfig.fanMaxTemperature;
+
+	// LED configuration
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		hash = hash * 31 + this->ledConfig[i].ledPin;
@@ -395,6 +448,8 @@ uint16_t TesLight::Configuration::getSimpleHash()
 		hash = hash * 31 + this->ledConfig[i].ledChannelCurrent[1];
 		hash = hash * 31 + this->ledConfig[i].ledChannelCurrent[2];
 	}
+
+	// WiFi configuration
 	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.accessPointSsid);
 	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.accessPointPassword);
 	hash = hash * 31 + this->wifiConfig.accessPointChannel;
@@ -402,6 +457,8 @@ uint16_t TesLight::Configuration::getSimpleHash()
 	hash = hash * 31 + this->wifiConfig.accessPointMaxConnections;
 	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.wifiSsid);
 	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.wifiPassword);
+
+	// Motion sensor calibration
 	hash = hash * 31 + this->motionSensorCalibration.accXRaw;
 	hash = hash * 31 + this->motionSensorCalibration.accYRaw;
 	hash = hash * 31 + this->motionSensorCalibration.accZRaw;
@@ -414,6 +471,12 @@ uint16_t TesLight::Configuration::getSimpleHash()
 	hash = hash * 31 + this->motionSensorCalibration.gyroXDeg;
 	hash = hash * 31 + this->motionSensorCalibration.gyroYDeg;
 	hash = hash * 31 + this->motionSensorCalibration.gyroZDeg;
+
+	// UI configuration
+	hash = hash * 32 + this->getSimpleStringHash(this->uiConfiguration.language);
+	hash = hash * 32 + this->getSimpleStringHash(this->uiConfiguration.theme);
+	hash = hash * 32 + this->uiConfiguration.expertMode;
+
 	return hash;
 }
 
@@ -422,7 +485,7 @@ uint16_t TesLight::Configuration::getSimpleHash()
  * @param input input string
  * @return uint16_t 2 byte hash
  */
-uint16_t TesLight::Configuration::getSimpleStringHash(const String input)
+uint16_t TL::Configuration::getSimpleStringHash(const String input)
 {
 	uint16_t hash = 7;
 	for (uint16_t i = 0; i < input.length(); i++)

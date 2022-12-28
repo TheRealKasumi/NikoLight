@@ -36,7 +36,10 @@ The first regulator will drive the channels 2, 4, 6, 8 and the second regulator 
 The dual regulator build is always recommended to be more flexible and have more headroom.
 When properly configured, the software will now also keep an eye on your power consumption.
 The power draw is calculated and limited for each regulator by limiting the LED brightness.
-Also two temperature sensors can be added to the regulators.
+Also two temperature sensors can be added to the regulators. For Temperature Sensor Install Position see following picture:
+
+<a href="media/build/install_temperature_sensor.jpg"><img src="media/build/install_temperature_sensor.jpg" alt="Temperature Sensor Install Position" style="width:150px"></a>
+
 The software will then also check for the temperature, control a cooling fan and reduce the power output if necessary.
 For even more protection there is a fuse and a poly fuse in place.
 
@@ -117,6 +120,10 @@ The pin can be used with analog voltages and also PWM signals due to the low-pas
 It is recommended to not measure voltages above 19V with this controller.
 There is an overvoltage protection in place and exceeding this limit for a short period should be possible but not recommended.
 Instead the resistor `R9` and `R10` of the voltage devider can be adjusted accordingly.
+Use an "electricity thief" to get the signal of the factory build footwell lights without harm. It could look like this if you add the correct plugs to get the signal without any harm. See [part list](part-list.md).
+
+<a href="media/build/get_signal_of_footwell_lights_without_harm.jpg"><img src="media/build/get_signal_of_footwell_lights_without_harm.jpg" alt="get signal of footwell lights without harm" style="width:150px"></a>
+<a href="media/build/get_signal_of_footwell_lights_without_harm_2.jpg"><img src="media/build/get_signal_of_footwell_lights_without_harm_2.jpg" alt="get signal of footwell lights without harm 2" style="width:150px"></a>
 
 Another 2 pin XH connector is for powering an optinal, 5V cooling fan.
 
@@ -222,27 +229,34 @@ It is used for the correct component placement.
 Make sure to upload the correct files, matching your board version.
 Click next to move to the following step.
 
-### Select the parts that should be placed.
+### Select the parts that should be placed
 
 On this page you should check if all parts are available.
 Also you can select whcih components should be installed.
 If you want to install a few components on you own, you can unselect them here.
 Once done click next and add the items to your shopping cart.
 
-### Upload 3D Files
+### Upload or Print 3D Files
 
-This works very similar to the steps described above.
+Ordering works very similar to the steps described above.
 Go back to the [order page](https://cart.jlcpcb.com/quote) and select `3D-Printing` at the top of the page.
-The 3D files can be found in the [/models](/models/) folder of the project.
+The 3D files can be found in the [/model](/model/) folder of the project.
 
-Depending on your previous choices you have to select the right files for the printing.
-Pick the right case for you selected board version and proceed.
+In a normal build you will need both, the [TesLight_Case.stl](/model/TesLight_Case.stl) and the [TesLight_Case_Cover.stl](/model/TesLight_Case_Cover.stl).
+The all-in-one verion [TesLight_Case_AIO.stl](/model/TesLight_Case_AIO.stl) can be used as an alternative.
+When you are using a smaller 30x30x6mm fan, the [TesLight_Fan_Adapter.stl](/model/TesLight_Fan_Adapter.stl) is recommended.
+If you plan to use fiber cables and LED injectors, the [TesLight_LED_Case.stl](TesLight_LED_Case.stl) should be ordered as well.
+The number depends on the number of light injectors you want to use for the fibre tubes.
 
-If you want to use fiber cables and LED injectors, the corresponding cases should be ordered as well.
-Depending on the number of light injectors for the fibre tubes, you will need a certain number of the [led-case.stl](/models/led-case.stl) model.
-The material choice shouldn't be a metal.
-The material must **NOT** be electrically conductive but is otherwise up to you.
-When you are done, add the 3D prints to the shopping cart.
+Generally the material choice shouldn't be a metal.
+The cases must **NOT** be electrically conductive but it is otherwise up to you.
+A recommendation is to use a more heat resistant material like ABS or PETG.
+Ideally a flame-retardant material is used.
+
+When you plan to print the case yourself, the following setup is recommended:
+
+-  Nozzle: 0.4 - 0.6mm
+-  Layerheight 0.1 - 0.2mm
 
 ### Order
 
@@ -328,6 +342,10 @@ Solder them to the PCB and you are done.
 When you are done, the TesLight controller should look similar to this (some components might look a little different):
 ![Controller](media/build/pcb-finished.png)
 
+## Install position in car
+
+It would be best if the antenna of the ESP32 points to the front and the USB port to the back of the vehicle. This way we ensure consistent acceleration directions from the sensor for all users.
+
 ## Assemble the LED Injectors (optional for fiber cables)
 
 First of all you should make sure to have the correct number of cases and LEDs.
@@ -374,10 +392,12 @@ Once again, this is how the connections should look at the end.
 ## Attach Wires to Light Bars (optional for Light Bars)
 
 Since the light bars also only use an LED strip internally, the procedure is the same as for the LED strips above.
-However depending on the light bars, the polarity might be different.
-It is highly recommended to open the light bar at the cable end to check on the polarity.
+However, depending on the light bars, the polarity might be different.
+It is highly recommended, to open the light bar at the cable end to check on the polarity.
 We already encountered the same type of light bars with different cable colors for the connections.
 So please be careful and don't trust the cable colours.
+How to check: The middle cable (green?) should always be data. Then plug one cable to GND and connect the other one with a 220 Ohm resistor to 5 V. If the strip turns on, then everything is good. If not, try the other way around. There should be no current flowing through the resistor high enough to damage the strip.
+
 At the end the 3 pin XH connectors must have the following pinout.
 
 ![LED XH Pinout](media/build/led-pinout.jpg)
@@ -431,8 +451,8 @@ Board version 1.0 (@luap):
 
 Board version 2.0 (@PhilippDen):
 
--  `#define LED_OUTPUT_PINS {13, 15, 17, 22, 14, 16, 21, 25}`
--  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
+-  `#define LED_DEFAULT_OUTPUT_PINS {13, 17, 14, 21, 15, 22, 16, 25}`
+-  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {17, 1}, {14, 0}, {21, 1}, {15, 0}, {22, 1}, {16, 0}, {25, 1}}`
 
 Save the files and then click the upload button in the bottom left.
 
@@ -447,7 +467,7 @@ Now open the serial monitor by clicking the "plug" button, near to the upload bu
 
 You should see the TesLight controller starting up, but then stops with `Failed to initialize SD card`.
 
-```
+```shell
 ████████╗███████╗███████╗██╗     ██╗ ██████╗ ██╗  ██╗████████╗
 ╚══██╔══╝██╔════╝██╔════╝██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
    ██║   █████╗  ███████╗██║     ██║██║  ███╗███████║   ██║
@@ -488,14 +508,14 @@ Create a new folder called `web-app` in the root of your SD card.
 Copy the content of [build](/web-app/build/) into the newly created folder.
 Eject the SD card from your computer and insert it into the micro SD card slot of the TesLight controller.
 
-## Let's test it!
+## Let's test it
 
 Now that everything is ready, it's time for a short test.
 Connect the board back to your computer and fire up the serial monitor.
 If required, press the reset button on the ESP32 board.
 If everything works, you should see the following (or similar) output:
 
-```
+```shell
 ████████╗███████╗███████╗██╗     ██╗ ██████╗ ██╗  ██╗████████╗
 ╚══██╔══╝██╔════╝██╔════╝██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
    ██║   █████╗  ███████╗██║     ██║██║  ███╗███████║   ██║

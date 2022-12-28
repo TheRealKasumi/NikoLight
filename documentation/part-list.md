@@ -63,7 +63,8 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 | WS2812 LED Strip  | [Amazon][ws2812b] |                                                      |
 | Fiber Tube        | [Amazon][fiber]   |                                                      |
 | LED Injector Case | [JLCPCB][jlcpcb]  | Can be ordered here using 3D models from the project |
-| LED Light Bars    | [IYC][lightbars]  | 30cm/75cm/100cm                                      |
+| LED Light Bars    | [IYC][lightbars]  | 30 cm/75 cm/100 cm                                   |
+| LED Light Bars Alternative   | [Herwins][lightbars_symphony]  | 25 cm/75 cm/100 cm (Symphony version are WS2812, check polarity before use, see [build](build.md). These are very small and are masked with black foil and are thus dimmed, which is great as we can use the full color spectrum of the LEDs and at the same time do not get blind while driving.)           |
 
 ## Optional Parts
 
@@ -74,6 +75,17 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 | Cooling Fan 30x30       | 1       | [Reichelt][fan]    | Not required but nice to have                   |
 | Shrinking tube          | depends | [Amazon][tubes]    | Will help you to have a cleaner and safer build |
 | Fabric tape             | depends | [Amazon][tape]     | Will help you to have a cleaner and safer build |
+| 3 wire cable            | depends | [Amazon][3-wire-cable]     | you can use this 3 wire cable to connect the LEDs |
+
+### How to get the signal of the factory build footwell lights without any harm
+
+| Part                    | Count   | Source             | Comment                                         |
+| ----------------------- | ------- | ------------------ | ----------------------------------------------- |
+| electricity thief/T-Connector | 2/1 | [Amazon][T-connector] | to get the car signal |
+| Female Connector  | 1 | [Mouser][female-connector] | TE Connectivity / AMP P/N: 1534111-1, car side uses this |
+| Male Connector | 1 | [Mouser][memale-connector] | TE Connectivity / AMP P/N: 1-1534155-1, factory build footwell LED’s use this |
+| Retainer / Cover for Connectors | 2 |  [Mouser][retainer] | TE Connectivity / AMP P/N: 1534027-1, each connector needs one |
+| Pin Connectors | 4 | [Mouser][pin-connectors] | TE Connectivity / AMP P/N: 1-928918-1 (Cut Strip), 2 per plug |
 
 [jlcpcb]: https://cart.jlcpcb.com/quote?orderType=1&stencilLayer=2&stencilWidth=100&stencilLength=100
 [esp32]: https://www.amazon.de/AZDelivery-NodeMCU-Development-Nachfolgermodell-ESP8266/dp/B071P98VTG/ref=sr_1_3?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=3U1PNFQJDSD0A&keywords=az%2Besp32&qid=1661668180&sprefix=az%2Besp32%2Caps%2C82&sr=8-3&th=1
@@ -101,12 +113,18 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 [zener3.0]: https://www.reichelt.de/zenerdiode-3-3-v-300mw-sod-323-mm3z3v3t1g-ons-p219513.html?&trstct=pos_0&nbc=1
 [fuse]: https://www.reichelt.de/smd-sicherungshalter-mit-sicherung-5-0-a-125-v-superflink-litt-0154005-dr-p229204.html?&trstct=pos_14&nbc=1
 [pfuse]: https://www.reichelt.de/rueckstellende-sicherungen-8-a-litt-ruef400-p242414.html?&trstct=pos_0&nbc=1
-[cables]: https://www.amazon.de/LEADTOPS-3-poliger-Leiterverl%C3%A4ngerungs-Verzinntes-Traumfarbe/dp/B08JPLRXRK/ref=sr_1_13?keywords=kabel+3+adrig&qid=1662188870&sprefix=kabel+3+%2Caps%2C94&sr=8-13
 [ws2812b]: https://www.amazon.de/BTF-LIGHTING-adressierbar-Vollfarbiger-wasserdichte-DIY-Projekte/dp/B088BRY2SH/ref=sr_1_8?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1OSVQ80JPAJDG&keywords=ws2812b+strip+60%2Fm&qid=1662188470&sprefix=ws2812b+strip+60%2Fm%2Caps%2C82&sr=8-8
 [fiber]: https://www.amazon.de/TABEN-Autoseitenlicht-LED-Beleuchtung-Innenatmosph%C3%A4re-Neonstreifenleuchten/dp/B08DLJ2JJ1/ref=sr_1_7?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&keywords=taben+fiber&qid=1662190164&sr=8-7
 [lightbars]: https://individualiseyourcar.com/en/ambitrim-digital-rgb-led-ambient-light-components.html
+[lightbars_symphony]: https://de.aliexpress.com/item/1005004297563628.html
 [hsink]: https://www.reichelt.de/kuehlkoerper-15-2-mm-alu-26-k-w-to-220-fk-242-sa-220-o-p228044.html?PROVID=2788&gclid=CjwKCAiA9qKbBhAzEiwAS4yeDbgDFQnpxuPlW2l_6iWmSpzoQlH7U5ZTtUvpgh0bGrCp32GTk7xljBoCXLsQAvD_BwE
 [tsense]: https://www.reichelt.de/digital-thermometer-1-wire--0-5-c-to-92-ds-18b20-p58169.html?&trstct=pos_0&nbc=1
 [fan]: https://www.amazon.de/gp/product/B071JN6HKM/ref=ppx_yo_dt_b_asin_title_o08_s00?ie=UTF8&psc=1
 [tubes]: https://www.amazon.de/ChiliTec-12000058-Chilitec-Schrumpfschlauch-Sortiment-100-teilig/dp/B003H9CJ1Y/ref=sr_1_20_mod_primary_new?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1Q5IY5D32HNLR&keywords=schrumpfschlauch&qid=1662189028&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&sprefix=schrumpfschlauch%2Caps%2C115&sr=8-20
 [tape]: https://www.amazon.de/tesa-Gewebeband-Witterungsbest%C3%A4ndiges-Panzertape-Befestigen/dp/B000KT7E0U/ref=sr_1_5?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1U7SK4BSKYGK0&keywords=Gewebeband&qid=1662189088&sprefix=gewebeban%2Caps%2C94&sr=8-5
+[3-wire-cable]: https://www.amazon.de/dp/B0999BVQYL
+[T-connector]: https://www.amazon.de/dp/B07F3SGJXR
+[female-connector]: https://www.mouser.com/ProductDetail/TE-Connectivity-AMP/1534111-1?qs=%2Fha2pyFaduiexECXuMzaAIQHOcZu%252BI25DS0iBamxYRg%3D
+[memale-connector]: https://www.mouser.com/ProductDetail/571-1-1534155-1
+[retainer]: https://www.mouser.com/ProductDetail/571-1534027-1
+[pin-connectors]:https://www.mouser.com/ProductDetail/571-1-928918-1-CT

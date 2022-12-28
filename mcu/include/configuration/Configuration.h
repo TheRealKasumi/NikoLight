@@ -3,7 +3,20 @@
  * @author TheRealKasumi
  * @brief Contains a class to load and save the (runtime) configuration.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #ifndef CONFIGURATION_H
@@ -16,7 +29,7 @@
 #include "util/BinaryFile.h"
 #include "logging/Logger.h"
 
-namespace TesLight
+namespace TL
 {
 	class Configuration
 	{
@@ -51,7 +64,7 @@ namespace TesLight
 			bool reverse;									 // Reverse the animation
 			uint8_t fadeSpeed;								 // Fading speed when turning on/off
 			uint8_t customField[ANIMATOR_NUM_CUSTOM_FIELDS]; // Custom fields for the animation
-			uint8_t ledVoltage;								 // Voltage of the LED x10
+			float ledVoltage;								 // Voltage of the LEDs
 			uint8_t ledChannelCurrent[3];					 // Current for each LED channel per LED in mA
 		};
 
@@ -82,20 +95,31 @@ namespace TesLight
 			float gyroZDeg;	  // Z rotation in deg/s
 		};
 
+		struct UIConfiguration
+		{
+			String firmware;
+			String language;
+			String theme;
+			bool expertMode;
+		};
+
 		Configuration(FS *fileSystem, const String fileName);
 		~Configuration();
 
-		TesLight::Configuration::SystemConfig getSystemConfig();
-		void setSystemConfig(TesLight::Configuration::SystemConfig systemConfig);
+		TL::Configuration::SystemConfig getSystemConfig();
+		void setSystemConfig(TL::Configuration::SystemConfig &systemConfig);
 
-		TesLight::Configuration::LedConfig getLedConfig(const uint8_t index);
-		void setLedConfig(const TesLight::Configuration::LedConfig ledConfig, const uint8_t index);
+		TL::Configuration::LedConfig getLedConfig(const uint8_t index);
+		void setLedConfig(const TL::Configuration::LedConfig &ledConfig, const uint8_t index);
 
-		TesLight::Configuration::WiFiConfig getWiFiConfig();
-		void setWiFiConfig(TesLight::Configuration::WiFiConfig wifiConfig);
+		TL::Configuration::WiFiConfig getWiFiConfig();
+		void setWiFiConfig(TL::Configuration::WiFiConfig &wifiConfig);
 
-		TesLight::Configuration::MotionSensorCalibration getMotionSensorCalibration();
-		void setMotionSensorCalibration(const TesLight::Configuration::MotionSensorCalibration calibration);
+		TL::Configuration::MotionSensorCalibration getMotionSensorCalibration();
+		void setMotionSensorCalibration(const TL::Configuration::MotionSensorCalibration &calibration);
+
+		TL::Configuration::UIConfiguration getUIConfiguration();
+		void setUIConfiguration(const TL::Configuration::UIConfiguration &uiConfiguration);
 
 		void loadDefaults();
 		bool load();
@@ -106,10 +130,11 @@ namespace TesLight
 		String fileName;
 		uint16_t configurationVersion;
 
-		TesLight::Configuration::SystemConfig systemConfig;
-		TesLight::Configuration::LedConfig ledConfig[LED_NUM_ZONES];
-		TesLight::Configuration::WiFiConfig wifiConfig;
-		TesLight::Configuration::MotionSensorCalibration motionSensorCalibration;
+		TL::Configuration::SystemConfig systemConfig;
+		TL::Configuration::LedConfig ledConfig[LED_NUM_ZONES];
+		TL::Configuration::WiFiConfig wifiConfig;
+		TL::Configuration::MotionSensorCalibration motionSensorCalibration;
+		TL::Configuration::UIConfiguration uiConfiguration;
 
 		uint16_t getSimpleHash();
 		uint16_t getSimpleStringHash(const String input);

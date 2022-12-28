@@ -1,21 +1,34 @@
 /**
  * @file motionSensor.cpp
  * @author TheRealKasumi
- * @brief implementation of the {@link TesLight::MotionSensor}.
+ * @brief implementation of the {@link TL::MotionSensor}.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #include "sensor/MotionSensor.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::MotionSensor}.
+ * @brief Create a new instance of {@link TL::MotionSensor}.
  * @param sensorAddress address of the sensor on the I²C bus
  * @param configuration configuration of TesLight
  */
-TesLight::MotionSensor::MotionSensor(const uint8_t sensorAddress, TesLight::Configuration *configuration)
+TL::MotionSensor::MotionSensor(const uint8_t sensorAddress, TL::Configuration *configuration)
 {
-	this->mpu6050 = new TesLight::MPU6050(sensorAddress);
+	this->mpu6050.reset(new TL::MPU6050(sensorAddress));
 	this->configuration = configuration;
 	this->motionData.accXRaw = 0;
 	this->motionData.accYRaw = 0;
@@ -40,12 +53,10 @@ TesLight::MotionSensor::MotionSensor(const uint8_t sensorAddress, TesLight::Conf
 }
 
 /**
- * @brief Delete the {@link TesLight::MotionSensor} instance and free memory.
+ * @brief Delete the {@link TL::MotionSensor} instance.
  */
-TesLight::MotionSensor::~MotionSensor()
+TL::MotionSensor::~MotionSensor()
 {
-	delete this->mpu6050;
-	this->mpu6050 = nullptr;
 }
 
 /**
@@ -53,23 +64,23 @@ TesLight::MotionSensor::~MotionSensor()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::MotionSensor::begin()
+bool TL::MotionSensor::begin()
 {
 	if (!this->mpu6050->begin())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to start MPU6050 sensor."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to start MPU6050 sensor."));
 		return false;
 	}
 
-	if (!this->mpu6050->setAccScale(TesLight::MPU6050::MPU6050AccScale::SCALE_4G))
+	if (!this->mpu6050->setAccScale(TL::MPU6050::MPU6050AccScale::SCALE_4G))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set acc scale of MPU6050 sensor."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set acc scale of MPU6050 sensor."));
 		return false;
 	}
 
-	if (!this->mpu6050->setGyScale(TesLight::MPU6050::MPU6050GyScale::SCALE_500DS))
+	if (!this->mpu6050->setGyScale(TL::MPU6050::MPU6050GyScale::SCALE_500DS))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set gyro scale of MPU6050 sensor."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set gyro scale of MPU6050 sensor."));
 		return false;
 	}
 
@@ -81,16 +92,16 @@ bool TesLight::MotionSensor::begin()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::MotionSensor::run()
+bool TL::MotionSensor::run()
 {
-	TesLight::MPU6050::MPU6050MotionData sensorData;
+	TL::MPU6050::MPU6050MotionData sensorData;
 	if (!this->mpu6050->getData(sensorData))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read sensor data from MPU6050."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read sensor data from MPU6050."));
 		return false;
 	}
 
-	const TesLight::Configuration::MotionSensorCalibration calibrationData = this->configuration->getMotionSensorCalibration();
+	const TL::Configuration::MotionSensorCalibration calibrationData = this->configuration->getMotionSensorCalibration();
 	const unsigned long timeStep = this->lastMeasure == 0 ? 0.0f : (micros() - this->lastMeasure);
 	const float timeScale = timeStep / 1000000.0f;
 	this->lastMeasure = micros();
@@ -134,25 +145,25 @@ bool TesLight::MotionSensor::run()
  * @return 2 when the motion sensor is too cold
  * @return 3 when the motion sensor is too warm
  */
-uint8_t TesLight::MotionSensor::calibrate(const bool failOnTemperature)
+uint8_t TL::MotionSensor::calibrate(const bool failOnTemperature)
 {
 	if (failOnTemperature)
 	{
-		TesLight::MPU6050::MPU6050MotionData sensorData;
+		TL::MPU6050::MPU6050MotionData sensorData;
 		if (!this->mpu6050->getData(sensorData))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read sensor data from MPU6050."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read sensor data from MPU6050."));
 			return 1;
 		}
 
 		if (sensorData.temperatureDeg < 20.0f)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Can not calibrate motion sensor becaues the temperature is too low."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Can not calibrate motion sensor becaues the temperature is too low."));
 			return 2;
 		}
 		else if (sensorData.temperatureDeg > 40.0f)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Can not calibrate motion sensor becaues the temperature is too high."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Can not calibrate motion sensor becaues the temperature is too high."));
 			return 3;
 		}
 	}
@@ -160,10 +171,10 @@ uint8_t TesLight::MotionSensor::calibrate(const bool failOnTemperature)
 	double calibrationData[12] = {0.0f};
 	for (uint16_t i = 0; i < 1000; i++)
 	{
-		TesLight::MPU6050::MPU6050MotionData sensorData;
+		TL::MPU6050::MPU6050MotionData sensorData;
 		if (!this->mpu6050->getData(sensorData))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read sensor data from MPU6050."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read sensor data from MPU6050."));
 			return 1;
 		}
 
@@ -181,7 +192,7 @@ uint8_t TesLight::MotionSensor::calibrate(const bool failOnTemperature)
 		calibrationData[11] += sensorData.gyroZDeg / 1000.0f;
 	}
 
-	TesLight::Configuration::MotionSensorCalibration calibration = this->configuration->getMotionSensorCalibration();
+	TL::Configuration::MotionSensorCalibration calibration = this->configuration->getMotionSensorCalibration();
 	calibration.accXRaw = calibrationData[0];
 	calibration.accYRaw = calibrationData[1];
 	// calibration.accZRaw = calibrationData[2];
@@ -203,7 +214,7 @@ uint8_t TesLight::MotionSensor::calibrate(const bool failOnTemperature)
  * @brief Get the current motion data.
  * @return full set of motion data
  */
-TesLight::MotionSensor::MotionSensorData TesLight::MotionSensor::getMotion()
+TL::MotionSensor::MotionSensorData TL::MotionSensor::getMotion()
 {
 	return this->motionData;
 }

@@ -1,55 +1,63 @@
 /**
  * @file TemperatureSensor.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TesLight::TemperatureSensor}.
+ * @brief Implementation of the {@link TL::TemperatureSensor}.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #include "sensor/TemperatureSensor.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::TemperatureSensor}.
+ * @brief Create a new instance of {@link TL::TemperatureSensor}.
  */
-TesLight::TemperatureSensor::TemperatureSensor()
+TL::TemperatureSensor::TemperatureSensor()
 {
-	this->ds18b20 = new TesLight::DS18B20(ONE_WIRE_PIN);
+	this->ds18b20.reset(new TL::DS18B20(ONE_WIRE_PIN));
 	if (!this->ds18b20->begin())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize temperature sensor."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize temperature sensor."));
 		return;
 	}
 
 	for (uint8_t i = 0; i < this->ds18b20->getNumSensors(); i++)
 	{
-		if (!this->ds18b20->setResolution(i, (TesLight::DS18B20::DS18B20Res)TEMP_SENSOR_RESOLUTION))
+		if (!this->ds18b20->setResolution(i, (TL::DS18B20::DS18B20Res)TEMP_SENSOR_RESOLUTION))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set temperature sensor resolution."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set temperature sensor resolution."));
 		}
 		if (!this->ds18b20->startMeasurement(i))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to start the temperature measurement."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to start the temperature measurement."));
 		}
 	}
 }
 
 /**
- * @brief Delete the {@link TesLight::TemperatureSensor} instance and free resources.
+ * @brief Delete the {@link TL::TemperatureSensor} instance.
  */
-TesLight::TemperatureSensor::~TemperatureSensor()
+TL::TemperatureSensor::~TemperatureSensor()
 {
-	if (this->ds18b20)
-	{
-		delete this->ds18b20;
-		this->ds18b20 = nullptr;
-	}
 }
 
 /**
  * @brief Get the number of temperature sensors.
  * @return number of sensors
  */
-uint8_t TesLight::TemperatureSensor::getNumSensors()
+uint8_t TL::TemperatureSensor::getNumSensors()
 {
 	return this->ds18b20->getNumSensors();
 }
@@ -60,7 +68,7 @@ uint8_t TesLight::TemperatureSensor::getNumSensors()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::TemperatureSensor::getMinTemperature(float &temp)
+bool TL::TemperatureSensor::getMinTemperature(float &temp)
 {
 	if (this->ds18b20->getNumSensors() == 0)
 	{
@@ -74,7 +82,7 @@ bool TesLight::TemperatureSensor::getMinTemperature(float &temp)
 		float currentTemp;
 		if (!this->ds18b20->getTemperature(i, currentTemp))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to get temperature from sensor ") + i + F("."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to get temperature from sensor ") + i + F("."));
 			return false;
 		}
 
@@ -82,7 +90,7 @@ bool TesLight::TemperatureSensor::getMinTemperature(float &temp)
 		{
 			if (!this->ds18b20->startMeasurement(i))
 			{
-				TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to start temperature measurement on sensor ") + i + F("."));
+				TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to start temperature measurement on sensor ") + i + F("."));
 				return false;
 			}
 		}
@@ -101,7 +109,7 @@ bool TesLight::TemperatureSensor::getMinTemperature(float &temp)
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::TemperatureSensor::getMaxTemperature(float &temp)
+bool TL::TemperatureSensor::getMaxTemperature(float &temp)
 {
 	if (this->ds18b20->getNumSensors() == 0)
 	{
@@ -115,7 +123,7 @@ bool TesLight::TemperatureSensor::getMaxTemperature(float &temp)
 		float currentTemp = 0.0f;
 		if (!this->ds18b20->getTemperature(i, currentTemp))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to get temperature from sensor ") + i + F("."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to get temperature from sensor ") + i + F("."));
 			return false;
 		}
 
@@ -123,7 +131,7 @@ bool TesLight::TemperatureSensor::getMaxTemperature(float &temp)
 		{
 			if (!this->ds18b20->startMeasurement(i))
 			{
-				TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to start temperature measurement on sensor ") + i + F("."));
+				TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to start temperature measurement on sensor ") + i + F("."));
 				return false;
 			}
 		}
@@ -142,7 +150,7 @@ bool TesLight::TemperatureSensor::getMaxTemperature(float &temp)
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::TemperatureSensor::getAverageTemperature(float &temp)
+bool TL::TemperatureSensor::getAverageTemperature(float &temp)
 {
 	if (this->ds18b20->getNumSensors() == 0)
 	{
@@ -156,7 +164,7 @@ bool TesLight::TemperatureSensor::getAverageTemperature(float &temp)
 		float currentTemp = 0.0f;
 		if (!this->ds18b20->getTemperature(i, currentTemp))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to get temperature from sensor ") + i + F("."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to get temperature from sensor ") + i + F("."));
 			return false;
 		}
 
@@ -164,7 +172,7 @@ bool TesLight::TemperatureSensor::getAverageTemperature(float &temp)
 		{
 			if (!this->ds18b20->startMeasurement(i))
 			{
-				TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to start temperature measurement on sensor ") + i + F("."));
+				TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to start temperature measurement on sensor ") + i + F("."));
 				return false;
 			}
 		}
