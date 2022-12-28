@@ -12,7 +12,7 @@ I know this might be boring, but I also have to cover people who want to know mo
 At first the TesLight controller is based on an ESP32 microcontroller board, which is placed on a custom PCB.
 The ESP32 contains two Tensilica-LX6 cores, running at 80MHz or 240MHz.
 They come with 512kB of SRAM and 4MB of flash memory.
-Also, they have onboard WiFi (802.11bgn) as well as Bluetooth (classic and LE).
+Also, they have onboard Wi-Fi (802.11bgn) as well as Bluetooth (classic and LE).
 Hardware support for SPI, I2C, CAN, UART, etc. could be used in the future.
 Generally the board operates at the 3.3V level.
 It has a voltage regulator which will provide the 3.3V from the 5V, provided by the TesLight PCB.
@@ -572,7 +572,7 @@ Firmware version 1.0.0
 
 When this is the case, you successfully built the TesLight controller.
 Success!
-Now search for a WiFi network called `TesLight`.
+Now search for a Wi-Fi network called `TesLight`.
 Connect to it using the default password `TesLightPW` and open up `192.168.4.1` in your browser.
 Now the TesLight UI should show up.
 Bookmark this page so that you will not forget it.
@@ -580,6 +580,6 @@ Alternatively, you can also try to "install" the UI on your device.
 Since it is a ReactJS based UI, some devices offer support for this.
 
 From here you can control TesLight using the browser based UI.
-But don't forget to connect to the `TesLight` WiFi first.
+But don't forget to connect to the `TesLight` Wi-Fi first.
 The ssid and password can be changed in the settings.
 I am sure you will figure out how the UI works :) .
