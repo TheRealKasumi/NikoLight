@@ -345,7 +345,7 @@ const Form = (): JSX.Element => {
             <Slider<FormData>
               className="w-full"
               min={60}
-              max={90}
+              max={85}
               step={1}
               control={control}
               name="system.regulatorHighTemperature"
@@ -358,8 +358,8 @@ const Form = (): JSX.Element => {
             </span>
             <Slider<FormData>
               className="w-full"
-              min={60}
-              max={100}
+              min={70}
+              max={95}
               step={1}
               control={control}
               name="system.regulatorCutoffTemperature"
@@ -371,7 +371,7 @@ const Form = (): JSX.Element => {
             </span>
             <Slider<FormData>
               className="w-full"
-              min={40}
+              min={45}
               max={70}
               step={1}
               control={control}
@@ -384,7 +384,7 @@ const Form = (): JSX.Element => {
             </span>
             <Slider<FormData>
               className="w-full"
-              min={50}
+              min={60}
               max={90}
               step={1}
               control={control}
