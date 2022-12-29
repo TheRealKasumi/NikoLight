@@ -1,0 +1,139 @@
+{
+  "customAnimations": {
+    "deleteSuccessful": "Erfolgreich gelöscht!",
+    "file": "Datei",
+    "fileName": "Dateiname",
+    "name": "Name",
+    "size": "Größe",
+    "title": "Benutzerdefinierte Animationen",
+    "upload": "Hochladen",
+    "uploadSuccessful": "Erfolgreich hochgeladen!"
+  },
+  "error": {
+    "desc": "Etwas ist schief gelaufen.",
+    "headline": "Hoppla!",
+    "retry": "Erneut versuchen"
+  },
+  "home": {
+    "title": "Startseite"
+  },
+  "logFiles": {
+    "clear": "Log leeren",
+    "clearSuccessful": "Log erfolgreich geleert!",
+    "download": "Log herunterladen",
+    "title": "Log-Dateien"
+  },
+  "notification": {
+    "headline": "Etwas ist schief gelaufen"
+  },
+  "settings": {
+    "accessPointPassword": "Passwort",
+    "accessPointSsid": "SSID",
+    "fanMaxPwmValue": "Lüfter max PWM",
+    "fanMaxTemperature": "Lüfter max Temperatur (°C)",
+    "fanMinPwmValue": "Lüfter min PWM (Stall Guard)",
+    "fanMinTemperature": "Lüfter min Temperatur (°C)",
+    "language": "Sprache",
+    "lightSensor": "Lichtsensor",
+    "lightSensorDuration": "Dauer",
+    "lightSensorMaxAmbientBrightness": "Maximale Helligkeit",
+    "lightSensorMaxLedBrightness": "Maximale LED Helligkeit",
+    "lightSensorMinAmbientBrightness": "Minimale Helligkeit",
+    "lightSensorMinLedBrightness": "Minimale LED Helligkeit",
+    "lightSensorMode": "Modus",
+    "lightSensorModes": {
+      "AlwaysOff": "Immer Aus",
+      "AlwaysOn": "Immer An",
+      "AutomaticOnOffADC": "Automatisch An/Aus ADC",
+      "AutomaticBrightnessADC": "Automatische Helligkeit ADC",
+      "AutomaticOnOffBH1750": "Automatisch An/Aus BH1750",
+      "AutomaticBrightnessBH1750": "Automatische Helligkeit BH1750",
+      "AutomaticOnOffMPU6050": "Automatisch An/Aus MPU6050"
+    },
+    "lightSensorThreshold": "Schwellenwert",
+    "loggingAndDebugging": "Protokollierung und Fehlersuche",
+    "logLevel": "Protokollierungsstufe",
+    "logLevels": {
+      "debug": "Fehlersuche",
+      "info": "Information",
+      "warning": "Warnung",
+      "error": "Fehler"
+    },
+    "regulator": "Regler",
+    "regulatorCutoffTemperature": "Abschalttemperatur (°C)",
+    "regulatorHighTemperature": "Drosseltemperatur (°C)",
+    "regulatorPowerLimit": "Leistungsgrenze (W)",
+    "reset": "Auf Standardwerte zurücksetzen",
+    "submit": "Einstellungen übernehmen",
+    "submitSuccessful": "Erfolgreich gespeichert!",
+    "title": "Einstellungen",
+    "ui": "Benutzeroberfläche",
+    "wifiHotspot": "Wifi Hotspot"
+  },
+  "toast": {
+    "close": "Ausblenden"
+  },
+  "update": {
+    "desc": {
+      "1": "Hier kann eine Systemaktualisierung auf das TesLight-Steuergerät installiert werden. Dies gilt sowohl für die Firmware des Mikroprozessors als auch für die Benutzeroberfläche. Um eine Systemaktualisierung zu installieren, muss zunächst ein so genanntes \"TesLight Update Package\" herunterladen. Diese Dateien haben die Erweiterung \".tup\" und kann im Release-Bereich auf meiner GitHub-Seite gefunden werden: <github>https://github.com/TheRealKasumi/TesLight</github>.",
+      "2": "Nach dem Herunterladen benutze bitte diese Seite, um das Aktualisierungspaket auf den Controller zu laden. Sobald die Datei hochgeladen ist, wird das Steuergerät neu gestartet und die Aktualisierung installiert. Dies kann bis zu 2 Minuten dauern, geht aber normalerweise schneller. Während dieser Zeit ist der Controller nicht über den WiFi-Hotspot erreichbar. Bitte habe Geduld. Danach wird der Controller neu gestartet und ist wie gewohnt erreichbar.",
+      "3": "Warnung: Das Hochladen fehlerhafter Aktualisierungspakete kann dazu führen, dass der Controller nicht mehr erreichbar ist. Dann ist eine kabelgebundene Verbindung zur Neuinstallation der Firmware erforderlich. Es wird daher empfohlen, nur stabile und getestete Aktualisierungspakete von der GitHub-Seite hochzuladen."
+    },
+    "submit": "TesLight aktualisieren",
+    "title": "Aktualisierung",
+    "updateSuccessful": "TesLight erfolgreich aktualisiert!"
+  },
+  "zone": {
+    "advanced": "Erweitert",
+    "animation": "Animation",
+    "animationTypes": {
+      "Rainbow": "Regenbogen",
+      "RainbowLinear": "Regenbogen linear",
+      "RainbowCentered": "Regenbogen zentriert",
+      "GradientLinear": "Farbverlauf linear",
+      "GradientCenter": "Farbverlauf zentriert",
+      "Static": "Statisch",
+      "ColorBarsLinearHard": "Farbbalken linear hart",
+      "ColorBarsLinearSoft": "Farbbalken linear weich",
+      "ColorBarsCenterHard": "Farbbalken zentriert hart",
+      "ColorBarsCenterSoft": "Farbbalken zentriert weich",
+      "RainbowLinearAccX": "Regenbogen lineare Beschleunigung X",
+      "RainbowLinearAccY": "Regenbogen lineare Beschleunigung Y",
+      "RainbowCenteredAccX": "Regenbogen zentrierte Beschleunigung X",
+      "RainbowCenteredAccY": "Regenbogen zentrierte Beschleunigung Y",
+      "GradientLinearAccX": "Farbverlauf lineare Beschleunigung X",
+      "GradientLinearAccY": "Farbverlauf lineare Beschleunigung Y",
+      "GradientCenteredAccX": "Farbverlauf zentrierte Beschleunigung X",
+      "GradientCenteredAccY": "Farbverlauf zentrierte Beschleunigung Y",
+      "Custom": "Benutzerdefiniert"
+    },
+    "basic": "Standard",
+    "brightness": "Helligkeit",
+    "channelCurrents": "LED-Strom pro Kanal (MA)",
+    "color1:": "Farbe 1",
+    "color2:": "Farbe 2",
+    "direction": {
+      "desc": "Die Richtung der Animation umkehren",
+      "label": "Richtung"
+    },
+    "fadeSpeed": "Überblendgeschwindigkeit",
+    "ledCount": "LED Anzahl",
+    "ledVoltage": "LED Spannung",
+    "offset": "Farbversatz",
+    "reset": "Auf Standardwerte zurücksetzen",
+    "speed": "Geschwindigkeit",
+    "submit": "Einstellungen übernehmen",
+    "submitSuccessful": "Erfolgreich gespeichert!"
+  },
+  "zones": {
+    "centerConsole": "Mittelkonsole",
+    "dashboard": "Armaturenbrett",
+    "frontLeftDoor": "Linke Vordertür",
+    "frontRightDoor": "Rechte Vordertür",
+    "leftFootwell": "Linker Fußraum",
+    "rearLeftDoor": "Linke Hintertür",
+    "rearRightDoor": "Rechte Hintertür",
+    "rightFootwell": "Rechter Fußraum",
+    "title": "Zonen"
+  }
+}
