@@ -79,9 +79,9 @@ The following table assumes that the TesLight controller is placed below the cen
 
 | Zone              | LEDs | Type                      | Cable Length | Physical Channel |
 | ----------------- | ---- | ------------------------- | ------------ | ---------------- |
-| Dash              | 72   | LED strip                 | 150 cm        | 1                |
+| Dash              | 72   | LED strip                 | 100 cm        | 1                |
 | Center Console    | 4    | Fiber cable and injectors | 150 cm        | 2                |
-| Front Doors       | 130  | Light bar (2 in parallel) | 265 cm + 50 cm | 3, 4             |
+| Front Doors       | 130  | Light bar (2 in parallel) | 215 cm + 50 cm | 3, 4             |
 | Rear Doors        | 92   | Light bar                 | 405 cm + 45 cm | 5, 6             |
 | Footwell lighting | 4    | LED strip or single LEDs  | 100 cm        | 7, 8             |
 
