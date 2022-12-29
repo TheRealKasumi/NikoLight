@@ -1,4 +1,5 @@
 import { saveAs } from 'file-saver';
+import { useTranslation } from 'react-i18next';
 import { Button, Log, Toast } from '../components';
 import { toMbyte } from '../libs';
 import { useClearLog, useLog, useLogSize } from './api';
@@ -6,6 +7,7 @@ import { useClearLog, useLog, useLogSize } from './api';
 export const LogFiles = (): JSX.Element => {
   const maxLogSize = 10000;
 
+  const { t } = useTranslation();
   const { data: logSize } = useLogSize();
 
   const { startByte, byteCount } =
@@ -26,7 +28,7 @@ export const LogFiles = (): JSX.Element => {
 
   return (
     <>
-      {isSuccess && <Toast title="Log successfully cleared!" />}
+      {isSuccess && <Toast title={t('logFiles.clearSuccessful')} />}
 
       <Log className="max-h-[65vh] overflow-scroll">{data}</Log>
       <p className="mb-6 text-right text-zinc">{toMbyte(logSize ?? 0)} MB</p>
@@ -37,11 +39,11 @@ export const LogFiles = (): JSX.Element => {
         onClick={onDownload}
         disabled={isLoading}
       >
-        Download
+        {t('logFiles.download')}
       </Button>
 
       <Button type="reset" onClick={onClear} disabled={isLoading}>
-        Clear
+        {t('logFiles.clear')}
       </Button>
     </>
   );

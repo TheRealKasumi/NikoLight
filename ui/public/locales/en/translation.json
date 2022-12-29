@@ -1,0 +1,139 @@
+{
+  "customAnimations": {
+    "deleteSuccessful": "Delete successfully!",
+    "file": "File",
+    "fileName": "File Name",
+    "name": "Name",
+    "size": "Size",
+    "title": "Custom Animations",
+    "upload": "Upload",
+    "uploadSuccessful": "Upload successfully!"
+  },
+  "error": {
+    "desc": "Something went wrong.",
+    "headline": "Oops!",
+    "retry": "Try again"
+  },
+  "home": {
+    "title": "Home"
+  },
+  "logFiles": {
+    "clear": "Clear",
+    "clearSuccessful": "Log successfully cleared!",
+    "download": "Download",
+    "title": "Log Files"
+  },
+  "notification": {
+    "headline": "Something went wrong"
+  },
+  "settings": {
+    "accessPointPassword": "Password",
+    "accessPointSsid": "SSID",
+    "fanMaxPwmValue": "Fan Max PWM",
+    "fanMaxTemperature": "Fan Full Speed Temp (°C)",
+    "fanMinPwmValue": "Fan Min PWM (Stall Guard)",
+    "fanMinTemperature": "Fan Start Temp (°C)",
+    "language": "Language",
+    "lightSensor": "Light Sensor",
+    "lightSensorDuration": "Duration",
+    "lightSensorMaxAmbientBrightness": "Maximum Brightness",
+    "lightSensorMaxLedBrightness": "Maximum LED Brightness",
+    "lightSensorMinAmbientBrightness": "Minimum Brightness",
+    "lightSensorMinLedBrightness": "Minimum LED Brightness",
+    "lightSensorMode": "Mode",
+    "lightSensorModes": {
+      "AlwaysOff": "Always Off",
+      "AlwaysOn": "Always On",
+      "AutomaticBrightnessADC": "Automatic Brightness ADC",
+      "AutomaticBrightnessBH1750": "Automatic Brightness BH1750",
+      "AutomaticOnOffADC": "Automatic On/Off ADC",
+      "AutomaticOnOffBH1750": "Automatic On/Off BH1750",
+      "AutomaticOnOffMPU6050": "Automatic On/Off MPU6050"
+    },
+    "lightSensorThreshold": "Threshold",
+    "loggingAndDebugging": "Logging and Debugging",
+    "logLevel": "Log Level",
+    "logLevels": {
+      "debug": "Debug",
+      "error": "Error",
+      "info": "Info",
+      "warning": "Warning"
+    },
+    "regulator": "Regulator",
+    "regulatorCutoffTemperature": "Shut Down Temperature (°C)",
+    "regulatorHighTemperature": "Throttle Temperature (°C)",
+    "regulatorPowerLimit": "Power Limit (W)",
+    "reset": "Reset to default",
+    "submit": "Apply Settings",
+    "submitSuccessful": "Saved successfully!",
+    "title": "Settings",
+    "ui": "User Interface",
+    "wifiHotspot": "Wifi Hotspot"
+  },
+  "toast": {
+    "close": "Dismiss"
+  },
+  "update": {
+    "desc": {
+      "1": "Here a system update can be installed to the TesLight controller. This includes the firmware of the mcu as well as the user interface. To install a system update, you first need to download a so called \"TesLight Update Package\". These files have the extension \".tup\" and can be found in the release section on my GitHub page: <github>https://github.com/TheRealKasumi/TesLight</github>.",
+      "2": "After the download, please use this page to upload the update package to the controller. Once the file is uploaded, the controller will restart and install the update. This can take up to 2 minutes but usually is faster. During this time, the controller will not be reachable via the WiFi hotspot. Please be patient. Afterwards the controller will restart and become reachable as usual.",
+      "3": "But here is also a word of warning. Uploading broken update packages could make the controller unreachable. Then a wired connection to reinstall the firmware is required. So it is recommended to only upload stable and tested update packages from the GitHub page."
+    },
+    "title": "Update",
+    "submit": "Update TesLight",
+    "updateSuccessful": "Update successfully!"
+  },
+  "zone": {
+    "advanced": "Advanced",
+    "animation": "Animation",
+    "animationTypes": {
+      "ColorBarsCenterHard": "Color Bars Center Hard",
+      "ColorBarsCenterSoft": "Color Bars Center Soft",
+      "ColorBarsLinearHard": "Color Bars Linear Hard",
+      "ColorBarsLinearSoft": "Color Bars Linear Soft",
+      "Custom": "Custom",
+      "GradientCenter": "Gradient Center",
+      "GradientCenteredAccX": "Gradient Centered Acc X",
+      "GradientCenteredAccY": "Gradient Centered Acc Y",
+      "GradientLinear": "Gradient Linear",
+      "GradientLinearAccX": "Gradient Linear Acc X",
+      "GradientLinearAccY": "Gradient Linear Acc Y",
+      "Rainbow": "Rainbow",
+      "RainbowCentered": "Rainbow Centered",
+      "RainbowCenteredAccX": "Rainbow Centered Acc X",
+      "RainbowCenteredAccY": "Rainbow Centered Acc Y",
+      "RainbowLinear": "Rainbow Linear",
+      "RainbowLinearAccX": "Rainbow Linear Acc X",
+      "RainbowLinearAccY": "Rainbow Linear Acc Y",
+      "Static": "Static"
+    },
+    "basic": "Basic",
+    "brightness": "Brightness",
+    "channelCurrents": "LED Current per Channel (MA)",
+    "color1:": "Color 1",
+    "color2:": "Color 2",
+    "direction": {
+      "desc": "Reverse the animation direction",
+      "label": "Direction"
+    },
+    "fadeSpeed": "Fading",
+    "ledCount": "LED Count",
+    "ledVoltage": "LED Voltage",
+    "offset": "Offset",
+    "reset": "Reset to default",
+    "speed": "Speed",
+    "submit": "Apply Settings",
+    "submitSuccessful": "Saved successfully!"
+  },
+  "zones": {
+    "centerConsole": "Center Console",
+    "dashboard": "Dashboard",
+    "frontLeftDoor": "Front Left Door",
+    "frontRightDoor": "Front Right Door",
+    "leftFootwell": "Left Footwell",
+    "rearLeftDoor": "Rear Left Door",
+    "rearRightDoor": "Rear Right Door",
+    "rightFootwell": "Right Footwell",
+    "title": "Zones"
+  }
+}

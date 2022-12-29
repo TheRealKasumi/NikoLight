@@ -36,6 +36,10 @@
       "description": "Read, update and run the motion sensor calibration"
     },
     {
+      "name": "UI Configuration",
+      "description": "Read and update the ui configuration"
+    },
+    {
       "name": "FSEQ Management",
       "description": "List, upload and delete FSEQ files for playback"
     },
@@ -174,16 +178,6 @@
           },
           "400": {
             "description": "The request is invalid.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          },
-          "412": {
-            "description": "A precondition failed.",
             "content": {
               "application/json": {
                 "schema": {
@@ -344,6 +338,67 @@
           },
           "412": {
             "description": "The motion sensor is not ready to be calibrated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to process the request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/config/ui": {
+      "get": {
+        "tags": ["UI Configuration"],
+        "summary": "Get UI configuration.",
+        "description": "Get the current UI configuration from the controller.",
+        "operationId": "getUIConfig",
+        "responses": {
+          "200": {
+            "description": "Response contains the current UI configuration.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UIConfiguration"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["UI Configuration"],
+        "summary": "Update UI configuration.",
+        "description": "Update the current UI configuration on the controller.",
+        "operationId": "setUIConfig",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UIConfiguration"
+        },
+        "responses": {
+          "200": {
+            "description": "The configuration was updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1041,6 +1096,41 @@
           }
         }
       },
+      "UIConfiguration": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "Message"
+          },
+          "uiConfig": {
+            "type": "object",
+            "properties": {
+              "firmware": {
+                "type": "string",
+                "example": "1.0.0"
+              },
+              "language": {
+                "type": "string",
+                "example": "en"
+              },
+              "theme": {
+                "type": "string",
+                "example": "dark"
+              },
+              "expertMode": {
+                "type": "boolean",
+                "example": false
+              }
+            }
+          }
+        }
+      },
       "FSEQList": {
         "type": "object",
         "properties": {
@@ -1390,6 +1480,35 @@
                       "type": "number",
                       "format": "float",
                       "example": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "UIConfiguration": {
+        "description": "Update the current UI configuration on the controller.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uiConfig": {
+                  "type": "object",
+                  "properties": {
+                    "language": {
+                      "type": "string",
+                      "example": "en"
+                    },
+                    "theme": {
+                      "type": "string",
+                      "example": "dark"
+                    },
+                    "expertMode": {
+                      "type": "boolean",
+                      "example": false
                     }
                   }
                 }
