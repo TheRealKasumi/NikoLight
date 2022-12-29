@@ -1,26 +1,40 @@
 /**
  * @file FseqLoader.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TesLight::FseqLoader}.
+ * @brief Implementation of the {@link TL::FseqLoader}.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #include "util/FseqLoader.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::FseqLoader::FseqLoader}
+ * @brief Create a new instance of {@link TL::FseqLoader::FseqLoader}
  * @param fileSystem file system from which the file should be loaded
  */
-TesLight::FseqLoader::FseqLoader(FS *fileSystem)
+TL::FseqLoader::FseqLoader(FS *fileSystem)
 {
 	this->fileSystem = fileSystem;
+	this->initFseqHeader();
 }
 
 /**
- * @brief Destroy the {@link TesLight::FseqLoader::FseqLoader} and close resources.
+ * @brief Destroy the {@link TL::FseqLoader::FseqLoader} and close resources.
  */
-TesLight::FseqLoader::~FseqLoader()
+TL::FseqLoader::~FseqLoader()
 {
 	this->close();
 }
@@ -31,23 +45,23 @@ TesLight::FseqLoader::~FseqLoader()
  * @return true when valid
  * @return false when invalid
  */
-bool TesLight::FseqLoader::loadFromFile(const String fileName)
+bool TL::FseqLoader::loadFromFile(const String fileName)
 {
 	this->file = this->fileSystem->open(fileName, FILE_READ);
 	if (!this->file)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open fseq file."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open fseq file."));
 		return false;
 	}
 	else if (this->file.isDirectory())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open fseq file because it is a directory."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open fseq file because it is a directory."));
 		this->file.close();
 		return false;
 	}
 	else if (this->file.size() < 28)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open fseq file because it is too small. A valid fseq file must have at least 28 bytes."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open fseq file because it is too small. A valid fseq file must have at least 28 bytes."));
 		this->file.close();
 		return false;
 	}
@@ -75,7 +89,7 @@ bool TesLight::FseqLoader::loadFromFile(const String fileName)
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("File is invalid."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("File is invalid."));
 		this->file.close();
 		return false;
 	}
@@ -85,7 +99,7 @@ bool TesLight::FseqLoader::loadFromFile(const String fileName)
  * @brief Return the number of remaining pixels in the file.
  * @return size_t number of pixels available to read
  */
-size_t TesLight::FseqLoader::available()
+size_t TL::FseqLoader::available()
 {
 	return this->file ? this->file.available() / 3 : 0;
 }
@@ -93,7 +107,7 @@ size_t TesLight::FseqLoader::available()
 /**
  * @brief Reset the animation to the start.
  */
-void TesLight::FseqLoader::moveToStart()
+void TL::FseqLoader::moveToStart()
 {
 	if (this->file)
 	{
@@ -101,14 +115,14 @@ void TesLight::FseqLoader::moveToStart()
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Can't move to the start of the data section because the file is not opened."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Can't move to the start of the data section because the file is not opened."));
 	}
 }
 
 /**
  * @brief Close the input file.
  */
-void TesLight::FseqLoader::close()
+void TL::FseqLoader::close()
 {
 	if (this->file)
 	{
@@ -118,25 +132,24 @@ void TesLight::FseqLoader::close()
 
 /**
  * @brief Get the file header.
- * @return {@link TesLight::FseqLoader::FseqHeader} header of the opened file
+ * @return {@link TL::FseqLoader::FseqHeader} header of the opened file
  */
-TesLight::FseqLoader::FseqHeader TesLight::FseqLoader::getHeader()
+TL::FseqLoader::FseqHeader TL::FseqLoader::getHeader()
 {
 	return this->fseqHeader;
 }
 
 /**
  * @brief Read a buffer of pixels from the stream.
- * @param pixelBuffer pointer to a {@link CRGB buffer} for the pixel data
- * @param bufferSize number of pixels in the buffer/number of pixels to be read from the stream
+ * @param pixels reference to the vector holding the LED pixel data
  * @return true when read successfully
  * @return false when there was an error
  */
-bool TesLight::FseqLoader::readPixelbuffer(CRGB *pixelBuffer, const size_t bufferSize)
+bool TL::FseqLoader::readPixelBuffer(std::vector<CRGB> &pixels)
 {
-	if (this->file && this->available() >= bufferSize)
+	if (this->file && this->available() >= pixels.size())
 	{
-		if (this->file.read((uint8_t *)pixelBuffer, bufferSize * 3) == bufferSize * 3)
+		if (this->file.read((uint8_t *)&pixels.front(), pixels.size() * 3) == pixels.size() * 3)
 		{
 			return true;
 		}
@@ -148,7 +161,7 @@ bool TesLight::FseqLoader::readPixelbuffer(CRGB *pixelBuffer, const size_t buffe
 /**
  * @brief Initialize the fseqHeader with 0.
  */
-void TesLight::FseqLoader::initFseqHeader()
+void TL::FseqLoader::initFseqHeader()
 {
 	this->fseqHeader.identifier[0] = 0;
 	this->fseqHeader.identifier[1] = 0;
@@ -174,26 +187,26 @@ void TesLight::FseqLoader::initFseqHeader()
  * @return true when valid
  * @return false when invalid
  */
-bool TesLight::FseqLoader::isValid()
+bool TL::FseqLoader::isValid()
 {
 	// Check the identifier
 	if (this->fseqHeader.identifier[0] != 'P' || this->fseqHeader.identifier[1] != 'S' || this->fseqHeader.identifier[2] != 'E' || this->fseqHeader.identifier[3] != 'Q')
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The fseq file is invalid because the identifier doesn't match. It must be PSEQ."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The fseq file is invalid because the identifier doesn't match. It must be PSEQ."));
 		return false;
 	}
 
 	// Check the version
 	if (this->fseqHeader.minorVersion != 0 || this->fseqHeader.majorVersion != 1)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The fseq file is invalid because the version does not match. It must be 1.0."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The fseq file is invalid because the version does not match. It must be 1.0."));
 		return false;
 	}
 
 	// Check the header length
 	if (this->fseqHeader.headerLength != 28)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The fseq file is invalid because the header length is not valid."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The fseq file is invalid because the header length is not valid."));
 		return false;
 	}
 
@@ -202,7 +215,7 @@ bool TesLight::FseqLoader::isValid()
 	uint32_t expectedLength = this->fseqHeader.channelCount * this->fseqHeader.frameCount;
 	if (dataLength != expectedLength)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The fseq file is invalid because the data length does not match den length defined in the header."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The fseq file is invalid because the data length does not match den length defined in the header."));
 		return false;
 	}
 
@@ -210,7 +223,7 @@ bool TesLight::FseqLoader::isValid()
 	// It has to be a multiple of 3 because there are 3 bytes per pixel
 	if (dataLength % 3 != 0)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The fseq file is invalid because the channel count is not a multiple of 3. This is a requirement by TesLight."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The fseq file is invalid because the channel count is not a multiple of 3. This is a requirement by TesLight."));
 		return false;
 	}
 

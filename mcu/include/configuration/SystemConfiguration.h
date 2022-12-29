@@ -3,11 +3,27 @@
  * @author TheRealKasumi
  * @brief Contains the (static) system configuration.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #ifndef SYSTEM_CONFIGURATION_H
 #define SYSTEM_CONFIGURATION_H
+
+// Firmware version
+#define FW_VERSION "1.0.0" // Firmware version of the MCU
 
 // SD configuration
 #define SD_CS_PIN 5			 // CS pin for the SD card
@@ -16,11 +32,12 @@
 #define SD_MAX_FILES 5		 // Maximum number of open files
 
 // Logging configuration
-#define SERIAL_BAUD_RATE 460800			// Serial baud rate
+#define SERIAL_BAUD_RATE 115200			// Serial baud rate
 #define LOG_FILE_NAME "/system_log.txt" // File name of the log file
 #define LOG_DEFAULT_LEVEL 1 			// Default log level
 
 // Configuration of the runtime configuration
+#define CONFIGURATION_FILE_VERSION 9		   // Version of the configuration file
 #define CONFIGURATION_FILE_NAME "/config.tli" // File name of the configuration file
 
 // LED and animator configuration
@@ -39,8 +56,8 @@
 // Voltage regulator
 #define REGULATOR_POWER_LIMIT 12																		// W per regulator
 #define REGULATOR_COUNT 2																				// Number of regulators
-#define REGULATOR_DEFAULT_VOLTAGE 50																	// Output Voltage x10
-#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 1}, {15, 0}, {16, 1}, {17,0}, {21, 1}, {22, 0}, {25, 1}}	// Map a output pin to a regulator index
+#define REGULATOR_DEFAULT_VOLTAGE 5.0f																	// Output Voltage 
+#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 1}, {15, 0}, {16, 1}, {17, 0}, {21, 1}, {22, 0}, {25, 1}}	// Map a output pin to a regulator index
 #define REGULATOR_HIGH_TEMP 70																			// Temp in °C where brightness is reduced
 #define REGULATOR_CUT_OFF_TEMP 85																		// Temp in °C where LEDs are turned off
 
@@ -88,17 +105,18 @@
 #define WIFI_DEFAULT_PASSWORD ""		 // Default password of a WiFi network
 
 // Webserver configuration
-#define WEB_SERVER_PORT 80					  // Port of the web server
-#define WEB_SERVER_STATIC_CONTENT "/web-app/" // Static content location for the web server
+#define WEB_SERVER_PORT 80					   // Port of the web server
+#define WEB_SERVER_STATIC_CONTENT "/ui/"  // Static content location for the UI
 
 // Timer configuration
-#define LED_FRAME_TIME 16666		   // Cycle time for the LEDs in µs
-#define TEMP_CYCLE_TIME 250000		   // Cycle time for reading temperatures and run fan controll in µs
-#define LIGHT_SENSOR_CYCLE_TIME 40000  // Cycle time for the light sensor in µs
-#define MOTION_SENSOR_CYCLE_TIME 20000 // Cycle time for the motion sensor in µs
-#define WEB_SERVER_CYCLE_TIME 20000	   // Cycle time for the web server to accept conenctions in µs
-#define STATUS_CYCLE_TIME 5000000	   // Cycle time for printing the current status in µs
-#define WATCHDOG_RESET_TIME 5		   // Time until a watchdog reset is triggered
+#define RENDER_INTERVAL 16666			// Interval for rendering the pixels in µs
+#define FRAME_INTERVAL 16666			// Interval for outputting to the LEDs in µs
+#define TEMP_INTERVAL 250000			// Interval for reading temperatures and run fan controll in µs
+#define LIGHT_SENSOR_INTERVAL 40000		// Interval for the light sensor in µs
+#define MOTION_SENSOR_INTERVAL 20000	// Interval for the motion sensor in µs
+#define WEB_SERVER_INTERVAL 20000		// Interval for the web server to accept conenctions in µs
+#define STATUS_INTERVAL 5000000			// Interval for printing the current status in µs
+#define WATCHDOG_RESET_TIME 3			// Time until a watchdog reset is triggered
 
 // FSEQ configuration
 #define FSEQ_DIRECTORY "/fseq" // Directory for fseq files
@@ -106,5 +124,10 @@
 // Update configuration
 #define UPDATE_DIRECTORY "/update"	  // Update folder
 #define UPDATE_FILE_NAME "update.tup" // Update package file name
+
+// UI configuration
+#define UI_DEFAULT_LANGUAGE "en" // Default language of the UI
+#define UI_DEFAULT_THEME "dark"	 // Default theme of the UI
+#define UI_DEFAULT_EXPERT false  // Deafult setting for the expert mode of the UI
 
 #endif

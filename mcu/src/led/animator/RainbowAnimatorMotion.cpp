@@ -1,91 +1,107 @@
 /**
  * @file RainbowAnimatorMotion.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@TesLight::RainbowAnimatorMotion}.
+ * @brief Implementation of the {@TL::RainbowAnimatorMotion}.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #include "led/animator/RainbowAnimatorMotion.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::RainbowAnimatorMotion}.
+ * @brief Create a new instance of {@link TL::RainbowAnimatorMotion}.
  */
-TesLight::RainbowAnimatorMotion::RainbowAnimatorMotion()
+TL::RainbowAnimatorMotion::RainbowAnimatorMotion()
 {
 	this->angle = 0.0f;
-	this->rainbowMode = TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_SOLID;
-	this->motionSensorValue = TesLight::MotionSensor::ACC_X_G;
+	this->rainbowMode = TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_SOLID;
+	this->motionSensorValue = TL::MotionSensor::ACC_X_G;
 }
 
 /**
- * @brief Create a new instance of {@link TesLight::RainbowAnimatorMotion}.
+ * @brief Create a new instance of {@link TL::RainbowAnimatorMotion}.
  *
  * @param rainbowMode display mode of the rainbow
  */
-TesLight::RainbowAnimatorMotion::RainbowAnimatorMotion(const TesLight::RainbowAnimatorMotion::RainbowMode rainbowMode, const TesLight::MotionSensor::MotionSensorValue motionSensorValue)
+TL::RainbowAnimatorMotion::RainbowAnimatorMotion(const TL::RainbowAnimatorMotion::RainbowMode rainbowMode, const TL::MotionSensor::MotionSensorValue motionSensorValue)
 {
+	this->angle = 0.0f;
 	this->rainbowMode = rainbowMode;
 	this->motionSensorValue = motionSensorValue;
 }
 
 /**
- * @brief Destroy the {@link TesLight::RainbowAnimatorMotion} instance.
+ * @brief Destroy the {@link TL::RainbowAnimatorMotion} instance.
  */
-TesLight::RainbowAnimatorMotion::~RainbowAnimatorMotion()
+TL::RainbowAnimatorMotion::~RainbowAnimatorMotion()
 {
 }
 
 /**
- * @brief Initialize the {@link TesLight::RainbowAnimatorMotion}.
+ * @brief Initialize the {@link TL::RainbowAnimatorMotion}.
+ * @param pixels reference to the vector holding the LED pixel data
  */
-void TesLight::RainbowAnimatorMotion::init()
+void TL::RainbowAnimatorMotion::init(std::vector<CRGB> &pixels)
 {
 	this->angle = 0.0f;
-	for (uint16_t i = 0; i < this->pixelCount; i++)
+	for (size_t i = 0; i < pixels.size(); i++)
 	{
-		this->pixels[i] = CRGB::Black;
+		pixels.at(i) = CRGB::Black;
 	}
 }
 
 /**
- * @brief Render a rainbow to the {@link TesLight::Pixel} array.
+ * @brief Render a rainbow to the vector holding the LED pixel data
+ * @param pixels reference to the vector holding the LED pixel data
  */
-void TesLight::RainbowAnimatorMotion::render()
+void TL::RainbowAnimatorMotion::render(std::vector<CRGB> &pixels)
 {
-	const uint16_t middle = this->pixelCount / 2;
-	for (uint16_t i = 0; i < this->pixelCount; i++)
+	const float middle = pixels.size() / 2;
+	for (uint16_t i = 0; i < pixels.size(); i++)
 	{
 		float redAngle = 0.0f;
 		float greenAngle = 0.0f;
 		float blueAngle = 0.0f;
 		const float offset = this->offset / 25.0f;
 
-		if (this->rainbowMode == TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_SOLID)
+		if (this->rainbowMode == TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_SOLID)
 		{
 			redAngle = this->angle + 0.0f;
 			greenAngle = this->angle + 120.0f;
 			blueAngle = this->angle + 240.0f;
 		}
 
-		else if (this->rainbowMode == TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR)
+		else if (this->rainbowMode == TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR)
 		{
 			redAngle = (this->angle + 0.0f) + i * offset;
 			greenAngle = (this->angle + 120.0f) + i * offset;
 			blueAngle = (this->angle + 240.0f) + i * offset;
 		}
 
-		else if (this->rainbowMode == TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_CENTER)
+		else if (this->rainbowMode == TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_CENTER)
 		{
-			redAngle = i < middle ? (this->angle + 0.0f) + i * offset : (this->angle + 0.0f) + (this->pixelCount - i) * offset;
-			greenAngle = i < middle ? (this->angle + 120.0f) + i * offset : (this->angle + 120.0f) + (this->pixelCount - i) * offset;
-			blueAngle = i < middle ? (this->angle + 240.0f) + i * offset : (this->angle + 240.0f) + (this->pixelCount - i) * offset;
+			redAngle = i < middle ? (this->angle + 0.0f) + i * offset : (this->angle + 0.0f) + (pixels.size() - i) * offset;
+			greenAngle = i < middle ? (this->angle + 120.0f) + i * offset : (this->angle + 120.0f) + (pixels.size() - i) * offset;
+			blueAngle = i < middle ? (this->angle + 240.0f) + i * offset : (this->angle + 240.0f) + (pixels.size() - i) * offset;
 		}
 
-		this->pixels[i].setRGB(this->trapezoid(redAngle) * 255.0f, this->trapezoid(greenAngle) * 255.0f, this->trapezoid(blueAngle) * 255.0f);
+		pixels.at(i).setRGB(this->trapezoid(redAngle) * 255.0f, this->trapezoid(greenAngle) * 255.0f, this->trapezoid(blueAngle) * 255.0f);
 	}
 
-	this->applyBrightness();
+	this->applyBrightness(pixels);
 
 	const float speed = this->getMotionSpeed();
 	if (this->reverse)
@@ -111,7 +127,7 @@ void TesLight::RainbowAnimatorMotion::render()
  * @brief Set the mode of the rainbow animation.
  * @param rainbowMode mode of the animation
  */
-void TesLight::RainbowAnimatorMotion::setRainbowMode(const TesLight::RainbowAnimatorMotion::RainbowMode rainbowMode)
+void TL::RainbowAnimatorMotion::setRainbowMode(const TL::RainbowAnimatorMotion::RainbowMode rainbowMode)
 {
 	this->rainbowMode = rainbowMode;
 }
@@ -120,7 +136,7 @@ void TesLight::RainbowAnimatorMotion::setRainbowMode(const TesLight::RainbowAnim
  * @brief Set the value of the motion sensor that is influencing the animation.
  * @param motionSensorValue value to influence the animation
  */
-void TesLight::RainbowAnimatorMotion::setMotionSensorValue(const TesLight::MotionSensor::MotionSensorValue motionSensorValue)
+void TL::RainbowAnimatorMotion::setMotionSensorValue(const TL::MotionSensor::MotionSensorValue motionSensorValue)
 {
 	this->motionSensorValue = motionSensorValue;
 }
@@ -129,30 +145,30 @@ void TesLight::RainbowAnimatorMotion::setMotionSensorValue(const TesLight::Motio
  * @brief Get the rainbow speed based on the motion senor value.
  * @return speed value based on the motion sensor value
  */
-float TesLight::RainbowAnimatorMotion::getMotionSpeed()
+float TL::RainbowAnimatorMotion::getMotionSpeed()
 {
 	float speed = this->speed / 15.0f;
-	if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_X_G)
+	if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ACC_X_G)
 	{
 		speed *= this->motionSensorData.accXG;
 	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_Y_G)
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ACC_Y_G)
 	{
 		speed *= this->motionSensorData.accYG;
 	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::ACC_Z_G)
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ACC_Z_G)
 	{
 		speed *= this->motionSensorData.accZG;
 	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_X_DEG)
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::GY_X_DEG)
 	{
 		speed *= this->motionSensorData.gyroXDeg / 10.0f;
 	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_Y_DEG)
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::GY_Y_DEG)
 	{
 		speed *= this->motionSensorData.gyroYDeg / 10.0f;
 	}
-	else if (this->motionSensorValue == TesLight::MotionSensor::MotionSensorValue::GY_Z_DEG)
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::GY_Z_DEG)
 	{
 		speed *= this->motionSensorData.gyroZDeg / 10.0f;
 	}

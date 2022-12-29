@@ -1,35 +1,48 @@
 /**
  * @file Logger.cpp
  * @author TheRealKasumi
- * @brief Implementation of {@link TesLight::Logger}.
+ * @brief Implementation of {@link TL::Logger}.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #include "logging/Logger.h"
 
 // Initialize
-bool TesLight::Logger::logToSerial = false;
-bool TesLight::Logger::logToFile = false;
-FS *TesLight::Logger::fileSystem = nullptr;
-String TesLight::Logger::fileName = F("");
-TesLight::Logger::LogLevel TesLight::Logger::minLogLevel = TesLight::Logger::LogLevel::DEBUG;
+bool TL::Logger::logToSerial = false;
+bool TL::Logger::logToFile = false;
+FS *TL::Logger::fileSystem = nullptr;
+String TL::Logger::fileName = F("");
+TL::Logger::LogLevel TL::Logger::minLogLevel = TL::Logger::LogLevel::DEBUG;
 
 /**
- * @brief Initialiize the {@link TesLight::Logger}.
+ * @brief Initialiize the {@link TL::Logger}.
  * @return true always
  */
-bool TesLight::Logger::begin()
+bool TL::Logger::begin()
 {
 	return true;
 }
 
 /**
- * @brief Initialiize the {@link TesLight::Logger}.
+ * @brief Initialiize the {@link TL::Logger}.
  * @param baudRate serial baud rate
  * @return true always
  */
-bool TesLight::Logger::begin(const uint32_t baudRate)
+bool TL::Logger::begin(const uint32_t baudRate)
 {
 	Serial.begin(baudRate);
 	logToSerial = true;
@@ -37,13 +50,13 @@ bool TesLight::Logger::begin(const uint32_t baudRate)
 }
 
 /**
- * @brief Initialiize the {@link TesLight::Logger}.
+ * @brief Initialiize the {@link TL::Logger}.
  * @param fs instance of the {@link FS} containing the file
  * @param fn full name of the file
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::Logger::begin(FS *fs, const String fn)
+bool TL::Logger::begin(FS *fs, const String fn)
 {
 	logToFile = testOpenFile(fs, fn);
 	fileSystem = fs;
@@ -52,14 +65,14 @@ bool TesLight::Logger::begin(FS *fs, const String fn)
 }
 
 /**
- * @brief Initialiize the {@link TesLight::Logger}.
+ * @brief Initialiize the {@link TL::Logger}.
  * @param baudRate serial baud rate
  * @param fs instance of the {@link FS} containing the file
  * @param fn full name of the file
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::Logger::begin(uint32_t baudRate, FS *fs, const String fn)
+bool TL::Logger::begin(uint32_t baudRate, FS *fs, const String fn)
 {
 	Serial.begin(baudRate);
 	logToSerial = true;
@@ -71,9 +84,9 @@ bool TesLight::Logger::begin(uint32_t baudRate, FS *fs, const String fn)
 
 /**
  * @brief Set the minimum {@link TesLight.:LogLevel} that is logged.
- * @param logLevel minimum {@link TesLight::Logger::LogLevel}
+ * @param logLevel minimum {@link TL::Logger::LogLevel}
  */
-void TesLight::Logger::setMinLogLevel(const TesLight::Logger::LogLevel logLevel)
+void TL::Logger::setMinLogLevel(const TL::Logger::LogLevel logLevel)
 {
 	minLogLevel = logLevel;
 }
@@ -86,7 +99,7 @@ void TesLight::Logger::setMinLogLevel(const TesLight::Logger::LogLevel logLevel)
  * @param current line in code
  * @param message message text
  */
-void TesLight::Logger::log(const TesLight::Logger::LogLevel logLevel, const char *file, const char *function, const int line, const String message)
+void TL::Logger::log(const TL::Logger::LogLevel logLevel, const char *file, const char *function, const int line, const String message)
 {
 	if (logLevel < minLogLevel)
 	{
@@ -117,7 +130,7 @@ void TesLight::Logger::log(const TesLight::Logger::LogLevel logLevel, const char
  * @brief Get the size of the log file on the SD card.
  * @return size_t log file size in bytes
  */
-size_t TesLight::Logger::getLogSize()
+size_t TL::Logger::getLogSize()
 {
 	if (!logToFile)
 	{
@@ -141,7 +154,7 @@ size_t TesLight::Logger::getLogSize()
  * @param start start index from where to read the log
  * @param bufferSize size of the buffer
  */
-void TesLight::Logger::readLog(uint8_t *buffer, const size_t start, const size_t bufferSize)
+void TL::Logger::readLog(uint8_t *buffer, const size_t start, const size_t bufferSize)
 {
 	if (!logToFile)
 	{
@@ -162,7 +175,7 @@ void TesLight::Logger::readLog(uint8_t *buffer, const size_t start, const size_t
 /**
  * @brief Clear the log file on the SD card.
  */
-void TesLight::Logger::clearLog()
+void TL::Logger::clearLog()
 {
 	if (!logToFile)
 	{
@@ -170,7 +183,7 @@ void TesLight::Logger::clearLog()
 	}
 
 	fileSystem->remove(fileName);
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Log file was cleared."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Log file was cleared."));
 }
 
 /**
@@ -178,7 +191,7 @@ void TesLight::Logger::clearLog()
  * @return true when file can be opened
  * @return false when file can not be opened
  */
-bool TesLight::Logger::testOpenFile(FS *fs, const String fn)
+bool TL::Logger::testOpenFile(FS *fs, const String fn)
 {
 	if (fs != nullptr)
 	{
@@ -194,25 +207,25 @@ bool TesLight::Logger::testOpenFile(FS *fs, const String fn)
 }
 
 /**
- * @brief Get the {@link String} representation of the {@link TesLight::Logger::LogLevel}.
+ * @brief Get the {@link String} representation of the {@link TL::Logger::LogLevel}.
  * @param logLevel log level
- * @return {@link String} representation of the {@link TesLight::Logger::LogLevel}
+ * @return {@link String} representation of the {@link TL::Logger::LogLevel}
  */
-String TesLight::Logger::getLogLevelString(const TesLight::Logger::LogLevel logLevel)
+String TL::Logger::getLogLevelString(const TL::Logger::LogLevel logLevel)
 {
-	if (logLevel == TesLight::Logger::LogLevel::DEBUG)
+	if (logLevel == TL::Logger::LogLevel::DEBUG)
 	{
 		return F("DEBUG");
 	}
-	else if (logLevel == TesLight::Logger::LogLevel::INFO)
+	else if (logLevel == TL::Logger::LogLevel::INFO)
 	{
 		return F("INFO");
 	}
-	else if (logLevel == TesLight::Logger::LogLevel::WARN)
+	else if (logLevel == TL::Logger::LogLevel::WARN)
 	{
 		return F("WARN");
 	}
-	else if (logLevel == TesLight::Logger::LogLevel::ERROR)
+	else if (logLevel == TL::Logger::LogLevel::ERROR)
 	{
 		return F("ERROR");
 	}
@@ -224,7 +237,7 @@ String TesLight::Logger::getLogLevelString(const TesLight::Logger::LogLevel logL
  * @brief Get a formatted time {@link String} based on the system time.
  * @return {@link String} representation of the system time
  */
-String TesLight::Logger::getTimeString()
+String TL::Logger::getTimeString()
 {
 	unsigned long milli = millis();
 	const unsigned long hour = milli / 3600000;

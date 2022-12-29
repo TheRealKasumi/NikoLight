@@ -3,296 +3,381 @@
  * @author TheRealKasumi
  * @brief Implementation of a REST endpoint to configure the system settings.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #include "server/SystemConfigurationEndpoint.h"
 
 // Initialize
-TesLight::Configuration *TesLight::SystemConfigurationEndpoint::configuration = nullptr;
-std::function<bool()> TesLight::SystemConfigurationEndpoint::configChangedCallback = nullptr;
+TL::Configuration *TL::SystemConfigurationEndpoint::configuration = nullptr;
+std::function<bool()> TL::SystemConfigurationEndpoint::configChangedCallback = nullptr;
 
 /**
- * @brief Add all request handler for this {@link TesLight::RestEndpoint} to the {@link TesLight::WebServerManager}.
+ * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
  */
-void TesLight::SystemConfigurationEndpoint::begin(TesLight::Configuration *_configuration, std::function<bool()> _configChangedCallback)
+void TL::SystemConfigurationEndpoint::begin(TL::Configuration *_configuration, std::function<bool()> _configChangedCallback)
 {
-	TesLight::SystemConfigurationEndpoint::configuration = _configuration;
-	TesLight::SystemConfigurationEndpoint::configChangedCallback = _configChangedCallback;
-	webServerManager->addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_GET, TesLight::SystemConfigurationEndpoint::getSystemConfig);
-	webServerManager->addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_POST, TesLight::SystemConfigurationEndpoint::postSystemConfig);
+	TL::SystemConfigurationEndpoint::configuration = _configuration;
+	TL::SystemConfigurationEndpoint::configChangedCallback = _configChangedCallback;
+	TL::SystemConfigurationEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_GET, TL::SystemConfigurationEndpoint::getSystemConfig);
+	TL::SystemConfigurationEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_POST, TL::SystemConfigurationEndpoint::postSystemConfig);
 }
 
 /**
- * @brief Return the system configuration to the client as binary data.
+ * @brief Return the system configuration to the client.
  */
-void TesLight::SystemConfigurationEndpoint::getSystemConfig()
+void TL::SystemConfigurationEndpoint::getSystemConfig()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the system configuration."));
-	TesLight::InMemoryBinaryFile binary(15);
-	binary.write((uint8_t)TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().logLevel);
-	binary.write((uint8_t)TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMode);
-	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorThreshold);
-	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinAmbientBrightness);
-	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxAmbientBrightness);
-	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinLedBrightness);
-	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxLedBrightness);
-	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorDuration);
-	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorPowerLimit);
-	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorHighTemperature);
-	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorCutoffTemperature);
-	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMinPwmValue);
-	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMaxPwmValue);
-	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMinTemperature);
-	binary.write(TesLight::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMaxTemperature);
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the system configuration."));
 
-	const String encoded = TesLight::Base64Util::encode(binary.getData(), binary.getBytesWritten());
-	if (encoded == F("BASE64_ERROR"))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to encode response."));
-		webServer->send(500, F("application/octet-stream"), F("Failed to encode response."));
-		return;
-	}
+	DynamicJsonDocument jsonDoc(1024);
+	JsonObject config = jsonDoc.createNestedObject(F("systemConfig"));
+	config[F("logLevel")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().logLevel;
+	config[F("lightSensorMode")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMode;
+	config[F("lightSensorThreshold")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorThreshold;
+	config[F("lightSensorMinAmbientBrightness")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinAmbientBrightness;
+	config[F("lightSensorMaxAmbientBrightness")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxAmbientBrightness;
+	config[F("lightSensorMinLedBrightness")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinLedBrightness;
+	config[F("lightSensorMaxLedBrightness")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxLedBrightness;
+	config[F("lightSensorDuration")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorDuration;
+	config[F("regulatorPowerLimit")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorPowerLimit;
+	config[F("regulatorHighTemperature")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorHighTemperature;
+	config[F("regulatorCutoffTemperature")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorCutoffTemperature;
+	config[F("fanMinPwmValue")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMinPwmValue;
+	config[F("fanMaxPwmValue")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMaxPwmValue;
+	config[F("fanMinTemperature")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMinTemperature;
+	config[F("fanMaxTemperature")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMaxTemperature;
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	webServer->send(200, "application/octet-stream", encoded);
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	TL::SystemConfigurationEndpoint::sendJsonDocument(200, F("Here you go."), jsonDoc);
 }
 
 /**
  * @brief Receive the system configuration sent by the client.
  */
-void TesLight::SystemConfigurationEndpoint::postSystemConfig()
+void TL::SystemConfigurationEndpoint::postSystemConfig()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the system configuration."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the system configuration."));
 
-	if (!webServer->hasArg(F("data")) || webServer->arg(F("data")).length() == 0)
+	if (!TL::SystemConfigurationEndpoint::webServer->hasHeader(F("content-type")) || TL::SystemConfigurationEndpoint::webServer->header(F("content-type")) != F("application/json"))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a x-www-form-urlencoded body parameter \"data\" with the base64 encoded system data."));
-		webServer->send(400, F("text/plain"), F("There must be a body parameter \"data\" with the base64 encoded system data."));
-		return;
-	}
-
-	const String encoded = webServer->arg(F("data"));
-	size_t length;
-	uint8_t *decoded = TesLight::Base64Util::decode(encoded, length);
-	if (decoded == nullptr)
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to decode request."));
-		webServer->send(500, F("text/plain"), F("Failed to decode request."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/json\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The content type must be \"application/json\"."));
 		return;
 	}
 
-	if (length != 15)
+	if (!TL::SystemConfigurationEndpoint::webServer->hasArg(F("plain")))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Length of decoded data is invalid."));
-		delete[] decoded;
-		webServer->send(400, F("text/plain"), F("The length of the decoded data must be exactly 15 bytes."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body with the system configuration."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("There must be a valid json body with the system configuration."));
 		return;
 	}
 
-	TesLight::InMemoryBinaryFile binary(length);
-	binary.loadFrom(decoded, length);
-	delete[] decoded;
-
-	TesLight::Configuration::SystemConfig config;
-	binary.write(config.logLevel);
-	binary.write(config.lightSensorMode);
-	binary.write(config.lightSensorThreshold);
-	binary.write(config.lightSensorMinAmbientBrightness);
-	binary.write(config.lightSensorMaxAmbientBrightness);
-	binary.write(config.lightSensorMinLedBrightness);
-	binary.write(config.lightSensorMaxLedBrightness);
-	binary.write(config.lightSensorDuration);
-	binary.write(config.regulatorPowerLimit);
-	binary.write(config.regulatorHighTemperature);
-	binary.write(config.regulatorCutoffTemperature);
-	binary.write(config.fanMinPwmValue);
-	binary.write(config.fanMaxPwmValue);
-	binary.write(config.fanMinTemperature);
-	binary.write(config.fanMaxTemperature);
-
-	if (!TesLight::SystemConfigurationEndpoint::validateLogLevel((uint8_t)config.logLevel))
+	const String body = TL::SystemConfigurationEndpoint::webServer->arg(F("plain"));
+	if (body.length() == 0 || body.length() > 1024)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The received log level is invalid."));
-		webServer->send(400, F("text/plain"), F("The received log level is invalid."));
-		return;
-	}
-	if (!TesLight::SystemConfigurationEndpoint::validateLightSensorMode((uint8_t)config.lightSensorMode))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The received light sensor mode is invalid."));
-		webServer->send(400, F("text/plain"), F("The received light sensor mode is invalid."));
-		return;
-	}
-	if (!TesLight::SystemConfigurationEndpoint::validateMinMax(config.lightSensorMinAmbientBrightness, config.lightSensorMaxAmbientBrightness))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The minimum ambient brightness must be smaller than the max value."));
-		webServer->send(400, F("text/plain"), F("The minimum ambient brightness must be smaller than the max value."));
-		return;
-	}
-	if (!TesLight::SystemConfigurationEndpoint::validateMinMax(config.lightSensorMinLedBrightness, config.lightSensorMaxLedBrightness))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The minimum LED brightness for automatic adjustment must be smaller than the max value."));
-		webServer->send(400, F("text/plain"), F("The minimum LED brightness for automatic adjustment must be smaller than the max value."));
-		return;
-	}
-	if (!TesLight::SystemConfigurationEndpoint::validateRegulatorPowerLimit(config.regulatorPowerLimit))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The regulator power limit must be between 1 and 30W."));
-		webServer->send(400, F("text/plain"), F("The regulator power limit must be between 1 and 30W."));
-		return;
-	}
-	if (!TesLight::SystemConfigurationEndpoint::validateMinMax(config.regulatorHighTemperature, config.regulatorCutoffTemperature))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The regulator high temperature must be lower than the cutoff temperature."));
-		webServer->send(400, F("text/plain"), F("The regulator high temperature must be lower than the cutoff temperature."));
-		return;
-	}
-	if (!TesLight::SystemConfigurationEndpoint::validateRegulatorHighTemperature(config.regulatorHighTemperature))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The regulator high temperature must be between 60°C and 90°C."));
-		webServer->send(400, F("text/plain"), F("The regulator high temperature must be between 60°C and 90°C."));
-		return;
-	}
-	if (!TesLight::SystemConfigurationEndpoint::validateRegulatorCutoffTemperature(config.regulatorCutoffTemperature))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The regulator cutoff temperature must be between 60°C and 100°C."));
-		webServer->send(400, F("text/plain"), F("The regulator cutoff temperature must be between 60°C and 100°C."));
-		return;
-	}
-	if (!TesLight::SystemConfigurationEndpoint::validateMinMax(config.fanMinPwmValue, config.fanMaxPwmValue))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The fan min pwm value must be smaller than the max value."));
-		webServer->send(400, F("text/plain"), F("The fan min pwm value must be smaller than the max value."));
-		return;
-	}
-	if (!TesLight::SystemConfigurationEndpoint::validateMinMax(config.fanMinTemperature, config.fanMaxTemperature))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The fan min temperature value must be smaller than the max value."));
-		webServer->send(400, F("text/plain"), F("The fan min temperature value must be smaller than the max value."));
-		return;
-	}
-	if (!TesLight::SystemConfigurationEndpoint::validateMinFanTemperature(config.fanMinTemperature))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The fan starting temperature must be between 40°C and 70°C."));
-		webServer->send(400, F("text/plain"), F("The fan starting temperature must be between 40°C and 70°C."));
-		return;
-	}
-	if (!TesLight::SystemConfigurationEndpoint::validateMaxFanTemperature(config.fanMaxTemperature))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The fan max temperature must be between 50°C and 90°C."));
-		webServer->send(400, F("text/plain"), F("The fan max temperature must be between 50°C and 90°C."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 1024 bytes."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 1024 bytes."));
 		return;
 	}
 
-	TesLight::SystemConfigurationEndpoint::configuration->setSystemConfig(config);
-	if (TesLight::SystemConfigurationEndpoint::configuration->save())
+	DynamicJsonDocument jsonDoc(1024);
+	if (!TL::SystemConfigurationEndpoint::parseJsonDocument(jsonDoc, body))
 	{
-		if (TesLight::SystemConfigurationEndpoint::configChangedCallback)
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The body could not be parsed. The json is invalid."));
+		return;
+	}
+
+	if (!jsonDoc[F("systemConfig")].is<JsonObject>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain the \"systemConfig\" object."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain the \"systemConfig\" object."));
+		return;
+	}
+
+	JsonObject configuration = jsonDoc[F("systemConfig")].as<JsonObject>();
+	if (!TL::SystemConfigurationEndpoint::validateConfiguration(configuration))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The validation of the configuration failed."));
+		return;
+	}
+
+	TL::Configuration::SystemConfig config;
+	config.logLevel = configuration[F("logLevel")].as<uint8_t>();
+	config.lightSensorMode = configuration[F("lightSensorMode")].as<uint8_t>();
+	config.lightSensorThreshold = configuration[F("lightSensorThreshold")].as<uint8_t>();
+	config.lightSensorMinAmbientBrightness = configuration[F("lightSensorMinAmbientBrightness")].as<uint8_t>();
+	config.lightSensorMaxAmbientBrightness = configuration[F("lightSensorMaxAmbientBrightness")].as<uint8_t>();
+	config.lightSensorMinLedBrightness = configuration[F("lightSensorMinLedBrightness")].as<uint8_t>();
+	config.lightSensorMaxLedBrightness = configuration[F("lightSensorMaxLedBrightness")].as<uint8_t>();
+	config.lightSensorDuration = configuration[F("lightSensorDuration")].as<uint8_t>();
+	config.regulatorPowerLimit = configuration[F("regulatorPowerLimit")].as<uint8_t>();
+	config.regulatorHighTemperature = configuration[F("regulatorHighTemperature")].as<uint8_t>();
+	config.regulatorCutoffTemperature = configuration[F("regulatorCutoffTemperature")].as<uint8_t>();
+	config.fanMinPwmValue = configuration[F("fanMinPwmValue")].as<uint8_t>();
+	config.fanMaxPwmValue = configuration[F("fanMaxPwmValue")].as<uint8_t>();
+	config.fanMinTemperature = configuration[F("fanMinTemperature")].as<uint8_t>();
+	config.fanMaxTemperature = configuration[F("fanMaxTemperature")].as<uint8_t>();
+
+	TL::SystemConfigurationEndpoint::configuration->setSystemConfig(config);
+	if (TL::SystemConfigurationEndpoint::configuration->save())
+	{
+		if (TL::SystemConfigurationEndpoint::configChangedCallback)
 		{
-			if (!TesLight::SystemConfigurationEndpoint::configChangedCallback())
+			if (!TL::SystemConfigurationEndpoint::configChangedCallback())
 			{
-				TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The callback function returned with an error."));
-				webServer->send(500, F("text/plain"), F("Failed to call the callback function."));
+				TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply the system configuration. The callback function returned with an error."));
+				TL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("Failed to apply the system configuration."));
 				return;
 			}
 		}
 	}
 	else
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save system configuration."));
-		webServer->send(500, F("text/plain"), F("Failed to save system configuration."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save system configuration."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save system configuration."));
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	webServer->send(200);
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	TL::SystemConfigurationEndpoint::sendSimpleResponse(200, F("Oki, my system configuration is updated."));
 }
 
 /**
- * @brief Validate if the min is smaller than the max value.
- * @param min received min value
- * @param max received max value
+ * @brief Validate if a system configuration is valid.
+ * @param jsonObject json object holding the configuration
  * @return true when valid
  * @return false when invalid
  */
-bool TesLight::SystemConfigurationEndpoint::validateMinMax(const uint16_t min, const uint16_t max)
+bool TL::SystemConfigurationEndpoint::validateConfiguration(const JsonObject &jsonObject)
+{
+	if (!jsonObject[F("logLevel")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"logLevel\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"logLevel\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("logLevel")].as<uint8_t>(), 0, 3))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"logLevel\" field is invalid. It should be between 0 and 3."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"logLevel\" field is invalid. It should be between 0 and 3."));
+		return false;
+	}
+
+	if (!jsonObject[F("lightSensorMode")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"lightSensorMode\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"lightSensorMode\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("lightSensorMode")].as<uint8_t>(), 0, 6))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"lightSensorMode\" field is invalid. It should be between 0 and 6."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"lightSensorMode\" field is invalid. It should be between 0 and 6."));
+		return false;
+	}
+
+	if (!jsonObject[F("lightSensorThreshold")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"lightSensorThreshold\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"lightSensorThreshold\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!jsonObject[F("lightSensorMinAmbientBrightness")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"lightSensorMinAmbientBrightness\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"lightSensorMinAmbientBrightness\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!jsonObject[F("lightSensorMaxAmbientBrightness")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"lightSensorMaxAmbientBrightness\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"lightSensorMaxAmbientBrightness\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!TL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("lightSensorMinAmbientBrightness")].as<uint8_t>(), jsonObject[F("lightSensorMaxAmbientBrightness")].as<uint8_t>()))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"lightSensorMinAmbientBrightness\" must be smaller than the \"lightSensorMaxAmbientBrightness\" value."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"lightSensorMinAmbientBrightness\" must be smaller than the \"lightSensorMaxAmbientBrightness\" value."));
+		return false;
+	}
+
+	if (!jsonObject[F("lightSensorMinLedBrightness")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"lightSensorMinLedBrightness\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"lightSensorMinLedBrightness\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!jsonObject[F("lightSensorMaxLedBrightness")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"lightSensorMaxLedBrightness\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"lightSensorMaxLedBrightness\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!TL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("lightSensorMinLedBrightness")].as<uint8_t>(), jsonObject[F("lightSensorMaxLedBrightness")].as<uint8_t>()))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"lightSensorMinLedBrightness\" must be smaller than the \"lightSensorMaxLedBrightness\" value."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"lightSensorMinLedBrightness\" must be smaller than the \"lightSensorMaxLedBrightness\" value."));
+		return false;
+	}
+
+	if (!jsonObject[F("lightSensorDuration")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"lightSensorDuration\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"lightSensorDuration\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!jsonObject[F("regulatorPowerLimit")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorPowerLimit\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorPowerLimit\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorPowerLimit")].as<uint8_t>(), 1, 30))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorPowerLimit\" field is invalid. It should be between 1 and 30."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorPowerLimit\" field is invalid. It should be between 1 and 30."));
+		return false;
+	}
+
+	if (!jsonObject[F("regulatorHighTemperature")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorHighTemperature\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorHighTemperature\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorHighTemperature")].as<uint8_t>(), 60, 85))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorHighTemperature\" field is invalid. It should be between 60 and 85."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorHighTemperature\" field is invalid. It should be between 60 and 85."));
+		return false;
+	}
+
+	if (!jsonObject[F("regulatorCutoffTemperature")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorCutoffTemperature\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorCutoffTemperature\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorCutoffTemperature")].as<uint8_t>(), 70, 95))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorCutoffTemperature\" field is invalid. It should be between 70 and 95."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorCutoffTemperature\" field is invalid. It should be between 70 and 95."));
+		return false;
+	}
+
+	if (!TL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("regulatorHighTemperature")].as<uint8_t>(), jsonObject[F("regulatorCutoffTemperature")].as<uint8_t>()))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorHighTemperature\" must be smaller than the \"regulatorCutoffTemperature\" value."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorHighTemperature\" must be smaller than the \"regulatorCutoffTemperature\" value."));
+		return false;
+	}
+
+	if (!jsonObject[F("fanMinPwmValue")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMinPwmValue\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMinPwmValue\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!jsonObject[F("fanMaxPwmValue")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMaxPwmValue\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMaxPwmValue\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!TL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("fanMinPwmValue")].as<uint8_t>(), jsonObject[F("fanMaxPwmValue")].as<uint8_t>()))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMinPwmValue\" must be smaller than the \"fanMaxPwmValue\" value."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMinPwmValue\" must be smaller than the \"fanMaxPwmValue\" value."));
+		return false;
+	}
+
+	if (!jsonObject[F("fanMinTemperature")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMinTemperature\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMinTemperature\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("fanMinTemperature")].as<uint8_t>(), 45, 70))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMinTemperature\" field is invalid. It should be between 45 and 70."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMinTemperature\" field is invalid. It should be between 45 and 70."));
+		return false;
+	}
+
+	if (!jsonObject[F("fanMaxTemperature")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMaxTemperature\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMaxTemperature\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("fanMaxTemperature")].as<uint8_t>(), 60, 90))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMaxTemperature\" field is invalid. It should be between 60 and 90."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMaxTemperature\" field is invalid. It should be between 60 and 90."));
+		return false;
+	}
+
+	if (!TL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("fanMinTemperature")].as<uint8_t>(), jsonObject[F("fanMaxTemperature")].as<uint8_t>()))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMinTemperature\" must be smaller than the \"fanMaxTemperature\" value."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMinTemperature\" must be smaller than the \"fanMaxTemperature\" value."));
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * @brief Check if a value is in range.
+ * @param value value to check
+ * @param min minimum value
+ * @param max maximum value
+ * @return true when the value is valid
+ * @return false when the value is invalid
+ */
+bool TL::SystemConfigurationEndpoint::isInRange(const long value, const long min, const long max)
+{
+	return value >= min && value <= max;
+}
+
+/**
+ * @brief Validate the min value to be smaller than the max value.
+ * @param min min value
+ * @param max max value
+ * @return true when the min value is smaller than the max value
+ * @return false when the min value is bigger than the max value
+ */
+bool TL::SystemConfigurationEndpoint::validateMinMax(const long min, const long max)
 {
 	return min < max;
-}
-
-/**
- * @brief Validate if the log level is valid.
- * @param value received log level
- * @return true when valid
- * @return false when invalid
- */
-bool TesLight::SystemConfigurationEndpoint::validateLogLevel(const uint8_t value)
-{
-	return value <= 3;
-}
-
-/**
- * @brief Validate if the light sensor mode is valid.
- * @param value received light sensor mode
- * @return true when valid
- * @return false when invalid
- */
-bool TesLight::SystemConfigurationEndpoint::validateLightSensorMode(const uint8_t value)
-{
-	return value <= 6;
-}
-
-/**
- * @brief Validate the maximum regulator power.
- * @param value value to validate
- * @return true when valid
- * @return false when invalid
- */
-bool TesLight::SystemConfigurationEndpoint::validateRegulatorPowerLimit(const uint8_t value)
-{
-	return value > 0 && value <= 30;
-}
-
-/**
- * @brief Validate the regulator high temperature.
- * @param value value to validate
- * @return true when valid
- * @return false when invalid
- */
-bool TesLight::SystemConfigurationEndpoint::validateRegulatorHighTemperature(const uint8_t value)
-{
-	return value >= 60 && value <= 90;
-}
-
-/**
- * @brief Validate the regulator cutoff temperature.
- * @param value value to validate
- * @return true when valid
- * @return false when invalid
- */
-bool TesLight::SystemConfigurationEndpoint::validateRegulatorCutoffTemperature(const uint8_t value)
-{
-	return value >= 60 && value <= 100;
-}
-
-/**
- * @brief Validate the minimum temperature where the fan starts.
- * @param value value to validate
- * @return true when valid
- * @return false when invalid
- */
-bool TesLight::SystemConfigurationEndpoint::validateMinFanTemperature(const uint8_t value)
-{
-	return value >= 40 && value <= 70;
-}
-
-/**
- * @brief Validate the maximum temperature where the fun runs at full speed.
- * @param value value to validate
- * @return true when valid
- * @return false when invalid
- */
-bool TesLight::SystemConfigurationEndpoint::validateMaxFanTemperature(const uint8_t value)
-{
-	return value >= 50 && value <= 90;
 }

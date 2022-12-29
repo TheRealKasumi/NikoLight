@@ -1,182 +1,222 @@
 /**
  * @file FseqEndpoint.cpp
  * @author TheRealKasumi
- * @brief Implementation of a REST endpoint to manage fseq files on the TesLight controller.
+ * @brief Implementation of a REST endpoint to manage fseq files on the TL controller.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #include "server/FseqEndpoint.h"
 
 // Initialize
-FS *TesLight::FseqEndpoint::fileSystem = nullptr;
-TesLight::Configuration *TesLight::FseqEndpoint::configuration = nullptr;
-File TesLight::FseqEndpoint::uploadFile = File();
+FS *TL::FseqEndpoint::fileSystem = nullptr;
+TL::Configuration *TL::FseqEndpoint::configuration = nullptr;
+File TL::FseqEndpoint::uploadFile = File();
 
 /**
- * @brief Add all request handler for this {@link TesLight::RestEndpoint} to the {@link TesLight::WebServerManager}.
+ * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
  */
-void TesLight::FseqEndpoint::begin(FS *_fileSystem, TesLight::Configuration *_configuration)
+void TL::FseqEndpoint::begin(FS *_fileSystem, TL::Configuration *_configuration)
 {
-	TesLight::FseqEndpoint::fileSystem = _fileSystem;
-	TesLight::FseqEndpoint::configuration = _configuration;
-	TesLight::FseqEndpoint::fileSystem->mkdir(FSEQ_DIRECTORY);
+	TL::FseqEndpoint::fileSystem = _fileSystem;
+	TL::FseqEndpoint::configuration = _configuration;
+	TL::FseqEndpoint::fileSystem->mkdir(FSEQ_DIRECTORY);
 
-	webServerManager->addRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_GET, TesLight::FseqEndpoint::getFseqList);
-	webServerManager->addUploadRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_POST, TesLight::FseqEndpoint::postFseq, TesLight::FseqEndpoint::fseqUpload);
-	webServerManager->addRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_DELETE, TesLight::FseqEndpoint::deleteFseq);
+	TL::FseqEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_GET, TL::FseqEndpoint::getFseqList);
+	TL::FseqEndpoint::webServerManager->addUploadRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_POST, TL::FseqEndpoint::postFseq, TL::FseqEndpoint::fseqUpload);
+	TL::FseqEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_DELETE, TL::FseqEndpoint::deleteFseq);
 }
 
 /**
  * @brief Return a list of available fseq files on the controller.
  */
-void TesLight::FseqEndpoint::getFseqList()
+void TL::FseqEndpoint::getFseqList()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the fseq list."));
-	String fileList;
-	if (!TesLight::FileUtil::getFileList(fileSystem, FSEQ_DIRECTORY, fileList, false))
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the fseq list."));
+	DynamicJsonDocument jsonDoc(4096);
+	JsonArray fileList = jsonDoc.createNestedArray(F("fileList"));
+
+	if (!TL::FileUtil::listFiles(
+			fileSystem, FSEQ_DIRECTORY, [jsonDoc, fileList](const String fileName, const size_t fileSize)
+			{ 
+				if(!jsonDoc.overflowed()) 
+				{
+					JsonObject object = fileList.createNestedObject();
+					object[F("fileName")] = fileName;
+					object[F("fileSize")] = fileSize;
+
+					uint32_t fileId;
+					if(TL::FileUtil::getFileIdentifier(fileSystem, FSEQ_DIRECTORY + (String)F("/") + fileName, fileId))
+					{
+						object[F("fileId")] = fileId;
+					}
+					else 
+					{
+						TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to get file identifier."));	
+						object[F("fileId")] = 0;
+					}
+				} },
+			false))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to list files."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to list files."));
+		TL::FseqEndpoint::sendSimpleResponse(500, F("The file list could not be read."));
+		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	webServer->send(200, F("text/plain"), fileList);
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	TL::FseqEndpoint::sendJsonDocument(200, F("Happily serving the file list to you :3 !"), jsonDoc);
 }
 
 /**
  * @brief Is called after the file upload of a fseq file.
  */
-void TesLight::FseqEndpoint::postFseq()
+void TL::FseqEndpoint::postFseq()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Upload of fseq file completed."));
-	webServer->send(200, F("text/plain"), F("File upload successful."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Upload of fseq file completed."));
+	TL::FseqEndpoint::sendSimpleResponse(200, F("File received! Can't wait to unpack it... Can I? Pleaaaase?"));
 }
 
 /**
  * @brief Upload a new fseq files to the controller.
  */
-void TesLight::FseqEndpoint::fseqUpload()
+void TL::FseqEndpoint::fseqUpload()
 {
 	const String fileName = webServer->arg(F("fileName"));
 	HTTPUpload &upload = webServer->upload();
 	if (upload.status == UPLOAD_FILE_START)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to upload a new fseq file."));
+		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to upload a new fseq file."));
 		if (fileName.length() == 0)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The fileName parameter must not be empty. Can not upload file."));
-			webServer->send(400, F("text/plain"), F("The fileName parameter must not be empty. Can not upload file."));
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The fileName parameter must not be empty. Can not upload file."));
+			TL::FseqEndpoint::sendSimpleResponse(400, F("The fileName parameter must not be empty. Can not upload file."));
 			return;
 		}
-		else if (!TesLight::FseqEndpoint::verifyFileName(fileName))
+		else if (!TL::FseqEndpoint::validateFileName(fileName))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The received file name is invalid."));
-			webServer->send(400, F("text/plain"), F("The received file name is invalid."));
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The received file name is invalid."));
+			TL::FseqEndpoint::sendSimpleResponse(400, F("The received file name is invalid."));
 			return;
 		}
 
-		if (TesLight::FileUtil::fileExists(TesLight::FseqEndpoint::fileSystem, (String)FSEQ_DIRECTORY + F("/") + fileName))
+		if (TL::FileUtil::fileExists(TL::FseqEndpoint::fileSystem, (String)FSEQ_DIRECTORY + F("/") + fileName))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("A file with name \"") + fileName + F("\" already exists."));
-			webServer->send(409, F("text/plain"), (String)F("A file with name \"") + fileName + F("\" already exists."));
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("A file with name \"") + fileName + F("\" already exists."));
+			TL::FseqEndpoint::sendSimpleResponse(409, (String)F("A file with name \"") + fileName + F("\" already exists."));
 			return;
 		}
 
-		TesLight::FseqEndpoint::uploadFile = TesLight::FseqEndpoint::fileSystem->open((String)FSEQ_DIRECTORY + F("/") + fileName, FILE_WRITE);
+		TL::FseqEndpoint::uploadFile = TL::FseqEndpoint::fileSystem->open((String)FSEQ_DIRECTORY + F("/") + fileName, FILE_WRITE);
 		if (!uploadFile)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to write to file for upload."));
-			webServer->send(500, F("text/plain"), F("Failed to write to file for upload."));
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to write to file for upload."));
+			TL::FseqEndpoint::sendSimpleResponse(500, F("Failed to write to file for upload."));
 			return;
 		}
 	}
-	else if (upload.status == UPLOAD_FILE_WRITE)
+	else if (upload.status == UPLOAD_FILE_WRITE && TL::FseqEndpoint::uploadFile)
 	{
-		if (TesLight::FseqEndpoint::uploadFile.write(upload.buf, upload.currentSize) != upload.currentSize)
+		if (TL::FseqEndpoint::uploadFile.write(upload.buf, upload.currentSize) != upload.currentSize)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to write chunk to file. Not all bytes were written."));
-			webServer->send(500, F("text/plain"), F("Failed to write chunk to file. Not all bytes were written."));
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to write chunk to file. Not all bytes were written."));
+			TL::FseqEndpoint::sendSimpleResponse(500, F("Failed to write chunk to file. Not all bytes were written."));
 			return;
 		}
 	}
 	else if (upload.status == UPLOAD_FILE_END)
 	{
-		TesLight::FseqEndpoint::uploadFile.close();
-		if (!TesLight::FseqEndpoint::verifyFseqFile((String)FSEQ_DIRECTORY + F("/") + fileName))
+		TL::FseqEndpoint::uploadFile.close();
+		if (!TL::FseqEndpoint::validateFseqFile((String)FSEQ_DIRECTORY + F("/") + fileName))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file is invalid and will not be deleted."));
-			TesLight::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
-			webServer->send(400, F("text/plain"), F("The uploaded fseq file is invalid and will be deleted."));
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file is invalid and will be deleted."));
+			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file is invalid and will be deleted."));
 			return;
 		}
 	}
 	else if (upload.status == UPLOAD_FILE_ABORTED)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Upload was aborted, file will be deleted."));
-		TesLight::FseqEndpoint::uploadFile.close();
-		TesLight::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
-		webServer->send(400, F("text/plain"), F("Upload was aborted by the client. The data was dropped."));
+		if (TL::FseqEndpoint::uploadFile)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Upload was aborted, file will be deleted."));
+			TL::FseqEndpoint::uploadFile.close();
+			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			TL::FseqEndpoint::sendSimpleResponse(400, F("Upload was aborted by the client. The data was dropped."));
+		}
 	}
 }
 
 /**
  * @brief Delete a fseq files from the controller.
  */
-void TesLight::FseqEndpoint::deleteFseq()
+void TL::FseqEndpoint::deleteFseq()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to delete a fseq file."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to delete a fseq file."));
 	const String fileName = webServer->arg(F("fileName"));
 	if (fileName.length() == 0)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to delete fseq file because file name parameter is empty."));
-		webServer->send(400, F("text/plain"), F("Failed to delete fseq file because the file name parameter is empty."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to delete fseq file because file name parameter is empty."));
+		TL::FseqEndpoint::sendSimpleResponse(400, F("Failed to delete fseq file because the file name parameter is empty."));
 		return;
 	}
 
 	if (!fileSystem->exists(FSEQ_DIRECTORY + (String)F("/") + fileName))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("File ") + FSEQ_DIRECTORY + F("/") + fileName + F(" was not found."));
-		webServer->send(404, F("text/plain"), (String)F("File ") + FSEQ_DIRECTORY + F("/") + fileName + F(" was not found."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("File ") + FSEQ_DIRECTORY + F("/") + fileName + F(" was not found."));
+		TL::FseqEndpoint::sendSimpleResponse(404, (String)F("File ") + FSEQ_DIRECTORY + F("/") + fileName + F(" was not found."));
 		return;
 	}
 
-	if (TesLight::FseqEndpoint::configuration->getLedConfig(0).type == 255)
+	if (TL::FseqEndpoint::configuration->getLedConfig(0).type == 255)
 	{
 		uint32_t idFile = 0;
 		uint32_t idConfig = 0;
-		if (!TesLight::FileUtil::getFileIdentifier(TesLight::FseqEndpoint::fileSystem, FSEQ_DIRECTORY + (String)F("/") + fileName, idFile))
+		if (!TL::FileUtil::getFileIdentifier(TL::FseqEndpoint::fileSystem, FSEQ_DIRECTORY + (String)F("/") + fileName, idFile))
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to calculate file identifier."));
-			webServer->send(500, F("text/plain"), F("Failed to calculate file identifier."));
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to calculate file identifier."));
+			TL::FseqEndpoint::sendSimpleResponse(500, F("Failed to calculate file identifier."));
 			return;
 		}
-		memcpy(&idConfig, &TesLight::FseqEndpoint::configuration->getLedConfig(0).customField[10], sizeof(idConfig));
+		memcpy(&idConfig, &TL::FseqEndpoint::configuration->getLedConfig(0).customField[10], sizeof(idConfig));
 		if (idFile == idConfig)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Can not delete a fseq file that is currently used."));
-			webServer->send(400, F("text/plain"), F("Can not delete a fseq file that is currently used."));
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Can not delete a fseq file that is currently used."));
+			TL::FseqEndpoint::sendSimpleResponse(400, F("Can not delete a fseq file that is currently used."));
 			return;
 		}
 	}
 
 	if (!fileSystem->remove(FSEQ_DIRECTORY + (String)F("/") + fileName))
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to delete file."));
-		webServer->send(500, F("text/plain"), F("Failed to delete file."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to delete file."));
+		TL::FseqEndpoint::sendSimpleResponse(500, F("Failed to delete file."));
 		return;
 	}
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	webServer->send(200, F("text/plain"), F("File deleted."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	TL::FseqEndpoint::sendSimpleResponse(200, F("File deleted."));
 }
 
 /**
- * @brief Verify the file name and check for invalid characters.
+ * @brief Validate the file name and check for invalid characters.
  * @param fileName received name of the file
  * @return true when valid
  * @return false when invalid
  */
-bool TesLight::FseqEndpoint::verifyFileName(const String fileName)
+bool TL::FseqEndpoint::validateFileName(const String fileName)
 {
 	if (fileName.length() < 1)
 	{
@@ -187,7 +227,7 @@ bool TesLight::FseqEndpoint::verifyFileName(const String fileName)
 		return false;
 	}
 
-	for (uint16_t i = 0; i < fileName.length(); i++)
+	for (unsigned int i = 0; i < fileName.length(); i++)
 	{
 		if ((fileName[i] < 'A' || fileName[i] > 'Z') && (fileName[i] < 'a' || fileName[i] > 'z') && (fileName[i] < '0' || fileName[i] > '9') && fileName[i] != '.' && fileName[i] != '_' && fileName[i] != '-' && fileName[i] != ' ')
 		{
@@ -199,14 +239,14 @@ bool TesLight::FseqEndpoint::verifyFileName(const String fileName)
 }
 
 /**
- * @brief Verify a fseq file by using the {@link TesLight::FseqLoader}.
+ * @brief Validate a fseq file by using the {@link TL::FseqLoader}.
  * @param fileName full path and name of the file to check
  * @return true when valid
  * @return false when invalid
  */
-bool TesLight::FseqEndpoint::verifyFseqFile(const String fileName)
+bool TL::FseqEndpoint::validateFseqFile(const String fileName)
 {
-	TesLight::FseqLoader fseqLoader(TesLight::FseqEndpoint::fileSystem);
+	TL::FseqLoader fseqLoader(TL::FseqEndpoint::fileSystem);
 	const bool valid = fseqLoader.loadFromFile(fileName);
 	fseqLoader.close();
 	return valid;

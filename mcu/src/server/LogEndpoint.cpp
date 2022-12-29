@@ -3,107 +3,123 @@
  * @author TheRealKasumi
  * @brief Implementation of a REST endpoint to manage the log of the TesLight controller.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 #include "server/LogEndpoint.h"
 
 // Initialize
-FS *TesLight::LogEndpoint::fileSystem = nullptr;
+FS *TL::LogEndpoint::fileSystem = nullptr;
 
 /**
- * @brief Add all request handler for this {@link TesLight::RestEndpoint} to the {@link TesLight::WebServerManager}.
+ * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
  */
-void TesLight::LogEndpoint::begin(FS *_fileSystem)
+void TL::LogEndpoint::begin(FS *_fileSystem)
 {
-	TesLight::LogEndpoint::fileSystem = _fileSystem;
-	webServerManager->addRequestHandler((getBaseUri() + F("log/size")).c_str(), http_method::HTTP_GET, TesLight::LogEndpoint::getLogSize);
-	webServerManager->addRequestHandler((getBaseUri() + F("log")).c_str(), http_method::HTTP_GET, TesLight::LogEndpoint::getLog);
-	webServerManager->addRequestHandler((getBaseUri() + F("log")).c_str(), http_method::HTTP_DELETE, TesLight::LogEndpoint::clearLog);
+	TL::LogEndpoint::fileSystem = _fileSystem;
+	TL::LogEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("log/size")).c_str(), http_method::HTTP_GET, TL::LogEndpoint::getLogSize);
+	TL::LogEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("log")).c_str(), http_method::HTTP_GET, TL::LogEndpoint::getLog);
+	TL::LogEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("log")).c_str(), http_method::HTTP_DELETE, TL::LogEndpoint::clearLog);
 }
 
 /**
  * @brief Return the size of the log file in bytes.
  */
-void TesLight::LogEndpoint::getLogSize()
+void TL::LogEndpoint::getLogSize()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the log size."));
-	File file = TesLight::LogEndpoint::fileSystem->open(LOG_FILE_NAME, FILE_READ);
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the log size."));
+	File file = TL::LogEndpoint::fileSystem->open(LOG_FILE_NAME, FILE_READ);
 	if (!file)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open log file."));
-		webServer->send(500, F("text/plain"), F("Failed to open log file."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open log file."));
+		TL::LogEndpoint::sendSimpleResponse(500, F("Failed to open log file."));
 		return;
 	}
 	else if (file.isDirectory())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open log file because it is a directory."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open log file because it is a directory."));
 		file.close();
-		webServer->send(500, F("text/plain"), F("Failed to open log file because it is a directory."));
+		TL::LogEndpoint::sendSimpleResponse(500, F("Failed to open log file because it is a directory."));
 		return;
 	}
 
 	const size_t logSize = file.size();
 	file.close();
 
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	webServer->send(200, F("text/plain"), String(logSize));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	DynamicJsonDocument jsonDoc(1024);
+	JsonObject log = jsonDoc.createNestedObject(F("log"));
+	log[F("size")] = logSize;
+	TL::LogEndpoint::sendJsonDocument(200, F("This is my current log size."), jsonDoc);
 }
 
 /**
  * @brief Get a section of the log file, determinded by the paremters start and count in bytes.
  */
-void TesLight::LogEndpoint::getLog()
+void TL::LogEndpoint::getLog()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get a section of the log file."));
-	if (!webServer->hasArg(F("start")) || webServer->arg(F("start")).length() == 0 || !webServer->hasArg(F("count")) || webServer->arg(F("count")).length() == 0)
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get a section of the log file."));
+	if (!TL::LogEndpoint::webServer->hasArg(F("start")) || TL::LogEndpoint::webServer->arg(F("start")).length() == 0 || !TL::LogEndpoint::webServer->hasArg(F("count")) || TL::LogEndpoint::webServer->arg(F("count")).length() == 0)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The parameters \"start\" and \"count\" must be provided."));
-		webServer->send(400, F("text/plain"), F("The parameters \"start\" and \"count\" must be provided."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The parameters \"start\" and \"count\" must be provided."));
+		TL::LogEndpoint::sendSimpleResponse(400, F("The url parameters \"start\" and \"count\" must be provided."));
 		return;
 	}
 
-	File file = TesLight::LogEndpoint::fileSystem->open(LOG_FILE_NAME, FILE_READ);
+	File file = TL::LogEndpoint::fileSystem->open(LOG_FILE_NAME, FILE_READ);
 	if (!file)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open log file."));
-		webServer->send(500, F("text/plain"), F("Failed to open log file."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open log file."));
+		TL::LogEndpoint::sendSimpleResponse(500, F("Failed to open log file."));
 		return;
 	}
 	else if (file.isDirectory())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open log file because it is a directory."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to open log file because it is a directory."));
 		file.close();
-		webServer->send(500, F("text/plain"), F("Failed to open log file because it is a directory."));
+		TL::LogEndpoint::sendSimpleResponse(500, F("Failed to open log file because it is a directory."));
 		return;
 	}
 
-	const size_t start = webServer->arg(F("start")).toInt();
-	const size_t count = webServer->arg(F("count")).toInt();
+	const size_t start = TL::LogEndpoint::webServer->arg(F("start")).toInt();
+	const size_t count = TL::LogEndpoint::webServer->arg(F("count")).toInt();
 	const size_t logSize = file.size();
 	if (start > logSize || start + count > logSize)
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The start or count parameters are invalid."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The start or count parameters are invalid."));
 		file.close();
-		webServer->send(400, F("text/plain"), F("The start or count parameters are invalid."));
+		TL::LogEndpoint::sendSimpleResponse(400, F("The start or count parameters are invalid."));
 		return;
 	}
 
-	webServer->setContentLength(count);
-	webServer->send(200, F("text/plain"), F(""));
+	TL::LogEndpoint::webServer->setContentLength(count);
+	TL::LogEndpoint::webServer->send(200, F("text/plain"), F(""));
 
 	file.seek(start);
-	uint8_t buffer[1024];
+	uint8_t buffer[512];
 	size_t sentBytes = 0;
 	while (sentBytes < count)
 	{
 		size_t chunkSize = count - sentBytes;
-		if (chunkSize > 1024)
+		if (chunkSize > 512)
 		{
-			chunkSize = 1024;
+			chunkSize = 512;
 		}
 		chunkSize = file.read(buffer, chunkSize);
-		webServer->sendContent_P((char *)buffer, chunkSize);
+		TL::LogEndpoint::webServer->sendContent_P((char *)buffer, chunkSize);
 		sentBytes += chunkSize;
 	}
 
@@ -113,10 +129,10 @@ void TesLight::LogEndpoint::getLog()
 /**
  * @brief Clear the log file of the controller.
  */
-void TesLight::LogEndpoint::clearLog()
+void TL::LogEndpoint::clearLog()
 {
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to clear the log file."));
-	TesLight::Logger::clearLog();
-	TesLight::Logger::log(TesLight::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	webServer->send(200, F("text/plain"), F("Log cleared."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to clear the log file."));
+	TL::Logger::clearLog();
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	TL::LogEndpoint::sendSimpleResponse(200, F("All clean. Can I now have a cookie please?"));
 }

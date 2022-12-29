@@ -1,35 +1,43 @@
 /**
  * @file LedManager.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TesLight::LedManager}.
+ * @brief Implementation of the {@link TL::LedManager}.
  *
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 TheRealKasumi
+ * 
+ * This project, including hardware and software, is provided "as is". There is no warranty
+ * of any kind, express or implied, including but not limited to the warranties of fitness
+ * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
+ * is holding ownership of this project. You are free to use, modify, distribute and contribute
+ * to this project for private, non-commercial purposes. It is granted to include this hardware
+ * and software into private, non-commercial projects. However, the source code of any project,
+ * software and hardware that is including this project must be public and free to use for private
+ * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
+ * By contributing to the project, you agree that the ownership of your work is transferred to
+ * the project owner and that you lose any claim to your contribute work. This copyright and
+ * license note applies to all files of this project and must not be removed without agreement
+ * from the owner.
  *
  */
 
 #include "led/LedManager.h"
 
 /**
- * @brief Create a new instance of {@link TesLight::LedManager}.
+ * @brief Create a new instance of {@link TL::LedManager}.
  * @param config pointer to the configuration
  */
-TesLight::LedManager::LedManager(TesLight::Configuration *config)
+TL::LedManager::LedManager(TL::Configuration *config)
 {
 	this->config = config;
-	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
-	{
-		this->ledData[i] = nullptr;
-		this->ledAnimator[i] = nullptr;
-	}
-	this->fseqLoader = nullptr;
-	this->targetFrameTime = LED_FRAME_TIME;
+	this->renderInterval = RENDER_INTERVAL;
+	this->frameInterval = FRAME_INTERVAL;
 	this->regulatorTemperature = 0.0f;
 }
 
 /**
- * @brief Destroy the {@link TesLight::LedManager} instance and clear memory.
+ * @brief Destroy the {@link TL::LedManager} instance and clear memory.
  */
-TesLight::LedManager::~LedManager()
+TL::LedManager::~LedManager()
 {
 	this->clearAnimations();
 }
@@ -39,19 +47,19 @@ TesLight::LedManager::~LedManager()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::LedManager::reloadAnimations()
+bool TL::LedManager::reloadAnimations()
 {
 	this->clearAnimations();
 
 	if (!this->createLedData())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to create new LED data."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to create new LED data."));
 		return false;
 	}
 
 	if (!this->createAnimators())
 	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to create new animators."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to create new animators."));
 		return false;
 	}
 
@@ -61,200 +69,133 @@ bool TesLight::LedManager::reloadAnimations()
 /**
  * @brief Clear the LED data and animators to free memory.
  */
-void TesLight::LedManager::clearAnimations()
+void TL::LedManager::clearAnimations()
 {
 	FastLED.clear();
-
-	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
-	{
-		if (this->ledData[i] != nullptr)
-		{
-			delete[] this->ledData[i];
-			this->ledData[i] = nullptr;
-		}
-		if (this->ledAnimator[i] != nullptr)
-		{
-			delete this->ledAnimator[i];
-			this->ledAnimator[i] = nullptr;
-		}
-	}
-
-	if (this->fseqLoader != nullptr)
-	{
-		delete this->fseqLoader;
-		this->fseqLoader = nullptr;
-	}
+	this->ledData.clear();
+	this->ledAnimator.clear();
+	this->fseqLoader.reset();
 }
 
 /**
  * @brief Set the current ambient brightness for all underlying LED animators.
  * @param ambientBrightness ambient brightness from 0.0 to 1.0
  */
-void TesLight::LedManager::setAmbientBrightness(const float ambientBrightness)
+void TL::LedManager::setAmbientBrightness(const float ambientBrightness)
 {
-	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	for (size_t i = 0; i < this->ledAnimator.size(); i++)
 	{
-		if (this->ledAnimator[i] != nullptr)
-		{
-			this->ledAnimator[i]->setAmbientBrightness(ambientBrightness);
-		}
-		else
-		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to set ambient brightness for animator ") + String(i) + F(" because the animator is null."));
-		}
+		this->ledAnimator.at(i)->setAmbientBrightness(ambientBrightness);
 	}
 }
 
 /**
- * @brief Get the currently set ambient brightness.
- * @return float ambient brightness from 0.0 to 1.0
+ * @brief Set the interval for rendering the pixels in µs.
+ * The minimum frame time is currently limited to 10000µs.
+ * @param renderInterval target frame time in µs
  */
-bool TesLight::LedManager::getAmbientBrightness(float &ambientBrightness)
+void TL::LedManager::setRenderInterval(const uint32_t renderInterval)
 {
-	if (this->ledAnimator[0] == nullptr)
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to get ambient brightness value because led animator at index 0 is null."));
-		return false;
-	}
-
-	ambientBrightness = this->ledAnimator[0]->getAmbientBrightness();
-	return true;
+	this->renderInterval = renderInterval >= 10000 ? renderInterval : 10000;
 }
 
 /**
- * @brief Set the targeted frame time for rendering the LEDs.
- * The minimum frame time is currently limited to 13ms.
- * @param targetFrameTime target frame time in microseconds
+ * @brief Get the interval for rendering the pixels.
+ * @return interval in microseconds
  */
-void TesLight::LedManager::setTargetFrameTime(const uint32_t targetFrameTime)
+uint32_t TL::LedManager::getRenderInterval()
 {
-	this->targetFrameTime = targetFrameTime > 13 ? targetFrameTime : 13;
+	return this->renderInterval;
 }
 
 /**
- * @brief Get the targeted frame time for rendering the LEDs.
- * @return uint16_t targeted frame time in microseconds
+ * @brief Set the interval for outputting to the LEDs in µs.
+ * The minimum frame time is currently limited to 10000µs.
+ * @param frameInterval target frame time in µs
  */
-uint32_t TesLight::LedManager::getTargetFrameTime()
+void TL::LedManager::setFrameInterval(const uint32_t frameInterval)
 {
-	return this->targetFrameTime;
+	this->frameInterval = frameInterval >= 10000 ? frameInterval : 10000;
+}
+
+/**
+ * @brief Get the interval for outputting to the LEDs.
+ * @return interval in microseconds
+ */
+uint32_t TL::LedManager::getFrameInterval()
+{
+	return this->frameInterval;
 }
 
 /**
  * @brief Set the current motion sensor data.
- * @param motionSensorData instance of the {@link TesLight::MotionSensor::MotionSensorData}
+ * @param motionSensorData instance of the {@link TL::MotionSensor::MotionSensorData}
  */
-void TesLight::LedManager::setMotionSensorData(const TesLight::MotionSensor::MotionSensorData motionSensorData)
+void TL::LedManager::setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData)
 {
-	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	for (size_t i = 0; i < this->ledAnimator.size(); i++)
 	{
-		if (this->ledAnimator[i] != nullptr)
-		{
-			this->ledAnimator[i]->setMotionSensorData(motionSensorData);
-		}
-		else
-		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to set motion sensor data for animator ") + String(i) + F(" because the animator is null."));
-		}
+		this->ledAnimator.at(i)->setMotionSensorData(motionSensorData);
 	}
-}
-
-/**
- * @brief Get the currently set and used motion sensor data.
- * @param motionSensorData reference to a {@link TesLight::MotionSensor::MotionSensorData}
- * @return true when the data was read successfully
- * @return false when there was an error
- */
-bool TesLight::LedManager::getMotionSensorData(TesLight::MotionSensor::MotionSensorData &motionSensorData)
-{
-	if (this->ledAnimator[0] != nullptr)
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to get motion sensor data because animator with index 0 was null."));
-		return false;
-	}
-
-	motionSensorData = this->ledAnimator[0]->getMotionSensorData();
-	return true;
 }
 
 /**
  * @brief Set the regulator temperature. Once a critical temperature is reached, the brightness will be reduced.
  * @param regulatorTemperature temperature of the generator in degree celsius.
  */
-void TesLight::LedManager::setRegulatorTemperature(const float regulatorTemperature)
+void TL::LedManager::setRegulatorTemperature(const float regulatorTemperature)
 {
 	this->regulatorTemperature = regulatorTemperature;
-}
-
-/**
- * @brief Get the currently set regulator temperature. This is not reading the temperature from the sensors.
- * @return currently set regulator temperature in degree celsius
- */
-float TesLight::LedManager::getRegulatorTemperature()
-{
-	return this->regulatorTemperature;
 }
 
 /**
  * @brief Get the total power draw of all LEDs that has been calculated.
  * @return total power draw in W
  */
-float TesLight::LedManager::getLedPowerDraw()
+float TL::LedManager::getLedPowerDraw()
 {
 	float regulatorPower[REGULATOR_COUNT];
-	if (!this->calculateRegulatorPowerDraw(regulatorPower))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to calculate power draw."));
-		return 0.0f;
-	}
+	this->calculateRegulatorPowerDraw(regulatorPower);
 
 	float sum = 0.0f;
 	for (uint8_t i = 0; i < REGULATOR_COUNT; i++)
 	{
 		sum += regulatorPower[i];
 	}
-
 	return sum;
+}
+
+/**
+ * @brief Get the total number of LEDs.
+ * @return total number of LEDs
+ */
+size_t TL::LedManager::getLedCount()
+{
+	size_t count = 0;
+	for (size_t i = 0; i < this->ledData.size(); i++)
+	{
+		count += this->ledData.at(i).size();
+	}
+	return count;
 }
 
 /**
  * @brief Render all LEDs using their animators.
  */
-bool TesLight::LedManager::render()
+void TL::LedManager::render()
 {
-	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	for (size_t i = 0; i < this->ledAnimator.size() && i < this->ledData.size(); i++)
 	{
-		if (this->ledAnimator[i] != nullptr)
-		{
-			this->ledAnimator[i]->render();
-		}
-		else
-		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to render LEDs with animator ") + String(i) + F(" because the animator is null."));
-			return false;
-		}
+		this->ledAnimator.at(i)->render(this->ledData.at(i));
 	}
-
-	if (!this->limitPowerConsumption())
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to limit LED power consumption after rendering."));
-		return false;
-	}
-
-	if (!this->limitRegulatorTemperature())
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to limit regulator temperature after rendering."));
-
-		return false;
-	}
-
-	return true;
+	this->limitPowerConsumption();
+	this->limitRegulatorTemperature();
 }
 
 /**
  * @brief Show the current LED data.
  */
-void TesLight::LedManager::show()
+void TL::LedManager::show()
 {
 	FastLED.show();
 }
@@ -264,49 +205,45 @@ void TesLight::LedManager::show()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::LedManager::createLedData()
+bool TL::LedManager::createLedData()
 {
-	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	this->ledData.assign(LED_NUM_ZONES, std::vector<CRGB>());
+	for (size_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		const TesLight::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
-		ledData[i] = new CRGB[ledConfig.ledCount];
-		for (uint16_t j = 0; j < ledConfig.ledCount; j++)
-		{
-			ledData[i][j] = CRGB::Black;
-		}
+		const TL::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
+		this->ledData.at(i).assign(ledConfig.ledCount, CRGB::Black);
 
 		switch (ledConfig.ledPin)
 		{
 		case 13:
-			FastLED.addLeds<NEOPIXEL, 13>(ledData[i], ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 13>(&this->ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		case 14:
-			FastLED.addLeds<NEOPIXEL, 14>(ledData[i], ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 14>(&this->ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		case 15:
-			FastLED.addLeds<NEOPIXEL, 15>(ledData[i], ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 15>(&this->ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		case 16:
-			FastLED.addLeds<NEOPIXEL, 16>(ledData[i], ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 16>(&this->ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		case 17:
-			FastLED.addLeds<NEOPIXEL, 17>(ledData[i], ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 17>(&this->ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		case 21:
-			FastLED.addLeds<NEOPIXEL, 21>(ledData[i], ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 21>(&this->ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		case 22:
-			FastLED.addLeds<NEOPIXEL, 22>(ledData[i], ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 22>(&this->ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		case 25:
-			FastLED.addLeds<NEOPIXEL, 25>(ledData[i], ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 25>(&this->ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		default:
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to link the created pixel data to the FastLED lib because the pin is invalid. It must be one of [13, 14, 15, 16, 17, 21, 22, 25]."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to link the created pixel data to the FastLED lib because the pin is invalid. It must be one of [13, 14, 15, 16, 17, 21, 22, 25]."));
 			return false;
 		}
 	}
-
 	return true;
 }
 
@@ -315,7 +252,7 @@ bool TesLight::LedManager::createLedData()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::LedManager::createAnimators()
+bool TL::LedManager::createAnimators()
 {
 	// Custom animations will be used when the first animator type is set to 255
 	// The used file identifier is set by the custom fields [10-13]
@@ -325,33 +262,51 @@ bool TesLight::LedManager::createAnimators()
 	memcpy(&identifier, &this->config->getLedConfig(0).customField[10], sizeof(identifier));
 	if (!customAnimation)
 	{
-		this->setTargetFrameTime(LED_FRAME_TIME);
+		const size_t ledCount = this->getLedCount();
+		if (ledCount <= 850)
+		{
+			// 60 FPS
+			this->setRenderInterval(RENDER_INTERVAL);
+			this->setFrameInterval(FRAME_INTERVAL);
+		}
+		else if (ledCount > 850 && ledCount <= 1000)
+		{
+			// 40 FPS
+			this->setRenderInterval(RENDER_INTERVAL);
+			this->setFrameInterval(FRAME_INTERVAL * 1.5f);
+		}
+		else
+		{
+			// 30 FPS
+			this->setRenderInterval(RENDER_INTERVAL);
+			this->setFrameInterval(FRAME_INTERVAL * 2.0f);
+		}
+
 		return this->loadCalculatedAnimations();
 	}
 	else
 	{
 		String fileName;
-		if (TesLight::FileUtil::getFileNameFromIdentifier(&SD, FSEQ_DIRECTORY, identifier, fileName) && fileName.length() > 0)
+		if (TL::FileUtil::getFileNameFromIdentifier(&SD, FSEQ_DIRECTORY, identifier, fileName) && fileName.length() > 0)
 		{
-			this->fseqLoader = new TesLight::FseqLoader(&SD);
+			this->fseqLoader.reset(new TL::FseqLoader(&SD));
 			if (!this->fseqLoader->loadFromFile(FSEQ_DIRECTORY + (String)F("/") + fileName))
 			{
-				TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to load fseq file. Cleaning FseqLoader."));
-				delete this->fseqLoader;
+				TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to load fseq file. The animation can not be played."));
+				this->fseqLoader.reset();
 				return false;
 			}
 		}
 		else
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to determine file name for animation file with id ") + String(identifier) + F("."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to determine file name for animation file with id ") + String(identifier) + F("."));
 			return false;
 		}
 
-		this->setTargetFrameTime((uint32_t)this->fseqLoader->getHeader().stepTime * 1000);
+		this->setRenderInterval((uint32_t)this->fseqLoader->getHeader().stepTime * 1000);
+		this->setFrameInterval((uint32_t)this->fseqLoader->getHeader().stepTime * 1000);
 		return this->loadCustomAnimation();
 	}
-
-	return true;
 }
 
 /**
@@ -359,149 +314,147 @@ bool TesLight::LedManager::createAnimators()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::LedManager::loadCalculatedAnimations()
+bool TL::LedManager::loadCalculatedAnimations()
 {
-	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	this->ledAnimator.resize(LED_NUM_ZONES);
+	for (size_t i = 0; i < this->ledAnimator.size(); i++)
 	{
-		const TesLight::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
+		const TL::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
 
 		// Rainbow solid type
 		if (ledConfig.type == 0)
 		{
-			ledAnimator[i] = new TesLight::RainbowAnimator(TesLight::RainbowAnimator::RainbowMode::RAINBOW_SOLID);
+			this->ledAnimator.at(i).reset(new TL::RainbowAnimator(TL::RainbowAnimator::RainbowMode::RAINBOW_SOLID));
 		}
 
 		// Rainbow linear type
 		else if (ledConfig.type == 1)
 		{
-			ledAnimator[i] = new TesLight::RainbowAnimator(TesLight::RainbowAnimator::RainbowMode::RAINBOW_LINEAR);
+			this->ledAnimator.at(i).reset(new TL::RainbowAnimator(TL::RainbowAnimator::RainbowMode::RAINBOW_LINEAR));
 		}
 
 		// Rainbow middle type
 		else if (ledConfig.type == 2)
 		{
-			ledAnimator[i] = new TesLight::RainbowAnimator(TesLight::RainbowAnimator::RainbowMode::RAINBOW_CENTER);
+			this->ledAnimator.at(i).reset(new TL::RainbowAnimator(TL::RainbowAnimator::RainbowMode::RAINBOW_CENTER));
 		}
 
 		// Gradient linear type
 		else if (ledConfig.type == 3)
 		{
-			ledAnimator[i] = new TesLight::GradientAnimator(TesLight::GradientAnimator::GradientMode::GRADIENT_LINEAR, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+			this->ledAnimator.at(i).reset(new TL::GradientAnimator(TL::GradientAnimator::GradientMode::GRADIENT_LINEAR, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
 		}
 
 		// Gradient center type
 		else if (ledConfig.type == 4)
 		{
-			ledAnimator[i] = new TesLight::GradientAnimator(TesLight::GradientAnimator::GradientMode::GRADIENT_CENTER, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+			this->ledAnimator.at(i).reset(new TL::GradientAnimator(TL::GradientAnimator::GradientMode::GRADIENT_CENTER, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
 		}
 
 		// Static color type
 		else if (ledConfig.type == 5)
 		{
-			ledAnimator[i] = new TesLight::StaticColorAnimator(CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]));
+			this->ledAnimator.at(i).reset(new TL::StaticColorAnimator(CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2])));
 		}
 
 		// Color bar linear hard type
 		else if (ledConfig.type == 6)
 		{
-			ledAnimator[i] = new TesLight::ColorBarAnimator(TesLight::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_HARD, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+			this->ledAnimator.at(i).reset(new TL::ColorBarAnimator(TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_HARD, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
 		}
 
 		// Color bar linear smooth type
 		else if (ledConfig.type == 7)
 		{
-			ledAnimator[i] = new TesLight::ColorBarAnimator(TesLight::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_SMOOTH, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+			this->ledAnimator.at(i).reset(new TL::ColorBarAnimator(TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_SMOOTH, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
 		}
 
 		// Color bar center hard type
 		else if (ledConfig.type == 8)
 		{
-			ledAnimator[i] = new TesLight::ColorBarAnimator(TesLight::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_HARD, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+			this->ledAnimator.at(i).reset(new TL::ColorBarAnimator(TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_HARD, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
 		}
 
 		// Color bar center smooth type
 		else if (ledConfig.type == 9)
 		{
-			ledAnimator[i] = new TesLight::ColorBarAnimator(TesLight::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_SMOOTH, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+			this->ledAnimator.at(i).reset(new TL::ColorBarAnimator(TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_SMOOTH, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
 		}
 
 		// Rainbow linear motion acc x type
 		else if (ledConfig.type == 10)
 		{
-			ledAnimator[i] = new TesLight::RainbowAnimatorMotion(TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TesLight::MotionSensor::MotionSensorValue::ACC_X_G);
+			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TL::MotionSensor::MotionSensorValue::ACC_X_G));
 		}
 
 		// Rainbow linear motion acc y type
 		else if (ledConfig.type == 11)
 		{
-			ledAnimator[i] = new TesLight::RainbowAnimatorMotion(TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TesLight::MotionSensor::MotionSensorValue::ACC_Y_G);
+			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TL::MotionSensor::MotionSensorValue::ACC_Y_G));
 		}
 
 		// Rainbow linear motion acc x type
 		else if (ledConfig.type == 10)
 		{
-			ledAnimator[i] = new TesLight::RainbowAnimatorMotion(TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TesLight::MotionSensor::MotionSensorValue::ACC_X_G);
+			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TL::MotionSensor::MotionSensorValue::ACC_X_G));
 		}
 
 		// Rainbow linear motion acc y type
 		else if (ledConfig.type == 11)
 		{
-			ledAnimator[i] = new TesLight::RainbowAnimatorMotion(TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TesLight::MotionSensor::MotionSensorValue::ACC_Y_G);
+			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TL::MotionSensor::MotionSensorValue::ACC_Y_G));
 		}
 
 		// Rainbow center motion acc x type
 		else if (ledConfig.type == 12)
 		{
-			ledAnimator[i] = new TesLight::RainbowAnimatorMotion(TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_CENTER, TesLight::MotionSensor::MotionSensorValue::ACC_X_G);
+			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_CENTER, TL::MotionSensor::MotionSensorValue::ACC_X_G));
 		}
 
 		// Rainbow center motion acc y type
 		else if (ledConfig.type == 13)
 		{
-			ledAnimator[i] = new TesLight::RainbowAnimatorMotion(TesLight::RainbowAnimatorMotion::RainbowMode::RAINBOW_CENTER, TesLight::MotionSensor::MotionSensorValue::ACC_Y_G);
+			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_CENTER, TL::MotionSensor::MotionSensorValue::ACC_Y_G));
 		}
 
 		// Gradient linear motion acc x type
 		else if (ledConfig.type == 14)
 		{
-			ledAnimator[i] = new TesLight::GradientAnimatorMotion(TesLight::GradientAnimatorMotion::GradientMode::GRADIENT_LINEAR, TesLight::MotionSensor::MotionSensorValue::ACC_X_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+			this->ledAnimator.at(i).reset(new TL::GradientAnimatorMotion(TL::GradientAnimatorMotion::GradientMode::GRADIENT_LINEAR, TL::MotionSensor::MotionSensorValue::ACC_X_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
 		}
 
 		// Gradient linear motion acc y type
 		else if (ledConfig.type == 15)
 		{
-			ledAnimator[i] = new TesLight::GradientAnimatorMotion(TesLight::GradientAnimatorMotion::GradientMode::GRADIENT_LINEAR, TesLight::MotionSensor::MotionSensorValue::ACC_Y_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+			this->ledAnimator.at(i).reset(new TL::GradientAnimatorMotion(TL::GradientAnimatorMotion::GradientMode::GRADIENT_LINEAR, TL::MotionSensor::MotionSensorValue::ACC_Y_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
 		}
 
 		// Gradient center motion acc x type
 		else if (ledConfig.type == 16)
 		{
-			ledAnimator[i] = new TesLight::GradientAnimatorMotion(TesLight::GradientAnimatorMotion::GradientMode::GRADIENT_CENTER, TesLight::MotionSensor::MotionSensorValue::ACC_X_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+			this->ledAnimator.at(i).reset(new TL::GradientAnimatorMotion(TL::GradientAnimatorMotion::GradientMode::GRADIENT_CENTER, TL::MotionSensor::MotionSensorValue::ACC_X_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
 		}
 
 		// Gradient center motion acc y type
 		else if (ledConfig.type == 17)
 		{
-			ledAnimator[i] = new TesLight::GradientAnimatorMotion(TesLight::GradientAnimatorMotion::GradientMode::GRADIENT_CENTER, TesLight::MotionSensor::MotionSensorValue::ACC_Y_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5]));
+			this->ledAnimator.at(i).reset(new TL::GradientAnimatorMotion(TL::GradientAnimatorMotion::GradientMode::GRADIENT_CENTER, TL::MotionSensor::MotionSensorValue::ACC_Y_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
 		}
 
 		// Unknown type
 		else
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is unknown. Invalid value ") + String(ledConfig.type) + F("."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is unknown. Invalid value ") + String(ledConfig.type) + F("."));
 			return false;
 		}
 
-		ledAnimator[i]->setPixels(this->ledData[i]);
-		ledAnimator[i]->setPixelCount(ledConfig.ledCount);
-		ledAnimator[i]->setSpeed(ledConfig.speed);
-		ledAnimator[i]->setOffset(ledConfig.offset);
-		ledAnimator[i]->setAnimationBrightness(ledConfig.brightness / 255.0f);
-		ledAnimator[i]->setFadeSpeed(ledConfig.fadeSpeed / 4096.0f);
-		ledAnimator[i]->setReverse(ledConfig.reverse);
-		ledAnimator[i]->init();
+		this->ledAnimator.at(i)->setSpeed(ledConfig.speed);
+		this->ledAnimator.at(i)->setOffset(ledConfig.offset);
+		this->ledAnimator.at(i)->setAnimationBrightness(ledConfig.brightness / 255.0f);
+		this->ledAnimator.at(i)->setFadeSpeed(ledConfig.fadeSpeed / 4096.0f);
+		this->ledAnimator.at(i)->setReverse(ledConfig.reverse);
+		this->ledAnimator.at(i)->init(this->ledData.at(i));
 	}
-
 	return true;
 }
 
@@ -510,131 +463,92 @@ bool TesLight::LedManager::loadCalculatedAnimations()
  * @return true when successful
  * @return false when there was an error
  */
-bool TesLight::LedManager::loadCustomAnimation()
+bool TL::LedManager::loadCustomAnimation()
 {
-	uint32_t totalLedCount = 0;
-	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	if (this->fseqLoader->getHeader().channelCount != this->getLedCount() * 3)
 	{
-		const TesLight::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
-		totalLedCount += ledConfig.ledCount;
-	}
-
-	if (this->fseqLoader->getHeader().channelCount != totalLedCount * 3)
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The fseq file can not be used with the current LED configuration because the LED count doesn't match the channel count."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The fseq file can not be used with the current LED configuration because the LED count doesn't match the channel count."));
 		return false;
 	}
 
-	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	this->ledAnimator.resize(LED_NUM_ZONES);
+	for (size_t i = 0; i < this->ledAnimator.size(); i++)
 	{
-		const TesLight::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
-		ledAnimator[i] = new TesLight::FseqAnimator(this->fseqLoader, true);
-		ledAnimator[i]->setPixels(this->ledData[i]);
-		ledAnimator[i]->setPixelCount(ledConfig.ledCount);
-		ledAnimator[i]->setSpeed(ledConfig.speed);
-		ledAnimator[i]->setOffset(ledConfig.offset);
-		ledAnimator[i]->setAnimationBrightness(ledConfig.brightness / 255.0f);
-		ledAnimator[i]->setFadeSpeed(ledConfig.fadeSpeed / 4096.0f);
-		ledAnimator[i]->setReverse(ledConfig.reverse);
-		ledAnimator[i]->init();
+		const TL::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
+		this->ledAnimator.at(i).reset(new TL::FseqAnimator(this->fseqLoader.get(), true));
+		this->ledAnimator.at(i)->setSpeed(ledConfig.speed);
+		this->ledAnimator.at(i)->setOffset(ledConfig.offset);
+		this->ledAnimator.at(i)->setAnimationBrightness(ledConfig.brightness / 255.0f);
+		this->ledAnimator.at(i)->setFadeSpeed(ledConfig.fadeSpeed / 4096.0f);
+		this->ledAnimator.at(i)->setReverse(ledConfig.reverse);
+		this->ledAnimator.at(i)->init(this->ledData.at(i));
 	}
-
 	return true;
 }
 
 /**
  * @brief Calculate the total power draw from each regulator using the current frame.
  * @param regulatorPower array containing the power draw per regulator after the call
- * @return true when successful
- * @return false when there was an error
  */
-bool TesLight::LedManager::calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_COUNT])
+void TL::LedManager::calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_COUNT])
 {
 	for (uint8_t i = 0; i < REGULATOR_COUNT; i++)
 	{
 		regulatorPower[i] = 0.0f;
 	}
 
-	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	for (size_t i = 0; i < this->ledData.size(); i++)
 	{
-		TesLight::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
+		TL::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
 		float zoneCurrent = 0.0f;
-		if (this->ledAnimator[i] != nullptr)
+		for (size_t j = 0; j < this->ledData.at(i).size(); j++)
 		{
-			for (uint16_t j = 0; j < this->ledAnimator[i]->getPixelCount(); j++)
-			{
-				zoneCurrent += ledConfig.ledChannelCurrent[0] * this->ledData[i][j].r / 255.0f;
-				zoneCurrent += ledConfig.ledChannelCurrent[1] * this->ledData[i][j].g / 255.0f;
-				zoneCurrent += ledConfig.ledChannelCurrent[2] * this->ledData[i][j].b / 255.0f;
-			}
-		}
-		else
-		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to calculate power consumption for animator ") + String(i) + F(" because the animator is null."));
-			return false;
+			zoneCurrent += ledConfig.ledChannelCurrent[0] * this->ledData.at(i).at(j).r / 255.0f;
+			zoneCurrent += ledConfig.ledChannelCurrent[1] * this->ledData.at(i).at(j).g / 255.0f;
+			zoneCurrent += ledConfig.ledChannelCurrent[2] * this->ledData.at(i).at(j).b / 255.0f;
 		}
 
 		const uint8_t regulatorIndex = this->getRegulatorIndexFromPin(ledConfig.ledPin);
-		regulatorPower[regulatorIndex] += zoneCurrent * (ledConfig.ledVoltage / 10.0f) / 1000.0f;
+		regulatorPower[regulatorIndex] += zoneCurrent * ledConfig.ledVoltage / 1000.0f;
 	}
-
-	return true;
 }
 
 /**
  * @brief Limit the power consumption of the current frame to the maxumim system power.
- * @return true when successful
- * @return false when there was an error
  */
-bool TesLight::LedManager::limitPowerConsumption()
+void TL::LedManager::limitPowerConsumption()
 {
 	float regulatorPower[REGULATOR_COUNT];
-	if (!this->calculateRegulatorPowerDraw(regulatorPower))
-	{
-		TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to get regulator power draw."));
-		return false;
-	}
+	this->calculateRegulatorPowerDraw(regulatorPower);
 
-	TesLight::Configuration::SystemConfig systemConfig = this->config->getSystemConfig();
-	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	TL::Configuration::SystemConfig systemConfig = this->config->getSystemConfig();
+	for (size_t i = 0; i < this->ledData.size(); i++)
 	{
-		TesLight::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
-		if (this->ledAnimator[i] != nullptr)
+		TL::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
+		const uint8_t regulatorIndex = this->getRegulatorIndexFromPin(ledConfig.ledPin);
+		float multiplicator = ((float)systemConfig.regulatorPowerLimit / REGULATOR_COUNT) / regulatorPower[regulatorIndex];
+		if (multiplicator < 0.0f)
 		{
-			const uint8_t regulatorIndex = this->getRegulatorIndexFromPin(ledConfig.ledPin);
-			float multiplicator = ((float)systemConfig.regulatorPowerLimit / REGULATOR_COUNT) / regulatorPower[regulatorIndex];
-			if (multiplicator < 0.0f)
-			{
-				multiplicator = 0.0f;
-			}
-			else if (multiplicator > 1.0f)
-			{
-				multiplicator = 1.0f;
-			}
-
-			for (uint16_t j = 0; j < this->ledAnimator[i]->getPixelCount(); j++)
-			{
-				this->ledData[i][j].r *= multiplicator;
-				this->ledData[i][j].g *= multiplicator;
-				this->ledData[i][j].b *= multiplicator;
-			}
+			multiplicator = 0.0f;
 		}
-		else
+		else if (multiplicator > 1.0f)
 		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to limit power consumption for animator ") + String(i) + F(" because the animator is null."));
-			return false;
+			multiplicator = 1.0f;
+		}
+
+		for (size_t j = 0; j < this->ledData.at(i).size(); j++)
+		{
+			this->ledData.at(i).at(j).r *= multiplicator;
+			this->ledData.at(i).at(j).g *= multiplicator;
+			this->ledData.at(i).at(j).b *= multiplicator;
 		}
 	}
-
-	return true;
 }
 
 /**
  * @brief Limit the regulator temperature by reducing the LED brightness once the high temperature is reached.
- * @return true when successul
- * @return false when there was an error
  */
-bool TesLight::LedManager::limitRegulatorTemperature()
+void TL::LedManager::limitRegulatorTemperature()
 {
 	float multiplicator = 1.0f - (this->regulatorTemperature - this->config->getSystemConfig().regulatorHighTemperature) / (this->config->getSystemConfig().regulatorCutoffTemperature - this->config->getSystemConfig().regulatorHighTemperature);
 	if (multiplicator < 0.0f)
@@ -646,25 +560,15 @@ bool TesLight::LedManager::limitRegulatorTemperature()
 		multiplicator = 1.0f;
 	}
 
-	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
+	for (size_t i = 0; i < this->ledData.size(); i++)
 	{
-		if (this->ledAnimator[i] != nullptr)
+		for (size_t j = 0; j < this->ledData.at(i).size(); j++)
 		{
-			for (uint16_t j = 0; j < this->ledAnimator[i]->getPixelCount(); j++)
-			{
-				this->ledData[i][j].r *= multiplicator;
-				this->ledData[i][j].g *= multiplicator;
-				this->ledData[i][j].b *= multiplicator;
-			}
-		}
-		else
-		{
-			TesLight::Logger::log(TesLight::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to limit regulator temperature because animator with index ") + String(i) + F(" is null."));
-			return false;
+			this->ledData.at(i).at(j).r *= multiplicator;
+			this->ledData.at(i).at(j).g *= multiplicator;
+			this->ledData.at(i).at(j).b *= multiplicator;
 		}
 	}
-
-	return true;
 }
 
 /**
@@ -672,7 +576,7 @@ bool TesLight::LedManager::limitRegulatorTemperature()
  * @param pin physical pin number
  * @return regulator index
  */
-uint8_t TesLight::LedManager::getRegulatorIndexFromPin(const uint8_t pin)
+uint8_t TL::LedManager::getRegulatorIndexFromPin(const uint8_t pin)
 {
 	const uint8_t regulatorMap[LED_NUM_ZONES][2] = REGULATOR_ZONE_MAPPING;
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
