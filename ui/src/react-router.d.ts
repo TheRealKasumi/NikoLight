@@ -5,7 +5,7 @@ declare module '@tanstack/react-router' {
   interface RouteMeta {
     icon?: React.ReactElement;
     isVisible?: boolean;
-    name: string;
+    name: React.ReactNode;
     zoneId?: number;
   }
 }

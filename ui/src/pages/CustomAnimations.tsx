@@ -3,6 +3,7 @@ import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { Suspense, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import {
   Animation,
   Button,
@@ -15,12 +16,12 @@ import {
 } from '../components';
 import { toMbyte } from '../libs';
 import {
-  Fseq,
   useDeleteFseq,
   useFseq,
   useLed,
   useUpdateFseq,
   useUpdateLed,
+  type Fseq,
 } from './api';
 
 type FormData = {
@@ -29,6 +30,8 @@ type FormData = {
 };
 
 const Form = (): JSX.Element => {
+  const { t } = useTranslation();
+
   const [currrentFileId, setCurrentFileId] = useState<number | undefined>(
     undefined,
   );
@@ -148,8 +151,12 @@ const Form = (): JSX.Element => {
 
   return (
     <>
-      {isUploadSuccess && <Toast title="Upload successfully!" />}
-      {isDeleteSuccess && <Toast title="Delete successfully!" />}
+      {isUploadSuccess && (
+        <Toast title={t('customAnimations.uploadSuccessful')} />
+      )}
+      {isDeleteSuccess && (
+        <Toast title={t('customAnimations.deleteSuccessful')} />
+      )}
 
       {isUploadError && <Notification message={uploadError.message} />}
       {isDeleteError && <Notification message={deleteError.message} />}
@@ -162,8 +169,12 @@ const Form = (): JSX.Element => {
           <table className="mb-6 w-full">
             <thead className="text-left">
               <tr>
-                <th className="w-2/4 py-2 pr-2 font-normal">Name</th>
-                <th className="p-2 font-normal">Size</th>
+                <th className="w-2/4 py-2 pr-2 font-normal">
+                  {t('customAnimations.name')}
+                </th>
+                <th className="p-2 font-normal">
+                  {t('customAnimations.size')}
+                </th>
                 <th className="py-2 pl-2 font-normal" />
               </tr>
             </thead>
@@ -201,7 +212,7 @@ const Form = (): JSX.Element => {
         )}
 
         <label className="mb-6 flex flex-col">
-          <span className="mb-2">File Name</span>
+          <span className="mb-2">{t('customAnimations.fileName')}</span>
           <InputText<FormData>
             control={control}
             maxLength={32}
@@ -215,7 +226,7 @@ const Form = (): JSX.Element => {
         </label>
 
         <label className="mb-6 flex flex-col">
-          <span className="mb-2">File</span>
+          <span className="mb-2">{t('customAnimations.file')}</span>
           <InputType<FormData>
             accept=".fseq"
             control={control}
@@ -228,7 +239,7 @@ const Form = (): JSX.Element => {
         </label>
 
         <Button type="submit" disabled={formState.isSubmitting}>
-          Upload
+          {t('customAnimations.upload')}
         </Button>
       </form>
     </>
