@@ -4,7 +4,7 @@ import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 type HeaderProps = {
-  name: string;
+  name: React.ReactNode;
   icon?: React.ReactElement;
 } & React.HTMLAttributes<HTMLDivElement>;
 

@@ -14,6 +14,7 @@ import {
   RouterProvider,
 } from '@tanstack/react-router';
 import { lazy } from 'react';
+import { Trans } from 'react-i18next';
 import { ReactComponent as CenterConsoleIcon } from './assets/center-console.svg';
 import { ReactComponent as DashboardIcon } from './assets/dashboard.svg';
 import { ReactComponent as DoorIcon } from './assets/door.svg';
@@ -53,7 +54,7 @@ const homeRoute = rootRoute.createRoute({
   path: '/',
   component: Home,
   meta: {
-    name: 'Home',
+    name: <Trans i18nKey="home.title" />,
     isVisible: false,
   },
 });
@@ -61,7 +62,7 @@ const homeRoute = rootRoute.createRoute({
 const zonesRoute = rootRoute.createRoute({
   path: 'zones',
   meta: {
-    name: 'Zones',
+    name: <Trans i18nKey="zones.title" />,
     isVisible: false,
   },
   component: () => {
@@ -87,7 +88,7 @@ const dashboardRoute = zonesRoute.createRoute({
   path: 'dashboard',
   component: () => <Zone routeId={dashboardRoute.id} />,
   meta: {
-    name: 'Dashboard',
+    name: <Trans i18nKey="zones.dashboard" />,
     icon: <DashboardIcon className="h-8 w-8" />,
     zoneId: 0,
   },
@@ -97,7 +98,7 @@ const centerConsoleRoute = zonesRoute.createRoute({
   path: 'center-console',
   component: () => <Zone routeId={centerConsoleRoute.id} />,
   meta: {
-    name: 'Center Console',
+    name: <Trans i18nKey="zones.centerConsole" />,
     icon: <CenterConsoleIcon className="h-8 w-8" />,
     zoneId: 1,
   },
@@ -107,7 +108,7 @@ const frontLeftDoorRoute = zonesRoute.createRoute({
   path: 'front-left-door',
   component: () => <Zone routeId={frontLeftDoorRoute.id} />,
   meta: {
-    name: 'Front Left Door',
+    name: <Trans i18nKey="zones.frontLeftDoor" />,
     icon: <DoorIcon className="h-8 w-8 -scale-x-100" />,
     zoneId: 2,
   },
@@ -117,7 +118,7 @@ const frontRightDoorRoute = zonesRoute.createRoute({
   path: 'front-right-door',
   component: () => <Zone routeId={frontRightDoorRoute.id} />,
   meta: {
-    name: 'Front Right Door',
+    name: <Trans i18nKey="zones.frontRightDoor" />,
     icon: <DoorIcon className="h-8 w-8" />,
     zoneId: 3,
   },
@@ -127,7 +128,7 @@ const rearLeftDoorRoute = zonesRoute.createRoute({
   path: 'rear-left-door',
   component: () => <Zone routeId={rearLeftDoorRoute.id} />,
   meta: {
-    name: 'Rear Left Door',
+    name: <Trans i18nKey="zones.rearLeftDoor" />,
     icon: <DoorIcon className="h-8 w-8 -scale-x-100" />,
     zoneId: 4,
   },
@@ -137,7 +138,7 @@ const rearRightDoorRoute = zonesRoute.createRoute({
   path: 'rear-right-door',
   component: () => <Zone routeId={rearRightDoorRoute.id} />,
   meta: {
-    name: 'Rear Right Door',
+    name: <Trans i18nKey="zones.rearRightDoor" />,
     icon: <DoorIcon className="h-8 w-8" />,
     zoneId: 5,
   },
@@ -147,7 +148,7 @@ const leftFootwellRoute = zonesRoute.createRoute({
   path: 'left-footwell',
   component: () => <Zone routeId={leftFootwellRoute.id} />,
   meta: {
-    name: 'Left Footwell',
+    name: <Trans i18nKey="zones.leftFootwell" />,
     icon: <FootwellLeftIcon className="h-8 w-8" />,
     zoneId: 6,
   },
@@ -157,7 +158,7 @@ const rightFootwellRoute = zonesRoute.createRoute({
   path: 'right-footwell',
   component: () => <Zone routeId={rightFootwellRoute.id} />,
   meta: {
-    name: 'Right Footwell',
+    name: <Trans i18nKey="zones.rightFootwell" />,
     icon: <FootwellRightIcon className="h-8 w-8" />,
     zoneId: 7,
   },
@@ -175,7 +176,7 @@ const customAnimationsRoute = rootRoute.createRoute({
     );
   },
   meta: {
-    name: 'Custom Animations',
+    name: <Trans i18nKey="customAnimations.title" />,
     icon: <FilmIcon className="h-6 w-6" />,
   },
 });
@@ -192,7 +193,7 @@ const settingsRoute = rootRoute.createRoute({
     );
   },
   meta: {
-    name: 'Settings',
+    name: <Trans i18nKey="settings.title" />,
     icon: <AdjustmentsVerticalIcon className="h-6 w-6" />,
   },
 });
@@ -209,7 +210,7 @@ const updateRoute = rootRoute.createRoute({
     );
   },
   meta: {
-    name: 'Update',
+    name: <Trans i18nKey="update.title" />,
     icon: <ArrowPathIcon className="h-6 w-6" />,
   },
 });
@@ -226,7 +227,7 @@ const logFilesRoute = rootRoute.createRoute({
     );
   },
   meta: {
-    name: 'Log Files',
+    name: <Trans i18nKey="logFiles.title" />,
     icon: <DocumentTextIcon className="h-6 w-6" />,
   },
 });

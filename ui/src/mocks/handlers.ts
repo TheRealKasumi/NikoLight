@@ -1,5 +1,5 @@
 import { rest } from 'msw';
-import type { Fseq, Led, System, Wifi } from '../pages/api';
+import type { Fseq, Led, System, Ui, Wifi } from '../pages/api';
 import { throttledRes } from './throttledRes';
 
 const mock: {
@@ -11,6 +11,9 @@ const mock: {
   };
   wifi: {
     wifiConfig: Wifi;
+  };
+  ui: {
+    uiConfig: Ui;
   };
   motion: {
     motionSensorCalibration: {
@@ -76,6 +79,14 @@ const mock: {
       accessPointChannel: 1,
       accessPointHidden: false,
       accessPointMaxConnections: 1,
+    },
+  },
+  ui: {
+    uiConfig: {
+      expertMode: false,
+      firmware: '1.0.0',
+      language: 'en',
+      theme: 'dark',
     },
   },
   motion: {
@@ -168,6 +179,24 @@ export const handlers = [
   rest.post('/api/config/wifi', async (req, res, ctx) => {
     mock.wifi = await req.json();
     console.debug(`Post new wifi configuration: ${mock.wifi}`);
+    return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
+  }),
+
+  // ------------------
+  // UI Configuration
+  // ------------------
+
+  rest.get('/api/config/ui', (_req, res, ctx) => {
+    console.debug(`Get UI configuration: ${mock.ui}`);
+    return res(
+      ctx.status(200),
+      ctx.json({ status: 200, message: 'ok', ...mock.ui }),
+    );
+  }),
+
+  rest.post('/api/config/ui', async (req, res, ctx) => {
+    mock.ui = await req.json();
+    console.debug(`Post new UI configuration: ${mock.ui}`);
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 

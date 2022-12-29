@@ -2,6 +2,7 @@ import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Error,
@@ -14,7 +15,18 @@ import {
   Slider,
   Toast,
 } from '../components';
-import { useSystem, useUpdateSystem, useUpdateWifi, useWifi } from './api';
+import i18n from '../i18n';
+import {
+  useSystem,
+  useUi,
+  useUpdateSystem,
+  useUpdateUi,
+  useUpdateWifi,
+  useWifi,
+  type System,
+  type Ui,
+  type Wifi,
+} from './api';
 
 enum LightSensorMode {
   AlwaysOff,
@@ -48,6 +60,9 @@ type FormData = {
     accessPointPassword: string;
     accessPointSsid: string;
   };
+  ui: {
+    language: string;
+  };
 };
 
 const DEFAULT_VALUES: FormData = {
@@ -72,11 +87,16 @@ const DEFAULT_VALUES: FormData = {
     accessPointPassword: 'TesLightPW',
     accessPointSsid: 'TesLight',
   },
+  ui: {
+    language: 'en',
+  },
 };
 
 const Form = (): JSX.Element => {
+  const { t } = useTranslation();
   const { data: system } = useSystem();
   const { data: wifi } = useWifi();
+  const { data: ui } = useUi();
   const {
     mutateAsync: mutateAsyncSystem,
     isSuccess: isSystemSuccess,
@@ -89,6 +109,12 @@ const Form = (): JSX.Element => {
     isError: isWifiError,
     error: wifiError,
   } = useUpdateWifi();
+  const {
+    mutateAsync: mutateAsyncUi,
+    isSuccess: isUiSuccess,
+    isError: isUiError,
+    error: uiError,
+  } = useUpdateUi();
 
   const { handleSubmit, watch, control, reset, formState } = useForm<FormData>({
     defaultValues: {
@@ -115,21 +141,29 @@ const Form = (): JSX.Element => {
         accessPointPassword: wifi?.accessPointPassword,
         accessPointSsid: wifi?.accessPointSsid,
       },
+      ui: {
+        language: ui?.language,
+      },
     },
     mode: 'onChange',
   });
 
   const onSubmit = handleSubmit(async (data) => {
-    const wifiCopy = JSON.parse(JSON.stringify(wifi)) as NonNullable<
-      typeof wifi
-    >;
-    const systemCopy = JSON.parse(JSON.stringify(system)) as NonNullable<
-      typeof system
-    >;
+    const wifiCopy: Wifi = JSON.parse(JSON.stringify(wifi));
+    const uiCopy: Ui = JSON.parse(JSON.stringify(ui));
+    const systemCopy: System = JSON.parse(JSON.stringify(system));
     const { lightSensorMode, logLevel, ...rest } = data.system;
 
     return Promise.all([
       mutateAsyncWifi({ ...wifiCopy, ...data.wifi }),
+      mutateAsyncUi(
+        { ...uiCopy, ...data.ui },
+        {
+          onSuccess: (_data, variables) => {
+            i18n.changeLanguage(variables.language);
+          },
+        },
+      ),
       mutateAsyncSystem({
         ...systemCopy,
         ...rest,
@@ -146,51 +180,32 @@ const Form = (): JSX.Element => {
 
   return (
     <>
-      {isSystemSuccess && isWifiSuccess && (
-        <Toast title="Saved successfully!" />
+      {isSystemSuccess && isWifiSuccess && isUiSuccess && (
+        <Toast title={t('settings.submitSuccessful')} />
       )}
 
       {isSystemError && <Notification message={systemError.message} />}
       {isWifiError && <Notification message={wifiError.message} />}
+      {isUiError && <Notification message={uiError.message} />}
 
       <form onSubmit={onSubmit}>
         <fieldset className="mb-6">
-          <legend className="mb-6 text-lg font-medium">Light Sensor</legend>
+          <legend className="mb-6 text-lg font-medium">
+            {t('settings.lightSensor')}
+          </legend>
           <label className="mb-6 flex flex-row justify-between">
-            <span className="basis-1/2 self-center">Mode</span>
+            <span className="basis-1/2 self-center">
+              {t('settings.lightSensorMode')}
+            </span>
             <div className="basis-1/2 text-right">
               <Select<FormData> control={control} name="system.lightSensorMode">
-                <SelectItem value={LightSensorMode.AlwaysOff.toString()}>
-                  Always Off
-                </SelectItem>
-                <SelectItem value={LightSensorMode.AlwaysOn.toString()}>
-                  Always On
-                </SelectItem>
-                <SelectItem
-                  value={LightSensorMode.AutomaticOnOffADC.toString()}
-                >
-                  Automatic On/Off ADC
-                </SelectItem>
-                <SelectItem
-                  value={LightSensorMode.AutomaticBrightnessADC.toString()}
-                >
-                  Automatic Brightness ADC
-                </SelectItem>
-                <SelectItem
-                  value={LightSensorMode.AutomaticOnOffBH1750.toString()}
-                >
-                  Automatic On/Off BH1750
-                </SelectItem>
-                <SelectItem
-                  value={LightSensorMode.AutomaticBrightnessBH1750.toString()}
-                >
-                  Automatic Brightness BH1750
-                </SelectItem>
-                <SelectItem
-                  value={LightSensorMode.AutomaticOnOffMPU6050.toString()}
-                >
-                  Automatic On/Off MPU6050
-                </SelectItem>
+                {Object.keys(LightSensorMode)
+                  .filter((key) => isNaN(Number(key)))
+                  .map((key, index) => (
+                    <SelectItem key={key} value={index.toString()}>
+                      {t(`settings.lightSensorModes.${key}`)}
+                    </SelectItem>
+                  ))}
               </Select>
             </div>
           </label>
@@ -199,7 +214,8 @@ const Form = (): JSX.Element => {
           ) && (
             <label className="mb-6 flex flex-col">
               <span className="mb-2">
-                Threshold: {watch('system.lightSensorThreshold')}
+                {t('settings.lightSensorThreshold')}:{' '}
+                {watch('system.lightSensorThreshold')}
               </span>
               <Slider<FormData>
                 className="w-full"
@@ -218,7 +234,7 @@ const Form = (): JSX.Element => {
             <>
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
-                  Minimum Brightness:{' '}
+                  {t('settings.lightSensorMinAmbientBrightness')}:{' '}
                   {watch('system.lightSensorMinAmbientBrightness')}
                 </span>
                 <Slider<FormData>
@@ -232,7 +248,7 @@ const Form = (): JSX.Element => {
               </label>
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
-                  Maximum Brightness:{' '}
+                  {t('settings.lightSensorMaxAmbientBrightness')}:{' '}
                   {watch('system.lightSensorMaxAmbientBrightness')}
                 </span>
                 <Slider<FormData>
@@ -246,7 +262,7 @@ const Form = (): JSX.Element => {
               </label>
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
-                  Minimum LED Brightness:{' '}
+                  {t('settings.lightSensorMinLedBrightness')}:{' '}
                   {watch('system.lightSensorMinLedBrightness')}
                 </span>
                 <Slider<FormData>
@@ -260,7 +276,7 @@ const Form = (): JSX.Element => {
               </label>
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
-                  Maximum LED Brightness:{' '}
+                  {t('settings.lightSensorMaxLedBrightness')}:{' '}
                   {watch('system.lightSensorMaxLedBrightness')}
                 </span>
                 <Slider<FormData>
@@ -278,7 +294,8 @@ const Form = (): JSX.Element => {
             Number(watch('system.lightSensorMode')) && (
             <label className="mb-6 flex flex-col">
               <span className="mb-2">
-                Duration: {watch('system.lightSensorDuration')}
+                {t('settings.lightSensorDuration')}:{' '}
+                {watch('system.lightSensorDuration')}
               </span>
               <Slider<FormData>
                 className="w-full"
@@ -293,9 +310,13 @@ const Form = (): JSX.Element => {
         </fieldset>
 
         <fieldset className="mb-6">
-          <legend className="mb-6 text-lg font-medium">Wifi Hotspot</legend>
+          <legend className="mb-6 text-lg font-medium">
+            {t('settings.wifiHotspot')}
+          </legend>
           <label className="mb-6 flex flex-row">
-            <span className="basis-1/2 self-center">SSID</span>
+            <span className="basis-1/2 self-center">
+              {t('settings.accessPointSsid')}
+            </span>
             <div className="basis-1/2">
               <InputText<FormData>
                 control={control}
@@ -308,7 +329,9 @@ const Form = (): JSX.Element => {
             </div>
           </label>
           <label className="mb-6 flex flex-row">
-            <span className="basis-1/2 self-center">Password</span>
+            <span className="basis-1/2 self-center">
+              {t('settings.accessPointPassword')}
+            </span>
             <div className="basis-1/2">
               <InputPassword<FormData>
                 control={control}
@@ -323,10 +346,13 @@ const Form = (): JSX.Element => {
         </fieldset>
 
         <fieldset className="mb-6">
-          <legend className="mb-6 text-lg font-medium">Regulator</legend>
+          <legend className="mb-6 text-lg font-medium">
+            {t('settings.regulator')}
+          </legend>
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              Power Limit (W): {watch('system.regulatorPowerLimit')}
+              {t('settings.regulatorPowerLimit')}:{' '}
+              {watch('system.regulatorPowerLimit')}
             </span>
             <Slider<FormData>
               className="w-full"
@@ -339,7 +365,7 @@ const Form = (): JSX.Element => {
           </label>
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              Throttle Temperature (°C):{' '}
+              {t('settings.regulatorHighTemperature')}:{' '}
               {watch('system.regulatorHighTemperature')}
             </span>
             <Slider<FormData>
@@ -353,7 +379,7 @@ const Form = (): JSX.Element => {
           </label>
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              Shut Down Temperature (°C):{' '}
+              {t('settings.regulatorCutoffTemperature')}:{' '}
               {watch('system.regulatorCutoffTemperature')}
             </span>
             <Slider<FormData>
@@ -367,7 +393,8 @@ const Form = (): JSX.Element => {
           </label>
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              Fan Start Temp (°C): {watch('system.fanMinTemperature')}
+              {t('settings.fanMinTemperature')}:{' '}
+              {watch('system.fanMinTemperature')}
             </span>
             <Slider<FormData>
               className="w-full"
@@ -380,7 +407,8 @@ const Form = (): JSX.Element => {
           </label>
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              Fan Full Speed Temp (°C): {watch('system.fanMaxTemperature')}
+              {t('settings.fanMaxTemperature')}:{' '}
+              {watch('system.fanMaxTemperature')}
             </span>
             <Slider<FormData>
               className="w-full"
@@ -393,7 +421,7 @@ const Form = (): JSX.Element => {
           </label>
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              Fan Min PWM (Stall Guard): {watch('system.fanMinPwmValue')}
+              {t('settings.fanMinPwmValue')}: {watch('system.fanMinPwmValue')}
             </span>
             <Slider<FormData>
               className="w-full"
@@ -406,7 +434,7 @@ const Form = (): JSX.Element => {
           </label>
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              Fan Max PWM: {watch('system.fanMaxPwmValue')}
+              {t('settings.fanMaxPwmValue')}: {watch('system.fanMaxPwmValue')}
             </span>
             <Slider<FormData>
               className="w-full"
@@ -421,16 +449,43 @@ const Form = (): JSX.Element => {
 
         <fieldset className="mb-6">
           <legend className="mb-6 text-lg font-medium">
-            Logging and Debugging
+            {t('settings.ui')}
           </legend>
           <label className="mb-6 flex flex-row justify-between">
-            <span className="basis-1/2 self-center">Log Level</span>
+            <span className="basis-1/2 self-center">
+              {t('settings.language')}
+            </span>
+            <div className="basis-1/2 text-right">
+              <Select<FormData> control={control} name="ui.language">
+                <SelectItem value="de">Deutsch</SelectItem>
+                <SelectItem value="en">English</SelectItem>
+              </Select>
+            </div>
+          </label>
+        </fieldset>
+
+        <fieldset className="mb-6">
+          <legend className="mb-6 text-lg font-medium">
+            {t('settings.loggingAndDebugging')}
+          </legend>
+          <label className="mb-6 flex flex-row justify-between">
+            <span className="basis-1/2 self-center">
+              {t('settings.logLevel')}
+            </span>
             <div className="basis-1/2 text-right">
               <Select<FormData> control={control} name="system.logLevel">
-                <SelectItem value="0">Debug</SelectItem>
-                <SelectItem value="1">Info</SelectItem>
-                <SelectItem value="2">Warning</SelectItem>
-                <SelectItem value="3">Error</SelectItem>
+                <SelectItem value="0">
+                  {t('settings.logLevels.debug')}
+                </SelectItem>
+                <SelectItem value="1">
+                  {t('settings.logLevels.info')}
+                </SelectItem>
+                <SelectItem value="2">
+                  {t('settings.logLevels.warning')}
+                </SelectItem>
+                <SelectItem value="3">
+                  {t('settings.logLevels.error')}
+                </SelectItem>
               </Select>
             </div>
           </label>
@@ -441,7 +496,7 @@ const Form = (): JSX.Element => {
           className="mb-4"
           disabled={formState.isSubmitting}
         >
-          Apply Settings
+          {t('settings.submit')}
         </Button>
 
         <Button
@@ -449,7 +504,7 @@ const Form = (): JSX.Element => {
           onClick={onReset}
           disabled={formState.isSubmitting}
         >
-          Reset to default
+          {t('settings.reset')}
         </Button>
       </form>
     </>

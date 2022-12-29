@@ -6,11 +6,13 @@ import {
   RouteInfo,
   useRouter,
 } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 import { version } from '../../package.json';
 import { ReactComponent as Logo } from '../assets/logo.svg';
 import { Animation } from '../components';
-import { keyToWord, toPercentage } from '../libs';
-import { useLed } from './api';
+import i18n from '../i18n';
+import { toPercentage } from '../libs';
+import { useLed, useUi } from './api';
 
 const flatRoutes = (route: Route<AllRouteInfo, RouteInfo>): AnyRoute[] =>
   route.childRoutes
@@ -25,9 +27,16 @@ const flatRoutes = (route: Route<AllRouteInfo, RouteInfo>): AnyRoute[] =>
     .filter((route): route is AnyRoute => !!route) ?? [];
 
 export const Home = (): JSX.Element => {
-  const { data } = useLed();
+  const { t } = useTranslation();
+  const { data: ledData } = useLed();
   const { routeTree } = useRouter();
   const routes = flatRoutes(routeTree);
+
+  useUi({
+    onSuccess: (data) => {
+      i18n.changeLanguage(data.language);
+    },
+  });
 
   return (
     <>
@@ -42,12 +51,14 @@ export const Home = (): JSX.Element => {
         if (meta && Number.isInteger(meta.zoneId)) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const zoneId = meta.zoneId!;
-          brightness = toPercentage(data?.[zoneId].brightness ?? 0);
-          animation = keyToWord(Animation[data?.[zoneId].type ?? 0]);
+          brightness = toPercentage(ledData?.[zoneId].brightness ?? 0);
+          animation = t(
+            `zone.animationTypes.${Animation[ledData?.[zoneId].type ?? 0]}`,
+          );
         }
 
         const isCustomAnimationActive =
-          data?.[0].type === Animation.Custom && !!brightness && !!animation;
+          ledData?.[0].type === Animation.Custom && !!brightness && !!animation;
 
         return (
           <route.Link
@@ -62,13 +73,13 @@ export const Home = (): JSX.Element => {
                 {!!animation && (
                   <p className="text-xs">
                     {isCustomAnimationActive
-                      ? keyToWord(Animation[Animation.Custom])
+                      ? t(`zone.animationTypes.${Animation[Animation.Custom]}`)
                       : animation}
 
                     {!!brightness && !isCustomAnimationActive && (
                       <span className="text-zinc">
                         {' '}
-                        &bull; Brightness {brightness}%
+                        &bull; {t('zone.brightness')} {brightness}%
                       </span>
                     )}
                   </p>

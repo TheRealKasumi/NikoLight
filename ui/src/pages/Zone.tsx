@@ -5,10 +5,8 @@ import hexRgb from 'hex-rgb';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import rgbHex from 'rgb-hex';
-import { keyToWord, toPercentage } from '../libs';
-import { useLed, useUpdateLed } from '../pages/api';
-
 import {
   Animation,
   Button,
@@ -22,6 +20,8 @@ import {
   Switch,
   Toast,
 } from '../components';
+import { toPercentage } from '../libs';
+import { useLed, useUpdateLed } from '../pages/api';
 
 type FormData = {
   brightness: number;
@@ -54,6 +54,7 @@ const DEFAULT_VALUES: FormData = {
 type FormProps = { zoneId: number };
 
 const Form = ({ zoneId }: FormProps): JSX.Element => {
+  const { t } = useTranslation();
   const { data } = useLed();
   const { mutateAsync, isSuccess, isError, error } = useUpdateLed();
   const zone = data?.[zoneId];
@@ -115,16 +116,18 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
 
   return (
     <>
-      {isSuccess && <Toast title="Saved successfully!" />}
+      {isSuccess && <Toast title={t('zone.submitSuccessful')} />}
 
       {isError && <Notification message={error.message} />}
 
       <form onSubmit={onSubmit}>
         <fieldset className="mb-6">
-          <legend className="mb-6 text-lg font-medium">Basic</legend>
+          <legend className="mb-6 text-lg font-medium">
+            {t('zone.basic')}
+          </legend>
 
           <label className="mb-6 flex flex-row justify-between">
-            <span className="basis-1/2 self-center">Animation</span>
+            <span className="basis-1/2 self-center">{t('zone.animation')}</span>
             <div className="basis-1/2 text-right">
               <Select<FormData> control={control} name="type">
                 {Object.keys(Animation)
@@ -132,7 +135,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
                   .filter((key) => key !== Animation[Animation.Custom])
                   .map((key, index) => (
                     <SelectItem key={key} value={index.toString()}>
-                      {keyToWord(key)}
+                      {t(`zone.animationTypes.${key}`)}
                     </SelectItem>
                   ))}
               </Select>
@@ -141,7 +144,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
 
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              Brightness: {toPercentage(watch('brightness'))}%
+              {t('zone.brightness')} : {toPercentage(watch('brightness'))}%
             </span>
             <Slider<FormData>
               className="w-full"
@@ -160,7 +163,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
           ].includes(Number(watch('type'))) && (
             <label className="mb-6 flex flex-col">
               <span className="mb-2">
-                Speed: {toPercentage(watch('speed'))}%
+                {t('zone.speed')}: {toPercentage(watch('speed'))}%
               </span>
               <Slider<FormData>
                 className="w-full"
@@ -176,7 +179,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
           {Animation.Static !== Number(watch('type')) && (
             <label className="mb-6 flex flex-col">
               <span className="mb-2">
-                Offset: {toPercentage(watch('offset'))}%
+                {t('zone.offset')}: {toPercentage(watch('offset'))}%
               </span>
               <Slider<FormData>
                 className="w-full"
@@ -203,7 +206,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             Animation.Static,
           ].includes(Number(watch('type'))) && (
             <label className="mb-6 flex flex-col">
-              <span className="mb-2">Color 1</span>
+              <span className="mb-2">{t('zone.color1')}</span>
               <ColorPicker<FormData>
                 className="h-10 w-full"
                 control={control}
@@ -225,7 +228,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             Animation.GradientLinearAccY,
           ].includes(Number(watch('type'))) && (
             <label className="mb-6 flex flex-col">
-              <span className="mb-2">Color 2</span>
+              <span className="mb-2">{t('zone.color2')}</span>
               <ColorPicker<FormData>
                 className="h-10 w-full"
                 control={control}
@@ -236,7 +239,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
 
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              Fading: {toPercentage(watch('fadeSpeed'))}%
+              {t('zone.fadeSpeed')}: {toPercentage(watch('fadeSpeed'))}%
             </span>
             <Slider<FormData>
               className="w-full"
@@ -250,10 +253,14 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
         </fieldset>
 
         <fieldset className="mb-6">
-          <legend className="mb-6 text-lg font-medium">Advanced</legend>
+          <legend className="mb-6 text-lg font-medium">
+            {t('zone.advanced')}
+          </legend>
 
           <label className="mb-6 flex flex-col">
-            <span className="mb-2">LED Count: {watch('ledCount')}</span>
+            <span className="mb-2">
+              {t('zone.ledCount')}: {watch('ledCount')}
+            </span>
             <Slider<FormData>
               className="w-full"
               control={control}
@@ -265,7 +272,9 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
           </label>
 
           <label className="mb-6 flex flex-col">
-            <span className="mb-2">LED Voltage: {watch('ledVoltage')}</span>
+            <span className="mb-2">
+              {t('zone.ledVoltage')}: {watch('ledVoltage')}
+            </span>
             <Slider<FormData>
               className="w-full"
               min={4.5}
@@ -277,7 +286,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
           </label>
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              LED Current per Channel (MA): {watch('channelCurrents')}
+              {t('zone.channelCurrents')}: {watch('channelCurrents')}
             </span>
             <Slider<FormData>
               className="w-full"
@@ -295,9 +304,9 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
                 <ArrowsRightLeftIcon className="h-4 w-4 text-zinc" />
               </div>
               <div className="flex flex-col">
-                <span>Direction</span>
+                <span>{t('zone.direction.label')}</span>
                 <span className="text-sm text-zinc">
-                  Reverse the animation direction
+                  {t('zone.direction.desc')}
                 </span>
               </div>
               <div className="flex-grow self-center text-right">
@@ -312,7 +321,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
           className="mb-4"
           disabled={formState.isSubmitting}
         >
-          Apply Settings
+          {t('zone.submit')}
         </Button>
 
         <Button
@@ -320,7 +329,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
           onClick={onReset}
           disabled={formState.isSubmitting}
         >
-          Reset to default
+          {t('zone.reset')}
         </Button>
       </form>
     </>
