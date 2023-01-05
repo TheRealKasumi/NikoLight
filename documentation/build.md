@@ -493,7 +493,7 @@ The SD card is used to store your settings, animations, logs and the browser bas
 Also, it can be used to save and play `fseq` files, with fully customized animations.
 
 Since the controller will create the settings and log data automatically, only the UI files must be copied to the SD card.
-These can be found in the [web-app](/web-app/) folder.
+These can be found in the [ui](/ui/) folder.
 But not so fast, there is a mandatory build step first.
 Open a terminal of your choice and navigate to the mentioned folder.
 Once you are there, please run the following commands.
@@ -503,9 +503,9 @@ npm install
 npm run build
 ```
 
-This can take a moment and should create a [build](/web-app/build/) folder.
-Create a new folder called `web-app` in the root of your SD card.
-Copy the content of [build](/web-app/build/) into the newly created folder.
+This can take a moment and should create a [dist](/ui/dist/) folder.
+Create a new folder called `ui` in the root of your SD card.
+Copy the content of [dist](/ui/dist/) into the newly created folder.
 Eject the SD card from your computer and insert it into the micro SD card slot of the TesLight controller.
 
 ## Let's test it
