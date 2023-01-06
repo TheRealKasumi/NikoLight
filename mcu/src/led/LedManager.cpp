@@ -332,17 +332,17 @@ bool TL::LedManager::loadCalculatedAnimations()
 		{
 			this->ledAnimator.at(i).reset(new TL::SparkleAnimator(
 				(TL::SparkleAnimator::SpawnPosition)ledConfig.animationSettings[0],
-				ledConfig.animationSettings[1],
-				CRGB(ledConfig.animationSettings[2], ledConfig.animationSettings[3], ledConfig.animationSettings[4]),
-				ledConfig.animationSettings[5] / 255.0f,
-				ledConfig.animationSettings[6] / 255.0f,
-				ledConfig.animationSettings[7] / 255.0f,
-				ledConfig.animationSettings[8] / 255.0f,
+				ledConfig.animationSettings[8],
+				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
 				ledConfig.animationSettings[9] / 255.0f,
 				ledConfig.animationSettings[10] / 255.0f,
 				ledConfig.animationSettings[11] / 255.0f,
 				ledConfig.animationSettings[12] / 255.0f,
-				ledConfig.animationSettings[13] / 255.0f));
+				ledConfig.animationSettings[13] / 255.0f,
+				ledConfig.animationSettings[14] / 255.0f,
+				ledConfig.animationSettings[15] / 255.0f,
+				ledConfig.animationSettings[16] / 255.0f,
+				ledConfig.animationSettings[17] / 255.0f));
 		}
 
 		// Gradient type
@@ -357,7 +357,7 @@ bool TL::LedManager::loadCalculatedAnimations()
 		// Static color type
 		else if (ledConfig.type == 3)
 		{
-			this->ledAnimator.at(i).reset(new TL::StaticColorAnimator(CRGB(ledConfig.animationSettings[0], ledConfig.animationSettings[1], ledConfig.animationSettings[2])));
+			this->ledAnimator.at(i).reset(new TL::StaticColorAnimator(CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3])));
 		}
 
 		// Color bar type
@@ -374,7 +374,7 @@ bool TL::LedManager::loadCalculatedAnimations()
 		{
 			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(
 				(TL::RainbowAnimatorMotion::RainbowMode)ledConfig.animationSettings[0],
-				(TL::MotionSensor::MotionSensorValue)ledConfig.animationSettings[1]));
+				(TL::MotionSensor::MotionSensorValue)ledConfig.animationSettings[7]));
 		}
 
 		// Gradient motion type
@@ -382,9 +382,9 @@ bool TL::LedManager::loadCalculatedAnimations()
 		{
 			this->ledAnimator.at(i).reset(new TL::GradientAnimatorMotion(
 				(TL::GradientAnimatorMotion::GradientMode)ledConfig.animationSettings[0],
-				(TL::MotionSensor::MotionSensorValue)ledConfig.animationSettings[1],
-				CRGB(ledConfig.animationSettings[2], ledConfig.animationSettings[3], ledConfig.animationSettings[4]),
-				CRGB(ledConfig.animationSettings[5], ledConfig.animationSettings[6], ledConfig.animationSettings[7])));
+				(TL::MotionSensor::MotionSensorValue)ledConfig.animationSettings[7],
+				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
+				CRGB(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
 		}
 
 		// Unknown type

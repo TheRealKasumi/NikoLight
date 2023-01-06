@@ -4,7 +4,7 @@
  * @brief Implementation of a REST endpoint to manage fseq files on the TL controller.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -190,7 +190,7 @@ void TL::FseqEndpoint::deleteFseq()
 			TL::FseqEndpoint::sendSimpleResponse(500, F("Failed to calculate file identifier."));
 			return;
 		}
-		memcpy(&idConfig, &TL::FseqEndpoint::configuration->getLedConfig(0).animationSettings[10], sizeof(idConfig));
+		memcpy(&idConfig, &TL::FseqEndpoint::configuration->getLedConfig(0).animationSettings[20], sizeof(idConfig));
 		if (idFile == idConfig)
 		{
 			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Can not delete a fseq file that is currently used."));

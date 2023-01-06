@@ -240,7 +240,7 @@ void TL::LedAnimator::applyBrightness(std::vector<CRGB> &pixels)
  * @brief Calculate a random value between a minimum and maximum.
  * @param min minimum value
  * @param max maximum value
- * @return random value within given  bounds
+ * @return random value within given bounds
  */
 int32_t TL::LedAnimator::random(const int32_t min, const int32_t max)
 {
