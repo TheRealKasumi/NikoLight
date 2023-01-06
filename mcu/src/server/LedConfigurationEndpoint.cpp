@@ -4,7 +4,7 @@
  * @brief Implementation of a REST endpoint to configure the LED settings.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -43,7 +43,7 @@ void TL::LedConfigurationEndpoint::getLedConfig()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the LED configuration."));
 
-	DynamicJsonDocument jsonDoc(4096);
+	DynamicJsonDocument jsonDoc(5500);
 	JsonArray ledConfig = jsonDoc.createNestedArray(F("ledConfig"));
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
@@ -58,10 +58,10 @@ void TL::LedConfigurationEndpoint::getLedConfig()
 		ledZone[F("fadeSpeed")] = TL::LedConfigurationEndpoint::configuration->getLedConfig(i).fadeSpeed;
 		ledZone[F("ledVoltage")] = TL::LedConfigurationEndpoint::configuration->getLedConfig(i).ledVoltage;
 
-		JsonArray customFields = ledZone.createNestedArray(F("customFields"));
-		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
+		JsonArray animationSettings = ledZone.createNestedArray(F("animationSettings"));
+		for (uint8_t j = 0; j < ANIMATOR_NUM_ANIMATION_SETTINGS; j++)
 		{
-			customFields.add(TL::LedConfigurationEndpoint::configuration->getLedConfig(i).customField[j]);
+			animationSettings.add(TL::LedConfigurationEndpoint::configuration->getLedConfig(i).animationSettings[j]);
 		}
 
 		JsonArray channelCurrents = ledZone.createNestedArray(F("channelCurrents"));
@@ -104,7 +104,7 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 		return;
 	}
 
-	DynamicJsonDocument jsonDoc(4096);
+	DynamicJsonDocument jsonDoc(5500);
 	if (!TL::LedConfigurationEndpoint::parseJsonDocument(jsonDoc, body))
 	{
 		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
@@ -147,10 +147,10 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 		config[i].fadeSpeed = ledZone[F("fadeSpeed")].as<uint8_t>();
 		config[i].ledVoltage = ledZone[F("ledVoltage")].as<float>();
 
-		JsonArray customFields = ledZone[F("customFields")].as<JsonArray>();
-		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
+		JsonArray animationSettings = ledZone[F("animationSettings")].as<JsonArray>();
+		for (uint8_t j = 0; j < ANIMATOR_NUM_ANIMATION_SETTINGS; j++)
 		{
-			config[i].customField[j] = customFields[j].as<uint8_t>();
+			config[i].animationSettings[j] = animationSettings[j].as<uint8_t>();
 		}
 
 		JsonArray channelCurrents = ledZone[F("channelCurrents")].as<JsonArray>();
@@ -232,10 +232,10 @@ bool TL::LedConfigurationEndpoint::validateLedZone(const JsonObject &jsonObject,
 		return false;
 	}
 
-	if (!TL::LedConfigurationEndpoint::isInRange(jsonObject[F("type")].as<uint8_t>(), 0L, 17L) && jsonObject[F("type")].as<uint8_t>() != 255)
+	if (!TL::LedConfigurationEndpoint::isInRange(jsonObject[F("type")].as<uint8_t>(), 0L, 6L) && jsonObject[F("type")].as<uint8_t>() != 255)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field in configuration ") + index + F(" must be between 0 and 17."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field in configuration ") + index + F(" must be between 0 and 17."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field in configuration ") + index + F(" must be between 0 and 6."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field in configuration ") + index + F(" must be between 0 and 6."));
 		return false;
 	}
 
@@ -281,28 +281,35 @@ bool TL::LedConfigurationEndpoint::validateLedZone(const JsonObject &jsonObject,
 		return false;
 	}
 
-	if (!jsonObject[F("customFields")].is<JsonArray>())
+	if (!jsonObject[F("animationSettings")].is<JsonArray>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"customFields\" field in configuration ") + index + F(" must be of type \"array\"."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"customFields\" field in configuration ") + index + F(" must be of type \"array\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"animationSettings\" field in configuration ") + index + F(" must be of type \"array\"."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"animationSettings\" field in configuration ") + index + F(" must be of type \"array\"."));
 		return false;
 	}
 
-	if (jsonObject[F("customFields")].as<JsonArray>().size() != ANIMATOR_NUM_CUSTOM_FIELDS)
+	if (jsonObject[F("animationSettings")].as<JsonArray>().size() != ANIMATOR_NUM_ANIMATION_SETTINGS)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"customFields\" array must have exactly ") + ANIMATOR_NUM_CUSTOM_FIELDS + F(" elements."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"customFields\" array must have exactly ") + ANIMATOR_NUM_CUSTOM_FIELDS + F(" elements."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"animationSettings\" array must have exactly ") + ANIMATOR_NUM_ANIMATION_SETTINGS + F(" elements."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"animationSettings\" array must have exactly ") + ANIMATOR_NUM_ANIMATION_SETTINGS + F(" elements."));
 		return false;
 	}
 
-	for (uint8_t i = 0; i < ANIMATOR_NUM_CUSTOM_FIELDS; i++)
+	for (uint8_t i = 0; i < ANIMATOR_NUM_ANIMATION_SETTINGS; i++)
 	{
-		if (!jsonObject[F("customFields")][i].is<uint8_t>())
+		if (!jsonObject[F("animationSettings")][i].is<uint8_t>())
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"customFields\" field in configuration ") + index + F(" must only contain elements of type \"uint8\"."));
-			TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"customFields\" field in configuration ") + index + F(" must only contain elements of type \"uint8\"."));
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"animationSettings\" field in configuration ") + index + F(" must only contain elements of type \"uint8\"."));
+			TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"animationSettings\" field in configuration ") + index + F(" must only contain elements of type \"uint8\"."));
 			return false;
 		}
+	}
+
+	if (!TL::LedConfigurationEndpoint::validateAnimationSettings(jsonObject[F("type")], jsonObject[F("animationSettings")]))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("One of the fields in the \"animationSettings\" array at index ") + index + F(" is invalid."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("One of the fields in the \"animationSettings\" array at index ") + index + F(" is invalid."));
+		return false;
 	}
 
 	if (!jsonObject[F("channelCurrents")].is<JsonArray>())
@@ -314,8 +321,8 @@ bool TL::LedConfigurationEndpoint::validateLedZone(const JsonObject &jsonObject,
 
 	if (jsonObject[F("channelCurrents")].as<JsonArray>().size() != 3)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"channelCurrents\" array must have exactly ") + ANIMATOR_NUM_CUSTOM_FIELDS + F(" elements."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"channelCurrents\" array must have exactly ") + ANIMATOR_NUM_CUSTOM_FIELDS + F(" elements."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"channelCurrents\" array must have exactly ") + ANIMATOR_NUM_ANIMATION_SETTINGS + F(" elements."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"channelCurrents\" array must have exactly ") + ANIMATOR_NUM_ANIMATION_SETTINGS + F(" elements."));
 		return false;
 	}
 
@@ -325,6 +332,50 @@ bool TL::LedConfigurationEndpoint::validateLedZone(const JsonObject &jsonObject,
 		{
 			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"channelCurrents\" field in configuration ") + index + F(" must only contain elements of type \"uint8\"."));
 			TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"channelCurrents\" field in configuration ") + index + F(" must only contain elements of type \"uint8\"."));
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/**
+ * @brief Calidate the animation settings based on the animatino type.
+ * @param type type of the animation
+ * @param jsonArray array holding the animation settings
+ * @return true when valid
+ * @return false when invalid
+ */
+bool TL::LedConfigurationEndpoint::validateAnimationSettings(const uint8_t type, const JsonArray &jsonArray)
+{
+	// Contains an array with the valid ranges for all animation settings
+	// [0] = type
+	// [1] = setting index
+	// [2] = min value
+	// [3] = max value
+	const size_t numElements = 9;
+	const uint8_t valueRanges[numElements][4] = {
+		{0, 0, 0, 2},
+		{1, 0, 0, 3},
+		{1, 8, 2, 200},
+		{2, 0, 0, 1},
+		{4, 0, 0, 2},
+		{5, 0, 0, 2},
+		{5, 7, 0, 18},
+		{6, 0, 0, 1},
+		{6, 7, 0, 18}};
+
+	for (size_t i = 0; i < numElements; i++)
+	{
+		if (valueRanges[i][0] != type)
+		{
+			continue;
+		}
+
+		if (!TL::LedConfigurationEndpoint::isInRange((long)jsonArray[valueRanges[i][1]], (long)valueRanges[i][2], (long)valueRanges[i][3]))
+		{
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"animationSettings\" value at index ") + valueRanges[i][1] + F(" is invalid."));
+			TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"animationSettings\" value at index ") + valueRanges[i][1] + F(" is invalid."));
 			return false;
 		}
 	}

@@ -4,7 +4,7 @@
  * @brief Contains a class to render a motion based rainbow.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -33,20 +33,16 @@ namespace TL
 	public:
 		enum RainbowMode
 		{
-			RAINBOW_SOLID,
-			RAINBOW_LINEAR,
-			RAINBOW_CENTER
+			RAINBOW_SOLID = 0,
+			RAINBOW_LINEAR = 1,
+			RAINBOW_CENTER = 2
 		};
 
-		RainbowAnimatorMotion();
 		RainbowAnimatorMotion(const TL::RainbowAnimatorMotion::RainbowMode rainbowMode, const TL::MotionSensor::MotionSensorValue motionSensorValue);
 		~RainbowAnimatorMotion();
 
 		void init(std::vector<CRGB> &pixels);
 		void render(std::vector<CRGB> &pixels);
-
-		void setRainbowMode(const TL::RainbowAnimatorMotion::RainbowMode rainbowMode);
-		void setMotionSensorValue(const TL::MotionSensor::MotionSensorValue motionSensorValue);
 
 	private:
 		float angle;

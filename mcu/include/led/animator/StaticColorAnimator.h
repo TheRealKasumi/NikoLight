@@ -4,7 +4,7 @@
  * @brief Contains a class to render a static color
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -30,14 +30,11 @@ namespace TL
 	class StaticColorAnimator : public LedAnimator
 	{
 	public:
-		StaticColorAnimator();
 		StaticColorAnimator(const CRGB color);
 		~StaticColorAnimator();
 
 		void init(std::vector<CRGB> &pixels);
 		void render(std::vector<CRGB> &pixels);
-
-		void setColor(const CRGB color);
 
 	private:
 		CRGB color;

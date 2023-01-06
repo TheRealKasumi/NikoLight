@@ -4,7 +4,7 @@
  * @brief Implementation of the {@link TL::LedManager}.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -255,11 +255,11 @@ bool TL::LedManager::createLedData()
 bool TL::LedManager::createAnimators()
 {
 	// Custom animations will be used when the first animator type is set to 255
-	// The used file identifier is set by the custom fields [10-13]
-	// Field 14 is reserved to store the previous, calculated animation type
+	// The used file identifier is set by the animationSettings [20-23]
+	// Field 24 is reserved to store the previous, calculated animation type
 	const bool customAnimation = this->config->getLedConfig(0).type == 255;
 	uint32_t identifier = 0;
-	memcpy(&identifier, &this->config->getLedConfig(0).customField[10], sizeof(identifier));
+	memcpy(&identifier, &this->config->getLedConfig(0).animationSettings[20], sizeof(identifier));
 	if (!customAnimation)
 	{
 		const size_t ledCount = this->getLedCount();
@@ -321,130 +321,76 @@ bool TL::LedManager::loadCalculatedAnimations()
 	{
 		const TL::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
 
-		// Rainbow solid type
+		// Rainbow type
 		if (ledConfig.type == 0)
 		{
-			this->ledAnimator.at(i).reset(new TL::RainbowAnimator(TL::RainbowAnimator::RainbowMode::RAINBOW_SOLID));
+			this->ledAnimator.at(i).reset(new TL::RainbowAnimator((TL::RainbowAnimator::RainbowMode)ledConfig.animationSettings[0]));
 		}
 
-		// Rainbow linear type
+		// Sparkle type
 		else if (ledConfig.type == 1)
 		{
-			this->ledAnimator.at(i).reset(new TL::RainbowAnimator(TL::RainbowAnimator::RainbowMode::RAINBOW_LINEAR));
+			this->ledAnimator.at(i).reset(new TL::SparkleAnimator(
+				(TL::SparkleAnimator::SpawnPosition)ledConfig.animationSettings[0],
+				ledConfig.animationSettings[1],
+				CRGB(ledConfig.animationSettings[2], ledConfig.animationSettings[3], ledConfig.animationSettings[4]),
+				ledConfig.animationSettings[5] / 255.0f,
+				ledConfig.animationSettings[6] / 255.0f,
+				ledConfig.animationSettings[7] / 255.0f,
+				ledConfig.animationSettings[8] / 255.0f,
+				ledConfig.animationSettings[9] / 255.0f,
+				ledConfig.animationSettings[10] / 255.0f,
+				ledConfig.animationSettings[11] / 255.0f,
+				ledConfig.animationSettings[12] / 255.0f,
+				ledConfig.animationSettings[13] / 255.0f));
 		}
 
-		// Rainbow middle type
+		// Gradient type
 		else if (ledConfig.type == 2)
 		{
-			this->ledAnimator.at(i).reset(new TL::RainbowAnimator(TL::RainbowAnimator::RainbowMode::RAINBOW_CENTER));
-		}
-
-		// Gradient linear type
-		else if (ledConfig.type == 3)
-		{
-			this->ledAnimator.at(i).reset(new TL::GradientAnimator(TL::GradientAnimator::GradientMode::GRADIENT_LINEAR, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
-		}
-
-		// Gradient center type
-		else if (ledConfig.type == 4)
-		{
-			this->ledAnimator.at(i).reset(new TL::GradientAnimator(TL::GradientAnimator::GradientMode::GRADIENT_CENTER, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
+			this->ledAnimator.at(i).reset(new TL::GradientAnimator(
+				(TL::GradientAnimator::GradientMode)ledConfig.animationSettings[0],
+				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
+				CRGB(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
 		}
 
 		// Static color type
+		else if (ledConfig.type == 3)
+		{
+			this->ledAnimator.at(i).reset(new TL::StaticColorAnimator(CRGB(ledConfig.animationSettings[0], ledConfig.animationSettings[1], ledConfig.animationSettings[2])));
+		}
+
+		// Color bar type
+		else if (ledConfig.type == 4)
+		{
+			this->ledAnimator.at(i).reset(new TL::ColorBarAnimator(
+				(TL::ColorBarAnimator::ColorBarMode)ledConfig.animationSettings[0],
+				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
+				CRGB(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
+		}
+
+		// Rainbow motion type
 		else if (ledConfig.type == 5)
 		{
-			this->ledAnimator.at(i).reset(new TL::StaticColorAnimator(CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2])));
+			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(
+				(TL::RainbowAnimatorMotion::RainbowMode)ledConfig.animationSettings[0],
+				(TL::MotionSensor::MotionSensorValue)ledConfig.animationSettings[1]));
 		}
 
-		// Color bar linear hard type
+		// Gradient motion type
 		else if (ledConfig.type == 6)
 		{
-			this->ledAnimator.at(i).reset(new TL::ColorBarAnimator(TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_HARD, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
-		}
-
-		// Color bar linear smooth type
-		else if (ledConfig.type == 7)
-		{
-			this->ledAnimator.at(i).reset(new TL::ColorBarAnimator(TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_SMOOTH, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
-		}
-
-		// Color bar center hard type
-		else if (ledConfig.type == 8)
-		{
-			this->ledAnimator.at(i).reset(new TL::ColorBarAnimator(TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_HARD, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
-		}
-
-		// Color bar center smooth type
-		else if (ledConfig.type == 9)
-		{
-			this->ledAnimator.at(i).reset(new TL::ColorBarAnimator(TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_SMOOTH, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
-		}
-
-		// Rainbow linear motion acc x type
-		else if (ledConfig.type == 10)
-		{
-			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TL::MotionSensor::MotionSensorValue::ACC_X_G));
-		}
-
-		// Rainbow linear motion acc y type
-		else if (ledConfig.type == 11)
-		{
-			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TL::MotionSensor::MotionSensorValue::ACC_Y_G));
-		}
-
-		// Rainbow linear motion acc x type
-		else if (ledConfig.type == 10)
-		{
-			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TL::MotionSensor::MotionSensorValue::ACC_X_G));
-		}
-
-		// Rainbow linear motion acc y type
-		else if (ledConfig.type == 11)
-		{
-			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR, TL::MotionSensor::MotionSensorValue::ACC_Y_G));
-		}
-
-		// Rainbow center motion acc x type
-		else if (ledConfig.type == 12)
-		{
-			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_CENTER, TL::MotionSensor::MotionSensorValue::ACC_X_G));
-		}
-
-		// Rainbow center motion acc y type
-		else if (ledConfig.type == 13)
-		{
-			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_CENTER, TL::MotionSensor::MotionSensorValue::ACC_Y_G));
-		}
-
-		// Gradient linear motion acc x type
-		else if (ledConfig.type == 14)
-		{
-			this->ledAnimator.at(i).reset(new TL::GradientAnimatorMotion(TL::GradientAnimatorMotion::GradientMode::GRADIENT_LINEAR, TL::MotionSensor::MotionSensorValue::ACC_X_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
-		}
-
-		// Gradient linear motion acc y type
-		else if (ledConfig.type == 15)
-		{
-			this->ledAnimator.at(i).reset(new TL::GradientAnimatorMotion(TL::GradientAnimatorMotion::GradientMode::GRADIENT_LINEAR, TL::MotionSensor::MotionSensorValue::ACC_Y_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
-		}
-
-		// Gradient center motion acc x type
-		else if (ledConfig.type == 16)
-		{
-			this->ledAnimator.at(i).reset(new TL::GradientAnimatorMotion(TL::GradientAnimatorMotion::GradientMode::GRADIENT_CENTER, TL::MotionSensor::MotionSensorValue::ACC_X_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
-		}
-
-		// Gradient center motion acc y type
-		else if (ledConfig.type == 17)
-		{
-			this->ledAnimator.at(i).reset(new TL::GradientAnimatorMotion(TL::GradientAnimatorMotion::GradientMode::GRADIENT_CENTER, TL::MotionSensor::MotionSensorValue::ACC_Y_G, CRGB(ledConfig.customField[0], ledConfig.customField[1], ledConfig.customField[2]), CRGB(ledConfig.customField[3], ledConfig.customField[4], ledConfig.customField[5])));
+			this->ledAnimator.at(i).reset(new TL::GradientAnimatorMotion(
+				(TL::GradientAnimatorMotion::GradientMode)ledConfig.animationSettings[0],
+				(TL::MotionSensor::MotionSensorValue)ledConfig.animationSettings[1],
+				CRGB(ledConfig.animationSettings[2], ledConfig.animationSettings[3], ledConfig.animationSettings[4]),
+				CRGB(ledConfig.animationSettings[5], ledConfig.animationSettings[6], ledConfig.animationSettings[7])));
 		}
 
 		// Unknown type
 		else
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is unknown. Invalid value ") + String(ledConfig.type) + F("."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is unknown. Invalid value ") + String(ledConfig.type) + F(". Using a static color instead"));
 			return false;
 		}
 

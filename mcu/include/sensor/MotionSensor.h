@@ -4,7 +4,7 @@
  * @brief Contains a class for reading the motion sensor on the TesLight board.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -37,25 +37,25 @@ namespace TL
 	public:
 		enum MotionSensorValue
 		{
-			ACC_X_RAW,
-			ACC_Y_RAW,
-			ACC_Z_RAW,
-			GY_X_RAW,
-			GY_Y_RAW,
-			GY_Z_RAW,
-			ACC_X_G,
-			ACC_Y_G,
-			ACC_Z_G,
-			GY_X_DEG,
-			GY_Y_DEG,
-			GY_Z_DEG,
-			PITCH,
-			ROLL,
-			YAW,
-			ROLL_COMPENSATED_ACC_X_G,
-			PITCH_COMPENSATED_ACC_Y_G,
-			TEMP_RAW,
-			TEMP_DEG
+			ACC_X_RAW = 0,
+			ACC_Y_RAW = 1,
+			ACC_Z_RAW = 2,
+			GY_X_RAW = 3,
+			GY_Y_RAW = 4,
+			GY_Z_RAW = 5,
+			ACC_X_G = 6,
+			ACC_Y_G = 7,
+			ACC_Z_G = 8,
+			GY_X_DEG = 9,
+			GY_Y_DEG = 10,
+			GY_Z_DEG = 11,
+			PITCH = 12,
+			ROLL = 13,
+			YAW = 14,
+			ROLL_COMPENSATED_ACC_X_G = 15,
+			PITCH_COMPENSATED_ACC_Y_G = 16,
+			TEMP_RAW = 17,
+			TEMP_DEG = 18
 		};
 
 		struct MotionSensorData

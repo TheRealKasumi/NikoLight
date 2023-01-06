@@ -60,10 +60,7 @@ TL::ColorBarAnimator::~ColorBarAnimator()
 void TL::ColorBarAnimator::init(std::vector<CRGB> &pixels)
 {
 	this->angle = 0.0f;
-	for (size_t i = 0; i < pixels.size(); i++)
-	{
-		pixels.at(i) = CRGB::Black;
-	}
+	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
 }
 
 /**

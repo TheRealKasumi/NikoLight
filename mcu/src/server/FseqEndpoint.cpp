@@ -190,7 +190,7 @@ void TL::FseqEndpoint::deleteFseq()
 			TL::FseqEndpoint::sendSimpleResponse(500, F("Failed to calculate file identifier."));
 			return;
 		}
-		memcpy(&idConfig, &TL::FseqEndpoint::configuration->getLedConfig(0).customField[10], sizeof(idConfig));
+		memcpy(&idConfig, &TL::FseqEndpoint::configuration->getLedConfig(0).animationSettings[10], sizeof(idConfig));
 		if (idFile == idConfig)
 		{
 			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Can not delete a fseq file that is currently used."));
