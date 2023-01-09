@@ -30,7 +30,7 @@
  * @param sparkFading fading speed of the sparks in the range 0.0 to 1.0
  * @param sparktail tail length of the sparks in the range 0.0 to 1.0
  * @param birthRate probability with which a new spark is born each cycle
- * @param spawnVariance variance in the spawn position in the rande 0.0 to 1.0
+ * @param spawnVariance variance in the spawn position in the range 0.0 to 1.0
  * @param speedVariance variance in speed in the range 0.0 to 1.0
  * @param brightnessVariance variance in brightness in the range 0.0 to 1.0
  * @param frictionVariance variance in friction in the range 0.0 to 1.0
@@ -189,13 +189,13 @@ void TL::SparkleAnimator::spawnSparks(std::vector<CRGB> &pixels)
 				break;
 			case TL::SparkleAnimator::SpawnPosition::SPAWN_RIGHT:
 				spark.position = (pixels.size() - 1.0f) - (this->offset / 255.0f) * (pixels.size() - 1);
-				spark.position += this->random(0, pixels.size() - 1.0f) * this->spawnVariance;
+				spark.position -= this->random(0, pixels.size() - 1.0f) * this->spawnVariance;
 				spark.position = spark.position >= 0 ? spark.position : 0;
 				spark.position = spark.position < pixels.size() ? spark.position : pixels.size() - 1;
 				break;
 			case TL::SparkleAnimator::SpawnPosition::SPAWN_CENTER:
 				spark.position = pixels.size() / 2.0f;
-				spark.position += this->random(0, pixels.size() - 1.0f) * this->spawnVariance;
+				spark.position += this->random(-spark.position, spark.position) * this->spawnVariance;
 				spark.position = spark.position >= 0 ? spark.position : 0;
 				spark.position = spark.position < pixels.size() ? spark.position : pixels.size() - 1;
 				break;

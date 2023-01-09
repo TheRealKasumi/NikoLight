@@ -332,17 +332,17 @@ bool TL::LedManager::loadCalculatedAnimations()
 		{
 			this->ledAnimator.at(i).reset(new TL::SparkleAnimator(
 				(TL::SparkleAnimator::SpawnPosition)ledConfig.animationSettings[0],
-				ledConfig.animationSettings[8],
+				ledConfig.animationSettings[8] / 2 + 1,
 				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
-				ledConfig.animationSettings[9] / 255.0f,
-				ledConfig.animationSettings[10] / 255.0f,
+				ledConfig.animationSettings[9] / 4096.0f,
+				ledConfig.animationSettings[10] / 1024.0f,
 				ledConfig.animationSettings[11] / 255.0f,
-				ledConfig.animationSettings[12] / 255.0f,
-				ledConfig.animationSettings[13] / 255.0f,
-				ledConfig.animationSettings[14] / 255.0f,
-				ledConfig.animationSettings[15] / 255.0f,
-				ledConfig.animationSettings[16] / 255.0f,
-				ledConfig.animationSettings[17] / 255.0f));
+				ledConfig.animationSettings[12] / 1024.0f,
+				ledConfig.animationSettings[13],
+				ledConfig.animationSettings[14] / 1024.0f,
+				ledConfig.animationSettings[15] / 1024.0f,
+				ledConfig.animationSettings[16] / 1024.0f,
+				ledConfig.animationSettings[17] / 1024.0f));
 		}
 
 		// Gradient type

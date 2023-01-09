@@ -157,6 +157,26 @@ float TL::GradientAnimatorMotion::getMotionOffset()
 	{
 		motionValue = this->motionSensorData.gyroZDeg / 30.0f;
 	}
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::PITCH)
+	{
+		motionValue = this->motionSensorData.pitch / 30.0f;
+	}
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ROLL)
+	{
+		motionValue = this->motionSensorData.roll / 30.0f;
+	}
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ROLL_COMPENSATED_ACC_X_G)
+	{
+		motionValue = this->motionSensorData.rollCompensatedAccXG;
+	}
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::PITCH_COMPENSATED_ACC_Y_G)
+	{
+		motionValue = this->motionSensorData.pitchCompensatedAccYG;
+	}
+	else
+	{
+		motionValue = 0.0f;
+	}
 
 	motionValue *= this->speed / 127.0f;
 	motionValue += (this->offset / 255.0f) - 0.5f;
