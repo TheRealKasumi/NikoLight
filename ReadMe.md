@@ -86,8 +86,8 @@ The build guide can be found [here](documentation/build.md).
 
 Creating this project has taken a lot of my time, effort and money.
 Nevertheless, I share it publicly with you.
-You can use it for free, modify it and even earn a coffee by building the parts for other people.
-But please **don't steal** my work silently, be a little **respectful** and **give credits**.
+You can use it for free, modify it and even earn a coffee by building the parts for other people as long as you are a private person without commercial intentions.
+But please **don't steal** my work, be a little **respectful** and **give credits**.
 That's all I wish for.
 
 Also, you should be careful when working on the project and especially your car.
