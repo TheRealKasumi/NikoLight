@@ -25,7 +25,7 @@ There all combinations are listed.
 
 | Animation             | Rainbow      | Sparkl              | Gradient      | Static      | Color Bar     | Rainbow Motion | Gradient Motion | FSEQ          |
 | --------------------- | ------------ | ------------------- | ------------- | ----------- | ------------- | -------------- | --------------- | ------------- |
-| Type                  | 0            | 1                   | 2             | 3           | 4             | 5              | 6               | Don't change  |
+| Type                  | 0            | 1                   | 2             | 3           | 4             | 5              | 6               | 255           |
 | animationSettings[0]  | Rainbow Mode | Spawn Position      | Gradient Mode | /           | Bar Mode      | Rainbow Mode   | Gradient Mode   | Don't change  |
 | animationSettings[1]  | /            | Color Red           | Color Red 1   | Color Red   | Color Red 1   | /              | Color Red 1     | Don't change  |
 | animationSettings[2]  | /            | Color Green         | Color Green 1 | Color Green | Color Green 1 | /              | Color Green 1   | Don't change  |
