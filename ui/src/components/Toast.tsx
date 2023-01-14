@@ -21,9 +21,6 @@ export const Toast = ({
         className={cx(
           'fixed inset-x-4 bottom-4 z-50 w-auto rounded-lg shadow-lg md:top-4 md:right-4 md:left-auto md:bottom-auto md:w-full md:max-w-sm',
           'bg-neutral dark:bg-gray',
-          'radix-state-open:animate-toast-slide-in-bottom md:radix-state-open:animate-toast-slide-in-right',
-          'radix-state-closed:animate-toast-hide',
-          'radix-swipe-end:animate-toast-swipe-out',
           'translate-x-radix-toast-swipe-move-x',
           'radix-swipe-cancel:translate-x-0 radix-swipe-cancel:duration-200 radix-swipe-cancel:ease-[ease]',
           'focus:outline-none focus-visible:ring focus-visible:ring-sky focus-visible:ring-opacity-75',

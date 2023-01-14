@@ -5,7 +5,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import {
-  Animation,
+  AnimationType,
   Button,
   Error,
   InputText,
@@ -46,11 +46,11 @@ const Form = (): JSX.Element => {
   const { data: led } = useLed({
     onSuccess: (data) => {
       const zone = data[0];
-      const customFields = zone.customFields;
+      const animationSettings = zone.animationSettings;
 
       let fileId = 0;
       for (let i = 3; i >= 0; i--) {
-        fileId = fileId * 256 + customFields[i + 10];
+        fileId = fileId * 256 + animationSettings[i + 20];
       }
 
       if (fileId > 0) {
@@ -107,18 +107,18 @@ const Form = (): JSX.Element => {
 
     const prevType = zone.type;
 
-    zone.type = Animation.Custom;
+    zone.type = AnimationType.FSEQ;
 
     // Write the fileId into the custom fields
     for (let i = 0; i < 4; i++) {
       const byte = fileId & 0xff;
-      zone.customFields[i + 10] = byte;
+      zone.animationSettings[i + 20] = byte;
       fileId = (fileId - byte) / 256;
     }
 
     // Set the last custom field to the previous calculated animation
-    if (prevType !== Animation.Custom) {
-      zone.customFields[14] = prevType;
+    if (prevType !== AnimationType.FSEQ) {
+      zone.animationSettings[24] = prevType;
     }
 
     zones[0] = zone;
@@ -134,10 +134,10 @@ const Form = (): JSX.Element => {
     const zones = JSON.parse(JSON.stringify(led)) as NonNullable<typeof led>;
     const zone = zones[0];
 
-    zone.type = zone.customFields[14];
+    zone.type = zone.animationSettings[24];
 
     for (let i = 0; i < 4; i++) {
-      zone.customFields[i + 10] = 0;
+      zone.animationSettings[i + 20] = 0;
     }
 
     zones[0] = zone;

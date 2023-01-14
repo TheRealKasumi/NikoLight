@@ -71,7 +71,7 @@
     "wifiHotspot": "Wifi Hotspot"
   },
   "toast": {
-    "close": "Ausblenden"
+    "close": "Verwerfen"
   },
   "update": {
     "desc": {
@@ -85,45 +85,72 @@
   },
   "zone": {
     "advanced": "Erweitert",
-    "animation": "Animation",
+    "animationType": "Animation",
     "animationTypes": {
+      "ColorBar": "Farbbalken",
+      "FSEQ": "Benutzerdefiniert",
+      "Gradient": "Farbverlauf",
+      "GradientMotion": "Bewegter Farbverlauf",
       "Rainbow": "Regenbogen",
-      "RainbowLinear": "Regenbogen linear",
-      "RainbowCentered": "Regenbogen zentriert",
-      "GradientLinear": "Farbverlauf linear",
-      "GradientCenter": "Farbverlauf zentriert",
-      "Static": "Statisch",
-      "ColorBarsLinearHard": "Farbbalken linear hart",
-      "ColorBarsLinearSoft": "Farbbalken linear weich",
-      "ColorBarsCenterHard": "Farbbalken zentriert hart",
-      "ColorBarsCenterSoft": "Farbbalken zentriert weich",
-      "RainbowLinearAccX": "Regenbogen lineare Beschleunigung X",
-      "RainbowLinearAccY": "Regenbogen lineare Beschleunigung Y",
-      "RainbowCenteredAccX": "Regenbogen zentrierte Beschleunigung X",
-      "RainbowCenteredAccY": "Regenbogen zentrierte Beschleunigung Y",
-      "GradientLinearAccX": "Farbverlauf lineare Beschleunigung X",
-      "GradientLinearAccY": "Farbverlauf lineare Beschleunigung Y",
-      "GradientCenteredAccX": "Farbverlauf zentrierte Beschleunigung X",
-      "GradientCenteredAccY": "Farbverlauf zentrierte Beschleunigung Y",
-      "Custom": "Benutzerdefiniert"
+      "RainbowMotion": "Bewegter Regenbogen",
+      "Sparkle": "Funkeln",
+      "Static": "Statisch"
+    },
+    "animationMode": "Modus",
+    "animationModes": {
+      "Center": "Zentriert",
+      "CenterHardBorders": "Zentriert mit harten Übergängen",
+      "CenterSmoothBorder": "Zentriert mit sanften Übergängen",
+      "Left": "Links",
+      "Linear": "Streifen",
+      "LinearHardBorders": "Streifen mit harten Übergängen",
+      "LinearSmoothBorder": "Streifen mit sanften Übergängen",
+      "Random": "Zufällig",
+      "Right": "Rechts",
+      "Solid": "Durchgängig",
+      "Static": "Statisch"
     },
     "basic": "Standard",
+    "birthRate": "Wahrscheinlichkeit neuer Funken",
     "brightness": "Helligkeit",
+    "brightnessVariance": "Helligkeitsabweichung",
     "channelCurrents": "LED-Strom pro Kanal (MA)",
-    "color1:": "Farbe 1",
-    "color2:": "Farbe 2",
+    "color1": "Farbe 1",
+    "color2": "Farbe 2",
     "direction": {
       "desc": "Die Richtung der Animation umkehren",
       "label": "Richtung"
     },
     "fadeSpeed": "Überblendgeschwindigkeit",
+    "fadingVariance": "Überblendungsabweichung",
+    "frictionVariance": "Friktionsabweichung",
     "ledCount": "LED Anzahl",
     "ledVoltage": "LED Spannung",
+    "motionSensorValues": {
+      "ACC_X_G": "ACC X G",
+      "ACC_Y_G": "ACC Y G",
+      "ACC_Z_G": "ACC Z G",
+      "GY_X_DEG": "GY X DEG",
+      "GY_Y_DEG": "GY Y DEG",
+      "GY_Z_DEG": "GY Z DEG",
+      "PITCH": "PITCH",
+      "ROLL": "ROLL",
+      "ROLL_COMPENSATED_ACC_X_G": "ROLL COMPENSATED ACC X G",
+      "PITCH_COMPENSATED_ACC_Y_G": "PITCH COMPENSATED ACC Y G"
+    },
     "offset": "Farbversatz",
     "reset": "Auf Standardwerte zurücksetzen",
+    "sensorValue": "Sensorwert",
+    "sparkCount": "Funken Anzahl",
+    "sparkFading": "Überblendgeschwindigkeit der Funken",
+    "sparkFriction": "Funken Friktion",
+    "sparkTail": "Schweiflänge der Funken",
+    "spawnVariance": "Spawn-Abweichung",
     "speed": "Geschwindigkeit",
+    "speedVariance": "Geschwindigkeitsabweichung",
     "submit": "Einstellungen übernehmen",
-    "submitSuccessful": "Erfolgreich gespeichert!"
+    "submitSuccessful": "Erfolgreich gespeichert!",
+    "variance": "Abweichung"
   },
   "zones": {
     "centerConsole": "Mittelkonsole",
