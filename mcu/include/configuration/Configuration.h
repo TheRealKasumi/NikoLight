@@ -4,7 +4,7 @@
  * @brief Contains a class to load and save the (runtime) configuration.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -55,17 +55,17 @@ namespace TL
 
 		struct LedConfig
 		{
-			uint8_t ledPin;									 // Physical pin for the LED output
-			uint16_t ledCount;								 // Number of LEDs
-			uint8_t type;									 // Type of the animation
-			uint8_t speed;									 // Speed of the animation
-			uint16_t offset;								 // Offset for the animation
-			uint8_t brightness;								 // Brightness of the LED channel
-			bool reverse;									 // Reverse the animation
-			uint8_t fadeSpeed;								 // Fading speed when turning on/off
-			uint8_t customField[ANIMATOR_NUM_CUSTOM_FIELDS]; // Custom fields for the animation
-			float ledVoltage;								 // Voltage of the LEDs
-			uint8_t ledChannelCurrent[3];					 // Current for each LED channel per LED in mA
+			uint8_t ledPin;												// Physical pin for the LED output
+			uint16_t ledCount;											// Number of LEDs
+			uint8_t type;												// Type of the animation
+			uint8_t speed;												// Speed of the animation
+			uint16_t offset;											// Offset for the animation
+			uint8_t brightness;											// Brightness of the LED channel
+			bool reverse;												// Reverse the animation
+			uint8_t fadeSpeed;											// Fading speed when turning on/off
+			uint8_t animationSettings[ANIMATOR_NUM_ANIMATION_SETTINGS]; // Custom settings for each animation
+			float ledVoltage;											// Voltage of the LEDs
+			uint8_t ledChannelCurrent[3];								// Current for each LED channel per LED in mA
 		};
 
 		struct WiFiConfig

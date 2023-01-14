@@ -4,7 +4,7 @@
  * @brief Implementation of the {@TL::RainbowAnimator}.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -20,15 +20,6 @@
  *
  */
 #include "led/animator/RainbowAnimator.h"
-
-/**
- * @brief Create a new instance of {@link TL::RainbowAnimator}.
- */
-TL::RainbowAnimator::RainbowAnimator()
-{
-	this->angle = 0.0f;
-	this->rainbowMode = TL::RainbowAnimator::RainbowMode::RAINBOW_SOLID;
-}
 
 /**
  * @brief Create a new instance of {@link TL::RainbowAnimator}.
@@ -55,10 +46,7 @@ TL::RainbowAnimator::~RainbowAnimator()
 void TL::RainbowAnimator::init(std::vector<CRGB> &pixels)
 {
 	this->angle = 0.0f;
-	for (size_t i = 0; i < pixels.size(); i++)
-	{
-		pixels.at(i) = CRGB::Black;
-	}
+	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
 }
 
 /**
@@ -118,13 +106,4 @@ void TL::RainbowAnimator::render(std::vector<CRGB> &pixels)
 	{
 		this->angle += 360.0f;
 	}
-}
-
-/**
- * @brief Set the mode of the rainbow animation.
- * @param rainbowMode mode of the animation
- */
-void TL::RainbowAnimator::setRainbowMode(const TL::RainbowAnimator::RainbowMode rainbowMode)
-{
-	this->rainbowMode = rainbowMode;
 }

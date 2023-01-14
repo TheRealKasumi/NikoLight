@@ -4,7 +4,7 @@
  * @brief Contains the implementation of {@link TL::LedAnimator}.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -234,6 +234,17 @@ void TL::LedAnimator::applyBrightness(std::vector<CRGB> &pixels)
 	{
 		pixels.at(i).setRGB(pixels.at(i).r * totalBrightness, pixels.at(i).g * totalBrightness, pixels.at(i).b * totalBrightness);
 	}
+}
+
+/**
+ * @brief Calculate a random value between a minimum and maximum.
+ * @param min minimum value
+ * @param max maximum value
+ * @return random value within given bounds
+ */
+int32_t TL::LedAnimator::random(const int32_t min, const int32_t max)
+{
+	return rand() % (max - min) + min;
 }
 
 /**

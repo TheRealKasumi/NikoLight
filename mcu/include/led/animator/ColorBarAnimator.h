@@ -4,7 +4,7 @@
  * @brief Contains a class to render moving color bars with a variable speed and color.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -32,10 +32,10 @@ namespace TL
 	public:
 		enum ColorBarMode
 		{
-			COLOR_BAR_LINEAR_HARD,
-			COLOR_BAR_LINEAR_SMOOTH,
-			COLOR_BAR_CENTER_HARD,
-			COLOR_BAR_CENTER_SMOOTH
+			COLOR_BAR_LINEAR_HARD = 0,
+			COLOR_BAR_LINEAR_SMOOTH = 1,
+			COLOR_BAR_CENTER_HARD = 2,
+			COLOR_BAR_CENTER_SMOOTH = 3
 		};
 
 		ColorBarAnimator();

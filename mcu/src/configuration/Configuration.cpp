@@ -168,9 +168,9 @@ void TL::Configuration::loadDefaults()
 		this->ledConfig[i].brightness = ANIMATOR_DEFAULT_BRIGHTNESS;
 		this->ledConfig[i].reverse = ANIMATOR_DEFAULT_REVERSE;
 		this->ledConfig[i].fadeSpeed = ANIMATOR_DEFAULT_FADE_SPEED;
-		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
+		for (uint8_t j = 0; j < ANIMATOR_NUM_ANIMATION_SETTINGS; j++)
 		{
-			this->ledConfig[i].customField[j] = 0;
+			this->ledConfig[i].animationSettings[j] = 0;
 		}
 		this->ledConfig[i].ledVoltage = REGULATOR_DEFAULT_VOLTAGE;
 		this->ledConfig[i].ledChannelCurrent[0] = LED_DEFAULT_CHANNEL_CURRENT;
@@ -260,9 +260,9 @@ bool TL::Configuration::load()
 		file.read(this->ledConfig[i].brightness);
 		file.read(this->ledConfig[i].reverse);
 		file.read(this->ledConfig[i].fadeSpeed);
-		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
+		for (uint8_t j = 0; j < ANIMATOR_NUM_ANIMATION_SETTINGS; j++)
 		{
-			file.read(this->ledConfig[i].customField[j]);
+			file.read(this->ledConfig[i].animationSettings[j]);
 		}
 		file.read(this->ledConfig[i].ledVoltage);
 		file.read(this->ledConfig[i].ledChannelCurrent[0]);
@@ -356,9 +356,9 @@ bool TL::Configuration::save()
 		file.write(this->ledConfig[i].brightness);
 		file.write(this->ledConfig[i].reverse);
 		file.write(this->ledConfig[i].fadeSpeed);
-		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
+		for (uint8_t j = 0; j < ANIMATOR_NUM_ANIMATION_SETTINGS; j++)
 		{
-			file.write(this->ledConfig[i].customField[j]);
+			file.write(this->ledConfig[i].animationSettings[j]);
 		}
 		file.write(this->ledConfig[i].ledVoltage);
 		file.write(this->ledConfig[i].ledChannelCurrent[0]);
@@ -439,9 +439,9 @@ uint16_t TL::Configuration::getSimpleHash()
 		hash = hash * 31 + this->ledConfig[i].brightness;
 		hash = hash * 31 + this->ledConfig[i].reverse;
 		hash = hash * 31 + this->ledConfig[i].fadeSpeed;
-		for (uint8_t j = 0; j < ANIMATOR_NUM_CUSTOM_FIELDS; j++)
+		for (uint8_t j = 0; j < ANIMATOR_NUM_ANIMATION_SETTINGS; j++)
 		{
-			hash = hash * 31 + this->ledConfig[i].customField[j];
+			hash = hash * 31 + this->ledConfig[i].animationSettings[j];
 		}
 		hash = hash * 31 + this->ledConfig[i].ledVoltage;
 		hash = hash * 31 + this->ledConfig[i].ledChannelCurrent[0];

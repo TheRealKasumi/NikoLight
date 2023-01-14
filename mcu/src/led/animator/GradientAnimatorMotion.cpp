@@ -4,7 +4,7 @@
  * @brief Implementation of the {@link TL::GradientAnimatorMotion}.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -23,23 +23,13 @@
 
 /**
  * @brief Create a new instance of {@link TL::GradientAnimatorMotion}.
- */
-TL::GradientAnimatorMotion::GradientAnimatorMotion()
-{
-	this->gradientMode = TL::GradientAnimatorMotion::GradientMode::GRADIENT_LINEAR;
-	this->color[0] = CRGB::Black;
-	this->color[1] = CRGB::Black;
-	this->motionSensorValue = TL::MotionSensor::MotionSensorValue::ACC_X_G;
-}
-
-/**
- * @brief Create a new instance of {@link TL::GradientAnimatorMotion}.
  * @param gradientMode mode of the gradient
  * @param motionSensorValue value that is influencing the animation
  * @param color1 first color value
  * @param color2 second color value
  */
-TL::GradientAnimatorMotion::GradientAnimatorMotion(const TL::GradientAnimatorMotion::GradientMode gradientMode, TL::MotionSensor::MotionSensorValue motionSensorValue, const CRGB color1, const CRGB color2)
+TL::GradientAnimatorMotion::GradientAnimatorMotion(const TL::GradientAnimatorMotion::GradientMode gradientMode, TL::MotionSensor::MotionSensorValue motionSensorValue,
+												   const CRGB color1, const CRGB color2)
 {
 	this->gradientMode = gradientMode;
 	this->color[0] = color1;
@@ -60,10 +50,7 @@ TL::GradientAnimatorMotion::~GradientAnimatorMotion()
  */
 void TL::GradientAnimatorMotion::init(std::vector<CRGB> &pixels)
 {
-	for (size_t i = 0; i < pixels.size(); i++)
-	{
-		pixels.at(i) = CRGB::Black;
-	}
+	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
 }
 
 /**
@@ -140,35 +127,6 @@ void TL::GradientAnimatorMotion::render(std::vector<CRGB> &pixels)
 }
 
 /**
- * @brief Set the gradient mode.
- * @param gradientMode mode of the gradient
- */
-void TL::GradientAnimatorMotion::setGradientMode(const TL::GradientAnimatorMotion::GradientMode gradientMode)
-{
-	this->gradientMode = gradientMode;
-}
-
-/**
- * @brief Set the color for the gradient.
- * @param color1 first color value
- * @param color2 second color value
- */
-void TL::GradientAnimatorMotion::setColor(const CRGB color1, const CRGB color2)
-{
-	this->color[0] = color1;
-	this->color[1] = color2;
-}
-
-/**
- * @brief Set the motion sensor value that is influencing the animation.
- * @param motionSensorValue value that is influencing the animation
- */
-void TL::GradientAnimatorMotion::setMotionSensorValue(const TL::MotionSensor::MotionSensorValue motionSensorValue)
-{
-	this->motionSensorValue = motionSensorValue;
-}
-
-/**
  * @brief Get the motion based offset value between 0.0 and 1.0.
  * @return motion based offset value
  */
@@ -198,6 +156,26 @@ float TL::GradientAnimatorMotion::getMotionOffset()
 	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::GY_Z_DEG)
 	{
 		motionValue = this->motionSensorData.gyroZDeg / 30.0f;
+	}
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::PITCH)
+	{
+		motionValue = this->motionSensorData.pitch / 30.0f;
+	}
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ROLL)
+	{
+		motionValue = this->motionSensorData.roll / 30.0f;
+	}
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ROLL_COMPENSATED_ACC_X_G)
+	{
+		motionValue = this->motionSensorData.rollCompensatedAccXG;
+	}
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::PITCH_COMPENSATED_ACC_Y_G)
+	{
+		motionValue = this->motionSensorData.pitchCompensatedAccYG;
+	}
+	else
+	{
+		motionValue = 0.0f;
 	}
 
 	motionValue *= this->speed / 127.0f;

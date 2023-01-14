@@ -4,7 +4,7 @@
  * @brief Implementation of the {@link TL::GradientAnimator}.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -20,16 +20,6 @@
  *
  */
 #include "led/animator/GradientAnimator.h"
-
-/**
- * @brief Create a new instance of {@link TL::GradientAnimator}.
- */
-TL::GradientAnimator::GradientAnimator()
-{
-	this->gradientMode = TL::GradientAnimator::GradientMode::GRADIENT_LINEAR;
-	this->color[0] = CRGB::Black;
-	this->color[1] = CRGB::Black;
-}
 
 /**
  * @brief Create a new instance of {@link TL::GradientAnimator}.
@@ -57,10 +47,7 @@ TL::GradientAnimator::~GradientAnimator()
  */
 void TL::GradientAnimator::init(std::vector<CRGB> &pixels)
 {
-	for (size_t i = 0; i < pixels.size(); i++)
-	{
-		pixels.at(i) = CRGB::Black;
-	}
+	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
 }
 
 /**
@@ -134,24 +121,4 @@ void TL::GradientAnimator::render(std::vector<CRGB> &pixels)
 	}
 
 	this->applyBrightness(pixels);
-}
-
-/**
- * @brief Set the gradient mode.
- * @param gradientMode mode of the gradient
- */
-void TL::GradientAnimator::setGradientMode(const TL::GradientAnimator::GradientMode gradientMode)
-{
-	this->gradientMode = gradientMode;
-}
-
-/**
- * @brief Set the color for the gradient.
- * @param color1 first color value
- * @param color2 second color value
- */
-void TL::GradientAnimator::setColor(const CRGB color1, const CRGB color2)
-{
-	this->color[0] = color1;
-	this->color[1] = color2;
 }
