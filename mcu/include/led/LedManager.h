@@ -4,7 +4,7 @@
  * @brief Contains a class to manage the LEDs using the FastLED library.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -40,6 +40,7 @@
 #include "led/animator/ColorBarAnimator.h"
 #include "led/animator/RainbowAnimatorMotion.h"
 #include "led/animator/GradientAnimatorMotion.h"
+#include "led/animator/SparkleAnimator.h"
 
 #include "sensor/MotionSensor.h"
 

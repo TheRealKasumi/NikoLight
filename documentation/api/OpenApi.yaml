@@ -665,10 +665,10 @@ components:
                         type: number
                         format: float
                         example: 5
-                     customFields:
+                     animationSettings:
                         type: array
-                        minItems: 15
-                        maxItems: 15
+                        minItems: 25
+                        maxItems: 25
                         items:
                            type: integer
                            format: uint8
@@ -962,10 +962,10 @@ components:
                                  type: number
                                  format: float
                                  example: 5
-                              customFields:
+                              animationSettings:
                                  type: array
-                                 minItems: 15
-                                 maxItems: 15
+                                 minItems: 25
+                                 maxItems: 25
                                  items:
                                     type: integer
                                     format: uint8

@@ -4,7 +4,7 @@
  * @brief Implementation of the {@link TL::FseqAnimator}.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -23,16 +23,8 @@
 
 /**
  * @brief Create a new instance of {@link TL::FseqAnimator}.
- */
-TL::FseqAnimator::FseqAnimator()
-{
-	this->fseqLoader = nullptr;
-	this->loop = false;
-}
-
-/**
- * @brief Create a new instance of {@link TL::FseqAnimator}.
  * @param fseqLoader reference to a {@link TL::FseqLoader} instance
+ * @param loop if set to true, the animation will loop
  */
 TL::FseqAnimator::FseqAnimator(TL::FseqLoader *fseqLoader, const bool loop)
 {
@@ -48,34 +40,13 @@ TL::FseqAnimator::~FseqAnimator()
 }
 
 /**
- * @brief Set the looping function to on/off.
- * @param loop on or off
- * @param loop loop the animation
- */
-void TL::FseqAnimator::setLoop(const bool loop)
-{
-	this->loop = loop;
-}
-
-/**
- * @brief Set the reference to a {@link TL::FseqLoader} instance
- * @param fseqLoader reference to the {@link TL::FseqLoader} instance
- */
-void TL::FseqAnimator::setFseqLoader(TL::FseqLoader *fseqLoader)
-{
-	this->fseqLoader = fseqLoader;
-}
-
-/**
  * @brief Initialize the {@link FseqAnimator}.
  * @param pixels reference to the vector holding the LED pixel data
  */
 void TL::FseqAnimator::init(std::vector<CRGB> &pixels)
 {
-	for (size_t i = 0; i < pixels.size(); i++)
-	{
-		pixels.at(i) = CRGB::Black;
-	}
+	this->fseqLoader->moveToStart();
+	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
 }
 
 /**
@@ -84,11 +55,6 @@ void TL::FseqAnimator::init(std::vector<CRGB> &pixels)
  */
 void TL::FseqAnimator::render(std::vector<CRGB> &pixels)
 {
-	if (this->fseqLoader == nullptr)
-	{
-		return;
-	}
-
 	if (this->fseqLoader->available() < pixels.size())
 	{
 		if (this->loop)

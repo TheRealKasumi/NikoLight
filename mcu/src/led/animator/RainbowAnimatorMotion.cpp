@@ -4,7 +4,7 @@
  * @brief Implementation of the {@TL::RainbowAnimatorMotion}.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -20,16 +20,6 @@
  *
  */
 #include "led/animator/RainbowAnimatorMotion.h"
-
-/**
- * @brief Create a new instance of {@link TL::RainbowAnimatorMotion}.
- */
-TL::RainbowAnimatorMotion::RainbowAnimatorMotion()
-{
-	this->angle = 0.0f;
-	this->rainbowMode = TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_SOLID;
-	this->motionSensorValue = TL::MotionSensor::ACC_X_G;
-}
 
 /**
  * @brief Create a new instance of {@link TL::RainbowAnimatorMotion}.
@@ -57,10 +47,7 @@ TL::RainbowAnimatorMotion::~RainbowAnimatorMotion()
 void TL::RainbowAnimatorMotion::init(std::vector<CRGB> &pixels)
 {
 	this->angle = 0.0f;
-	for (size_t i = 0; i < pixels.size(); i++)
-	{
-		pixels.at(i) = CRGB::Black;
-	}
+	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
 }
 
 /**
@@ -124,24 +111,6 @@ void TL::RainbowAnimatorMotion::render(std::vector<CRGB> &pixels)
 }
 
 /**
- * @brief Set the mode of the rainbow animation.
- * @param rainbowMode mode of the animation
- */
-void TL::RainbowAnimatorMotion::setRainbowMode(const TL::RainbowAnimatorMotion::RainbowMode rainbowMode)
-{
-	this->rainbowMode = rainbowMode;
-}
-
-/**
- * @brief Set the value of the motion sensor that is influencing the animation.
- * @param motionSensorValue value to influence the animation
- */
-void TL::RainbowAnimatorMotion::setMotionSensorValue(const TL::MotionSensor::MotionSensorValue motionSensorValue)
-{
-	this->motionSensorValue = motionSensorValue;
-}
-
-/**
  * @brief Get the rainbow speed based on the motion senor value.
  * @return speed value based on the motion sensor value
  */
@@ -162,15 +131,35 @@ float TL::RainbowAnimatorMotion::getMotionSpeed()
 	}
 	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::GY_X_DEG)
 	{
-		speed *= this->motionSensorData.gyroXDeg / 10.0f;
+		speed *= this->motionSensorData.gyroXDeg / 20.0f;
 	}
 	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::GY_Y_DEG)
 	{
-		speed *= this->motionSensorData.gyroYDeg / 10.0f;
+		speed *= this->motionSensorData.gyroYDeg / 20.0f;
 	}
 	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::GY_Z_DEG)
 	{
-		speed *= this->motionSensorData.gyroZDeg / 10.0f;
+		speed *= this->motionSensorData.gyroZDeg / 20.0f;
+	}
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::PITCH)
+	{
+		speed *= this->motionSensorData.pitch / 20.0f;
+	}
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ROLL)
+	{
+		speed *= this->motionSensorData.roll / 20.0f;
+	}
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::PITCH_COMPENSATED_ACC_Y_G)
+	{
+		speed *= this->motionSensorData.pitchCompensatedAccYG;
+	}
+	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ROLL_COMPENSATED_ACC_X_G)
+	{
+		speed *= this->motionSensorData.rollCompensatedAccXG;
+	}
+	else
+	{
+		speed = 0.0f;
 	}
 
 	if (speed > 20)

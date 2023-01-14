@@ -4,7 +4,7 @@
  * @brief Contains a REST endpoint to configure the LED settings.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -45,6 +45,7 @@ namespace TL
 		static void postLedConfig();
 
 		static bool validateLedZone(const JsonObject &jsonObject, const uint8_t index);
+		static bool validateAnimationSettings(const uint8_t type, const JsonArray &jsonArray);
 		static bool isValidPin(const uint8_t pinNumber);
 		static bool isInRange(const long value, const long min, const long max);
 		static bool isInRange(const float value, const float min, const float max);
