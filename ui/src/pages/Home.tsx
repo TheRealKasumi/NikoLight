@@ -9,7 +9,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { version } from '../../package.json';
 import { ReactComponent as Logo } from '../assets/logo.svg';
-import { Animation } from '../components';
+import { AnimationType } from '../components';
 import i18n from '../i18n';
 import { toPercentage } from '../libs';
 import { useLed, useUi } from './api';
@@ -53,12 +53,14 @@ export const Home = (): JSX.Element => {
           const zoneId = meta.zoneId!;
           brightness = toPercentage(ledData?.[zoneId].brightness ?? 0);
           animation = t(
-            `zone.animationTypes.${Animation[ledData?.[zoneId].type ?? 0]}`,
+            `zone.animationTypes.${AnimationType[ledData?.[zoneId].type ?? 0]}`,
           );
         }
 
         const isCustomAnimationActive =
-          ledData?.[0].type === Animation.Custom && !!brightness && !!animation;
+          ledData?.[0].type === AnimationType.FSEQ &&
+          !!brightness &&
+          !!animation;
 
         return (
           <route.Link
@@ -73,7 +75,11 @@ export const Home = (): JSX.Element => {
                 {!!animation && (
                   <p className="text-xs">
                     {isCustomAnimationActive
-                      ? t(`zone.animationTypes.${Animation[Animation.Custom]}`)
+                      ? t(
+                          `zone.animationTypes.${
+                            AnimationType[AnimationType.FSEQ]
+                          }`,
+                        )
                       : animation}
 
                     {!!brightness && !isCustomAnimationActive && (

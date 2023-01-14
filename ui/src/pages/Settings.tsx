@@ -199,10 +199,10 @@ const Form = (): JSX.Element => {
             </span>
             <div className="basis-1/2 text-right">
               <Select<FormData> control={control} name="system.lightSensorMode">
-                {Object.keys(LightSensorMode)
-                  .filter((key) => isNaN(Number(key)))
-                  .map((key, index) => (
-                    <SelectItem key={key} value={index.toString()}>
+                {Object.entries(LightSensorMode)
+                  .filter(([key]) => isNaN(Number(key)))
+                  .map(([key, value]) => (
+                    <SelectItem key={key} value={value.toString()}>
                       {t(`settings.lightSensorModes.${key}`)}
                     </SelectItem>
                   ))}

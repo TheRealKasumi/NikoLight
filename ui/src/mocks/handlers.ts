@@ -68,7 +68,10 @@ const mock: {
       reverse: false,
       fadeSpeed: 30,
       ledVoltage: 5,
-      customFields: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      animationSettings: [
+        2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0,
+      ],
       channelCurrents: [16, 16, 16],
     })),
   },
