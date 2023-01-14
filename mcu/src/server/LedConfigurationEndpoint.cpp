@@ -353,7 +353,7 @@ bool TL::LedConfigurationEndpoint::validateAnimationSettings(const uint8_t type,
 	// [1] = setting index
 	// [2] = min value
 	// [3] = max value
-	const size_t numElements = 9;
+	const size_t numElements = 8;
 	const uint8_t valueRanges[numElements][4] = {
 		{0, 0, 0, 2},
 		{1, 0, 0, 3},

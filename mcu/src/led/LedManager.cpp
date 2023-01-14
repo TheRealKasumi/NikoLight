@@ -338,7 +338,7 @@ bool TL::LedManager::loadCalculatedAnimations()
 				ledConfig.animationSettings[10] / 1024.0f,
 				ledConfig.animationSettings[11] / 255.0f,
 				ledConfig.animationSettings[12] / 1024.0f,
-				ledConfig.animationSettings[13],
+				ledConfig.animationSettings[13] / 255.0f,
 				ledConfig.animationSettings[14] / 1024.0f,
 				ledConfig.animationSettings[15] / 1024.0f,
 				ledConfig.animationSettings[16] / 1024.0f,
