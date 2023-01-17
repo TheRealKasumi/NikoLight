@@ -14,17 +14,16 @@ export const Update = (): JSX.Element => {
   });
   const { mutateAsync, isSuccess, isError, isLoading, error } = useUpload();
 
-  const onSubmit = handleSubmit(
-    async (data) =>
-      await mutateAsync(
-        { file: data.files[0] },
-        {
-          onSuccess: () => {
-            reset();
-          },
+  const onSubmit = handleSubmit(async (data) => {
+    await mutateAsync(
+      { file: data.files[0] },
+      {
+        onSuccess: () => {
+          reset();
         },
-      ),
-  );
+      },
+    );
+  });
 
   return (
     <>
