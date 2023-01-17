@@ -28,7 +28,7 @@ export const Update = (): JSX.Element => {
 
   return (
     <>
-      {isSuccess && <Toast title={t('settings.updateSuccessful')} />}
+      {isSuccess && <Toast title={t('update.updateSuccessful')} />}
 
       {isError && <Notification message={error.message} />}
 
