@@ -155,23 +155,23 @@ const Form = (): JSX.Element => {
     const systemCopy: System = JSON.parse(JSON.stringify(system));
     const { lightSensorMode, logLevel, ...rest } = data.system;
 
-    return Promise.all([
-      mutateAsyncWifi({ ...wifiCopy, ...data.wifi }),
-      mutateAsyncUi(
-        { ...uiCopy, ...data.ui },
-        {
-          onSuccess: (_data, variables) => {
-            i18n.changeLanguage(variables.language);
-          },
+    await mutateAsyncUi(
+      { ...uiCopy, ...data.ui },
+      {
+        onSuccess: (_data, variables) => {
+          i18n.changeLanguage(variables.language);
         },
-      ),
-      mutateAsyncSystem({
-        ...systemCopy,
-        ...rest,
-        lightSensorMode: Number(lightSensorMode),
-        logLevel: Number(logLevel),
-      }),
-    ]);
+      },
+    );
+
+    await mutateAsyncSystem({
+      ...systemCopy,
+      ...rest,
+      lightSensorMode: Number(lightSensorMode),
+      logLevel: Number(logLevel),
+    });
+
+    await mutateAsyncWifi({ ...wifiCopy, ...data.wifi });
   });
 
   const onReset = async () => {

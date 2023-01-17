@@ -158,7 +158,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
         type: Number(type),
       };
 
-      return await mutateAsync(led);
+      await mutateAsync(led);
     },
   );
 
