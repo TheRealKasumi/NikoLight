@@ -507,8 +507,8 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
                     className="w-full"
                     control={control}
                     name="animationSettings.14"
-                    min={2}
-                    max={200}
+                    min={1}
+                    max={255}
                     step={1}
                   />
                 </label>
