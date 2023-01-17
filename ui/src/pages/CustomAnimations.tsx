@@ -82,20 +82,19 @@ const Form = (): JSX.Element => {
     error: deleteError,
   } = useDeleteFseq();
 
-  const onSubmit = handleSubmit(
-    async (data) =>
-      await updateFseq(
-        {
-          file: data.files[0],
-          fileName: data.fileName,
+  const onSubmit = handleSubmit(async (data) => {
+    await updateFseq(
+      {
+        file: data.files[0],
+        fileName: data.fileName,
+      },
+      {
+        onSuccess: () => {
+          reset();
         },
-        {
-          onSuccess: () => {
-            reset();
-          },
-        },
-      ),
-  );
+      },
+    );
+  });
 
   const onDelete = (file: Fseq) => deleteFseq({ fileName: file.fileName });
 
