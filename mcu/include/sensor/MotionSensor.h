@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Contains a class for reading the motion sensor on the TesLight board.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
@@ -23,39 +23,46 @@
 #define MOTION_SENSOR_H
 
 #include <stdint.h>
-#include <memory>
 
 #include "configuration/SystemConfiguration.h"
 #include "configuration/Configuration.h"
 #include "hardware/MPU6050.h"
-#include "logging/Logger.h"
 
 namespace TL
 {
 	class MotionSensor
 	{
 	public:
-		enum MotionSensorValue
+		enum class Error
 		{
-			ACC_X_RAW = 0,
-			ACC_Y_RAW = 1,
-			ACC_Z_RAW = 2,
-			GY_X_RAW = 3,
-			GY_Y_RAW = 4,
-			GY_Z_RAW = 5,
-			ACC_X_G = 6,
-			ACC_Y_G = 7,
-			ACC_Z_G = 8,
-			GY_X_DEG = 9,
-			GY_Y_DEG = 10,
-			GY_Z_DEG = 11,
-			PITCH = 12,
-			ROLL = 13,
-			YAW = 14,
-			ROLL_COMPENSATED_ACC_X_G = 15,
-			PITCH_COMPENSATED_ACC_Y_G = 16,
-			TEMP_RAW = 17,
-			TEMP_DEG = 18
+			OK,						  // No error
+			ERROR_CONFIG_UNAVAILABLE, // The configuration is not available
+			ERROR_MPU6050_UNAVIALBLE, // The MPU6050 is not available
+			ERROR_TOO_COLD,			  // The MPU6050 is too cold for a calibratin
+			ERROR_TOO_WARM			  // The MPU6050 is too warm for a calibration
+		};
+
+		enum MotionSensorValue : uint8_t
+		{
+			ACC_X_RAW = 0,					// Raw x acceleration
+			ACC_Y_RAW = 1,					// Raw y acceleration
+			ACC_Z_RAW = 2,					// Raw z acceleration
+			GY_X_RAW = 3,					// Raw x rotation
+			GY_Y_RAW = 4,					// Raw y rotation
+			GY_Z_RAW = 5,					// Raw z rotation
+			ACC_X_G = 6,					// Acceleration on x axis in g
+			ACC_Y_G = 7,					// Acceleration on y axis in g
+			ACC_Z_G = 8,					// Acceleration on z axis in g
+			GY_X_DEG = 9,					// Rotation around the x axis in deg/s
+			GY_Y_DEG = 10,					// Rotation around the y axis in deg/s
+			GY_Z_DEG = 11,					// Rotation around the z axis in deg/s
+			PITCH = 12,						// Pitch angle of the unit
+			ROLL = 13,						// Roll angle of the unit
+			YAW = 14,						// Yaw angle of the unit
+			ROLL_COMPENSATED_ACC_X_G = 15,	// Roll angle compensated acceleration on x axis in g
+			PITCH_COMPENSATED_ACC_Y_G = 16, // Pitch angle compensated acceleration on y axis in g
+			TEMP_RAW = 17,					// Raw temperature value
+			TEMP_DEG = 18					// Temperature in degree celsius
 		};
 
 		struct MotionSensorData
@@ -81,19 +88,20 @@ namespace TL
 			float temperatureDeg;
 		};
 
-		MotionSensor(const uint8_t sensorAddress, TL::Configuration *configuration);
-		~MotionSensor();
+		static TL::MotionSensor::Error begin();
+		static void end();
+		static bool isInitialized();
 
-		bool begin();
-		bool run();
-		uint8_t calibrate(const bool failOnTemperature);
-		TL::MotionSensor::MotionSensorData getMotion();
+		static TL::MotionSensor::Error run();
+		static TL::MotionSensor::Error calibrate(const bool failOnTemperature);
+		static TL::MotionSensor::MotionSensorData getMotion();
 
 	private:
-		std::unique_ptr<TL::MPU6050> mpu6050;
-		TL::Configuration *configuration;
-		TL::MotionSensor::MotionSensorData motionData;
-		unsigned long lastMeasure;
+		MotionSensor();
+
+		static bool initialized;
+		static TL::MotionSensor::MotionSensorData motionData;
+		static unsigned long lastMeasure;
 	};
 }
 

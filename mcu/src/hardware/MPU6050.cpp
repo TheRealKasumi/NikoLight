@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Implementation of the {@link TL::MPU6050}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -21,120 +21,128 @@
  */
 #include "hardware/MPU6050.h"
 
+bool TL::MPU6050::initialized = false;
+uint8_t TL::MPU6050::deviceAddress;
+TL::MPU6050::MPU6050AccScale TL::MPU6050::accScale;
+TL::MPU6050::MPU6050GyScale TL::MPU6050::gyScale;
+
 /**
- * @brief Create a new instance of {@link TL::MPU6050}.
+ * @brief Start the MPU6050 motion sensor.
  * @param deviceAddress I²C address of the MPU6050 sensor
+ * @return OK when the sensor was initialized
+ * @return ERROR_IIC_COMM when the I²C communication failed
  */
-TL::MPU6050::MPU6050(const uint8_t deviceAddress)
+TL::MPU6050::Error TL::MPU6050::begin(const uint8_t deviceAddress)
 {
-	this->deviceAddress = deviceAddress;
-	this->accScale = TL::MPU6050::MPU6050AccScale::SCALE_2G;
-	this->gyScale = TL::MPU6050::MPU6050GyScale::SCALE_250DS;
+	return TL::MPU6050::begin(deviceAddress, TL::MPU6050::MPU6050AccScale::SCALE_2G, TL::MPU6050::MPU6050GyScale::SCALE_250DS);
 }
 
 /**
- * @brief Create a new instance of {@link TL::MPU6050}.
+ * @brief Start the MPU6050 motion sensor.
  * @param deviceAddress I²C address of the MPU6050 sensor
  * @param accScale scale value, can be 2G, 4G, 8G, 16G
  * @param gyScale scale value, can be 200°/S, 500°/s, 1000°/s, 2000°/s
+ * @return OK when the sensor was initialized
+ * @return ERROR_IIC_COMM when the I²C communication failed
  */
-TL::MPU6050::MPU6050(const uint8_t deviceAddress, const TL::MPU6050::MPU6050AccScale accScale, const TL::MPU6050::MPU6050GyScale gyScale)
+TL::MPU6050::Error TL::MPU6050::begin(const uint8_t deviceAddress, const TL::MPU6050::MPU6050AccScale accScale, const TL::MPU6050::MPU6050GyScale gyScale)
 {
-	this->deviceAddress = deviceAddress;
-	this->accScale = accScale;
-	this->gyScale = gyScale;
+	TL::MPU6050::initialized = false;
+	TL::MPU6050::deviceAddress = deviceAddress;
+	TL::MPU6050::accScale = accScale;
+	TL::MPU6050::gyScale = gyScale;
+
+	const TL::MPU6050::Error wakeError = TL::MPU6050::wake();
+	if (wakeError != TL::MPU6050::Error::OK)
+	{
+		return TL::MPU6050::Error::ERROR_IIC_COMM;
+	}
+
+	const TL::MPU6050::Error accScaleError = TL::MPU6050::setAccScale(TL::MPU6050::accScale);
+	if (accScaleError != TL::MPU6050::Error::OK)
+	{
+		return TL::MPU6050::Error::ERROR_IIC_COMM;
+	}
+
+	const TL::MPU6050::Error gyScaleError = TL::MPU6050::setGyScale(TL::MPU6050::gyScale);
+	if (gyScaleError != TL::MPU6050::Error::OK)
+	{
+		return TL::MPU6050::Error::ERROR_IIC_COMM;
+	}
+
+	TL::MPU6050::initialized = true;
+	return TL::MPU6050::Error::OK;
 }
 
 /**
- * @brief Delete the {@link TL::MPU6050} instance and shut down the sensor.
+ * @brief Stop the MPU6050 motion sensor.
  */
-TL::MPU6050::~MPU6050()
+void TL::MPU6050::end()
 {
-	this->sleep();
+	TL::MPU6050::initialized = false;
 }
 
 /**
- * @brief Initialize the MPU6050 motion sensor.
- * @return true when successful
- * @return false when there was an error
+ * @brief Return if the sensor was initialized correctly.
+ * @return true when initialized
+ * @return false when not initialized
  */
-bool TL::MPU6050::begin()
+bool TL::MPU6050::isInitialized()
 {
-	if (!this->wake())
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to wake MPU6050."));
-		return false;
-	}
-
-	if (!this->setAccScale(this->accScale))
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to wake MPU6050."));
-		return false;
-	}
-
-	if (!this->setGyScale(this->gyScale))
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to wake MPU6050."));
-		return false;
-	}
-
-	return true;
+	return TL::MPU6050::initialized;
 }
 
 /**
  * @brief Wake up the MPU6050 motion sensor.
- * @return true when successful
- * @return false when there was a communication error
+ * @return OK when the command was sent
+ * @return ERROR_IIC_COMM when the communication failed
  */
-bool TL::MPU6050::wake()
+TL::MPU6050::Error TL::MPU6050::wake()
 {
-	Wire.beginTransmission(this->deviceAddress);
+	Wire.beginTransmission(TL::MPU6050::deviceAddress);
 	Wire.write(0x6B);
 	Wire.write(0B00000000);
 	if (Wire.endTransmission(true) != 0)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("I²C communication error. Failed to wake MPU6050."));
-		return false;
+		return TL::MPU6050::Error::ERROR_IIC_COMM;
 	}
-	return true;
+	return TL::MPU6050::Error::OK;
 }
 
 /**
  * @brief Put the MPU6050 motion sensor into sleep mode.
- * @return true when successful
- * @return false when there was a communication error
+ * @return OK when the command was sent
+ * @return ERROR_IIC_COMM when the communication failed
  */
-bool TL::MPU6050::sleep()
+TL::MPU6050::Error TL::MPU6050::sleep()
 {
-	Wire.beginTransmission(this->deviceAddress);
+	Wire.beginTransmission(TL::MPU6050::deviceAddress);
 	Wire.write(0x6B);
 	Wire.write(0B01000000);
 	if (Wire.endTransmission(true) != 0)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("I²C communication error. Failed to put MPU6050 into sleep mode."));
-		return false;
+		return TL::MPU6050::Error::ERROR_IIC_COMM;
 	}
-	return true;
+	return TL::MPU6050::Error::OK;
 }
 
 /**
  * @brief Set the acc scale of the MPU6050.
  * @param accScale scale value, can be 2G, 4G, 8G, 16G
- * @return true when successful
- * @return false when there was a communication error
+ * @return OK when the acc scale was updated
+ * @return ERROR_IIC_COMM when the communication failed
  */
-bool TL::MPU6050::setAccScale(TL::MPU6050::MPU6050AccScale accScale)
+TL::MPU6050::Error TL::MPU6050::setAccScale(TL::MPU6050::MPU6050AccScale accScale)
 {
-	this->accScale = accScale;
-	Wire.beginTransmission(this->deviceAddress);
+	TL::MPU6050::accScale = accScale;
+	Wire.beginTransmission(TL::MPU6050::deviceAddress);
 	Wire.write(0x1C);
-	Wire.write(this->accScale);
+	Wire.write(TL::MPU6050::accScale);
 	if (Wire.endTransmission(true) != 0)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("I²C communication error. Failed to set acceleration scale of MPU6050 sensor."));
-		return false;
+		return TL::MPU6050::Error::ERROR_IIC_COMM;
 	}
-	return true;
+	return TL::MPU6050::Error::OK;
 }
 
 /**
@@ -143,27 +151,26 @@ bool TL::MPU6050::setAccScale(TL::MPU6050::MPU6050AccScale accScale)
  */
 TL::MPU6050::MPU6050AccScale TL::MPU6050::getAccScale()
 {
-	return this->accScale;
+	return TL::MPU6050::accScale;
 }
 
 /**
  * @brief Set the gyro scale of the MPU6050.
  * @param gyScale scale value, can be 200°/S, 500°/s, 1000°/s, 2000°/s
- * @return true when sucessful
- * @return false when there was a communication error
+ * @return OK when the gyro scale was updated
+ * @return ERROR_IIC_COMM when the communication failed
  */
-bool TL::MPU6050::setGyScale(TL::MPU6050::MPU6050GyScale gyScale)
+TL::MPU6050::Error TL::MPU6050::setGyScale(TL::MPU6050::MPU6050GyScale gyScale)
 {
-	this->gyScale = gyScale;
-	Wire.beginTransmission(this->deviceAddress);
+	TL::MPU6050::gyScale = gyScale;
+	Wire.beginTransmission(TL::MPU6050::deviceAddress);
 	Wire.write(0x1B);
-	Wire.write(this->gyScale);
+	Wire.write(TL::MPU6050::gyScale);
 	if (Wire.endTransmission(true) != 0)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("I²C communication error. Failed to set gyro scale of MPU6050 sensor."));
-		return false;
+		return TL::MPU6050::Error::ERROR_IIC_COMM;
 	}
-	return true;
+	return TL::MPU6050::Error::OK;
 }
 
 /**
@@ -172,24 +179,23 @@ bool TL::MPU6050::setGyScale(TL::MPU6050::MPU6050GyScale gyScale)
  */
 TL::MPU6050::MPU6050GyScale TL::MPU6050::getGyScale()
 {
-	return this->gyScale;
+	return TL::MPU6050::gyScale;
 }
 
 /**
  * @brief Read the current sensor data.
  * @param motionData structure containing all data
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the data was received from the sensor
+ * @return ERROR_IIC_COMM when the communication failed
  */
-bool TL::MPU6050::getData(TL::MPU6050::MPU6050MotionData &motionData)
+TL::MPU6050::Error TL::MPU6050::getData(TL::MPU6050::MPU6050MotionData &motionData)
 {
 	// Request the 6 acc registers
-	Wire.beginTransmission(this->deviceAddress);
+	Wire.beginTransmission(TL::MPU6050::deviceAddress);
 	Wire.write(0x3B);
-	if (Wire.endTransmission(false) != 0 || Wire.requestFrom(this->deviceAddress, 6, true) != 6 || Wire.available() != 6)
+	if (Wire.endTransmission(false) != 0 || Wire.requestFrom(static_cast<int>(TL::MPU6050::deviceAddress), static_cast<int>(6), static_cast<int>(true)) != 6 || Wire.available() != 6)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("I²C communication error. Failed to request 6 acc registers of MPU6050 sensor."));
-		return false;
+		return TL::MPU6050::Error::ERROR_IIC_COMM;
 	}
 
 	// Read the acc values
@@ -198,12 +204,11 @@ bool TL::MPU6050::getData(TL::MPU6050::MPU6050MotionData &motionData)
 	motionData.accZRaw = (Wire.read() << 8 | Wire.read());
 
 	// Request the 6 gyro registers
-	Wire.beginTransmission(this->deviceAddress);
+	Wire.beginTransmission(TL::MPU6050::deviceAddress);
 	Wire.write(0x43);
-	if (Wire.endTransmission(false) != 0 || Wire.requestFrom(this->deviceAddress, 6, true) != 6 || Wire.available() != 6)
+	if (Wire.endTransmission(false) != 0 || Wire.requestFrom(static_cast<int>(TL::MPU6050::deviceAddress), static_cast<int>(6), static_cast<int>(true)) != 6 || Wire.available() != 6)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("I²C communication error. Failed to request 6 gyro registers of MPU6050 sensor."));
-		return false;
+		return TL::MPU6050::Error::ERROR_IIC_COMM;
 	}
 
 	// Read the rotation values
@@ -212,31 +217,30 @@ bool TL::MPU6050::getData(TL::MPU6050::MPU6050MotionData &motionData)
 	motionData.gyroZRaw = (Wire.read() << 8 | Wire.read());
 
 	// Request the 2 temperature registers
-	Wire.beginTransmission(this->deviceAddress);
+	Wire.beginTransmission(TL::MPU6050::deviceAddress);
 	Wire.write(0x41);
-	if (Wire.endTransmission(false) != 0 || Wire.requestFrom(this->deviceAddress, 2, true) != 2 || Wire.available() != 2)
+	if (Wire.endTransmission(false) != 0 || Wire.requestFrom(static_cast<int>(TL::MPU6050::deviceAddress), static_cast<int>(2), static_cast<int>(true)) != 2 || Wire.available() != 2)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("I²C communication error. Failed to request 2 temperature registers of MPU6050 sensor."));
-		return false;
+		return TL::MPU6050::Error::ERROR_IIC_COMM;
 	}
 
 	// Read the temperature values
 	motionData.temperatureRaw = (Wire.read() << 8 | Wire.read());
 
 	// Calculate G values
-	motionData.accXG = motionData.accXRaw / getScaleDiv(this->accScale);
-	motionData.accYG = motionData.accYRaw / getScaleDiv(this->accScale);
-	motionData.accZG = motionData.accZRaw / getScaleDiv(this->accScale);
+	motionData.accXG = motionData.accXRaw / getScaleDiv(TL::MPU6050::accScale);
+	motionData.accYG = motionData.accYRaw / getScaleDiv(TL::MPU6050::accScale);
+	motionData.accZG = motionData.accZRaw / getScaleDiv(TL::MPU6050::accScale);
 
 	// Calculate rotation value in degree/s
-	motionData.gyroXDeg = motionData.gyroXRaw / getScaleDiv(this->gyScale);
-	motionData.gyroYDeg = motionData.gyroYRaw / getScaleDiv(this->gyScale);
-	motionData.gyroZDeg = motionData.gyroZRaw / getScaleDiv(this->gyScale);
+	motionData.gyroXDeg = motionData.gyroXRaw / getScaleDiv(TL::MPU6050::gyScale);
+	motionData.gyroYDeg = motionData.gyroYRaw / getScaleDiv(TL::MPU6050::gyScale);
+	motionData.gyroZDeg = motionData.gyroZRaw / getScaleDiv(TL::MPU6050::gyScale);
 
 	// Calculate the temeprature from raw value
 	motionData.temperatureDeg = motionData.temperatureRaw / 340.0f + 36.53f;
 
-	return true;
+	return TL::MPU6050::Error::OK;
 }
 
 /**

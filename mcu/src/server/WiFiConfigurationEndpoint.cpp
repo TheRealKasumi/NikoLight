@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Implementation of a REST endpoint to configure the WiFi settings.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -21,19 +21,13 @@
  */
 #include "server/WiFiConfigurationEndpoint.h"
 
-// Initialize
-TL::Configuration *TL::WiFiConfigurationEndpoint::configuration = nullptr;
-std::function<bool()> TL::WiFiConfigurationEndpoint::configChangedCallback = nullptr;
-
 /**
  * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
  */
-void TL::WiFiConfigurationEndpoint::begin(TL::Configuration *_configuration, std::function<bool()> _configChangedCallback)
+void TL::WiFiConfigurationEndpoint::begin()
 {
-	TL::WiFiConfigurationEndpoint::configuration = _configuration;
-	TL::WiFiConfigurationEndpoint::configChangedCallback = _configChangedCallback;
-	TL::WiFiConfigurationEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_GET, TL::WiFiConfigurationEndpoint::getWiFiConfig);
-	TL::WiFiConfigurationEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_POST, TL::WiFiConfigurationEndpoint::postWiFiConfig);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_GET, TL::WiFiConfigurationEndpoint::getWiFiConfig);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_POST, TL::WiFiConfigurationEndpoint::postWiFiConfig);
 }
 
 /**
@@ -42,16 +36,22 @@ void TL::WiFiConfigurationEndpoint::begin(TL::Configuration *_configuration, std
 void TL::WiFiConfigurationEndpoint::getWiFiConfig()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the WiFi configuration."));
+	if (!TL::Configuration::isInitialized())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		return;
+	}
 
-	DynamicJsonDocument jsonDoc(1024);
+	DynamicJsonDocument jsonDoc(4096);
 	JsonObject config = jsonDoc.createNestedObject(F("wifiConfig"));
-	config[F("accessPointSsid")] = TL::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointSsid;
-	config[F("accessPointPassword")] = TL::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointPassword;
-	config[F("accessPointChannel")] = TL::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointChannel;
-	config[F("accessPointHidden")] = TL::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointHidden;
-	config[F("accessPointMaxConnections")] = TL::WiFiConfigurationEndpoint::configuration->getWiFiConfig().accessPointMaxConnections;
-	// config[F("wifiSsid")] = TL::WiFiConfigurationEndpoint::configuration->getWiFiConfig().wifiSsid;
-	// config[F("wifiPassword")] = TL::WiFiConfigurationEndpoint::configuration->getWiFiConfig().wifiPassword;
+	config[F("accessPointSsid")] = TL::Configuration::getWiFiConfig().accessPointSsid;
+	config[F("accessPointPassword")] = TL::Configuration::getWiFiConfig().accessPointPassword;
+	config[F("accessPointChannel")] = TL::Configuration::getWiFiConfig().accessPointChannel;
+	config[F("accessPointHidden")] = TL::Configuration::getWiFiConfig().accessPointHidden;
+	config[F("accessPointMaxConnections")] = TL::Configuration::getWiFiConfig().accessPointMaxConnections;
+	// config[F("wifiSsid")] = TL::Configuration::getWiFiConfig().wifiSsid;
+	// config[F("wifiPassword")] = TL::Configuration::getWiFiConfig().wifiPassword;
 
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
 	TL::WiFiConfigurationEndpoint::sendJsonDocument(200, F("Here is your WiFi configuration."), jsonDoc);
@@ -63,6 +63,19 @@ void TL::WiFiConfigurationEndpoint::getWiFiConfig()
 void TL::WiFiConfigurationEndpoint::postWiFiConfig()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the WiFi configuration."));
+	if (!TL::Configuration::isInitialized())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		return;
+	}
+
+	if (!TL::WiFiManager::isInitialized())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The WiFi manager was not initialized. Can not apply WiFi settings."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("The WiFi manager was not initialized. Can not apply WiFi settings."));
+		return;
+	}
 
 	if (!TL::WiFiConfigurationEndpoint::webServer->hasHeader(F("content-type")) || TL::WiFiConfigurationEndpoint::webServer->header(F("content-type")) != F("application/json"))
 	{
@@ -79,14 +92,14 @@ void TL::WiFiConfigurationEndpoint::postWiFiConfig()
 	}
 
 	const String body = TL::WiFiConfigurationEndpoint::webServer->arg(F("plain"));
-	if (body.length() == 0 || body.length() > 1024)
+	if (body.length() == 0 || body.length() > 4096)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 1024 bytes."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 1024 bytes."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 4096 bytes."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 4096 bytes."));
 		return;
 	}
 
-	DynamicJsonDocument jsonDoc(1024);
+	DynamicJsonDocument jsonDoc(4096);
 	if (!TL::WiFiConfigurationEndpoint::parseJsonDocument(jsonDoc, body))
 	{
 		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
@@ -108,7 +121,7 @@ void TL::WiFiConfigurationEndpoint::postWiFiConfig()
 		return;
 	}
 
-	TL::Configuration::WiFiConfig config = TL::WiFiConfigurationEndpoint::configuration->getWiFiConfig();
+	TL::Configuration::WiFiConfig config = TL::Configuration::getWiFiConfig();
 	config.accessPointSsid = configuration[F("accessPointSsid")].as<String>();
 	config.accessPointPassword = configuration[F("accessPointPassword")].as<String>();
 	config.accessPointChannel = configuration[F("accessPointChannel")].as<uint8_t>();
@@ -117,24 +130,54 @@ void TL::WiFiConfigurationEndpoint::postWiFiConfig()
 	// config.wifiSsid = configuration[F("wifiSsid")].as<String>();
 	// config.wifiPassword = configuration[F("wifiPassword")].as<String>();
 
-	TL::WiFiConfigurationEndpoint::configuration->setWiFiConfig(config);
-	if (TL::WiFiConfigurationEndpoint::configuration->save())
+	if (TL::WiFiConfigurationEndpoint::hasChanged(config))
 	{
-		if (TL::WiFiConfigurationEndpoint::configChangedCallback)
+		TL::Configuration::setWiFiConfig(config);
+		const TL::Configuration::Error configSaveError = TL::Configuration::save();
+		if (configSaveError == TL::Configuration::Error::ERROR_FILE_OPEN)
 		{
-			if (!TL::WiFiConfigurationEndpoint::configChangedCallback())
-			{
-				TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The callback function returned with an error."));
-				TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("Failed to apply WiFi configuration."));
-				return;
-			}
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save LED configuration. The configuration file could not be opened."));
+			TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save LED configuration. The configuration file could not be opened."));
+			return;
 		}
-	}
-	else
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save WiFi configuration."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save WiFi configuration."));
-		return;
+		else if (configSaveError == TL::Configuration::Error::ERROR_FILE_WRITE)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save LED configuration. The configuration file could not be written."));
+			TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save LED configuration. The configuration file could not be written."));
+			return;
+		}
+		else if (configSaveError != TL::Configuration::Error::OK)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save LED configuration."));
+			TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save LED configuration."));
+			return;
+		}
+
+		const TL::WiFiManager::Error wifiError = TL::WiFiManager::startAccessPoint(TL::Configuration::getWiFiConfig().accessPointSsid.c_str(), TL::Configuration::getWiFiConfig().accessPointPassword.c_str(), TL::Configuration::getWiFiConfig().accessPointChannel, false, TL::Configuration::getWiFiConfig().accessPointMaxConnections);
+		if (wifiError == TL::WiFiManager::Error::ERROR_START_AP)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to start WiFi access point."));
+			TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("Failed to start WiFi access point."));
+			return;
+		}
+		else if (wifiError == TL::WiFiManager::Error::ERROR_INVALID_SSID)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to start WiFi access point. The SSID is invalid."));
+			TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("Failed to start WiFi access point. The SSID is invalid."));
+			return;
+		}
+		else if (wifiError == TL::WiFiManager::Error::ERROR_INVALID_PW)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to start WiFi access point. The password is invalid."));
+			TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("Failed to start WiFi access point. The password is invalid."));
+			return;
+		}
+		else
+		{
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to start WiFi access point."));
+			TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("Failed to start WiFi access point."));
+			return;
+		}
 	}
 
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("WiFi configuration saved. Sending the response."));
@@ -212,6 +255,34 @@ bool TL::WiFiConfigurationEndpoint::validateConfiguration(const JsonObject &json
 		return false;
 	}
 
+	/*if (!jsonObject[F("wifiSsid")].is<String>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"wifiSsid\" field in configuration must be of type \"string\"."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"wifiSsid\" field in configuration must be of type \"string\"."));
+		return false;
+	}
+
+	if (!TL::WiFiConfigurationEndpoint::validateWiFiSsid(jsonObject[F("wifiSsid")].as<String>()))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"wifiSsid\" field is invalid. It must be a valid WiFi SSID."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"wifiSsid\" field is invalid. It must be a valid WiFi SSID."));
+		return false;
+	}
+
+	if (!jsonObject[F("wifiPassword")].is<String>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"wifiPassword\" field in configuration must be of type \"string\"."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"wifiPassword\" field in configuration must be of type \"string\"."));
+		return false;
+	}
+
+	if (!TL::WiFiConfigurationEndpoint::validateWiFiPassword(jsonObject[F("wifiPassword")].as<String>()))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"wifiPassword\" field is invalid. It must be a valid WiFi password."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"wifiPassword\" field is invalid. It must be a valid WiFi password."));
+		return false;
+	}*/
+
 	return true;
 }
 
@@ -276,4 +347,44 @@ bool TL::WiFiConfigurationEndpoint::validateWiFiPassword(const String password)
 	}
 
 	return true;
+}
+
+/**
+ * @brief Check if the configuration has changed.
+ * @param newConfig updated configuration
+ * @return true when the configuration has changed
+ * @return false when the configuraion has not changed
+ */
+bool TL::WiFiConfigurationEndpoint::hasChanged(const TL::Configuration::WiFiConfig &newConfig)
+{
+	const TL::Configuration::WiFiConfig oldConfig = TL::Configuration::getWiFiConfig();
+	if (newConfig.accessPointSsid != oldConfig.accessPointSsid)
+	{
+		return true;
+	}
+	if (newConfig.accessPointPassword != oldConfig.accessPointPassword)
+	{
+		return true;
+	}
+	if (newConfig.accessPointChannel != oldConfig.accessPointChannel)
+	{
+		return true;
+	}
+	if (newConfig.accessPointHidden != oldConfig.accessPointHidden)
+	{
+		return true;
+	}
+	if (newConfig.accessPointMaxConnections != oldConfig.accessPointMaxConnections)
+	{
+		return true;
+	}
+	if (newConfig.wifiSsid != oldConfig.wifiSsid)
+	{
+		return true;
+	}
+	if (newConfig.wifiPassword != oldConfig.wifiPassword)
+	{
+		return true;
+	}
+	return false;
 }

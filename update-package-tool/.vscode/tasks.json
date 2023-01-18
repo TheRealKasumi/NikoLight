@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "C/C++: g++.exe build project",
+			"type": "cppbuild",
+			"command": "g++.exe",
+			"args": ["-g", "${workspaceRoot}\\src\\*.cpp", "-o", "${workspaceRoot}\\build\\tupt.exe"],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "silent"
+			},
+			"problemMatcher": "$gcc"
+		}
+	]
+}

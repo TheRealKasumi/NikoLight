@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains the implementation of a base class for a single REST endpoint.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -22,29 +22,17 @@
 #include "server/RestEndpoint.h"
 
 // Initialize
-TL::WebServerManager *TL::RestEndpoint::webServerManager = nullptr;
-WebServer *TL::RestEndpoint::webServer = nullptr;
-String TL::RestEndpoint::baseUri = F("");
+WebServer *TL::RestEndpoint::webServer;
+String TL::RestEndpoint::baseUri;
 
 /**
  * @brief Initialize the rest endpoint.
- * @param _webServer instance of {@link TL::WebServerManager}
  * @param _baseUri base uri under which the endpoint is exposed
  */
-void TL::RestEndpoint::init(TL::WebServerManager *_webServerManager, String _baseUri)
+void TL::RestEndpoint::init(String _baseUri)
 {
-	TL::RestEndpoint::webServerManager = _webServerManager;
-	TL::RestEndpoint::webServer = webServerManager->getWebServer();
+	TL::RestEndpoint::webServer = TL::WebServerManager::getWebServer();
 	TL::RestEndpoint::baseUri = _baseUri;
-}
-
-/**
- * @brief Get the {@link TL::WebServerManager} reference.
- * @return {@link TL::WebServerManager} reference
- */
-TL::WebServerManager *TL::RestEndpoint::getServerManager()
-{
-	return TL::RestEndpoint::webServerManager;
 }
 
 /**

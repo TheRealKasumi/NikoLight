@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a class for loading a TesLight Update Package file.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -24,13 +24,29 @@
 
 #include <Arduino.h>
 #include <FS.h>
-#include "logging/Logger.h"
 
 namespace TL
 {
 	class TupFile
 	{
 	public:
+		enum class Error
+		{
+			OK,						  // No error
+			ERROR_FILE_NOT_FOUND,	  // The file was not found
+			ERROR_IS_DIRECTORY,		  // A directory instead of a file was found
+			ERROR_INVALID_HEADER,	  // The TUP header is invalid
+			ERROR_INVALID_DATA,		  // The TUP data is invalid
+			ERROR_EMPTY_FILE,		  // The TUP has no content
+			ERROR_FILE_READ,		  // The file could not be read
+			ERROR_INVALID_BLOCK_NAME, // The TUP has a invalid data block name
+			ERROR_CREATE_DIR,		  // One of the directories could not be created while unpacking
+			ERROR_CREATE_FILE,		  // One of the files could not be created while unpacking
+			ERROR_MAGIC_NUMBERS,	  // One of the magic numbers in the file header is invalid
+			ERROR_FILE_VERSION,		  // The file version is invalid
+			ERROR_FILE_HASH			  // The file hash is invalid
+		};
+
 		struct TupHeader
 		{
 			char magic[4];
@@ -39,7 +55,7 @@ namespace TL
 			uint32_t numberBlocks;
 		};
 
-		enum TupDataType
+		enum TupDataType : uint8_t
 		{
 			FIRMWARE = 0,
 			FILE = 1,
@@ -58,8 +74,8 @@ namespace TL
 		TupFile();
 		~TupFile();
 
-		bool load(FS *fileSystem, const String fileName);
-		bool unpack(FS *fileSystem, const String root);
+		TL::TupFile::Error load(FS *fileSystem, const String fileName);
+		TL::TupFile::Error unpack(FS *fileSystem, const String root);
 		void close();
 
 		TL::TupFile::TupHeader getHeader();
@@ -69,9 +85,9 @@ namespace TL
 		TL::TupFile::TupHeader tupHeader;
 
 		void initHeader();
-		bool loadTupHeader();
+		TL::TupFile::Error loadTupHeader();
 
-		bool verify();
+		TL::TupFile::Error verify();
 		uint32_t generateHash();
 
 		String createAbsolutePath(const String root, const char *name, uint16_t nameLength);

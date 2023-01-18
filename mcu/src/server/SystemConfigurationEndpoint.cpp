@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Implementation of a REST endpoint to configure the system settings.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -21,19 +21,13 @@
  */
 #include "server/SystemConfigurationEndpoint.h"
 
-// Initialize
-TL::Configuration *TL::SystemConfigurationEndpoint::configuration = nullptr;
-std::function<bool()> TL::SystemConfigurationEndpoint::configChangedCallback = nullptr;
-
 /**
  * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
  */
-void TL::SystemConfigurationEndpoint::begin(TL::Configuration *_configuration, std::function<bool()> _configChangedCallback)
+void TL::SystemConfigurationEndpoint::begin()
 {
-	TL::SystemConfigurationEndpoint::configuration = _configuration;
-	TL::SystemConfigurationEndpoint::configChangedCallback = _configChangedCallback;
-	TL::SystemConfigurationEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_GET, TL::SystemConfigurationEndpoint::getSystemConfig);
-	TL::SystemConfigurationEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_POST, TL::SystemConfigurationEndpoint::postSystemConfig);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_GET, TL::SystemConfigurationEndpoint::getSystemConfig);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_POST, TL::SystemConfigurationEndpoint::postSystemConfig);
 }
 
 /**
@@ -42,24 +36,30 @@ void TL::SystemConfigurationEndpoint::begin(TL::Configuration *_configuration, s
 void TL::SystemConfigurationEndpoint::getSystemConfig()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the system configuration."));
+	if (!TL::Configuration::isInitialized())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		return;
+	}
 
 	DynamicJsonDocument jsonDoc(1024);
 	JsonObject config = jsonDoc.createNestedObject(F("systemConfig"));
-	config[F("logLevel")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().logLevel;
-	config[F("lightSensorMode")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMode;
-	config[F("lightSensorThreshold")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorThreshold;
-	config[F("lightSensorMinAmbientBrightness")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinAmbientBrightness;
-	config[F("lightSensorMaxAmbientBrightness")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxAmbientBrightness;
-	config[F("lightSensorMinLedBrightness")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMinLedBrightness;
-	config[F("lightSensorMaxLedBrightness")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorMaxLedBrightness;
-	config[F("lightSensorDuration")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().lightSensorDuration;
-	config[F("regulatorPowerLimit")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorPowerLimit;
-	config[F("regulatorHighTemperature")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorHighTemperature;
-	config[F("regulatorCutoffTemperature")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().regulatorCutoffTemperature;
-	config[F("fanMinPwmValue")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMinPwmValue;
-	config[F("fanMaxPwmValue")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMaxPwmValue;
-	config[F("fanMinTemperature")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMinTemperature;
-	config[F("fanMaxTemperature")] = TL::SystemConfigurationEndpoint::configuration->getSystemConfig().fanMaxTemperature;
+	config[F("logLevel")] = TL::Configuration::getSystemConfig().logLevel;
+	config[F("lightSensorMode")] = TL::Configuration::getSystemConfig().lightSensorMode;
+	config[F("lightSensorThreshold")] = TL::Configuration::getSystemConfig().lightSensorThreshold;
+	config[F("lightSensorMinAmbientBrightness")] = TL::Configuration::getSystemConfig().lightSensorMinAmbientBrightness;
+	config[F("lightSensorMaxAmbientBrightness")] = TL::Configuration::getSystemConfig().lightSensorMaxAmbientBrightness;
+	config[F("lightSensorMinLedBrightness")] = TL::Configuration::getSystemConfig().lightSensorMinLedBrightness;
+	config[F("lightSensorMaxLedBrightness")] = TL::Configuration::getSystemConfig().lightSensorMaxLedBrightness;
+	config[F("lightSensorDuration")] = TL::Configuration::getSystemConfig().lightSensorDuration;
+	config[F("regulatorPowerLimit")] = TL::Configuration::getSystemConfig().regulatorPowerLimit;
+	config[F("regulatorHighTemperature")] = TL::Configuration::getSystemConfig().regulatorHighTemperature;
+	config[F("regulatorCutoffTemperature")] = TL::Configuration::getSystemConfig().regulatorCutoffTemperature;
+	config[F("fanMinPwmValue")] = TL::Configuration::getSystemConfig().fanMinPwmValue;
+	config[F("fanMaxPwmValue")] = TL::Configuration::getSystemConfig().fanMaxPwmValue;
+	config[F("fanMinTemperature")] = TL::Configuration::getSystemConfig().fanMinTemperature;
+	config[F("fanMaxTemperature")] = TL::Configuration::getSystemConfig().fanMaxTemperature;
 
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
 	TL::SystemConfigurationEndpoint::sendJsonDocument(200, F("Here you go."), jsonDoc);
@@ -71,6 +71,12 @@ void TL::SystemConfigurationEndpoint::getSystemConfig()
 void TL::SystemConfigurationEndpoint::postSystemConfig()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the system configuration."));
+	if (!TL::Configuration::isInitialized())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		return;
+	}
 
 	if (!TL::SystemConfigurationEndpoint::webServer->hasHeader(F("content-type")) || TL::SystemConfigurationEndpoint::webServer->header(F("content-type")) != F("application/json"))
 	{
@@ -133,25 +139,28 @@ void TL::SystemConfigurationEndpoint::postSystemConfig()
 	config.fanMinTemperature = configuration[F("fanMinTemperature")].as<uint8_t>();
 	config.fanMaxTemperature = configuration[F("fanMaxTemperature")].as<uint8_t>();
 
-	TL::SystemConfigurationEndpoint::configuration->setSystemConfig(config);
-	if (TL::SystemConfigurationEndpoint::configuration->save())
+	TL::Configuration::setSystemConfig(config);
+	const TL::Configuration::Error configSaveError = TL::Configuration::save();
+	if (configSaveError == TL::Configuration::Error::ERROR_FILE_OPEN)
 	{
-		if (TL::SystemConfigurationEndpoint::configChangedCallback)
-		{
-			if (!TL::SystemConfigurationEndpoint::configChangedCallback())
-			{
-				TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply the system configuration. The callback function returned with an error."));
-				TL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("Failed to apply the system configuration."));
-				return;
-			}
-		}
-	}
-	else
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save system configuration."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save system configuration."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save LED configuration. The configuration file could not be opened."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save LED configuration. The configuration file could not be opened."));
 		return;
 	}
+	else if (configSaveError == TL::Configuration::Error::ERROR_FILE_WRITE)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save LED configuration. The configuration file could not be written."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save LED configuration. The configuration file could not be written."));
+		return;
+	}
+	else if (configSaveError != TL::Configuration::Error::OK)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save LED configuration."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save LED configuration."));
+		return;
+	}
+
+	TL::Logger::setMinLogLevel((TL::Logger::LogLevel)TL::Configuration::getSystemConfig().logLevel);
 
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
 	TL::SystemConfigurationEndpoint::sendSimpleResponse(200, F("Oki, my system configuration is updated."));
@@ -190,6 +199,27 @@ bool TL::SystemConfigurationEndpoint::validateConfiguration(const JsonObject &js
 	{
 		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"lightSensorMode\" field is invalid. It should be between 0 and 6."));
 		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"lightSensorMode\" field is invalid. It should be between 0 and 6."));
+		return false;
+	}
+
+	if (!TL::AnalogInput::isInitialized() && TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("lightSensorMode")].as<uint8_t>(), 2, 3))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"lightSensorMode\" field is invalid. Can not select ADC based mode because the ADC is not available."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"lightSensorMode\" field is invalid. Can not select ADC based mode because the ADC is not available."));
+		return false;
+	}
+
+	if (!TL::BH1750::isInitialized() && TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("lightSensorMode")].as<uint8_t>(), 4, 5))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"lightSensorMode\" field is invalid. Can not select BH1750 based mode because the BH1750 is not available."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"lightSensorMode\" field is invalid. Can not select BH1750 based mode because the BH1750 is not available."));
+		return false;
+	}
+
+	if (!TL::MotionSensor::isInitialized() && jsonObject[F("lightSensorMode")].as<uint8_t>() == 6)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"lightSensorMode\" field is invalid. Can not select motion sensor based mode because the motion sensor is not available."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"lightSensorMode\" field is invalid. Can not select motion sensor based mode because the motion sensor is not available."));
 		return false;
 	}
 
@@ -256,10 +286,10 @@ bool TL::SystemConfigurationEndpoint::validateConfiguration(const JsonObject &js
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorPowerLimit")].as<uint8_t>(), 1, 30))
+	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorPowerLimit")].as<uint8_t>(), 1, REGULATOR_POWER_LIMIT * REGULATOR_COUNT))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorPowerLimit\" field is invalid. It should be between 1 and 30."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorPowerLimit\" field is invalid. It should be between 1 and 30."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorPowerLimit\" field is invalid. It should be between 1 and ") + REGULATOR_POWER_LIMIT * REGULATOR_COUNT);
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorPowerLimit\" field is invalid. It should be between 1 and ") + REGULATOR_POWER_LIMIT * REGULATOR_COUNT);
 		return false;
 	}
 

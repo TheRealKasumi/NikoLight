@@ -570,6 +570,31 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "System Information",
+			"item": [
+				{
+					"name": "Get System Information",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/info/system",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"info",
+								"system"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [

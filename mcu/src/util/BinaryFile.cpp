@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Implementation of the {@link TL::BianryFile}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -45,25 +45,24 @@ TL::BinaryFile::~BinaryFile()
  * @brief Open a file from the file system with a given name
  * @param fileName full path and name of the file
  * @param mode read or write
- * @return true when successful
- * @return false when the file could not be opened
+ * @return OK when the file was opened
+ * @return ERROR_FILE_NOT_FOUND when the file was not found
+ * @return ERROR_FILE_IS_DIR when a directory was found
  */
-bool TL::BinaryFile::open(const String fileName, const char *mode)
+TL::BinaryFile::Error TL::BinaryFile::open(const String fileName, const char *mode)
 {
 	this->file = this->fileSystem->open(fileName, mode);
 	if (!this->file)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open binary file."));
-		return false;
+		return TL::BinaryFile::Error::ERROR_FILE_NOT_FOUND;
 	}
 	else if (this->file.isDirectory())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open binary file because it is a directory."));
 		this->file.close();
-		return false;
+		return TL::BinaryFile::Error::ERROR_FILE_IS_DIR;
 	}
 
-	return true;
+	return TL::BinaryFile::Error::OK;
 }
 
 /**
@@ -80,39 +79,43 @@ void TL::BinaryFile::close()
 /**
  * @brief Write a string (variable lengt) to the file.
  * @param string string to write
- * @return true when successful
- * @return false when there was an error
+ * @return OK when data was written
+ * @return ERROR_FILE_WRITE when data could not be written
  */
-bool TL::BinaryFile::writeString(const String string)
+TL::BinaryFile::Error TL::BinaryFile::writeString(const String string)
 {
 	const uint16_t length = string.length();
-	if (!this->write(length))
+	const TL::BinaryFile::Error writeLenError = this->write(length);
+	if (writeLenError != TL::BinaryFile::Error::OK)
 	{
-		return false;
+		return writeLenError;
 	}
 
 	for (uint16_t i = 0; i < length; i++)
 	{
-		if (!this->write(string.charAt(i)))
+		const TL::BinaryFile::Error writeCharError = this->write(string.charAt(i));
+		if (writeCharError != TL::BinaryFile::Error::OK)
 		{
-			return false;
+			return writeCharError;
 		}
 	}
-	return true;
+
+	return TL::BinaryFile::Error::OK;
 }
 
 /**
  * @brief Read a string of variable length from the file.
  * @param string reference variable to hold the string
- * @return true when successful
- * @return false when there was an error
+ * @return OK when data could not be read
+ * @return ERROR_FILE_READ when data could not be read
  */
-bool TL::BinaryFile::readString(String &string)
+TL::BinaryFile::Error TL::BinaryFile::readString(String &string)
 {
 	uint16_t length;
-	if (!this->read(length))
+	const TL::BinaryFile::Error readLenError = this->read(length);
+	if (readLenError != TL::BinaryFile::Error::OK)
 	{
-		return false;
+		return readLenError;
 	}
 
 	string.clear();
@@ -120,12 +123,13 @@ bool TL::BinaryFile::readString(String &string)
 	for (uint16_t i = 0; i < length; i++)
 	{
 		char c;
-		if (!this->read(c))
+		const TL::BinaryFile::Error readCharError = this->read(c);
+		if (readCharError != TL::BinaryFile::Error::OK)
 		{
-			return false;
+			return readCharError;
 		}
 		string += c;
 	}
 
-	return true;
+	return TL::BinaryFile::Error::OK;
 }

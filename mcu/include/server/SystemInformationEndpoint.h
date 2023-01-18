@@ -1,7 +1,7 @@
 /**
- * @file FanController.h
+ * @file SystemInformationEndpoint.h
  * @author TheRealKasumi
- * @brief Contains a class to control the cooling fan.
+ * @brief Contains a REST endpoint read the system information.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -19,38 +19,23 @@
  * from the owner.
  *
  */
-#ifndef FAN_CONTROLLER_H
-#define FAN_CONTROLLER_H
+#ifndef SYSTEM_INFORMATION_ENDPOINT_H
+#define SYSTEM_INFORMATION_ENDPOINT_H
 
-#include <Arduino.h>
-#include "configuration/Configuration.h"
+#include "server/RestEndpoint.h"
+#include "SystemInformation.h"
+#include "logging/Logger.h"
 
 namespace TL
 {
-	class FanController
+	class SystemInformationEndpoint : public RestEndpoint
 	{
 	public:
-		enum class Error
-		{
-			OK,						  // No error
-			ERROR_CONFIG_UNAVAILABLE, // The configuration is not available
-			ERROR_SETUP_PIN			  // Error setting up the pin
-		};
-
-		static TL::FanController::Error begin(const uint8_t fanPin, const uint8_t pwmChannel, const uint32_t frequency, const uint8_t resolution);
-		static void end();
-		static bool isInitialized();
-
-		static void setTemperature(const uint8_t temp);
+		static void begin();
 
 	private:
-		FanController();
-
-		static bool initialized;
-		static uint8_t fanPin;
-		static uint8_t pwmChannel;
-		static uint32_t frequency;
-		static uint8_t resolution;
+		SystemInformationEndpoint();
+		static void getSystemInformation();
 	};
 }
 

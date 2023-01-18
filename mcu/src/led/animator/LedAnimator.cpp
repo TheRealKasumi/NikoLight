@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Contains the implementation of {@link TL::LedAnimator}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
@@ -256,7 +256,7 @@ float TL::LedAnimator::trapezoid(float angle)
 {
 	// This will limit the angle to [0...360]
 	float factor = angle / 360.0f;
-	factor -= (int)factor;
+	factor -= static_cast<int>(factor);
 	angle = factor * 360.0f;
 	if (angle < 0.0f)
 	{
@@ -296,7 +296,7 @@ float TL::LedAnimator::trapezoid2(float angle)
 {
 	// This will limit the angle to [0...360]
 	float factor = angle / 360.0f;
-	factor -= (int)factor;
+	factor -= static_cast<int>(factor);
 	angle = factor * 360.0f;
 	if (angle < 0.0f)
 	{

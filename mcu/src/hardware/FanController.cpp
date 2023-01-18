@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Implementation of the {@link TL::FanController}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -21,25 +21,62 @@
  */
 #include "hardware/FanController.h"
 
+bool TL::FanController::initialized = false;
+uint8_t TL::FanController::fanPin;
+uint8_t TL::FanController::pwmChannel;
+uint32_t TL::FanController::frequency;
+uint8_t TL::FanController::resolution;
+
 /**
- * @brief Create a new instance of {@link TL::FanController} and initialize the hardware.
+ * @brief Initialize the {@link TL::FanController}. This required the configuration to be initialized beforehand.
  * @param fanPin output pin for the pwm signal to controll the fan
- * @param configuration reference to the configuration of the controller
+ * @param pwmChannel channel for the PWM output
+ * @param frequency frequency of the pwm output
+ * @param resolution resolution of the pwm output
+ * @return OK when the fan controller was initialized
+ * @return ERROR_CONFIG_UNAVAILABLE when the configuration is not available
+ * @return ERROR_SETUP_PIN when the output pin could not be configured
  */
-TL::FanController::FanController(const uint8_t fanPin, TL::Configuration *configuration)
+TL::FanController::Error TL::FanController::begin(const uint8_t fanPin, const uint8_t pwmChannel, const uint32_t frequency, const uint8_t resolution)
 {
-	this->fanPin = fanPin;
-	this->configuration = configuration;
-	ledcSetup(FAN_PWM_CHANNEL, FAN_PWM_FREQUENCY, FAN_PWM_RESOLUTION);
-	ledcAttachPin(this->fanPin, FAN_PWM_CHANNEL);
+	TL::FanController::initialized = false;
+	TL::FanController::fanPin = fanPin;
+	TL::FanController::pwmChannel = pwmChannel;
+	TL::FanController::frequency = frequency;
+	TL::FanController::resolution = resolution;
+
+	if (!TL::Configuration::isInitialized())
+	{
+		return TL::FanController::Error::ERROR_CONFIG_UNAVAILABLE;
+	}
+
+	if (ledcSetup(TL::FanController::pwmChannel, TL::FanController::frequency, TL::FanController::resolution) == 0)
+	{
+		return TL::FanController::Error::ERROR_SETUP_PIN;
+	}
+	ledcAttachPin(TL::FanController::fanPin, TL::FanController::pwmChannel);
+
+	TL::FanController::initialized = true;
+	return TL::FanController::Error::OK;
 }
 
 /**
- * @brief Destroy the {@link TL::FanController} instance and free resources.
+ * @brief Stop the fan controller.
  */
-TL::FanController::~FanController()
+void TL::FanController::end()
 {
-	ledcDetachPin(this->fanPin);
+	TL::FanController::initialized = false;
+	ledcDetachPin(TL::FanController::fanPin);
+}
+
+/**
+ * @brief Return if the controller was initialized.
+ * @return true when initialized
+ * @return false when not initialized
+ */
+bool TL::FanController::isInitialized()
+{
+	return TL::FanController::initialized;
 }
 
 /**
@@ -48,7 +85,7 @@ TL::FanController::~FanController()
  */
 void TL::FanController::setTemperature(const uint8_t temp)
 {
-	const TL::Configuration::SystemConfig systemConfig = this->configuration->getSystemConfig();
+	const TL::Configuration::SystemConfig systemConfig = TL::Configuration::getSystemConfig();
 
 	// Convert the temperature into a value between 0 and 1 within the min/max limits
 	float temperature = temp;
@@ -69,5 +106,5 @@ void TL::FanController::setTemperature(const uint8_t temp)
 		pwm = systemConfig.fanMaxPwmValue;
 	}
 
-	ledcWrite(FAN_PWM_CHANNEL, pwm);
+	ledcWrite(TL::FanController::pwmChannel, pwm);
 }
