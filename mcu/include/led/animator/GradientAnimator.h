@@ -4,7 +4,7 @@
  * @brief Contains a class to render a gradient.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -32,19 +32,15 @@ namespace TL
 	public:
 		enum GradientMode
 		{
-			GRADIENT_LINEAR,
-			GRADIENT_CENTER
+			GRADIENT_LINEAR = 0,
+			GRADIENT_CENTER = 1
 		};
 
-		GradientAnimator();
 		GradientAnimator(const TL::GradientAnimator::GradientMode gradientMode, const CRGB color1, const CRGB color2);
 		~GradientAnimator();
 
 		void init(std::vector<CRGB> &pixels);
 		void render(std::vector<CRGB> &pixels);
-
-		void setGradientMode(const TL::GradientAnimator::GradientMode gradientMode);
-		void setColor(const CRGB color1, const CRGB color2);
 
 	private:
 		TL::GradientAnimator::GradientMode gradientMode;

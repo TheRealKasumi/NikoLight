@@ -23,7 +23,7 @@
 #define SYSTEM_CONFIGURATION_H
 
 // Firmware version
-#define FW_VERSION "1.0.0" // Firmware version of the MCU
+#define FW_VERSION "1.1.0" // Firmware version of the MCU
 
 // SD configuration
 #define SD_CS_PIN 5			 // CS pin for the SD card
@@ -37,15 +37,15 @@
 #define LOG_DEFAULT_LEVEL 1 			// Default log level
 
 // Configuration of the runtime configuration
-#define CONFIGURATION_FILE_VERSION 9		   // Version of the configuration file
+#define CONFIGURATION_FILE_VERSION 10		  // Version of the configuration file
 #define CONFIGURATION_FILE_NAME "/config.tli" // File name of the configuration file
 
-// LED and animator configuration
+// LED and effect configuration
 #define LED_NUM_ZONES 8 											// Number of LED zones
 #define LED_DEFAULT_OUTPUT_PINS {13, 14, 15, 16, 17, 21, 22, 25} 	// Pin mapping of zones to physical pins
 #define LED_DEFAULT_COUNTS {2, 2, 2, 2, 2, 2, 2, 2}					// Default number of LEDs for each channel
 #define LED_DEFAULT_CHANNEL_CURRENT 16 								// Default current per LED channel in mA
-#define ANIMATOR_NUM_CUSTOM_FIELDS 15  								// Number of custom fields in the LED configuration
+#define ANIMATOR_NUM_ANIMATION_SETTINGS 25  						// Number of custom fields in the LED configuration
 #define ANIMATOR_DEFAULT_TYPE 0		   								// Default animation type
 #define ANIMATOR_DEFAULT_SPEED 50	   								// Default animation speed
 #define ANIMATOR_DEFAULT_OFFSET 10	   								// Default animation offset

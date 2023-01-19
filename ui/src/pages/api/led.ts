@@ -9,15 +9,15 @@ import ky from 'ky';
 const API_URL = '/api/config/led';
 
 export type Led = {
+  animationSettings: number[];
   brightness: number;
-  customFields: number[];
-  fadeSpeed: number;
-  reverse: boolean;
   channelCurrents: number[];
+  fadeSpeed: number;
   ledCount: number;
   ledPin: number;
   ledVoltage: number;
   offset: number;
+  reverse: boolean;
   speed: number;
   type: number;
 };

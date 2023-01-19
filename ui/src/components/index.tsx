@@ -1,5 +1,6 @@
 export * from './Animation';
 export * from './Button';
+export * from './Collapsible';
 export * from './ColorPicker';
 export * from './Error';
 export * from './Header';

@@ -16,6 +16,7 @@ import {
   Toast,
 } from '../components';
 import i18n from '../i18n';
+import { toPercentage } from '../libs';
 import {
   useSystem,
   useUi,
@@ -154,23 +155,23 @@ const Form = (): JSX.Element => {
     const systemCopy: System = JSON.parse(JSON.stringify(system));
     const { lightSensorMode, logLevel, ...rest } = data.system;
 
-    return Promise.all([
-      mutateAsyncWifi({ ...wifiCopy, ...data.wifi }),
-      mutateAsyncUi(
-        { ...uiCopy, ...data.ui },
-        {
-          onSuccess: (_data, variables) => {
-            i18n.changeLanguage(variables.language);
-          },
+    await mutateAsyncUi(
+      { ...uiCopy, ...data.ui },
+      {
+        onSuccess: (_data, variables) => {
+          i18n.changeLanguage(variables.language);
         },
-      ),
-      mutateAsyncSystem({
-        ...systemCopy,
-        ...rest,
-        lightSensorMode: Number(lightSensorMode),
-        logLevel: Number(logLevel),
-      }),
-    ]);
+      },
+    );
+
+    await mutateAsyncSystem({
+      ...systemCopy,
+      ...rest,
+      lightSensorMode: Number(lightSensorMode),
+      logLevel: Number(logLevel),
+    });
+
+    await mutateAsyncWifi({ ...wifiCopy, ...data.wifi });
   });
 
   const onReset = async () => {
@@ -199,10 +200,10 @@ const Form = (): JSX.Element => {
             </span>
             <div className="basis-1/2 text-right">
               <Select<FormData> control={control} name="system.lightSensorMode">
-                {Object.keys(LightSensorMode)
-                  .filter((key) => isNaN(Number(key)))
-                  .map((key, index) => (
-                    <SelectItem key={key} value={index.toString()}>
+                {Object.entries(LightSensorMode)
+                  .filter(([key]) => isNaN(Number(key)))
+                  .map(([key, value]) => (
+                    <SelectItem key={key} value={value.toString()}>
                       {t(`settings.lightSensorModes.${key}`)}
                     </SelectItem>
                   ))}
@@ -215,7 +216,7 @@ const Form = (): JSX.Element => {
             <label className="mb-6 flex flex-col">
               <span className="mb-2">
                 {t('settings.lightSensorThreshold')}:{' '}
-                {watch('system.lightSensorThreshold')}
+                {toPercentage(watch('system.lightSensorThreshold'))}%
               </span>
               <Slider<FormData>
                 className="w-full"
@@ -235,7 +236,10 @@ const Form = (): JSX.Element => {
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
                   {t('settings.lightSensorMinAmbientBrightness')}:{' '}
-                  {watch('system.lightSensorMinAmbientBrightness')}
+                  {toPercentage(
+                    watch('system.lightSensorMinAmbientBrightness'),
+                  )}
+                  %
                 </span>
                 <Slider<FormData>
                   className="w-full"
@@ -249,7 +253,10 @@ const Form = (): JSX.Element => {
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
                   {t('settings.lightSensorMaxAmbientBrightness')}:{' '}
-                  {watch('system.lightSensorMaxAmbientBrightness')}
+                  {toPercentage(
+                    watch('system.lightSensorMaxAmbientBrightness'),
+                  )}
+                  %
                 </span>
                 <Slider<FormData>
                   className="w-full"
@@ -263,7 +270,7 @@ const Form = (): JSX.Element => {
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
                   {t('settings.lightSensorMinLedBrightness')}:{' '}
-                  {watch('system.lightSensorMinLedBrightness')}
+                  {toPercentage(watch('system.lightSensorMinLedBrightness'))}%
                 </span>
                 <Slider<FormData>
                   className="w-full"
@@ -277,7 +284,7 @@ const Form = (): JSX.Element => {
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
                   {t('settings.lightSensorMaxLedBrightness')}:{' '}
-                  {watch('system.lightSensorMaxLedBrightness')}
+                  {toPercentage(watch('system.lightSensorMaxLedBrightness'))}%
                 </span>
                 <Slider<FormData>
                   className="w-full"
@@ -295,7 +302,7 @@ const Form = (): JSX.Element => {
             <label className="mb-6 flex flex-col">
               <span className="mb-2">
                 {t('settings.lightSensorDuration')}:{' '}
-                {watch('system.lightSensorDuration')}
+                {watch('system.lightSensorDuration') * 5}s
               </span>
               <Slider<FormData>
                 className="w-full"

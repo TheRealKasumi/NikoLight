@@ -4,7 +4,7 @@
  * @brief Implementation of the {@link StaticColorAnimator}.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -20,14 +20,6 @@
  *
  */
 #include "led/animator/StaticColorAnimator.h"
-
-/**
- * @brief Create a new instance of {@link TL::StaticColorAnimator}.
- */
-TL::StaticColorAnimator::StaticColorAnimator()
-{
-	this->color = CRGB::Black;
-}
 
 /**
  * @brief Create a new instance of {@link TL::StaticColorAnimator}.
@@ -51,10 +43,7 @@ TL::StaticColorAnimator::~StaticColorAnimator()
  */
 void TL::StaticColorAnimator::init(std::vector<CRGB> &pixels)
 {
-	for (size_t i = 0; i < pixels.size(); i++)
-	{
-		pixels.at(i) = CRGB::Black;
-	}
+	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
 }
 
 /**
@@ -69,13 +58,4 @@ void TL::StaticColorAnimator::render(std::vector<CRGB> &pixels)
 	}
 
 	this->applyBrightness(pixels);
-}
-
-/**
- * @brief Set the static color.
- * @param color color to display
- */
-void TL::StaticColorAnimator::setColor(const CRGB color)
-{
-	this->color = color;
 }

@@ -4,7 +4,7 @@
  * @brief Contains a class to render a custom animation from a fseq file.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -31,12 +31,8 @@ namespace TL
 	class FseqAnimator : public LedAnimator
 	{
 	public:
-		FseqAnimator();
 		FseqAnimator(TL::FseqLoader *fseqLoader, const bool loop = false);
 		~FseqAnimator();
-
-		void setFseqLoader(TL::FseqLoader *fseqLoader);
-		void setLoop(const bool loop);
 
 		void init(std::vector<CRGB> &pixels);
 		void render(std::vector<CRGB> &pixels);
