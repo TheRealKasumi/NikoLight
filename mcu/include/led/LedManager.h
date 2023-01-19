@@ -98,7 +98,7 @@ namespace TL
 		static TL::LedManager::Error createLedData();
 		static TL::LedManager::Error createAnimators();
 		static TL::LedManager::Error loadCalculatedAnimations();
-		static TL::LedManager::Error loadCustomAnimation();
+		static TL::LedManager::Error loadCustomAnimation(const String &fileName);
 
 		static void calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_COUNT]);
 		static void limitPowerConsumption();

@@ -140,7 +140,7 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 	{
 		if (!TL::AnalogInput::isInitialized())
 		{
-			brightness = 0.0f;
+			brightness = 1.0f;
 			return TL::LightSensor::Error::ERROR_ADC_UNAVAILABLE;
 		}
 
@@ -168,7 +168,7 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 	{
 		if (!TL::AnalogInput::isInitialized())
 		{
-			brightness = 0.0f;
+			brightness = 1.0f;
 			return TL::LightSensor::Error::ERROR_ADC_UNAVAILABLE;
 		}
 
@@ -215,7 +215,7 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 	{
 		if (!TL::BH1750::isInitialized())
 		{
-			brightness = 0.0f;
+			brightness = 1.0f;
 			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
 		}
 
@@ -244,7 +244,7 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 	{
 		if (!TL::BH1750::isInitialized())
 		{
-			brightness = 0.0f;
+			brightness = 1.0f;
 			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
 		}
 
@@ -287,12 +287,12 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 		return TL::LightSensor::Error::OK;
 	}
 
-	// Auto on/off using motion sensor mpu6050
+	// Auto on/off using motion sensor MPU6050
 	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_ON_OFF_MOTION)
 	{
 		if (!TL::MotionSensor::isInitialized())
 		{
-			brightness = 0.0f;
+			brightness = 1.0f;
 			return TL::LightSensor::Error::ERROR_MPU6050_UNAVAILABLE;
 		}
 
@@ -314,6 +314,6 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 		return TL::LightSensor::Error::OK;
 	}
 
-	brightness = 0.0f;
+	brightness = 1.0f;
 	return TL::LightSensor::Error::ERROR_UNKNOWN_MODE;
 }

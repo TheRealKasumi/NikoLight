@@ -301,26 +301,6 @@ TL::LedManager::Error TL::LedManager::createAnimators()
 	memcpy(&identifier, &TL::Configuration::getLedConfig(0).animationSettings[20], sizeof(identifier));
 	if (!customAnimation)
 	{
-		const size_t ledCount = TL::LedManager::getLedCount();
-		if (ledCount <= 850)
-		{
-			// 60 FPS
-			TL::LedManager::setRenderInterval(RENDER_INTERVAL);
-			TL::LedManager::setFrameInterval(FRAME_INTERVAL);
-		}
-		else if (ledCount > 850 && ledCount <= 1000)
-		{
-			// 40 FPS
-			TL::LedManager::setRenderInterval(RENDER_INTERVAL);
-			TL::LedManager::setFrameInterval(FRAME_INTERVAL * 1.5f);
-		}
-		else
-		{
-			// 30 FPS
-			TL::LedManager::setRenderInterval(RENDER_INTERVAL);
-			TL::LedManager::setFrameInterval(FRAME_INTERVAL * 2.0f);
-		}
-
 		return TL::LedManager::loadCalculatedAnimations();
 	}
 	else
@@ -328,22 +308,12 @@ TL::LedManager::Error TL::LedManager::createAnimators()
 		String fileName;
 		if (TL::FileUtil::getFileNameFromIdentifier(&SD, FSEQ_DIRECTORY, identifier, fileName) && fileName.length() > 0)
 		{
-			TL::LedManager::fseqLoader.reset(new TL::FseqLoader(&SD));
-			const TL::FseqLoader::Error fseqError = TL::LedManager::fseqLoader->loadFromFile(FSEQ_DIRECTORY + (String)F("/") + fileName);
-			if (fseqError != TL::FseqLoader::Error::OK)
-			{
-				TL::LedManager::fseqLoader.reset();
-				return TL::LedManager::Error::ERROR_INVALID_FSEQ;
-			}
+			return TL::LedManager::loadCustomAnimation(fileName);
 		}
 		else
 		{
 			return TL::LedManager::Error::ERROR_FILE_NOT_FOUND;
 		}
-
-		TL::LedManager::setRenderInterval(static_cast<uint32_t>(TL::LedManager::fseqLoader->getHeader().stepTime) * 1000);
-		TL::LedManager::setFrameInterval(static_cast<uint32_t>(TL::LedManager::fseqLoader->getHeader().stepTime) * 1000);
-		return TL::LedManager::loadCustomAnimation();
 	}
 }
 
@@ -354,6 +324,26 @@ TL::LedManager::Error TL::LedManager::createAnimators()
  */
 TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 {
+	const size_t ledCount = TL::LedManager::getLedCount();
+	if (ledCount <= 850)
+	{
+		// 60 FPS
+		TL::LedManager::setRenderInterval(RENDER_INTERVAL);
+		TL::LedManager::setFrameInterval(FRAME_INTERVAL);
+	}
+	else if (ledCount > 850 && ledCount <= 1000)
+	{
+		// 40 FPS
+		TL::LedManager::setRenderInterval(RENDER_INTERVAL);
+		TL::LedManager::setFrameInterval(FRAME_INTERVAL * 1.5f);
+	}
+	else
+	{
+		// 30 FPS
+		TL::LedManager::setRenderInterval(RENDER_INTERVAL);
+		TL::LedManager::setFrameInterval(FRAME_INTERVAL * 2.0f);
+	}
+
 	TL::LedManager::ledAnimator.resize(LED_NUM_ZONES);
 	for (size_t i = 0; i < TL::LedManager::ledAnimator.size(); i++)
 	{
@@ -443,15 +433,37 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 
 /**
  * @brief Load a custom animator and play the animation from the fseq loader.
+ * @param fileName name of the fseq file to load
  * @return OK when the custom animation was loaded
+ * @return ERROR_INVALID_FSEQ when a custom animation was set but the fseq file is invalid
  * @return ERROR_INVALID_LED_CONFIGURATION when the LED configuration is invalid for the custom animation
  */
-TL::LedManager::Error TL::LedManager::loadCustomAnimation()
+TL::LedManager::Error TL::LedManager::loadCustomAnimation(const String &fileName)
 {
-	if (TL::LedManager::fseqLoader->getHeader().channelCount != TL::LedManager::getLedCount() * 3)
+	TL::LedManager::fseqLoader.reset(new TL::FseqLoader(&SD));
+	const TL::FseqLoader::Error fseqError = TL::LedManager::fseqLoader->loadFromFile(FSEQ_DIRECTORY + (String)F("/") + fileName);
+	if (fseqError != TL::FseqLoader::Error::OK)
 	{
+		TL::LedManager::fseqLoader.reset();
+		return TL::LedManager::Error::ERROR_INVALID_FSEQ;
+	}
+
+	const uint32_t channelCount = TL::LedManager::getLedCount() * 3;
+	const uint32_t roundedChannelCount = channelCount % 4 ? channelCount + (4 - channelCount % 4) : channelCount;
+	const uint8_t fillerBytes = roundedChannelCount - channelCount;
+	if (TL::LedManager::fseqLoader->getHeader().channelCount != roundedChannelCount)
+	{
+		Serial.println(channelCount);
+		Serial.println(roundedChannelCount);
+		Serial.println(TL::LedManager::fseqLoader->getHeader().channelCount);
+		Serial.println(fillerBytes);
 		return TL::LedManager::Error::ERROR_INVALID_LED_CONFIGURATION;
 	}
+	TL::LedManager::fseqLoader->setFillerBytes(fillerBytes);
+	TL::LedManager::fseqLoader->setZoneCount(LED_NUM_ZONES);
+
+	TL::LedManager::setRenderInterval(static_cast<uint32_t>(TL::LedManager::fseqLoader->getHeader().stepTime) * 1000);
+	TL::LedManager::setFrameInterval(static_cast<uint32_t>(TL::LedManager::fseqLoader->getHeader().stepTime) * 1000);
 
 	TL::LedManager::ledAnimator.resize(LED_NUM_ZONES);
 	for (size_t i = 0; i < TL::LedManager::ledAnimator.size(); i++)

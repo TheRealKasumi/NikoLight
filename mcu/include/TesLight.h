@@ -61,8 +61,6 @@ private:
 	TesLight();
 
 	// Timer
-	static unsigned long renderInterval;
-	static unsigned long frameInterval;
 	static unsigned long lightSensorInterval;
 	static unsigned long motionSensorInterval;
 	static unsigned long renderTimer;

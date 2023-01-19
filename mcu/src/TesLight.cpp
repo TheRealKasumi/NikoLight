@@ -21,8 +21,6 @@
  */
 #include "TesLight.h"
 
-unsigned long TesLight::renderInterval = RENDER_INTERVAL;
-unsigned long TesLight::frameInterval = FRAME_INTERVAL;
 unsigned long TesLight::lightSensorInterval = LIGHT_SENSOR_INTERVAL;
 unsigned long TesLight::motionSensorInterval = MOTION_SENSOR_INTERVAL;
 unsigned long TesLight::renderTimer = 0;
@@ -290,7 +288,7 @@ void TesLight::initializeLedManager()
 	}
 	else if (ledManagerLoadError == TL::LedManager::Error::ERROR_INVALID_LED_CONFIGURATION)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to load LED configuration. The current configuraion does not match the configuration of the fseq file. Continuing without LEDs."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to load LED configuration. The current configurationn does not match the configuration of the fseq file. Continuing without LEDs."));
 	}
 	else if (ledManagerLoadError != TL::LedManager::Error::OK)
 	{
@@ -632,14 +630,14 @@ bool TesLight::checkTimer(unsigned long &timer, unsigned long cycleTime)
 void TesLight::run()
 {
 	// Handle the pixel rendering
-	if (checkTimer(renderTimer, renderInterval))
+	if (checkTimer(renderTimer, TL::LedManager::getRenderInterval()))
 	{
 		TL::LedManager::render();
 		renderCounter++;
 	}
 
 	// Handle the LEDs
-	if (checkTimer(frameTimer, frameInterval))
+	if (checkTimer(frameTimer, TL::LedManager::getFrameInterval()))
 	{
 		TL::LedManager::show();
 		frameCounter++;
@@ -658,9 +656,9 @@ void TesLight::run()
 		}
 		else
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read light sensor data. Delaying next read by 10s."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read light sensor data. Delaying next read by 1s."));
 			TL::LedManager::setAmbientBrightness(1.0f);
-			lightSensorInterval += 10000000;
+			lightSensorInterval = 1000000;
 		}
 	}
 
@@ -675,8 +673,8 @@ void TesLight::run()
 		}
 		else
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read motion sensor data. Delaying next read by 10s"));
-			motionSensorInterval += 10000000;
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read motion sensor data. Delaying next read by 1s"));
+			motionSensorInterval = 1000000;
 		}
 	}
 

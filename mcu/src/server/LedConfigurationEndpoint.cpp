@@ -224,8 +224,8 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 	}
 	else if (ledManagerError == TL::LedManager::Error::ERROR_INVALID_LED_CONFIGURATION)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. The current configuraion does not match the configuration of the fseq file."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, F("Failed to apply LED configuration. The current configuraion does not match the configuration of the fseq file."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. The current configurationn does not match the configuration of the fseq file."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, F("Failed to apply LED configuration. The current configurationn does not match the configuration of the fseq file."));
 		return;
 	}
 	else if (ledManagerError != TL::LedManager::Error::OK)

@@ -353,7 +353,7 @@ bool TL::WiFiConfigurationEndpoint::validateWiFiPassword(const String password)
  * @brief Check if the configuration has changed.
  * @param newConfig updated configuration
  * @return true when the configuration has changed
- * @return false when the configuraion has not changed
+ * @return false when the configurationn has not changed
  */
 bool TL::WiFiConfigurationEndpoint::hasChanged(const TL::Configuration::WiFiConfig &newConfig)
 {

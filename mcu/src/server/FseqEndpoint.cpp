@@ -138,7 +138,43 @@ void TL::FseqEndpoint::fseqUpload()
 	{
 		TL::FseqEndpoint::uploadFile.close();
 		TL::FseqLoader::Error fseqError = TL::FseqEndpoint::validateFseqFile((String)FSEQ_DIRECTORY + F("/") + fileName);
-		if (fseqError != TL::FseqLoader::Error::OK)
+
+		if (fseqError == TL::FseqLoader::Error::ERROR_FILE_TOO_SMALL)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file is invalid because it is too small. File will be deleted."));
+			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file is invalid because it is too small. File will be deleted."));
+			return;
+		}
+		else if (fseqError == TL::FseqLoader::Error::ERROR_MAGIC_NUMBERS)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file is not a valid fseq file. File will be deleted."));
+			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file is not a valid fseq file. File will be deleted."));
+			return;
+		}
+		else if (fseqError == TL::FseqLoader::Error::ERROR_FILE_VERSION)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file has a invalid version. File will be deleted."));
+			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file has a invalid version. File will be deleted."));
+			return;
+		}
+		else if (fseqError == TL::FseqLoader::Error::ERROR_HEADER_LENGTH)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file has a invalid header length. File will be deleted."));
+			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file has a invalid header length. File will be deleted."));
+			return;
+		}
+		else if (fseqError == TL::FseqLoader::Error::ERROR_INVALID_DATA_LENGTH)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file has a invalid data length. File will be deleted."));
+			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file has a invalid data length. File will be deleted."));
+			return;
+		}
+		else if (fseqError != TL::FseqLoader::Error::OK)
 		{
 			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file is invalid and will be deleted."));
 			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
@@ -249,7 +285,6 @@ bool TL::FseqEndpoint::validateFileName(const String fileName)
  * @return TL::FseqLoader::ERROR_FILE_VERSION  when the file version is unsupported
  * @return TL::FseqLoader::ERROR_HEADER_LENGTH when the header length is invalid
  * @return TL::FseqLoader::ERROR_INVALID_DATA_LENGTH when the data length does not match the length specified in header
- * @return TL::FseqLoader::ERROR_UNSUPPORTED_DATA_LENGTH when the data length is not a multiple of 3 and unsupported by TesLight
  */
 TL::FseqLoader::Error TL::FseqEndpoint::validateFseqFile(const String fileName)
 {

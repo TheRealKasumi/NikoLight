@@ -29,6 +29,9 @@ TL::FseqLoader::FseqLoader(FS *fileSystem)
 {
 	this->fileSystem = fileSystem;
 	this->initFseqHeader();
+	this->fillerBytes = 0;
+	this->zoneCount = 1;
+	this->zoneCounter = 0;
 }
 
 /**
@@ -51,7 +54,6 @@ TL::FseqLoader::~FseqLoader()
  * @return ERROR_FILE_VERSION  when the file version is unsupported
  * @return ERROR_HEADER_LENGTH when the header length is invalid
  * @return ERROR_INVALID_DATA_LENGTH when the data length does not match the length specified in header
- * @return ERROR_UNSUPPORTED_DATA_LENGTH when the data length is not a multiple of 3 and unsupported by TesLight
  */
 TL::FseqLoader::Error TL::FseqLoader::loadFromFile(const String fileName)
 {
@@ -121,6 +123,7 @@ void TL::FseqLoader::moveToStart()
 	if (this->file)
 	{
 		this->file.seek(this->fseqHeader.channelDataOffset);
+		this->zoneCounter = 0;
 	}
 }
 
@@ -154,6 +157,16 @@ TL::FseqLoader::Error TL::FseqLoader::readPixelBuffer(std::vector<CRGB> &pixels)
 {
 	if (this->file && this->available() >= pixels.size())
 	{
+		this->zoneCounter++;
+		if (this->zoneCounter >= this->zoneCount)
+		{
+			this->zoneCounter = 0;
+			if (!this->file.seek(this->fillerBytes, fs::SeekMode::SeekCur))
+			{
+				return TL::FseqLoader::Error::ERROR_END_OF_FILE;
+			}
+		}
+
 		if (this->file.read((uint8_t *)&pixels.front(), pixels.size() * 3) == pixels.size() * 3)
 		{
 			return TL::FseqLoader::Error::OK;
@@ -161,6 +174,40 @@ TL::FseqLoader::Error TL::FseqLoader::readPixelBuffer(std::vector<CRGB> &pixels)
 	}
 
 	return TL::FseqLoader::Error::ERROR_END_OF_FILE;
+}
+
+/**
+ * @brief Set the number of filler bytes which is skipped after each completed frame.
+ * @param fillerBytes number of filler bytes
+ */
+void TL::FseqLoader::setFillerBytes(const uint8_t fillerBytes)
+{
+	this->fillerBytes = fillerBytes;
+}
+
+/**
+ * @brief Get the number of filler bytes which is skipped after each completed frame.
+ */
+uint8_t TL::FseqLoader::getFillerBytes()
+{
+	return this->fillerBytes;
+}
+
+/**
+ * @brief Set the number of zones that will read from the file.
+ * @param zoneCount number of zones
+ */
+void TL::FseqLoader::setZoneCount(const uint8_t zoneCount)
+{
+	this->zoneCount = zoneCount;
+}
+
+/**
+ * @brief Get the number of zones that will read from the file.
+ */
+uint8_t TL::FseqLoader::getZoneCount()
+{
+	return this->zoneCount;
 }
 
 /**
@@ -194,7 +241,6 @@ void TL::FseqLoader::initFseqHeader()
  * @return ERROR_FILE_VERSION  when the file version is unsupported
  * @return ERROR_HEADER_LENGTH when the header length is invalid
  * @return ERROR_INVALID_DATA_LENGTH when the data length does not match the length specified in header
- * @return ERROR_UNSUPPORTED_DATA_LENGTH when the data length is not a multiple of 3 and unsupported by TesLight
  */
 TL::FseqLoader::Error TL::FseqLoader::isValid()
 {
@@ -222,13 +268,6 @@ TL::FseqLoader::Error TL::FseqLoader::isValid()
 	if (dataLength != expectedLength)
 	{
 		return TL::FseqLoader::Error::ERROR_INVALID_DATA_LENGTH;
-	}
-
-	// Check if the data length is a multiple of 3
-	// It has to be a multiple of 3 because there are 3 bytes per pixel
-	if (dataLength % 3 != 0)
-	{
-		return TL::FseqLoader::Error::ERROR_UNSUPPORTED_DATA_LENGTH;
 	}
 
 	return TL::FseqLoader::Error::OK;

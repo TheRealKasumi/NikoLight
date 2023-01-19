@@ -34,17 +34,16 @@ namespace TL
 	public:
 		enum class Error
 		{
-			OK,							   // No error
-			ERROR_FILE_NOT_FOUND,		   // The file was not found
-			ERROR_FILE_IS_DIR,			   // The file is not a file but a directory
-			ERROR_FILE_TOO_SMALL,		   // The file is empty or too small to be valid
-			ERROR_FILE_READ,			   // The file could not be read
-			ERROR_MAGIC_NUMBERS,		   // The magic numbers do not fit the file
-			ERROR_FILE_VERSION,			   // The file version is not supported
-			ERROR_HEADER_LENGTH,		   // The header length of the file is invalid
-			ERROR_INVALID_DATA_LENGTH,	   // The data length specified in header does not match actual data length
-			ERROR_UNSUPPORTED_DATA_LENGTH, // The data length is not supported because it is not a multiple of 3
-			ERROR_END_OF_FILE			   // End of the file was reached
+			OK,						   // No error
+			ERROR_FILE_NOT_FOUND,	   // The file was not found
+			ERROR_FILE_IS_DIR,		   // The file is not a file but a directory
+			ERROR_FILE_TOO_SMALL,	   // The file is empty or too small to be valid
+			ERROR_FILE_READ,		   // The file could not be read
+			ERROR_MAGIC_NUMBERS,	   // The magic numbers do not fit the file
+			ERROR_FILE_VERSION,		   // The file version is not supported
+			ERROR_HEADER_LENGTH,	   // The header length of the file is invalid
+			ERROR_INVALID_DATA_LENGTH, // The data length specified in header does not match actual data length
+			ERROR_END_OF_FILE		   // End of the file was reached
 		};
 
 		struct FseqHeader
@@ -69,7 +68,6 @@ namespace TL
 		~FseqLoader();
 
 		TL::FseqLoader::Error loadFromFile(const String fileName);
-
 		size_t available();
 		void moveToStart();
 		void close();
@@ -77,10 +75,19 @@ namespace TL
 		FseqHeader getHeader();
 		TL::FseqLoader::Error readPixelBuffer(std::vector<CRGB> &pixels);
 
+		void setFillerBytes(const uint8_t fillerBytes);
+		uint8_t getFillerBytes();
+
+		void setZoneCount(const uint8_t zoneCount);
+		uint8_t getZoneCount();
+
 	private:
 		FS *fileSystem;
 		File file;
 		FseqHeader fseqHeader;
+		uint8_t fillerBytes;
+		uint8_t zoneCount;
+		uint8_t zoneCounter;
 
 		void initFseqHeader();
 		TL::FseqLoader::Error isValid();
