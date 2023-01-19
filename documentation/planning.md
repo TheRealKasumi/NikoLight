@@ -54,7 +54,7 @@ So each LED per zone will get a number from 0 to n, where n is the last LED in t
 Currently there are three different types of luminants available that you can choose from. They are all fully supported by TesLight, but not each luminant is suitable for each installation location.
 
 #### Basic WS2812 LED strip 
-This is the most widely availble type of luminant - a series of WS2812 LEDs in mounted in series on a thin, flexible PCB strip. These strips are available in various lenghts, widths and density (count of LEDs per meter). 
+This is the most widely availble type of luminant - a series of WS2812 LEDs mounted in series on a thin, flexible PCB strip. These strips are available in various lenghts, widths and density (count of LEDs per meter). 
 Possible installation locations for the LED strip are the dashboard and the foot wells. A density of around 60 LEDs/meter is a good compromise between cost/power consumption and good looking light (effects).
 Benefits of the LED strip are that it is easy to obtain in various configurations and since many LEDs are distributed across the strip it can be used for many light effects.
 The main drawback is that it can only be installed in locations where it is not directly visible.
