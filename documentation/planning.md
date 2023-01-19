@@ -76,7 +76,7 @@ As an alternative it is also possible to use a light bar for the dashboard as we
 
 The fiber tubes are working well for the center console or around the seats.
 
-For the doors, the light bars turned out to be very nice looking and be less noticeable when turned of
+For the doors, the light bars turned out to be very nice looking and be less noticeable when turned off.
 The choice here is fully up to you.
 All parts can be found on the [part list](part-list.md).
 
