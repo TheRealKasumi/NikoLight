@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a class for reading the BH1750 I²C light sensor.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -24,36 +24,43 @@
 
 #include <stdint.h>
 #include <Wire.h>
-#include "logging/Logger.h"
 
 namespace TL
 {
 	class BH1750
 	{
 	public:
-		enum BH1750Res
+		enum class Error
+		{
+			OK,			   // No error
+			ERROR_IIC_COMM // I²C communication failed
+		};
+
+		enum BH1750Res : uint8_t
 		{
 			BH1750_HIGH = 0b00010000,
 			BH1750_LOW = 0b00010011
 		};
 
-		BH1750(const uint8_t deviceAddress);
-		BH1750(const uint8_t deviceAddress, const TL::BH1750::BH1750Res resolution);
-		~BH1750();
+		static TL::BH1750::Error begin(const uint8_t deviceAddress);
+		static TL::BH1750::Error begin(const uint8_t deviceAddress, const TL::BH1750::BH1750Res resolution);
+		static void end();
+		static bool isInitialized();
 
-		bool begin();
+		static TL::BH1750::Error setResolution(const TL::BH1750::BH1750Res resolution);
+		static TL::BH1750::BH1750Res getResolution();
 
-		bool setResolution(const TL::BH1750::BH1750Res resolution);
-		TL::BH1750::BH1750Res getResolution();
-
-		bool getLux(float &lux);
+		static TL::BH1750::Error getLux(float &lux);
 
 	private:
-		uint8_t deviceAddress;
-		TL::BH1750::BH1750Res resolution;
+		BH1750();
 
-		bool write(const uint8_t command);
-		bool read(uint16_t &value);
+		static bool initialized;
+		static uint8_t deviceAddress;
+		static TL::BH1750::BH1750Res resolution;
+
+		static TL::BH1750::Error write(const uint8_t command);
+		static TL::BH1750::Error read(uint16_t &value);
 	};
 }
 

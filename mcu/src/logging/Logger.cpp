@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Implementation of {@link TL::Logger}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -21,31 +21,44 @@
  */
 #include "logging/Logger.h"
 
-// Initialize
-bool TL::Logger::logToSerial = false;
-bool TL::Logger::logToFile = false;
-FS *TL::Logger::fileSystem = nullptr;
-String TL::Logger::fileName = F("");
-TL::Logger::LogLevel TL::Logger::minLogLevel = TL::Logger::LogLevel::DEBUG;
+bool TL::Logger::initialized = false;
+bool TL::Logger::logToSerial;
+bool TL::Logger::logToFile;
+FS *TL::Logger::fileSystem;
+String TL::Logger::fileName;
+TL::Logger::LogLevel TL::Logger::minLogLevel;
 
 /**
  * @brief Initialiize the {@link TL::Logger}.
+ * @param minLogLevel optional parameter to set the minimum log level
  * @return true always
  */
-bool TL::Logger::begin()
+bool TL::Logger::begin(const TL::Logger::LogLevel minLogLevel)
 {
+	TL::Logger::initialized = true;
+	TL::Logger::logToSerial = false;
+	TL::Logger::logToFile = false;
+	TL::Logger::fileSystem = nullptr;
+	TL::Logger::fileName = F("");
+	TL::Logger::minLogLevel = minLogLevel;
 	return true;
 }
 
 /**
  * @brief Initialiize the {@link TL::Logger}.
  * @param baudRate serial baud rate
+ * @param minLogLevel optional parameter to set the minimum log level
  * @return true always
  */
-bool TL::Logger::begin(const uint32_t baudRate)
+bool TL::Logger::begin(const uint32_t baudRate, const TL::Logger::LogLevel minLogLevel)
 {
 	Serial.begin(baudRate);
-	logToSerial = true;
+	TL::Logger::initialized = true;
+	TL::Logger::logToSerial = true;
+	TL::Logger::logToFile = false;
+	TL::Logger::fileSystem = nullptr;
+	TL::Logger::fileName = F("");
+	TL::Logger::minLogLevel = minLogLevel;
 	return true;
 }
 
@@ -53,15 +66,19 @@ bool TL::Logger::begin(const uint32_t baudRate)
  * @brief Initialiize the {@link TL::Logger}.
  * @param fs instance of the {@link FS} containing the file
  * @param fn full name of the file
- * @return true when successful
- * @return false when there was an error
+ * @param minLogLevel optional parameter to set the minimum log level
+ * @return true when the logger can write to the sd card
+ * @return false when the logger cant log to the sd card
  */
-bool TL::Logger::begin(FS *fs, const String fn)
+bool TL::Logger::begin(FS *fs, const String fn, const TL::Logger::LogLevel minLogLevel)
 {
-	logToFile = testOpenFile(fs, fn);
-	fileSystem = fs;
-	fileName = fn;
-	return true;
+	TL::Logger::initialized = testOpenFile(fs, fn);
+	TL::Logger::logToSerial = false;
+	TL::Logger::logToFile = true;
+	TL::Logger::fileSystem = fs;
+	TL::Logger::fileName = fn;
+	TL::Logger::minLogLevel = minLogLevel;
+	return TL::Logger::initialized;
 }
 
 /**
@@ -69,17 +86,43 @@ bool TL::Logger::begin(FS *fs, const String fn)
  * @param baudRate serial baud rate
  * @param fs instance of the {@link FS} containing the file
  * @param fn full name of the file
- * @return true when successful
- * @return false when there was an error
+ * @param minLogLevel optional parameter to set the minimum log level
+ * @return true when the logger can write to the sd card
+ * @return false when the logger cant log to the sd card
  */
-bool TL::Logger::begin(uint32_t baudRate, FS *fs, const String fn)
+bool TL::Logger::begin(uint32_t baudRate, FS *fs, const String fn, const TL::Logger::LogLevel minLogLevel)
 {
 	Serial.begin(baudRate);
-	logToSerial = true;
-	logToFile = testOpenFile(fs, fn);
-	fileSystem = fs;
-	fileName = fn;
-	return true;
+	TL::Logger::initialized = testOpenFile(fs, fn);
+	TL::Logger::logToSerial = true;
+	TL::Logger::logToFile = true;
+	TL::Logger::fileSystem = fs;
+	TL::Logger::fileName = fn;
+	TL::Logger::minLogLevel = minLogLevel;
+	return TL::Logger::initialized;
+}
+
+/**
+ * @brief Stop the logger.
+ */
+void TL::Logger::end()
+{
+	TL::Logger::initialized = false;
+	TL::Logger::logToSerial = false;
+	TL::Logger::logToFile = false;
+	TL::Logger::fileSystem = nullptr;
+	TL::Logger::fileName = F("");
+	TL::Logger::minLogLevel = TL::Logger::LogLevel::INFO;
+}
+
+/**
+ * @brief Check if the logger is initalized.
+ * @return true when the logger is initalized
+ * @return false when the logger is not initialized
+ */
+bool TL::Logger::isInitialized()
+{
+	return TL::Logger::initialized;
 }
 
 /**
@@ -101,6 +144,11 @@ void TL::Logger::setMinLogLevel(const TL::Logger::LogLevel logLevel)
  */
 void TL::Logger::log(const TL::Logger::LogLevel logLevel, const char *file, const char *function, const int line, const String message)
 {
+	if (!TL::Logger::initialized)
+	{
+		return;
+	}
+
 	if (logLevel < minLogLevel)
 	{
 		return;
@@ -132,6 +180,11 @@ void TL::Logger::log(const TL::Logger::LogLevel logLevel, const char *file, cons
  */
 size_t TL::Logger::getLogSize()
 {
+	if (!TL::Logger::initialized)
+	{
+		return 0;
+	}
+
 	if (!logToFile)
 	{
 		return 0;
@@ -156,6 +209,11 @@ size_t TL::Logger::getLogSize()
  */
 void TL::Logger::readLog(uint8_t *buffer, const size_t start, const size_t bufferSize)
 {
+	if (!TL::Logger::initialized)
+	{
+		return;
+	}
+
 	if (!logToFile)
 	{
 		return;
@@ -177,6 +235,11 @@ void TL::Logger::readLog(uint8_t *buffer, const size_t start, const size_t buffe
  */
 void TL::Logger::clearLog()
 {
+	if (!TL::Logger::initialized)
+	{
+		return;
+	}
+
 	if (!logToFile)
 	{
 		return;

@@ -1,0 +1,15 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "g++.exe - Build and debug project",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceRoot}\\build\\tupt.exe",
+			"cwd": "${workspaceRoot}\\build",
+			"stopAtEntry": false,
+			"MIMode": "gdb",
+			"preLaunchTask": "C/C++: g++.exe build project"
+		}
+	]
+}

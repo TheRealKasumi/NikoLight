@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Contains the (static) system configuration.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  * 
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
@@ -22,8 +22,19 @@
 #ifndef SYSTEM_CONFIGURATION_H
 #define SYSTEM_CONFIGURATION_H
 
-// Firmware version
+// Version configuration
 #define FW_VERSION "1.1.0" // Firmware version of the MCU
+#define HW_VERSION_2_1     // Hardware version
+
+#if defined(HW_VERSION_1_0)
+	#define HW_VERSION "1.0"
+#elif defined(HW_VERSION_2_0)
+	#define HW_VERSION "2.0"
+#elif defined(HW_VERSION_2_1)
+	#define HW_VERSION "2.1"
+#else
+	#error "A valid hardware version must be defined."
+#endif
 
 // SD configuration
 #define SD_CS_PIN 5			 // CS pin for the SD card
@@ -41,42 +52,63 @@
 #define CONFIGURATION_FILE_NAME "/config.tli" // File name of the configuration file
 
 // LED and effect configuration
-#define LED_NUM_ZONES 8 											// Number of LED zones
-#define LED_DEFAULT_OUTPUT_PINS {13, 14, 15, 16, 17, 21, 22, 25} 	// Pin mapping of zones to physical pins
-#define LED_DEFAULT_COUNTS {2, 2, 2, 2, 2, 2, 2, 2}					// Default number of LEDs for each channel
-#define LED_DEFAULT_CHANNEL_CURRENT 16 								// Default current per LED channel in mA
-#define ANIMATOR_NUM_ANIMATION_SETTINGS 25  						// Number of custom fields in the LED configuration
-#define ANIMATOR_DEFAULT_TYPE 0		   								// Default animation type
-#define ANIMATOR_DEFAULT_SPEED 50	   								// Default animation speed
-#define ANIMATOR_DEFAULT_OFFSET 10	   								// Default animation offset
-#define ANIMATOR_DEFAULT_BRIGHTNESS 50 								// Default zone brightness
-#define ANIMATOR_DEFAULT_REVERSE false 								// Default reversal of the animation
-#define ANIMATOR_DEFAULT_FADE_SPEED 30 								// Default fading speed
+#define LED_NUM_ZONES 8 											  // Number of LED zones
+#if defined(HW_VERSION_1_0)											  // Pin mapping of zones to physical pins depending on hardware version
+	#define LED_DEFAULT_OUTPUT_PINS {13, 14, 15, 16, 17, 21, 22, 25}
+#elif defined(HW_VERSION_2_0)
+	#define LED_DEFAULT_OUTPUT_PINS {13, 17, 14, 21, 15, 22, 16, 25}
+#elif defined(HW_VERSION_2_1)
+	#define LED_DEFAULT_OUTPUT_PINS {13, 14, 15, 16, 17, 21, 22, 25}
+#endif
+#define LED_DEFAULT_COUNTS {2, 2, 2, 2, 2, 2, 2, 2}					  // Default number of LEDs for each channel
+#define LED_DEFAULT_CHANNEL_CURRENT 16 								  // Default current per LED channel in mA
+#define ANIMATOR_NUM_ANIMATION_SETTINGS 25  						  // Number of custom fields in the LED configuration
+#define ANIMATOR_DEFAULT_TYPE 0		   								  // Default animation type
+#define ANIMATOR_DEFAULT_SPEED 50	   								  // Default animation speed
+#define ANIMATOR_DEFAULT_OFFSET 10	   								  // Default animation offset
+#define ANIMATOR_DEFAULT_BRIGHTNESS 50 								  // Default zone brightness
+#define ANIMATOR_DEFAULT_REVERSE false 								  // Default reversal of the animation
+#define ANIMATOR_DEFAULT_FADE_SPEED 30 								  // Default fading speed
 
 // Voltage regulator
-#define REGULATOR_POWER_LIMIT 12																		// W per regulator
-#define REGULATOR_COUNT 2																				// Number of regulators
-#define REGULATOR_DEFAULT_VOLTAGE 5.0f																	// Output Voltage 
-#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 1}, {15, 0}, {16, 1}, {17, 0}, {21, 1}, {22, 0}, {25, 1}}	// Map a output pin to a regulator index
-#define REGULATOR_HIGH_TEMP 70																			// Temp in °C where brightness is reduced
-#define REGULATOR_CUT_OFF_TEMP 85																		// Temp in °C where LEDs are turned off
-
-// Cooling fan
-#define FAN_PWM_PIN 27			// Output pin for the fan
-#define FAN_PWM_CHANNEL 0		// PWM channel for the fan control
-#define FAN_PWM_FREQUENCY 60000	// PWM frequency of the fan in Hz
-#define FAN_PWM_RESOLUTION 8 	// Resolution of the fan control in bits
-#define FAN_PWM_MIN 75		 	// Minimum PWM value for the fan (stall guard)
-#define FAN_PWM_MAX 255		 	// Maximum PWm value for the fan
-#define FAN_TEMP_MIN 60		 	// Minimum temperature where the fan starts
-#define FAN_TEMP_MAX 80		 	// Maximum temeprature where the fan runs at full speed
+#define REGULATOR_DEFAULT_VOLTAGE 5.0f																	      // Output Voltage in V
+#define REGULATOR_CURRENT_LIMIT 3.0f																	      // Current per regulator in A
+#define REGULATOR_POWER_LIMIT 12																		      // Default output power per regulator in W
+#if defined(HW_VERSION_1_0)																				      // Number of regulators depending on hardware version
+	#define REGULATOR_COUNT 1
+#elif defined(HW_VERSION_2_0)
+	#define REGULATOR_COUNT 2
+#elif defined(HW_VERSION_2_1)
+	#define REGULATOR_COUNT 2
+#endif
+#if defined(HW_VERSION_1_0)																				      // Map a output pin to a regulator index depending on hardware version
+	#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}
+#elif defined(HW_VERSION_2_0)
+	#define REGULATOR_ZONE_MAPPING {{13, 0}, {17, 1}, {14, 0}, {21, 1}, {15, 0}, {22, 1}, {16, 0}, {25, 1}}
+#elif defined(HW_VERSION_2_1)
+	#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 1}, {15, 0}, {16, 1}, {17, 0}, {21, 1}, {22, 0}, {25, 1}}	
+#endif
+#define REGULATOR_HIGH_TEMP 70																			      // Temp in °C where brightness is reduced
+#define REGULATOR_CUT_OFF_TEMP 85																		      // Temp in °C where LEDs are turned off
 
 // I2C configuration
-#define IIC_SDA_PIN 32 // SDA pin
-#define IIC_SCL_PIN 33 // SCL pin
+#define IIC_SDA_PIN 32		 // SDA pin
+#define IIC_SCL_PIN 33 		 // SCL pin
+#define IIC_FREQUENCY 400000 // I²C bus frequency
 
 // OneWire configuration
 #define ONE_WIRE_PIN 26 // Pin of the OneWire bus
+
+// Analog input configuration
+#define ANALOG_INPUT_PIN 35			 // Physical pin for the analog voltage sensor
+#define ANALOG_INPUT_MODE INPUT		 // Input mode of the analog input
+#define ANALOG_INPUT_MAX_VOLTAGE 3.3 // Maximum input voltage of the analog input
+
+// MPU6050 configuration
+#define MPU6050_IIC_ADDRESS 0x68 // I²C Adress of the MPU6050 motion sensor
+
+// BH1750 configuration
+#define BH1750_IIC_ADDRESS 0x23	// I²C Adress of the BH1750 brightness sensor
 
 // Light sensor configuration
 #define LIGHT_SENSOR_DEFAULT_MODE 1 			// Default light sensor mode
@@ -86,14 +118,19 @@
 #define LIGHT_SENSOR_DEFAULT_MIN_LED 0			// Minimum brightness of the LEDs for brightnes control
 #define LIGHT_SENSOR_DEFAULT_MAX_LED 255		// Maximum brightness of the LEDs for brightness control
 #define LIGHT_SENSOR_DEFAULT_DURATION 6 		// Time after which the lights are turning off when using the motion sensor (x5 seconds)
-#define LIGHT_SENSOR_ADC_PIN 35					// Physical pin for the analog voltage sensor
-#define IIC_ADDRESS_BH1750 0x23					// I²C Adress of the BH1750 brightness sensor
 
-// Motion sensor configuration
-#define IIC_ADDRESS_MPU6050 0x68 // I²C Adress of the MPU6050 motion sensor
-
-// Temperature sensor
+// Temperature sensor configuration
 #define TEMP_SENSOR_RESOLUTION 127	// Resolution register of the temperature sensors
+
+// Cooling fan configuration
+#define FAN_PWM_PIN 27			// Output pin for the fan
+#define FAN_PWM_CHANNEL 0		// PWM channel for the fan control
+#define FAN_PWM_FREQUENCY 60000	// PWM frequency of the fan in Hz
+#define FAN_PWM_RESOLUTION 8 	// Resolution of the fan control in bits
+#define FAN_PWM_MIN 75		 	// Minimum PWM value for the fan (stall guard)
+#define FAN_PWM_MAX 255		 	// Maximum PWm value for the fan
+#define FAN_TEMP_MIN 60		 	// Minimum temperature where the fan starts
+#define FAN_TEMP_MAX 80		 	// Maximum temeprature where the fan runs at full speed
 
 // WiFi configuration
 #define AP_DEFAULT_SSID "TesLight"		 // Default SSID of the access point
@@ -111,11 +148,12 @@
 // Timer configuration
 #define RENDER_INTERVAL 16666			// Interval for rendering the pixels in µs
 #define FRAME_INTERVAL 16666			// Interval for outputting to the LEDs in µs
-#define TEMP_INTERVAL 250000			// Interval for reading temperatures and run fan controll in µs
+#define FAN_INTERVAL 500000				// Interval for running the fan controll in µs
 #define LIGHT_SENSOR_INTERVAL 40000		// Interval for the light sensor in µs
 #define MOTION_SENSOR_INTERVAL 20000	// Interval for the motion sensor in µs
 #define WEB_SERVER_INTERVAL 20000		// Interval for the web server to accept conenctions in µs
-#define STATUS_INTERVAL 5000000			// Interval for printing the current status in µs
+#define STATUS_INTERVAL 500000			// Interval for collecting new status information in µs
+#define STATUS_PRINT_INTERVAL 5000000	// Interval for printing the current status in µs
 #define WATCHDOG_RESET_TIME 3			// Time until a watchdog reset is triggered
 
 // FSEQ configuration

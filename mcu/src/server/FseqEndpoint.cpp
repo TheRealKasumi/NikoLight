@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Implementation of a REST endpoint to manage fseq files on the TL controller.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
@@ -23,21 +23,19 @@
 
 // Initialize
 FS *TL::FseqEndpoint::fileSystem = nullptr;
-TL::Configuration *TL::FseqEndpoint::configuration = nullptr;
 File TL::FseqEndpoint::uploadFile = File();
 
 /**
  * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
  */
-void TL::FseqEndpoint::begin(FS *_fileSystem, TL::Configuration *_configuration)
+void TL::FseqEndpoint::begin(FS *_fileSystem)
 {
 	TL::FseqEndpoint::fileSystem = _fileSystem;
-	TL::FseqEndpoint::configuration = _configuration;
 	TL::FseqEndpoint::fileSystem->mkdir(FSEQ_DIRECTORY);
 
-	TL::FseqEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_GET, TL::FseqEndpoint::getFseqList);
-	TL::FseqEndpoint::webServerManager->addUploadRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_POST, TL::FseqEndpoint::postFseq, TL::FseqEndpoint::fseqUpload);
-	TL::FseqEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_DELETE, TL::FseqEndpoint::deleteFseq);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_GET, TL::FseqEndpoint::getFseqList);
+	TL::WebServerManager::addUploadRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_POST, TL::FseqEndpoint::postFseq, TL::FseqEndpoint::fseqUpload);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_DELETE, TL::FseqEndpoint::deleteFseq);
 }
 
 /**
@@ -139,7 +137,44 @@ void TL::FseqEndpoint::fseqUpload()
 	else if (upload.status == UPLOAD_FILE_END)
 	{
 		TL::FseqEndpoint::uploadFile.close();
-		if (!TL::FseqEndpoint::validateFseqFile((String)FSEQ_DIRECTORY + F("/") + fileName))
+		TL::FseqLoader::Error fseqError = TL::FseqEndpoint::validateFseqFile((String)FSEQ_DIRECTORY + F("/") + fileName);
+
+		if (fseqError == TL::FseqLoader::Error::ERROR_FILE_TOO_SMALL)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file is invalid because it is too small. File will be deleted."));
+			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file is invalid because it is too small. File will be deleted."));
+			return;
+		}
+		else if (fseqError == TL::FseqLoader::Error::ERROR_MAGIC_NUMBERS)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file is not a valid fseq file. File will be deleted."));
+			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file is not a valid fseq file. File will be deleted."));
+			return;
+		}
+		else if (fseqError == TL::FseqLoader::Error::ERROR_FILE_VERSION)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file has a invalid version. File will be deleted."));
+			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file has a invalid version. File will be deleted."));
+			return;
+		}
+		else if (fseqError == TL::FseqLoader::Error::ERROR_HEADER_LENGTH)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file has a invalid header length. File will be deleted."));
+			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file has a invalid header length. File will be deleted."));
+			return;
+		}
+		else if (fseqError == TL::FseqLoader::Error::ERROR_INVALID_DATA_LENGTH)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file has a invalid data length. File will be deleted."));
+			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file has a invalid data length. File will be deleted."));
+			return;
+		}
+		else if (fseqError != TL::FseqLoader::Error::OK)
 		{
 			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file is invalid and will be deleted."));
 			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
@@ -180,7 +215,7 @@ void TL::FseqEndpoint::deleteFseq()
 		return;
 	}
 
-	if (TL::FseqEndpoint::configuration->getLedConfig(0).type == 255)
+	if (TL::Configuration::getLedConfig(0).type == 255)
 	{
 		uint32_t idFile = 0;
 		uint32_t idConfig = 0;
@@ -190,7 +225,7 @@ void TL::FseqEndpoint::deleteFseq()
 			TL::FseqEndpoint::sendSimpleResponse(500, F("Failed to calculate file identifier."));
 			return;
 		}
-		memcpy(&idConfig, &TL::FseqEndpoint::configuration->getLedConfig(0).animationSettings[20], sizeof(idConfig));
+		memcpy(&idConfig, &TL::Configuration::getLedConfig(0).animationSettings[20], sizeof(idConfig));
 		if (idFile == idConfig)
 		{
 			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Can not delete a fseq file that is currently used."));
@@ -241,13 +276,20 @@ bool TL::FseqEndpoint::validateFileName(const String fileName)
 /**
  * @brief Validate a fseq file by using the {@link TL::FseqLoader}.
  * @param fileName full path and name of the file to check
- * @return true when valid
- * @return false when invalid
+ * @return TL::FseqLoader::OK when the file was loaded and is valid
+ * @return TL::FseqLoader::ERROR_FILE_NOT_FOUND when the file was not found
+ * @return TL::FseqLoader::ERROR_FILE_IS_DIR when the file is a directory
+ * @return TL::FseqLoader::ERROR_FILE_TOO_SMALL when the file is too small to be valid
+ * @return TL::FseqLoader::ERROR_FILE_READ when the file could not be read
+ * @return TL::FseqLoader::ERROR_MAGIC_NUMBERS when the magic numbers do not match
+ * @return TL::FseqLoader::ERROR_FILE_VERSION  when the file version is unsupported
+ * @return TL::FseqLoader::ERROR_HEADER_LENGTH when the header length is invalid
+ * @return TL::FseqLoader::ERROR_INVALID_DATA_LENGTH when the data length does not match the length specified in header
  */
-bool TL::FseqEndpoint::validateFseqFile(const String fileName)
+TL::FseqLoader::Error TL::FseqEndpoint::validateFseqFile(const String fileName)
 {
 	TL::FseqLoader fseqLoader(TL::FseqEndpoint::fileSystem);
-	const bool valid = fseqLoader.loadFromFile(fileName);
+	const TL::FseqLoader::Error fseqError = fseqLoader.loadFromFile(fileName);
 	fseqLoader.close();
-	return valid;
+	return fseqError;
 }

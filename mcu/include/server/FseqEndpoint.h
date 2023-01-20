@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a REST endpoint to manage fseq files on the TesLight controller.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -35,13 +35,12 @@ namespace TL
 	class FseqEndpoint : public RestEndpoint
 	{
 	public:
-		static void begin(FS *_fileSystem, TL::Configuration *_configuration);
+		static void begin(FS *_fileSystem);
 
 	private:
 		FseqEndpoint();
 
 		static FS *fileSystem;
-		static TL::Configuration *configuration;
 		static File uploadFile;
 
 		static void getFseqList();
@@ -50,7 +49,7 @@ namespace TL
 		static void deleteFseq();
 
 		static bool validateFileName(const String fileName);
-		static bool validateFseqFile(const String fileName);
+		static TL::FseqLoader::Error validateFseqFile(const String fileName);
 	};
 }
 

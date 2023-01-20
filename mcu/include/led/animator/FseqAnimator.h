@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a class to render a custom animation from a fseq file.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- *
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ * 
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)

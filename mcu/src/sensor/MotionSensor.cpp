@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief implementation of the {@link TL::MotionSensor}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -21,150 +21,157 @@
  */
 #include "sensor/MotionSensor.h"
 
-/**
- * @brief Create a new instance of {@link TL::MotionSensor}.
- * @param sensorAddress address of the sensor on the I²C bus
- * @param configuration configuration of TesLight
- */
-TL::MotionSensor::MotionSensor(const uint8_t sensorAddress, TL::Configuration *configuration)
-{
-	this->mpu6050.reset(new TL::MPU6050(sensorAddress));
-	this->configuration = configuration;
-	this->motionData.accXRaw = 0;
-	this->motionData.accYRaw = 0;
-	this->motionData.accZRaw = 0;
-	this->motionData.gyroXRaw = 0;
-	this->motionData.gyroYRaw = 0;
-	this->motionData.gyroZRaw = 0;
-	this->motionData.accXG = 0.0f;
-	this->motionData.accYG = 0.0f;
-	this->motionData.accZG = 0.0f;
-	this->motionData.gyroXDeg = 0.0f;
-	this->motionData.gyroYDeg = 0.0f;
-	this->motionData.gyroZDeg = 0.0f;
-	this->motionData.pitch = 0.0f;
-	this->motionData.roll = 0.0f;
-	this->motionData.yaw = 0.0f;
-	this->motionData.rollCompensatedAccXG = 0.0f;
-	this->motionData.pitchCompensatedAccYG = 0.0f;
-	this->motionData.temperatureRaw = 0;
-	this->motionData.temperatureDeg = 0;
-	this->lastMeasure = 0;
-}
-
-/**
- * @brief Delete the {@link TL::MotionSensor} instance.
- */
-TL::MotionSensor::~MotionSensor()
-{
-}
+bool TL::MotionSensor::initialized = false;
+TL::MotionSensor::MotionSensorData TL::MotionSensor::motionData;
+unsigned long TL::MotionSensor::lastMeasure;
 
 /**
  * @brief Initialize the motion sensor and set the scales.
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the motion sensor was initialized
+ * @return ERROR_CONFIG_UNAVAILABLE when the configuration is not available
+ * @return ERROR_MPU6050_UNAVIALBLE when the MPU6050 is not available
  */
-bool TL::MotionSensor::begin()
+TL::MotionSensor::Error TL::MotionSensor::begin()
 {
-	if (!this->mpu6050->begin())
+	TL::MotionSensor::initialized = false;
+	TL::MotionSensor::motionData.accXRaw = 0;
+	TL::MotionSensor::motionData.accYRaw = 0;
+	TL::MotionSensor::motionData.accZRaw = 0;
+	TL::MotionSensor::motionData.gyroXRaw = 0;
+	TL::MotionSensor::motionData.gyroYRaw = 0;
+	TL::MotionSensor::motionData.gyroZRaw = 0;
+	TL::MotionSensor::motionData.accXG = 0.0f;
+	TL::MotionSensor::motionData.accYG = 0.0f;
+	TL::MotionSensor::motionData.accZG = 0.0f;
+	TL::MotionSensor::motionData.gyroXDeg = 0.0f;
+	TL::MotionSensor::motionData.gyroYDeg = 0.0f;
+	TL::MotionSensor::motionData.gyroZDeg = 0.0f;
+	TL::MotionSensor::motionData.pitch = 0.0f;
+	TL::MotionSensor::motionData.roll = 0.0f;
+	TL::MotionSensor::motionData.yaw = 0.0f;
+	TL::MotionSensor::motionData.rollCompensatedAccXG = 0.0f;
+	TL::MotionSensor::motionData.pitchCompensatedAccYG = 0.0f;
+	TL::MotionSensor::motionData.temperatureRaw = 0;
+	TL::MotionSensor::motionData.temperatureDeg = 0;
+	TL::MotionSensor::lastMeasure = 0;
+
+	if (!TL::Configuration::isInitialized())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to start MPU6050 sensor."));
-		return false;
+		return TL::MotionSensor::Error::ERROR_CONFIG_UNAVAILABLE;
 	}
 
-	if (!this->mpu6050->setAccScale(TL::MPU6050::MPU6050AccScale::SCALE_4G))
+	if (!TL::MPU6050::isInitialized())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set acc scale of MPU6050 sensor."));
-		return false;
+		return TL::MotionSensor::Error::ERROR_MPU6050_UNAVIALBLE;
 	}
 
-	if (!this->mpu6050->setGyScale(TL::MPU6050::MPU6050GyScale::SCALE_500DS))
+	if (TL::MPU6050::setAccScale(TL::MPU6050::MPU6050AccScale::SCALE_4G) != TL::MPU6050::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set gyro scale of MPU6050 sensor."));
-		return false;
+		return TL::MotionSensor::Error::ERROR_MPU6050_UNAVIALBLE;
 	}
 
-	return true;
+	if (TL::MPU6050::setGyScale(TL::MPU6050::MPU6050GyScale::SCALE_500DS) != TL::MPU6050::Error::OK)
+	{
+		return TL::MotionSensor::Error::ERROR_MPU6050_UNAVIALBLE;
+	}
+
+	TL::MotionSensor::initialized = true;
+	return TL::MotionSensor::Error::OK;
+}
+
+/**
+ * @brief Stop the motion sensor.
+ */
+void TL::MotionSensor::end()
+{
+	TL::MotionSensor::initialized = false;
+}
+
+/**
+ * @brief Check if the motion sensor is initialized.
+ * @return true when initialized
+ * @return false when not initialized
+ */
+bool TL::MotionSensor::isInitialized()
+{
+	return TL::MotionSensor::initialized;
 }
 
 /**
  * @brief Run the measurement and calculation cycle.
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the motion data was captured
+ * @return ERROR_MPU6050_UNAVIALBLE when the MPU6050 is not available
  */
-bool TL::MotionSensor::run()
+TL::MotionSensor::Error TL::MotionSensor::run()
 {
 	TL::MPU6050::MPU6050MotionData sensorData;
-	if (!this->mpu6050->getData(sensorData))
+	if (TL::MPU6050::getData(sensorData) != TL::MPU6050::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read sensor data from MPU6050."));
-		return false;
+		return TL::MotionSensor::Error::ERROR_MPU6050_UNAVIALBLE;
 	}
 
-	const TL::Configuration::MotionSensorCalibration calibrationData = this->configuration->getMotionSensorCalibration();
-	const unsigned long timeStep = this->lastMeasure == 0 ? 0.0f : (micros() - this->lastMeasure);
+	const TL::Configuration::MotionSensorCalibration calibrationData = TL::Configuration::getMotionSensorCalibration();
+	const unsigned long timeStep = TL::MotionSensor::lastMeasure == 0 ? 0.0f : (micros() - TL::MotionSensor::lastMeasure);
 	const float timeScale = timeStep / 1000000.0f;
-	this->lastMeasure = micros();
+	TL::MotionSensor::lastMeasure = micros();
 
-	this->motionData.accXRaw = sensorData.accXRaw - calibrationData.accXRaw;
-	this->motionData.accYRaw = sensorData.accYRaw - calibrationData.accYRaw;
-	this->motionData.accZRaw = sensorData.accZRaw - calibrationData.accZRaw;
-	this->motionData.gyroXRaw = sensorData.gyroXRaw - calibrationData.gyroXRaw;
-	this->motionData.gyroYRaw = sensorData.gyroYRaw - calibrationData.gyroYRaw;
-	this->motionData.gyroZRaw = sensorData.gyroZRaw - calibrationData.gyroZRaw;
-	this->motionData.accXG = sensorData.accXG - calibrationData.accXG;
-	this->motionData.accYG = sensorData.accYG - calibrationData.accYG;
-	this->motionData.accZG = sensorData.accZG - calibrationData.accZG;
-	this->motionData.gyroXDeg = sensorData.gyroXDeg - calibrationData.gyroXDeg;
-	this->motionData.gyroYDeg = sensorData.gyroYDeg - calibrationData.gyroYDeg;
-	this->motionData.gyroZDeg = sensorData.gyroZDeg - calibrationData.gyroZDeg;
-	this->motionData.temperatureRaw = sensorData.temperatureRaw;
-	this->motionData.temperatureDeg = sensorData.temperatureDeg;
+	TL::MotionSensor::motionData.accXRaw = sensorData.accXRaw - calibrationData.accXRaw;
+	TL::MotionSensor::motionData.accYRaw = sensorData.accYRaw - calibrationData.accYRaw;
+	TL::MotionSensor::motionData.accZRaw = sensorData.accZRaw - calibrationData.accZRaw;
+	TL::MotionSensor::motionData.gyroXRaw = sensorData.gyroXRaw - calibrationData.gyroXRaw;
+	TL::MotionSensor::motionData.gyroYRaw = sensorData.gyroYRaw - calibrationData.gyroYRaw;
+	TL::MotionSensor::motionData.gyroZRaw = sensorData.gyroZRaw - calibrationData.gyroZRaw;
+	TL::MotionSensor::motionData.accXG = sensorData.accXG - calibrationData.accXG;
+	TL::MotionSensor::motionData.accYG = sensorData.accYG - calibrationData.accYG;
+	TL::MotionSensor::motionData.accZG = sensorData.accZG - calibrationData.accZG;
+	TL::MotionSensor::motionData.gyroXDeg = sensorData.gyroXDeg - calibrationData.gyroXDeg;
+	TL::MotionSensor::motionData.gyroYDeg = sensorData.gyroYDeg - calibrationData.gyroYDeg;
+	TL::MotionSensor::motionData.gyroZDeg = sensorData.gyroZDeg - calibrationData.gyroZDeg;
+	TL::MotionSensor::motionData.temperatureRaw = sensorData.temperatureRaw;
+	TL::MotionSensor::motionData.temperatureDeg = sensorData.temperatureDeg;
 
-	this->motionData.pitch += this->motionData.gyroXDeg * timeScale;
-	this->motionData.roll += this->motionData.gyroYDeg * timeScale;
-	this->motionData.yaw += this->motionData.gyroZDeg * timeScale;
+	TL::MotionSensor::motionData.pitch += TL::MotionSensor::motionData.gyroXDeg * timeScale;
+	TL::MotionSensor::motionData.roll += TL::MotionSensor::motionData.gyroYDeg * timeScale;
+	TL::MotionSensor::motionData.yaw += TL::MotionSensor::motionData.gyroZDeg * timeScale;
 
-	const float accPitch = atan(this->motionData.accYG / this->motionData.accZG) * 180.0f / PI;
-	this->motionData.pitch += (accPitch - this->motionData.pitch) / 500.0f;
+	const float accPitch = atan(TL::MotionSensor::motionData.accYG / TL::MotionSensor::motionData.accZG) * 180.0f / PI;
+	TL::MotionSensor::motionData.pitch += (accPitch - TL::MotionSensor::motionData.pitch) / 500.0f;
 
-	const float accRoll = -atan(this->motionData.accXG / this->motionData.accZG) * 180.0f / PI;
-	this->motionData.roll += (accRoll - this->motionData.roll) / 500.0f;
+	const float accRoll = -atan(TL::MotionSensor::motionData.accXG / TL::MotionSensor::motionData.accZG) * 180.0f / PI;
+	TL::MotionSensor::motionData.roll += (accRoll - TL::MotionSensor::motionData.roll) / 500.0f;
 
-	this->motionData.rollCompensatedAccXG = this->motionData.accXG + sin(this->motionData.roll / 180.0f * PI);
-	this->motionData.pitchCompensatedAccYG = this->motionData.accYG - sin(this->motionData.pitch / 180.0f * PI);
+	TL::MotionSensor::motionData.rollCompensatedAccXG = TL::MotionSensor::motionData.accXG + sin(TL::MotionSensor::motionData.roll / 180.0f * PI);
+	TL::MotionSensor::motionData.pitchCompensatedAccYG = TL::MotionSensor::motionData.accYG - sin(TL::MotionSensor::motionData.pitch / 180.0f * PI);
 
-	return true;
+	return TL::MotionSensor::Error::OK;
 }
 
 /**
  * @brief Calibrate the motion sensor.
  * @param failOnTemperature if set to true, the calibration will fail when the sensor is too cold or warm
- * @return 0 when successful
- * @return 1 when there is a communication error
- * @return 2 when the motion sensor is too cold
- * @return 3 when the motion sensor is too warm
+ * @return OK when the sensor was calibrated
+ * @return ERROR_MPU6050_UNAVIALBLE when the MPU6050 is not available
+ * @return ERROR_TOO_COLD when the MPU6050 is too cold
+ * @return ERROR_TOO_WARM when the MPU6050 is too warm
  */
-uint8_t TL::MotionSensor::calibrate(const bool failOnTemperature)
+TL::MotionSensor::Error TL::MotionSensor::calibrate(const bool failOnTemperature)
 {
 	if (failOnTemperature)
 	{
 		TL::MPU6050::MPU6050MotionData sensorData;
-		if (!this->mpu6050->getData(sensorData))
+		const TL::MPU6050::Error mpuError = TL::MPU6050::getData(sensorData);
+		if (mpuError != TL::MPU6050::Error::OK)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read sensor data from MPU6050."));
-			return 1;
+			return TL::MotionSensor::Error::ERROR_MPU6050_UNAVIALBLE;
 		}
 
-		if (sensorData.temperatureDeg < 20.0f)
+		if (sensorData.temperatureDeg < 15.0f)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Can not calibrate motion sensor becaues the temperature is too low."));
-			return 2;
+			return TL::MotionSensor::Error::ERROR_TOO_COLD;
 		}
 		else if (sensorData.temperatureDeg > 40.0f)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Can not calibrate motion sensor becaues the temperature is too high."));
-			return 3;
+			return TL::MotionSensor::Error::ERROR_TOO_WARM;
 		}
 	}
 
@@ -172,10 +179,10 @@ uint8_t TL::MotionSensor::calibrate(const bool failOnTemperature)
 	for (uint16_t i = 0; i < 1000; i++)
 	{
 		TL::MPU6050::MPU6050MotionData sensorData;
-		if (!this->mpu6050->getData(sensorData))
+		const TL::MPU6050::Error mpuError = TL::MPU6050::getData(sensorData);
+		if (mpuError != TL::MPU6050::Error::OK)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read sensor data from MPU6050."));
-			return 1;
+			return TL::MotionSensor::Error::ERROR_MPU6050_UNAVIALBLE;
 		}
 
 		calibrationData[0] += sensorData.accXRaw / 1000.0f;
@@ -192,7 +199,7 @@ uint8_t TL::MotionSensor::calibrate(const bool failOnTemperature)
 		calibrationData[11] += sensorData.gyroZDeg / 1000.0f;
 	}
 
-	TL::Configuration::MotionSensorCalibration calibration = this->configuration->getMotionSensorCalibration();
+	TL::Configuration::MotionSensorCalibration calibration = TL::Configuration::getMotionSensorCalibration();
 	calibration.accXRaw = calibrationData[0];
 	calibration.accYRaw = calibrationData[1];
 	// calibration.accZRaw = calibrationData[2];
@@ -205,9 +212,9 @@ uint8_t TL::MotionSensor::calibrate(const bool failOnTemperature)
 	calibration.gyroXDeg = calibrationData[9];
 	calibration.gyroYDeg = calibrationData[10];
 	calibration.gyroZDeg = calibrationData[11];
-	this->configuration->setMotionSensorCalibration(calibration);
+	TL::Configuration::setMotionSensorCalibration(calibration);
 
-	return 0;
+	return TL::MotionSensor::Error::OK;
 }
 
 /**
@@ -216,5 +223,5 @@ uint8_t TL::MotionSensor::calibrate(const bool failOnTemperature)
  */
 TL::MotionSensor::MotionSensorData TL::MotionSensor::getMotion()
 {
-	return this->motionData;
+	return TL::MotionSensor::motionData;
 }

@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Implementation of a REST endpoint to configure the LED settings.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
@@ -21,19 +21,13 @@
  */
 #include "server/LedConfigurationEndpoint.h"
 
-// Initialize
-TL::Configuration *TL::LedConfigurationEndpoint::configuration = nullptr;
-std::function<bool()> TL::LedConfigurationEndpoint::configChangedCallback = nullptr;
-
 /**
  * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
  */
-void TL::LedConfigurationEndpoint::begin(TL::Configuration *_configuration, std::function<bool()> _configChangedCallback)
+void TL::LedConfigurationEndpoint::begin()
 {
-	TL::LedConfigurationEndpoint::configuration = _configuration;
-	TL::LedConfigurationEndpoint::configChangedCallback = _configChangedCallback;
-	TL::LedConfigurationEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("config/led")).c_str(), http_method::HTTP_GET, TL::LedConfigurationEndpoint::getLedConfig);
-	TL::LedConfigurationEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("config/led")).c_str(), http_method::HTTP_POST, TL::LedConfigurationEndpoint::postLedConfig);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/led")).c_str(), http_method::HTTP_GET, TL::LedConfigurationEndpoint::getLedConfig);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/led")).c_str(), http_method::HTTP_POST, TL::LedConfigurationEndpoint::postLedConfig);
 }
 
 /**
@@ -42,32 +36,38 @@ void TL::LedConfigurationEndpoint::begin(TL::Configuration *_configuration, std:
 void TL::LedConfigurationEndpoint::getLedConfig()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the LED configuration."));
+	if (!TL::Configuration::isInitialized())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		return;
+	}
 
 	DynamicJsonDocument jsonDoc(5500);
 	JsonArray ledConfig = jsonDoc.createNestedArray(F("ledConfig"));
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		JsonObject ledZone = ledConfig.createNestedObject();
-		ledZone[F("ledPin")] = TL::LedConfigurationEndpoint::configuration->getLedConfig(i).ledPin;
-		ledZone[F("ledCount")] = TL::LedConfigurationEndpoint::configuration->getLedConfig(i).ledCount;
-		ledZone[F("type")] = TL::LedConfigurationEndpoint::configuration->getLedConfig(i).type;
-		ledZone[F("speed")] = TL::LedConfigurationEndpoint::configuration->getLedConfig(i).speed;
-		ledZone[F("offset")] = TL::LedConfigurationEndpoint::configuration->getLedConfig(i).offset;
-		ledZone[F("brightness")] = TL::LedConfigurationEndpoint::configuration->getLedConfig(i).brightness;
-		ledZone[F("reverse")] = TL::LedConfigurationEndpoint::configuration->getLedConfig(i).reverse;
-		ledZone[F("fadeSpeed")] = TL::LedConfigurationEndpoint::configuration->getLedConfig(i).fadeSpeed;
-		ledZone[F("ledVoltage")] = TL::LedConfigurationEndpoint::configuration->getLedConfig(i).ledVoltage;
+		ledZone[F("ledPin")] = TL::Configuration::getLedConfig(i).ledPin;
+		ledZone[F("ledCount")] = TL::Configuration::getLedConfig(i).ledCount;
+		ledZone[F("type")] = TL::Configuration::getLedConfig(i).type;
+		ledZone[F("speed")] = TL::Configuration::getLedConfig(i).speed;
+		ledZone[F("offset")] = TL::Configuration::getLedConfig(i).offset;
+		ledZone[F("brightness")] = TL::Configuration::getLedConfig(i).brightness;
+		ledZone[F("reverse")] = TL::Configuration::getLedConfig(i).reverse;
+		ledZone[F("fadeSpeed")] = TL::Configuration::getLedConfig(i).fadeSpeed;
+		ledZone[F("ledVoltage")] = TL::Configuration::getLedConfig(i).ledVoltage;
 
 		JsonArray animationSettings = ledZone.createNestedArray(F("animationSettings"));
 		for (uint8_t j = 0; j < ANIMATOR_NUM_ANIMATION_SETTINGS; j++)
 		{
-			animationSettings.add(TL::LedConfigurationEndpoint::configuration->getLedConfig(i).animationSettings[j]);
+			animationSettings.add(TL::Configuration::getLedConfig(i).animationSettings[j]);
 		}
 
 		JsonArray channelCurrents = ledZone.createNestedArray(F("channelCurrents"));
 		for (uint8_t j = 0; j < 3; j++)
 		{
-			channelCurrents.add(TL::LedConfigurationEndpoint::configuration->getLedConfig(i).ledChannelCurrent[j]);
+			channelCurrents.add(TL::Configuration::getLedConfig(i).ledChannelCurrent[j]);
 		}
 	}
 
@@ -81,6 +81,12 @@ void TL::LedConfigurationEndpoint::getLedConfig()
 void TL::LedConfigurationEndpoint::postLedConfig()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the LED configuration."));
+	if (!TL::Configuration::isInitialized())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		return;
+	}
 
 	if (!TL::LedConfigurationEndpoint::webServer->hasHeader(F("content-type")) || TL::LedConfigurationEndpoint::webServer->header(F("content-type")) != F("application/json"))
 	{
@@ -162,25 +168,70 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		TL::LedConfigurationEndpoint::configuration->setLedConfig(config[i], i);
+		TL::Configuration::setLedConfig(config[i], i);
 	}
 
-	if (TL::LedConfigurationEndpoint::configuration->save())
+	const TL::Configuration::Error configSaveError = TL::Configuration::save();
+	if (configSaveError == TL::Configuration::Error::ERROR_FILE_OPEN)
 	{
-		if (TL::LedConfigurationEndpoint::configChangedCallback)
-		{
-			if (!TL::LedConfigurationEndpoint::configChangedCallback())
-			{
-				TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. The callback function returned with an error."));
-				TL::LedConfigurationEndpoint::sendSimpleResponse(500, F("Failed to apply LED configuration."));
-				return;
-			}
-		}
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save LED configuration. The configuration file could not be opened."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save LED configuration. The configuration file could not be opened."));
+		return;
 	}
-	else
+	else if (configSaveError == TL::Configuration::Error::ERROR_FILE_WRITE)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save LED configuration. The configuration file could not be written."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save LED configuration. The configuration file could not be written."));
+		return;
+	}
+	else if (configSaveError != TL::Configuration::Error::OK)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save LED configuration."));
 		TL::LedConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save LED configuration."));
+		return;
+	}
+
+	const TL::LedManager::Error ledManagerError = TL::LedManager::reloadAnimations();
+	if (ledManagerError == TL::LedManager::Error::ERROR_CONFIG_UNAVAILABLE)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to apply LED configuration. The TesLight configuration is not available."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(500, F("Failed to apply LED configuration. The TesLight configuration is not available."));
+		return;
+	}
+	else if (ledManagerError == TL::LedManager::Error::ERROR_CREATE_LED_DATA)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to apply LED configuration. The pixel data could not be created."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(500, F("Failed to apply LED configuration. The pixel data could not be created."));
+		return;
+	}
+	else if (ledManagerError == TL::LedManager::Error::ERROR_UNKNOWN_ANIMATOR_TYPE)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. One of the animator types is unknown."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, F("Failed to apply LED configuration. One of the animator types is unknown."));
+		return;
+	}
+	else if (ledManagerError == TL::LedManager::Error::ERROR_INVALID_FSEQ)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. The selected fseq file is invalid."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, F("Failed to apply LED configuration. The selected fseq file is invalid."));
+		return;
+	}
+	else if (ledManagerError == TL::LedManager::Error::ERROR_FILE_NOT_FOUND)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. No fseq file with selected file id was found."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, F("Failed to apply LED configuration. No fseq file with selected file id was found."));
+		return;
+	}
+	else if (ledManagerError == TL::LedManager::Error::ERROR_INVALID_LED_CONFIGURATION)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. The current configurationn does not match the configuration of the fseq file."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, F("Failed to apply LED configuration. The current configurationn does not match the configuration of the fseq file."));
+		return;
+	}
+	else if (ledManagerError != TL::LedManager::Error::OK)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration because of unknown reason"));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(500, F("Failed to apply LED configuration because of unknown reason"));
 		return;
 	}
 
@@ -236,6 +287,13 @@ bool TL::LedConfigurationEndpoint::validateLedZone(const JsonObject &jsonObject,
 	{
 		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field in configuration ") + index + F(" must be between 0 and 6."));
 		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field in configuration ") + index + F(" must be between 0 and 6."));
+		return false;
+	}
+
+	if (!TL::MotionSensor::isInitialized() && TL::LedConfigurationEndpoint::isInRange(jsonObject[F("type")].as<uint8_t>(), 5L, 6L))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field in configuration ") + index + F(" is invalid. No effect using the motion sensor can be selected because it is not available."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field in configuration ") + index + F(" is invalid. No effect using the motion sensor can be selected because it is not available."));
 		return false;
 	}
 

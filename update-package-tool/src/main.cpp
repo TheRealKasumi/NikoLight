@@ -9,6 +9,11 @@
 #include <iostream>
 #include <filesystem>
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#include <io.h>
+#include <fcntl.h>
+#endif
+
 #include "TUPFile.h"
 
 // Function declarations
@@ -23,6 +28,13 @@ void printHelp();
  */
 int main(int argc, char *argv[])
 {
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+	_setmode(_fileno(stdout), _O_U16TEXT);
+#else
+	std::wcout.sync_with_stdio(false);
+	std::wcout.imbue(std::locale("en_US.utf8"));
+#endif
+
 	printHeader();
 	if (argc != 3)
 	{
@@ -41,7 +53,7 @@ int main(int argc, char *argv[])
 	}
 
 	// Generate the TUP file
-	std::cout << "Generate TesLight Update Package from folder: " << updateFolder << std::endl;
+	std::wcout << L"Generate TesLight Update Package from folder: " << updateFolder << std::endl;
 	TUPFile tupFile;
 	if (!tupFile.generateFromFolder(updateFolder))
 	{
@@ -50,14 +62,14 @@ int main(int argc, char *argv[])
 	}
 
 	// Write the TUP to the disk
-	std::cout << "Write TesLight Update Package to: " << outputFile << std::endl;
+	std::wcout << L"Write TesLight Update Package to: " << outputFile << std::endl;
 	if (!tupFile.saveToFile(outputFile))
 	{
 		std::cerr << "Failed to write TesLight Update Package.";
 		exit(4);
 	}
 
-	std::cout << "Nice! The TesLight Update Package created successfully.";
+	std::wcout << L"Nice! The TesLight Update Package created successfully.";
 	exit(0);
 }
 
@@ -66,20 +78,20 @@ int main(int argc, char *argv[])
  */
 void printHeader()
 {
-	std::cout << "████████╗███████╗███████╗██╗     ██╗ ██████╗ ██╗  ██╗████████╗    ██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗" << std::endl;
-	std::cout << "╚══██╔══╝██╔════╝██╔════╝██║     ██║██╔════╝ ██║  ██║╚══██╔══╝    ██║   ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝" << std::endl;
-	std::cout << "   ██║   █████╗  ███████╗██║     ██║██║  ███╗███████║   ██║       ██║   ██║██████╔╝██║  ██║███████║   ██║   █████╗  " << std::endl;
-	std::cout << "   ██║   ██╔══╝  ╚════██║██║     ██║██║   ██║██╔══██║   ██║       ██║   ██║██╔═══╝ ██║  ██║██╔══██║   ██║   ██╔══╝  " << std::endl;
-	std::cout << "   ██║   ███████╗███████║███████╗██║╚██████╔╝██║  ██║   ██║       ╚██████╔╝██║     ██████╔╝██║  ██║   ██║   ███████╗" << std::endl;
-	std::cout << "   ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝        ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝" << std::endl;
-	std::cout << "                                                                                                                    " << std::endl;
-	std::cout << "         ██████╗  █████╗  ██████╗██╗  ██╗ █████╗  ██████╗ ███████╗    ████████╗ ██████╗  ██████╗ ██╗                " << std::endl;
-	std::cout << "         ██╔══██╗██╔══██╗██╔════╝██║ ██╔╝██╔══██╗██╔════╝ ██╔════╝    ╚══██╔══╝██╔═══██╗██╔═══██╗██║                " << std::endl;
-	std::cout << "         ██████╔╝███████║██║     █████╔╝ ███████║██║  ███╗█████╗         ██║   ██║   ██║██║   ██║██║                " << std::endl;
-	std::cout << "         ██╔═══╝ ██╔══██║██║     ██╔═██╗ ██╔══██║██║   ██║██╔══╝         ██║   ██║   ██║██║   ██║██║                " << std::endl;
-	std::cout << "         ██║     ██║  ██║╚██████╗██║  ██╗██║  ██║╚██████╔╝███████╗       ██║   ╚██████╔╝╚██████╔╝███████╗           " << std::endl;
-	std::cout << "         ╚═╝     ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝       ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝           " << std::endl;
-	std::cout << std::endl;
+	std::wcout << L"████████╗███████╗███████╗██╗     ██╗ ██████╗ ██╗  ██╗████████╗    ██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗" << std::endl;
+	std::wcout << L"╚══██╔══╝██╔════╝██╔════╝██║     ██║██╔════╝ ██║  ██║╚══██╔══╝    ██║   ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝" << std::endl;
+	std::wcout << L"   ██║   █████╗  ███████╗██║     ██║██║  ███╗███████║   ██║       ██║   ██║██████╔╝██║  ██║███████║   ██║   █████╗  " << std::endl;
+	std::wcout << L"   ██║   ██╔══╝  ╚════██║██║     ██║██║   ██║██╔══██║   ██║       ██║   ██║██╔═══╝ ██║  ██║██╔══██║   ██║   ██╔══╝  " << std::endl;
+	std::wcout << L"   ██║   ███████╗███████║███████╗██║╚██████╔╝██║  ██║   ██║       ╚██████╔╝██║     ██████╔╝██║  ██║   ██║   ███████╗" << std::endl;
+	std::wcout << L"   ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝        ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝" << std::endl;
+	std::wcout << L"                                                                                                                    " << std::endl;
+	std::wcout << L"         ██████╗  █████╗  ██████╗██╗  ██╗ █████╗  ██████╗ ███████╗    ████████╗ ██████╗  ██████╗ ██╗                " << std::endl;
+	std::wcout << L"         ██╔══██╗██╔══██╗██╔════╝██║ ██╔╝██╔══██╗██╔════╝ ██╔════╝    ╚══██╔══╝██╔═══██╗██╔═══██╗██║                " << std::endl;
+	std::wcout << L"         ██████╔╝███████║██║     █████╔╝ ███████║██║  ███╗█████╗         ██║   ██║   ██║██║   ██║██║                " << std::endl;
+	std::wcout << L"         ██╔═══╝ ██╔══██║██║     ██╔═██╗ ██╔══██║██║   ██║██╔══╝         ██║   ██║   ██║██║   ██║██║                " << std::endl;
+	std::wcout << L"         ██║     ██║  ██║╚██████╗██║  ██╗██║  ██║╚██████╔╝███████╗       ██║   ╚██████╔╝╚██████╔╝███████╗           " << std::endl;
+	std::wcout << L"         ╚═╝     ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝       ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝           " << std::endl;
+	std::wcout << std::endl;
 }
 
 /**
@@ -87,14 +99,14 @@ void printHeader()
  */
 void printHelp()
 {
-	std::cout << "This tool will help you to create a TesLight Update Package (TUP). ";
-	std::cout << "These packages are used to update the TesLight firmware and MicroSD card content. ";
-	std::cout << "If you want to generate such a file, you need to create a folder first. ";
-	std::cout << "Here you need to copy all data for the update, including the firmware and the frotnend files. ";
-	std::cout << "All other data, except user settings, log and animation data is removed from the MicroSD card. ";
-	std::cout << "This can make the controller unusable without connecting it to your computer again, so be careful. ";
-	std::cout << "By convention the firmware file for the controller is called 'firmware.bin' and must be in the root of the update folder. ";
-	std::cout << "Once you copied all files to the update folder, we are ready to go." << std::endl
-			  << std::endl;
-	std::cout << "Please call me again with the following arguments: tupt <output_file> <source_directory>";
+	std::wcout << L"This tool will help you to create a TesLight Update Package (TUP). ";
+	std::wcout << L"These packages are used to update the TesLight firmware and MicroSD card content. ";
+	std::wcout << L"If you want to generate such a file, you need to create a folder first. ";
+	std::wcout << L"Here you need to copy all data for the update, including the firmware and the frotnend files. ";
+	std::wcout << L"All other data, except user settings, log and animation data is removed from the MicroSD card. ";
+	std::wcout << L"This can make the controller unusable without connecting it to your computer again, so be careful. ";
+	std::wcout << L"By convention the firmware file for the controller is called 'firmware.bin' and must be in the root of the update folder. ";
+	std::wcout << L"Once you copied all files to the update folder, we are ready to go." << std::endl
+			   << std::endl;
+	std::wcout << L"Please call me again with the following arguments: tupt <output_file> <source_directory>";
 }

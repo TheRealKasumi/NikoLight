@@ -1,10 +1,10 @@
 /**
- * @file ESP32ADC.h
+ * @file AnalogInput.h
  * @author TheRealKasumi
- * @brief Contains a class for reading analog values from any pin using the ESP32's ADC.
+ * @brief Contains a class for reading the analog input from the TesLight board.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -19,40 +19,43 @@
  * from the owner.
  *
  */
-#ifndef ESP32ADC_H
-#define ESP32ADC_H
+#ifndef ANALOG_INPUT_H
+#define ANALOG_INPUT_H
 
 #include <Arduino.h>
-#include "logging/Logger.h"
 
 namespace TL
 {
-	class ESP32ADC
+	class AnalogInput
 	{
 	public:
-		ESP32ADC(const uint8_t inputPin);
-		ESP32ADC(const uint8_t inputPin, const uint8_t inputMode);
-		ESP32ADC(const uint8_t inputPin, const uint8_t inputMode, const float maxVoltage);
-		~ESP32ADC();
+		static void begin(const uint8_t inputPin);
+		static void begin(const uint8_t inputPin, const uint8_t inputMode);
+		static void begin(const uint8_t inputPin, const uint8_t inputMode, const float maxVoltage);
+		static void end();
+		static bool isInitialized();
 
-		void setInputPin(const uint8_t inputPin);
-		uint8_t getInputPin();
+		static void setInputPin(const uint8_t inputPin);
+		static uint8_t getInputPin();
 
-		void setInputMode(const uint8_t inputMode);
-		uint8_t getInputMode();
+		static void setInputMode(const uint8_t inputMode);
+		static uint8_t getInputMode();
 
-		void setMaxVoltage(const float maxVoltage);
-		float getMaxVoltage();
+		static void setMaxVoltage(const float maxVoltage);
+		static float getMaxVoltage();
 
-		uint16_t getAnalogValue();
-		float getAnalogVoltage(const bool usePolynomialCorrection = true);
+		static uint16_t getAnalogValue();
+		static float getAnalogVoltage(const bool usePolynomialCorrection = true);
 
 	private:
-		uint8_t inputPin;
-		uint8_t inputMode;
-		float maxVoltage;
+		AnalogInput();
 
-		void setupPin();
+		static bool initialized;
+		static uint8_t inputPin;
+		static uint8_t inputMode;
+		static float maxVoltage;
+
+		static void setupPin();
 	};
 }
 
