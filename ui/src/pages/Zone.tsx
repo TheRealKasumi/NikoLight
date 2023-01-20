@@ -159,6 +159,9 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
       };
 
       await mutateAsync(led);
+
+      // Reset dirty fields
+      reset({}, { keepValues: true });
     },
   );
 

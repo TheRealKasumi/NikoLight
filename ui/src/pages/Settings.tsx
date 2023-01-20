@@ -171,7 +171,13 @@ const Form = (): JSX.Element => {
       logLevel: Number(logLevel),
     });
 
-    await mutateAsyncWifi({ ...wifiCopy, ...data.wifi });
+    // Update WiFi configuration only if there was a change.
+    if (formState.dirtyFields.wifi) {
+      await mutateAsyncWifi({ ...wifiCopy, ...data.wifi });
+    }
+
+    // Reset dirty fields
+    reset({}, { keepValues: true });
   });
 
   const onReset = async () => {
@@ -181,9 +187,11 @@ const Form = (): JSX.Element => {
 
   return (
     <>
-      {isSystemSuccess && isWifiSuccess && isUiSuccess && (
-        <Toast title={t('settings.submitSuccessful')} />
-      )}
+      {isSystemSuccess &&
+        isUiSuccess &&
+        (isWifiSuccess || !formState.dirtyFields.wifi) && (
+          <Toast title={t('settings.submitSuccessful')} />
+        )}
 
       {isSystemError && <Notification message={systemError.message} />}
       {isWifiError && <Notification message={wifiError.message} />}
