@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a class for managing the synchronious WebServer.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -23,10 +23,10 @@
 #define WEBSERVER_MANAGER_H
 
 #include <stdint.h>
-#include <memory>
 #include <HTTP_Method.h>
 #include <WebServer.h>
 #include <FS.h>
+
 #include "configuration/SystemConfiguration.h"
 #include "logging/Logger.h"
 
@@ -35,25 +35,27 @@ namespace TL
 	class WebServerManager
 	{
 	public:
-		WebServerManager(FS *fileSystem);
-		~WebServerManager();
+		static void begin(FS *fileSystem, const uint16_t port);
+		static void end();
+		static bool isInitialize();
 
-		WebServer *getWebServer();
+		static void startServer();
+		static WebServer *getWebServer();
 
-		void addRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction handler);
-		void addUploadRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction requestHandler, WebServer::THandlerFunction uploadHandler);
+		static void addRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction handler);
+		static void addUploadRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction requestHandler, WebServer::THandlerFunction uploadHandler);
 
-		void begin();
-		void stop();
-
-		void handleRequest();
+		static void handleRequest();
 
 	private:
-		std::unique_ptr<WebServer> webServer;
-		FS *fileSystem;
+		WebServerManager();
 
-		void init();
-		void handleNotFound();
+		static bool initialized;
+		static WebServer *webServer;
+		static FS *fileSystem;
+
+		static void init();
+		static void handleNotFound();
 	};
 }
 

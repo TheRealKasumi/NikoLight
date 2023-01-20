@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a class for reading the MPU6050 I²C motion sensor.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -25,14 +25,18 @@
 #include <stdint.h>
 #include <Wire.h>
 
-#include "logging/Logger.h"
-
 namespace TL
 {
 	class MPU6050
 	{
 	public:
-		enum MPU6050AccScale
+		enum class Error
+		{
+			OK,			   // No error
+			ERROR_IIC_COMM // Error in the I²C communication
+		};
+
+		enum MPU6050AccScale : uint8_t
 		{
 			SCALE_2G = 0B00000000,
 			SCALE_4G = 0B00001000,
@@ -40,7 +44,7 @@ namespace TL
 			SCALE_16G = 0B00011000
 		};
 
-		enum MPU6050GyScale
+		enum MPU6050GyScale : uint8_t
 		{
 			SCALE_250DS = 0B00000000,
 			SCALE_500DS = 0B00001000,
@@ -66,30 +70,32 @@ namespace TL
 			float temperatureDeg;
 		};
 
-		MPU6050(const uint8_t deviceAddress);
-		MPU6050(const uint8_t deviceAddress, const TL::MPU6050::MPU6050AccScale accScale, const TL::MPU6050::MPU6050GyScale gyScale);
-		~MPU6050();
+		static TL::MPU6050::Error begin(const uint8_t deviceAddress);
+		static TL::MPU6050::Error begin(const uint8_t deviceAddress, const TL::MPU6050::MPU6050AccScale accScale, const TL::MPU6050::MPU6050GyScale gyScale);
+		static void end();
+		static bool isInitialized();
 
-		bool begin();
+		static TL::MPU6050::Error wake();
+		static TL::MPU6050::Error sleep();
 
-		bool wake();
-		bool sleep();
+		static TL::MPU6050::Error setAccScale(TL::MPU6050::MPU6050AccScale accScale);
+		static TL::MPU6050::MPU6050AccScale getAccScale();
 
-		bool setAccScale(TL::MPU6050::MPU6050AccScale accScale);
-		TL::MPU6050::MPU6050AccScale getAccScale();
+		static TL::MPU6050::Error setGyScale(TL::MPU6050::MPU6050GyScale gyScale);
+		static TL::MPU6050::MPU6050GyScale getGyScale();
 
-		bool setGyScale(TL::MPU6050::MPU6050GyScale gyScale);
-		TL::MPU6050::MPU6050GyScale getGyScale();
-
-		bool getData(TL::MPU6050::MPU6050MotionData &motionData);
+		static TL::MPU6050::Error getData(TL::MPU6050::MPU6050MotionData &motionData);
 
 	private:
-		uint8_t deviceAddress;
-		TL::MPU6050::MPU6050AccScale accScale;
-		TL::MPU6050::MPU6050GyScale gyScale;
+		MPU6050();
 
-		float getScaleDiv(const TL::MPU6050::MPU6050AccScale accScale);
-		float getScaleDiv(const TL::MPU6050::MPU6050GyScale gyScale);
+		static bool initialized;
+		static uint8_t deviceAddress;
+		static TL::MPU6050::MPU6050AccScale accScale;
+		static TL::MPU6050::MPU6050GyScale gyScale;
+
+		static float getScaleDiv(const TL::MPU6050::MPU6050AccScale accScale);
+		static float getScaleDiv(const TL::MPU6050::MPU6050GyScale gyScale);
 	};
 }
 

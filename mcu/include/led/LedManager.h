@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Contains a class to manage the LEDs using the FastLED library.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
@@ -29,7 +29,6 @@
 #include "configuration/SystemConfiguration.h"
 #include "configuration/Configuration.h"
 
-#include "logging/Logger.h"
 #include "util/FileUtil.h"
 #include "FastLED.h"
 
@@ -49,49 +48,63 @@ namespace TL
 	class LedManager
 	{
 	public:
-		LedManager(TL::Configuration *config);
-		~LedManager();
+		enum class Error
+		{
+			OK,								// No error
+			ERROR_CONFIG_UNAVAILABLE,		// The configuration is not available
+			ERROR_CREATE_LED_DATA,			// Failed to create LED pixel data
+			ERROR_UNKNOWN_ANIMATOR_TYPE,	// The animator type is unknown
+			ERROR_INVALID_FSEQ,				// When a custom animation was set but the fseq file is invalid
+			ERROR_FILE_NOT_FOUND,			// The animation file was not found
+			ERROR_INVALID_LED_CONFIGURATION // The current LED configuration does not match the custom animation
+		};
 
-		bool reloadAnimations();
-		void clearAnimations();
+		static TL::LedManager::Error begin();
+		static void end();
+		static bool isInitialized();
 
-		void setAmbientBrightness(const float ambientBrightness);
+		static TL::LedManager::Error reloadAnimations();
+		static void clearAnimations();
 
-		void setRenderInterval(const uint32_t renderInterval);
-		uint32_t getRenderInterval();
+		static void setAmbientBrightness(const float ambientBrightness);
 
-		void setFrameInterval(const uint32_t frameInterval);
-		uint32_t getFrameInterval();
+		static void setRenderInterval(const uint32_t renderInterval);
+		static uint32_t getRenderInterval();
 
-		void setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData);
-		void setRegulatorTemperature(const float regulatorTemperature);
+		static void setFrameInterval(const uint32_t frameInterval);
+		static uint32_t getFrameInterval();
 
-		float getLedPowerDraw();
-		size_t getLedCount();
+		static void setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData);
+		static void setRegulatorTemperature(const float regulatorTemperature);
 
-		void render();
-		void show();
+		static float getLedPowerDraw();
+		static size_t getLedCount();
+
+		static void render();
+		static void show();
 
 	private:
-		TL::Configuration *config;
-		std::vector<std::vector<CRGB>> ledData;
-		std::vector<std::unique_ptr<TL::LedAnimator>> ledAnimator;
-		std::unique_ptr<TL::FseqLoader> fseqLoader;
+		LedManager();
 
-		uint32_t renderInterval;
-		uint32_t frameInterval;
-		float regulatorTemperature;
+		static bool initialized;
+		static std::vector<std::vector<CRGB>> ledData;
+		static std::vector<std::unique_ptr<TL::LedAnimator>> ledAnimator;
+		static std::unique_ptr<TL::FseqLoader> fseqLoader;
 
-		bool createLedData();
-		bool createAnimators();
-		bool loadCalculatedAnimations();
-		bool loadCustomAnimation();
+		static uint32_t renderInterval;
+		static uint32_t frameInterval;
+		static float regulatorTemperature;
 
-		void calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_COUNT]);
-		void limitPowerConsumption();
-		void limitRegulatorTemperature();
+		static TL::LedManager::Error createLedData();
+		static TL::LedManager::Error createAnimators();
+		static TL::LedManager::Error loadCalculatedAnimations();
+		static TL::LedManager::Error loadCustomAnimation(const String &fileName);
 
-		uint8_t getRegulatorIndexFromPin(const uint8_t pin);
+		static void calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_COUNT]);
+		static void limitPowerConsumption();
+		static void limitRegulatorTemperature();
+
+		static uint8_t getRegulatorIndexFromPin(const uint8_t pin);
 	};
 }
 

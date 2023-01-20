@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Class to handle the watchdog timers.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -30,9 +30,19 @@ namespace TL
 	class WatchDog
 	{
 	public:
-		static bool initializeTaskWatchdog();
-		static bool resetTaskWatchdog();
-		static bool deleteTaskWatchdog();
+		enum class Error
+		{
+			OK,						  // No error
+			ERROR_UNKNOWN,			  // Unknown error
+			ERROR_OUT_OF_MEMORY,	  // Not enough memory for the allocation
+			ERROR_ALREADY_SUBSCRIBED, // The task is already subscribed
+			ERROR_WDT_NOT_INIT,		  // The wdt has not been initialized yet
+			ERROR_WDT_NOT_FOUND,	  // The task did not subscribe to a wdt
+		};
+
+		static TL::WatchDog::Error initializeTaskWatchdog();
+		static TL::WatchDog::Error resetTaskWatchdog();
+		static TL::WatchDog::Error deleteTaskWatchdog();
 
 	private:
 		WatchDog();

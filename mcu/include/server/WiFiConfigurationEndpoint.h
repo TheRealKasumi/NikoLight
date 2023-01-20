@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a REST endpoint to configure the WiFi settings.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -22,10 +22,10 @@
 #ifndef WIFI_CONFIGURATION_ENDPOINT_H
 #define WIFI_CONFIGURATION_ENDPOINT_H
 
-#include <functional>
 #include "server/RestEndpoint.h"
 #include "configuration/Configuration.h"
 #include "configuration/SystemConfiguration.h"
+#include "wifi/WiFiManager.h"
 #include "logging/Logger.h"
 
 namespace TL
@@ -33,13 +33,10 @@ namespace TL
 	class WiFiConfigurationEndpoint : public RestEndpoint
 	{
 	public:
-		static void begin(TL::Configuration *_configuration, std::function<bool()> _configChangedCallback);
+		static void begin();
 
 	private:
 		WiFiConfigurationEndpoint();
-
-		static TL::Configuration *configuration;
-		static std::function<bool()> configChangedCallback;
 
 		static void getWiFiConfig();
 		static void postWiFiConfig();
@@ -48,6 +45,7 @@ namespace TL
 		static bool isInRange(const long value, const long min, const long max);
 		static bool validateWiFiSsid(const String ssid);
 		static bool validateWiFiPassword(const String password);
+		static bool hasChanged(const TL::Configuration::WiFiConfig &newConfig);
 	};
 }
 

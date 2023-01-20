@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a class for reading the ambient brightness from either the cars ambient light or an external light sensor.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -23,13 +23,11 @@
 #define LIGHT_SENSOR_H
 
 #include <stdint.h>
-#include <memory>
 
 #include "configuration/SystemConfiguration.h"
 #include "configuration/Configuration.h"
-#include "hardware/ESP32ADC.h"
+#include "hardware/AnalogInput.h"
 #include "hardware/BH1750.h"
-#include "logging/Logger.h"
 
 #include "sensor/MotionSensor.h"
 
@@ -38,7 +36,17 @@ namespace TL
 	class LightSensor
 	{
 	public:
-		enum LightSensorMode
+		enum class Error
+		{
+			OK,						   // No error
+			ERROR_CONFIG_UNAVAILABLE,  // The configuration is not available
+			ERROR_ADC_UNAVAILABLE,	   // The ADC is not available
+			ERROR_BH1750_UNAVAILABLE,  // The BH1750 is not available
+			ERROR_MPU6050_UNAVAILABLE, // The MPU6050 is not available
+			ERROR_UNKNOWN_MODE,		   // The light sensor mode is unknown
+		};
+
+		enum LightSensorMode : uint8_t
 		{
 			ALWAYS_OFF = 0,
 			ALWAYS_ON = 1,
@@ -46,23 +54,24 @@ namespace TL
 			AUTO_BRIGHTNESS_ADC = 3,
 			AUTO_ON_OFF_BH1750 = 4,
 			AUTO_BRIGHTNESS_BH1750 = 5,
-			AUTO_ON_OFF_MPU6050 = 6
+			AUTO_ON_OFF_MOTION = 6
 		};
 
-		LightSensor(TL::Configuration *configuration);
-		~LightSensor();
+		static TL::LightSensor::Error begin();
+		static void end();
+		static bool isInitialized();
 
-		bool getBrightness(float &brightness, TL::MotionSensor *motionSensor = nullptr);
+		static TL::LightSensor::Error getBrightness(float &brightness);
 
 	private:
-		TL::Configuration *configuration;
-		std::unique_ptr<TL::ESP32ADC> esp32adc;
-		std::unique_ptr<TL::BH1750> bh1750;
-		float lastBrightnessValue;
-		TL::MotionSensor::MotionSensorData motionData;
-		unsigned long motionSensorTriggerTime;
+		LightSensor();
 
-		bool getBrightnessInt(float &brightness, TL::MotionSensor *motionSensor = nullptr);
+		static bool initialized;
+		static float lastBrightnessValue;
+		static TL::MotionSensor::MotionSensorData motionData;
+		static unsigned long motionSensorTriggerTime;
+
+		static TL::LightSensor::Error getBrightnessInt(float &brightness);
 	};
 }
 

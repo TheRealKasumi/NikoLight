@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a class to load and verify fseq 1.0 files created by xLights.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -25,9 +25,6 @@
 #include <stdint.h>
 #include <vector>
 #include <FS.h>
-
-#include "logging/Logger.h"
-
 #include "FastLED.h"
 
 namespace TL
@@ -35,6 +32,20 @@ namespace TL
 	class FseqLoader
 	{
 	public:
+		enum class Error
+		{
+			OK,						   // No error
+			ERROR_FILE_NOT_FOUND,	   // The file was not found
+			ERROR_FILE_IS_DIR,		   // The file is not a file but a directory
+			ERROR_FILE_TOO_SMALL,	   // The file is empty or too small to be valid
+			ERROR_FILE_READ,		   // The file could not be read
+			ERROR_MAGIC_NUMBERS,	   // The magic numbers do not fit the file
+			ERROR_FILE_VERSION,		   // The file version is not supported
+			ERROR_HEADER_LENGTH,	   // The header length of the file is invalid
+			ERROR_INVALID_DATA_LENGTH, // The data length specified in header does not match actual data length
+			ERROR_END_OF_FILE		   // End of the file was reached
+		};
+
 		struct FseqHeader
 		{
 			char identifier[4];
@@ -56,22 +67,30 @@ namespace TL
 		FseqLoader(FS *fileSystem);
 		~FseqLoader();
 
-		bool loadFromFile(const String fileName);
-
+		TL::FseqLoader::Error loadFromFile(const String fileName);
 		size_t available();
 		void moveToStart();
 		void close();
 
 		FseqHeader getHeader();
-		bool readPixelBuffer(std::vector<CRGB> &pixels);
+		TL::FseqLoader::Error readPixelBuffer(std::vector<CRGB> &pixels);
+
+		void setFillerBytes(const uint8_t fillerBytes);
+		uint8_t getFillerBytes();
+
+		void setZoneCount(const uint8_t zoneCount);
+		uint8_t getZoneCount();
 
 	private:
 		FS *fileSystem;
 		File file;
 		FseqHeader fseqHeader;
+		uint8_t fillerBytes;
+		uint8_t zoneCount;
+		uint8_t zoneCounter;
 
 		void initFseqHeader();
-		bool isValid();
+		TL::FseqLoader::Error isValid();
 	};
 }
 

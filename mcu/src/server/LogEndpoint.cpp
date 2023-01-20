@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Implementation of a REST endpoint to manage the log of the TesLight controller.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -30,9 +30,9 @@ FS *TL::LogEndpoint::fileSystem = nullptr;
 void TL::LogEndpoint::begin(FS *_fileSystem)
 {
 	TL::LogEndpoint::fileSystem = _fileSystem;
-	TL::LogEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("log/size")).c_str(), http_method::HTTP_GET, TL::LogEndpoint::getLogSize);
-	TL::LogEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("log")).c_str(), http_method::HTTP_GET, TL::LogEndpoint::getLog);
-	TL::LogEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("log")).c_str(), http_method::HTTP_DELETE, TL::LogEndpoint::clearLog);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("log/size")).c_str(), http_method::HTTP_GET, TL::LogEndpoint::getLogSize);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("log")).c_str(), http_method::HTTP_GET, TL::LogEndpoint::getLog);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("log")).c_str(), http_method::HTTP_DELETE, TL::LogEndpoint::clearLog);
 }
 
 /**
