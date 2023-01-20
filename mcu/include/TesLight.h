@@ -29,7 +29,7 @@
 #include "configuration/SystemConfiguration.h"
 #include "logging/Logger.h"
 #include "configuration/Configuration.h"
-#include "hardware/FanController.h"
+#include "hardware/Fan.h"
 #include "led/LedManager.h"
 #include "sensor/TemperatureSensor.h"
 #include "sensor/LightSensor.h"
@@ -88,7 +88,7 @@ private:
 	static void initializeMotionSensor();
 	static void initializeLightSensor();
 	static void initializeTemperatureSensor();
-	static void initializeFanController();
+	static void initializeFan();
 	static void initializeWiFiManager();
 	static void initializeWebServerManager();
 	static void initializeRestApi();

@@ -56,6 +56,7 @@ namespace TL
 			uint8_t regulatorPowerLimit;			 // Limit in W
 			uint8_t regulatorHighTemperature;		 // Temp in °C where brightness is reduced
 			uint8_t regulatorCutoffTemperature;		 // Temp in °C where LEDs are turned off
+			uint8_t fanMode;						 // Mode of the cooling fan
 			uint8_t fanMinPwmValue;					 // Minimum pwm value output to the fan (stall guard)
 			uint8_t fanMaxPwmValue;					 // Maximum pwm value output to the fan
 			uint8_t fanMinTemperature;				 // Minimum temp in °C where the fan starts

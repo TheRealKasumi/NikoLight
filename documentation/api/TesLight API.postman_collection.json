@@ -63,7 +63,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"systemConfig\": {\r\n        \"logLevel\": 1,\r\n        \"lightSensorMode\": 1,\r\n        \"lightSensorThreshold\": 5,\r\n        \"lightSensorMinAmbientBrightness\": 5,\r\n        \"lightSensorMaxAmbientBrightness\": 255,\r\n        \"lightSensorMinLedBrightness\": 0,\r\n        \"lightSensorMaxLedBrightness\": 255,\r\n        \"lightSensorDuration\": 6,\r\n        \"regulatorPowerLimit\": 24,\r\n        \"regulatorHighTemperature\": 70,\r\n        \"regulatorCutoffTemperature\": 85,\r\n        \"fanMinPwmValue\": 75,\r\n        \"fanMaxPwmValue\": 255,\r\n        \"fanMinTemperature\": 60,\r\n        \"fanMaxTemperature\": 80\r\n    }\r\n}",
+							"raw": "{\r\n    \"systemConfig\": {\r\n        \"logLevel\": 1,\r\n        \"lightSensorMode\": 1,\r\n        \"lightSensorThreshold\": 5,\r\n        \"lightSensorMinAmbientBrightness\": 5,\r\n        \"lightSensorMaxAmbientBrightness\": 255,\r\n        \"lightSensorMinLedBrightness\": 0,\r\n        \"lightSensorMaxLedBrightness\": 255,\r\n        \"lightSensorDuration\": 6,\r\n        \"regulatorPowerLimit\": 24,\r\n        \"regulatorHighTemperature\": 70,\r\n        \"regulatorCutoffTemperature\": 85,\r\n        \"fanMode\": 0,\r\n        \"fanMinPwmValue\": 75,\r\n        \"fanMaxPwmValue\": 255,\r\n        \"fanMinTemperature\": 60,\r\n        \"fanMaxTemperature\": 80\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
