@@ -337,6 +337,13 @@ bool TL::SystemConfigurationEndpoint::validateConfiguration(const JsonObject &js
 		return false;
 	}
 
+	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("fanMode")].as<uint8_t>(), 0, 5))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMode\" field is invalid. It should be between 0 and 5."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMode\" field is invalid. It should be between 0 and 5."));
+		return false;
+	}
+
 	if (!jsonObject[F("fanMinPwmValue")].is<uint8_t>())
 	{
 		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMinPwmValue\" field in configuration must be of type \"uint8\"."));
