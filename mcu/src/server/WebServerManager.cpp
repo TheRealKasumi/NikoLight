@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Implementation of the {@link TL::WebServerManager}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -21,23 +21,48 @@
  */
 #include "server/WebServerManager.h"
 
+bool TL::WebServerManager::initialized = false;
+WebServer *TL::WebServerManager::webServer;
+FS *TL::WebServerManager::fileSystem;
+
 /**
- * @brief Create a new instance of {@link TL::WebServerManager}.
- * @param fileSystem instance of {@link FS}
+ * @brief Start the web server manager.
+ * @param fileSystem file system to serve static content from
  */
-TL::WebServerManager::WebServerManager(FS *fileSystem)
+void TL::WebServerManager::begin(FS *fileSystem, const uint16_t port)
 {
-	this->webServer.reset(new WebServer(WEB_SERVER_PORT));
-	this->fileSystem = fileSystem;
-	this->init();
+	TL::WebServerManager::initialized = true;
+	TL::WebServerManager::webServer = new WebServer(port);
+	TL::WebServerManager::fileSystem = fileSystem;
+	TL::WebServerManager::init();
 }
 
 /**
- * @brief Destroy the {@link TL::WebServerManager} instance and shut down the web server.
+ * @brief Stop the web server manager.
  */
-TL::WebServerManager::~WebServerManager()
+void TL::WebServerManager::end()
 {
-	this->stop();
+	TL::WebServerManager::initialized = false;
+	TL::WebServerManager::webServer->stop();
+	delete TL::WebServerManager::webServer;
+}
+
+/**
+ * @brief Check if the web server manager is initialized.
+ * @return true when initialized
+ * @return false when not initialized
+ */
+bool TL::WebServerManager::isInitialize()
+{
+	return TL::WebServerManager::initialized;
+}
+
+/**
+ * @brief Start the web server.
+ */
+void TL::WebServerManager::startServer()
+{
+	TL::WebServerManager::webServer->begin();
 }
 
 /**
@@ -46,18 +71,17 @@ TL::WebServerManager::~WebServerManager()
  */
 WebServer *TL::WebServerManager::getWebServer()
 {
-	return this->webServer.get();
+	return TL::WebServerManager::webServer;
 }
 
 /**
  * @brief Add a request handler for a speciffic uri.
- *
  * @param uri uri of the endpoint
  * @param handler handler function
  */
 void TL::WebServerManager::addRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction handler)
 {
-	this->webServer->on(uri, method, handler);
+	TL::WebServerManager::webServer->on(uri, method, handler);
 }
 
 /**
@@ -69,23 +93,7 @@ void TL::WebServerManager::addRequestHandler(const char *uri, http_method method
  */
 void TL::WebServerManager::addUploadRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction requestHandler, WebServer::THandlerFunction uploadHandler)
 {
-	this->webServer->on(uri, method, requestHandler, uploadHandler);
-}
-
-/**
- * @brief Start the web server. Before starting the server, all endpoints must be added.
- */
-void TL::WebServerManager::begin()
-{
-	this->webServer->begin();
-}
-
-/**
- * @brief Stop the web server.
- */
-void TL::WebServerManager::stop()
-{
-	this->webServer->stop();
+	TL::WebServerManager::webServer->on(uri, method, requestHandler, uploadHandler);
 }
 
 /**
@@ -93,7 +101,7 @@ void TL::WebServerManager::stop()
  */
 void TL::WebServerManager::handleRequest()
 {
-	this->webServer->handleClient();
+	TL::WebServerManager::webServer->handleClient();
 }
 
 /**
@@ -104,9 +112,11 @@ void TL::WebServerManager::init()
 	const char *headerKeys[1] = {"content-type"};
 	webServer->collectHeaders(headerKeys, 1);
 
-	this->webServer->onNotFound([this](){ this->handleNotFound(); });
-	this->webServer->serveStatic(WEB_SERVER_STATIC_CONTENT, *this->fileSystem, WEB_SERVER_STATIC_CONTENT);
-	this->webServer->on("/", http_method::HTTP_GET, [this](){this->webServer->sendHeader("Location", "/ui/index.html"); this->webServer->send(301); });
+	TL::WebServerManager::webServer->onNotFound([]()
+												{ TL::WebServerManager::handleNotFound(); });
+	TL::WebServerManager::webServer->serveStatic(WEB_SERVER_STATIC_CONTENT, *TL::WebServerManager::fileSystem, WEB_SERVER_STATIC_CONTENT);
+	TL::WebServerManager::webServer->on("/", http_method::HTTP_GET, []()
+										{TL::WebServerManager::webServer->sendHeader("Location", "/ui/index.html"); TL::WebServerManager::webServer->send(301); });
 }
 
 /**
@@ -114,12 +124,12 @@ void TL::WebServerManager::init()
  */
 void TL::WebServerManager::handleNotFound()
 {
-	if (this->webServer->method() == HTTP_OPTIONS)
+	if (TL::WebServerManager::webServer->method() == HTTP_OPTIONS)
 	{
-		this->webServer->send(200);
+		TL::WebServerManager::webServer->send(200);
 	}
 	else
 	{
-		this->webServer->send(404);
+		TL::WebServerManager::webServer->send(404);
 	}
 }

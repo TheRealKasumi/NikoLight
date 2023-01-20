@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a REST endpoint to test the connection to the controller.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -26,7 +26,7 @@
  */
 void TL::ConnectionTestEndpoint::begin()
 {
-	TL::ConnectionTestEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("connection_test")).c_str(), http_method::HTTP_GET, TL::ConnectionTestEndpoint::handleConnectionTest);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("connection_test")).c_str(), http_method::HTTP_GET, TL::ConnectionTestEndpoint::handleConnectionTest);
 }
 
 /**

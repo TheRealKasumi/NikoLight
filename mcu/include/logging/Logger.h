@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Static class containing the {@link TL::Logger}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -33,7 +33,7 @@ namespace TL
 	class Logger
 	{
 	public:
-		enum LogLevel
+		enum LogLevel : uint8_t
 		{
 			DEBUG = 0,
 			INFO = 1,
@@ -41,10 +41,12 @@ namespace TL
 			ERROR = 3
 		};
 
-		static bool begin();
-		static bool begin(const uint32_t baudRate);
-		static bool begin(FS *fs, const String fn);
-		static bool begin(uint32_t baudRate, FS *fs, const String fn);
+		static bool begin(const TL::Logger::LogLevel minLogLevel = TL::Logger::LogLevel::INFO);
+		static bool begin(const uint32_t baudRate, const TL::Logger::LogLevel minLogLevel = TL::Logger::LogLevel::INFO);
+		static bool begin(FS *fs, const String fn, const TL::Logger::LogLevel minLogLevel = TL::Logger::LogLevel::INFO);
+		static bool begin(uint32_t baudRate, FS *fs, const String fn, const TL::Logger::LogLevel minLogLevel = TL::Logger::LogLevel::INFO);
+		static void end();
+		static bool isInitialized();
 
 		static void setMinLogLevel(const TL::Logger::LogLevel logLevel);
 
@@ -55,13 +57,14 @@ namespace TL
 		static void clearLog();
 
 	private:
+		Logger();
+
+		static bool initialized;
 		static bool logToSerial;
 		static bool logToFile;
 		static FS *fileSystem;
 		static String fileName;
 		static TL::Logger::LogLevel minLogLevel;
-
-		Logger(){};
 
 		static bool testOpenFile(FS *fs, const String fn);
 		static String getLogLevelString(const TL::Logger::LogLevel logLevel);

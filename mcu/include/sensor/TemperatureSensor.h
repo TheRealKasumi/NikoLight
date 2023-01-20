@@ -1,10 +1,10 @@
 /**
  * @file TemperatureSensor.h
  * @author TheRealKasumi
- * @brief Contains a class for reading the temperature of the voltage regulator.
+ * @brief Contains a class for reading the temperature from the DS18B20 sensors.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -23,27 +23,33 @@
 #define TEMPERATURE_SENSOR_H
 
 #include <stdint.h>
-#include <memory>
 
 #include "configuration/SystemConfiguration.h"
 #include "hardware/DS18B20.h"
-#include "logging/Logger.h"
 
 namespace TL
 {
 	class TemperatureSensor
 	{
 	public:
-		TemperatureSensor();
-		~TemperatureSensor();
+		enum class Error
+		{
+			OK,						  // No error
+			ERROR_DS18B20_UNAVAILABLE // The DS18B20 sensor is not available
+		};
 
-		uint8_t getNumSensors();
-		bool getMinTemperature(float &temp);
-		bool getMaxTemperature(float &temp);
-		bool getAverageTemperature(float &temp);
+		static TL::TemperatureSensor::Error begin();
+		static void end();
+		static bool isInitialized();
+
+		static TL::TemperatureSensor::Error getMinTemperature(float &temp);
+		static TL::TemperatureSensor::Error getMaxTemperature(float &temp);
+		static TL::TemperatureSensor::Error getAverageTemperature(float &temp);
 
 	private:
-		std::unique_ptr<TL::DS18B20> ds18b20;
+		TemperatureSensor();
+
+		static bool initialized;
 	};
 }
 

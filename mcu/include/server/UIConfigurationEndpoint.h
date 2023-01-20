@@ -18,12 +18,10 @@ namespace TL
 	class UIConfigurationEndpoint : public RestEndpoint
 	{
 	public:
-		static void begin(TL::Configuration *_configuration);
+		static void begin();
 
 	private:
 		UIConfigurationEndpoint();
-
-		static TL::Configuration *configuration;
 
 		static void getUIConfig();
 		static void postUIConfig();

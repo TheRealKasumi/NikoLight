@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a REST endpoint to remotely reset the controller in case something is going wrong.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -29,8 +29,8 @@ FS *TL::ResetEndpoint::fileSystem = nullptr;
 void TL::ResetEndpoint::begin(FS *_fileSystem)
 {
 	TL::ResetEndpoint::fileSystem = _fileSystem;
-	TL::ResetEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("reset/soft")).c_str(), http_method::HTTP_POST, TL::ResetEndpoint::handleSoftReset);
-	TL::ResetEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("reset/hard")).c_str(), http_method::HTTP_POST, TL::ResetEndpoint::handleHardReset);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("reset/soft")).c_str(), http_method::HTTP_POST, TL::ResetEndpoint::handleSoftReset);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("reset/hard")).c_str(), http_method::HTTP_POST, TL::ResetEndpoint::handleHardReset);
 }
 
 /**

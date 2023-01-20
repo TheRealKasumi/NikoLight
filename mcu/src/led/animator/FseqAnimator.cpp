@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Implementation of the {@link TL::FseqAnimator}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
@@ -67,7 +67,8 @@ void TL::FseqAnimator::render(std::vector<CRGB> &pixels)
 		}
 	}
 
-	if (!this->fseqLoader->readPixelBuffer(pixels))
+	const TL::FseqLoader::Error fseqError = this->fseqLoader->readPixelBuffer(pixels);
+	if (fseqError != TL::FseqLoader::Error::OK)
 	{
 		for (size_t i = 0; i < pixels.size(); i++)
 		{

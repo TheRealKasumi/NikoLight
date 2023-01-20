@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Implementation of a REST endpoint to calibrate the motion sensor.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -21,21 +21,14 @@
  */
 #include "server/MotionSensorEndpoint.h"
 
-// Initialize
-TL::Configuration *TL::MotionSensorEndpoint::configuration = nullptr;
-TL::MotionSensor *TL::MotionSensorEndpoint::motionSensor = nullptr;
-
 /**
  * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
  */
-void TL::MotionSensorEndpoint::begin(TL::Configuration *_configuration, TL::MotionSensor *_motionSensor)
+void TL::MotionSensorEndpoint::begin()
 {
-	TL::MotionSensorEndpoint::configuration = _configuration;
-	TL::MotionSensorEndpoint::motionSensor = _motionSensor;
-
-	TL::MotionSensorEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("config/motion")).c_str(), http_method::HTTP_GET, TL::MotionSensorEndpoint::getCalibrationData);
-	TL::MotionSensorEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("config/motion")).c_str(), http_method::HTTP_POST, TL::MotionSensorEndpoint::postCalibrationData);
-	TL::MotionSensorEndpoint::webServerManager->addRequestHandler((getBaseUri() + F("config/motion")).c_str(), http_method::HTTP_PATCH, TL::MotionSensorEndpoint::runCalibration);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/motion")).c_str(), http_method::HTTP_GET, TL::MotionSensorEndpoint::getCalibrationData);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/motion")).c_str(), http_method::HTTP_POST, TL::MotionSensorEndpoint::postCalibrationData);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/motion")).c_str(), http_method::HTTP_PATCH, TL::MotionSensorEndpoint::runCalibration);
 }
 
 /**
@@ -44,21 +37,27 @@ void TL::MotionSensorEndpoint::begin(TL::Configuration *_configuration, TL::Moti
 void TL::MotionSensorEndpoint::getCalibrationData()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the motion sensor calibration data."));
+	if (!TL::Configuration::isInitialized())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		return;
+	}
 
 	DynamicJsonDocument jsonDoc(512);
 	JsonObject calibration = jsonDoc.createNestedObject(F("motionSensorCalibration"));
-	calibration[F("accXRaw")] = TL::MotionSensorEndpoint::configuration->getMotionSensorCalibration().accXRaw;
-	calibration[F("accYRaw")] = TL::MotionSensorEndpoint::configuration->getMotionSensorCalibration().accYRaw;
-	calibration[F("accZRaw")] = TL::MotionSensorEndpoint::configuration->getMotionSensorCalibration().accZRaw;
-	calibration[F("gyroXRaw")] = TL::MotionSensorEndpoint::configuration->getMotionSensorCalibration().gyroXRaw;
-	calibration[F("gyroYRaw")] = TL::MotionSensorEndpoint::configuration->getMotionSensorCalibration().gyroYRaw;
-	calibration[F("gyroZRaw")] = TL::MotionSensorEndpoint::configuration->getMotionSensorCalibration().gyroZRaw;
-	calibration[F("accXG")] = TL::MotionSensorEndpoint::configuration->getMotionSensorCalibration().accXG;
-	calibration[F("accYG")] = TL::MotionSensorEndpoint::configuration->getMotionSensorCalibration().accYG;
-	calibration[F("accZG")] = TL::MotionSensorEndpoint::configuration->getMotionSensorCalibration().accZG;
-	calibration[F("gyroXDeg")] = TL::MotionSensorEndpoint::configuration->getMotionSensorCalibration().gyroXDeg;
-	calibration[F("gyroYDeg")] = TL::MotionSensorEndpoint::configuration->getMotionSensorCalibration().gyroYDeg;
-	calibration[F("gyroZDeg")] = TL::MotionSensorEndpoint::configuration->getMotionSensorCalibration().gyroZDeg;
+	calibration[F("accXRaw")] = TL::Configuration::getMotionSensorCalibration().accXRaw;
+	calibration[F("accYRaw")] = TL::Configuration::getMotionSensorCalibration().accYRaw;
+	calibration[F("accZRaw")] = TL::Configuration::getMotionSensorCalibration().accZRaw;
+	calibration[F("gyroXRaw")] = TL::Configuration::getMotionSensorCalibration().gyroXRaw;
+	calibration[F("gyroYRaw")] = TL::Configuration::getMotionSensorCalibration().gyroYRaw;
+	calibration[F("gyroZRaw")] = TL::Configuration::getMotionSensorCalibration().gyroZRaw;
+	calibration[F("accXG")] = TL::Configuration::getMotionSensorCalibration().accXG;
+	calibration[F("accYG")] = TL::Configuration::getMotionSensorCalibration().accYG;
+	calibration[F("accZG")] = TL::Configuration::getMotionSensorCalibration().accZG;
+	calibration[F("gyroXDeg")] = TL::Configuration::getMotionSensorCalibration().gyroXDeg;
+	calibration[F("gyroYDeg")] = TL::Configuration::getMotionSensorCalibration().gyroYDeg;
+	calibration[F("gyroZDeg")] = TL::Configuration::getMotionSensorCalibration().gyroZDeg;
 
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
 	TL::MotionSensorEndpoint::sendJsonDocument(200, F("Here is the motion sensor calibration."), jsonDoc);
@@ -70,6 +69,12 @@ void TL::MotionSensorEndpoint::getCalibrationData()
 void TL::MotionSensorEndpoint::postCalibrationData()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the motion sensor calibration data."));
+	if (!TL::Configuration::isInitialized())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		return;
+	}
 
 	if (!TL::MotionSensorEndpoint::webServer->hasHeader(F("content-type")) || TL::MotionSensorEndpoint::webServer->header(F("content-type")) != F("application/json"))
 	{
@@ -129,8 +134,9 @@ void TL::MotionSensorEndpoint::postCalibrationData()
 	motionSensorCalibration.gyroYDeg = calibration[F("gyroYDeg")].as<float>();
 	motionSensorCalibration.gyroZDeg = calibration[F("gyroZDeg")].as<float>();
 
-	TL::MotionSensorEndpoint::configuration->setMotionSensorCalibration(motionSensorCalibration);
-	if (!TL::MotionSensorEndpoint::configuration->save())
+	TL::Configuration::setMotionSensorCalibration(motionSensorCalibration);
+	const TL::Configuration::Error configSaveError = TL::Configuration::save();
+	if (configSaveError != TL::Configuration::Error::OK)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save motion sensor calibration data."));
 		TL::MotionSensorEndpoint::sendSimpleResponse(500, F("Failed to save motion sensor calibration data."));
@@ -147,28 +153,49 @@ void TL::MotionSensorEndpoint::postCalibrationData()
 void TL::MotionSensorEndpoint::runCalibration()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to automatically calibrate the motion sensor."));
-
-	uint8_t result = TL::MotionSensorEndpoint::motionSensor->calibrate(true);
-	if (result == 1)
+	if (!TL::Configuration::isInitialized())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read motion sensor."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(500, F("Failed to read motion sensor."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
 		return;
 	}
-	else if (result == 2)
+
+	if (!TL::MotionSensor::isInitialized())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The motion sensor is not available. Can not calibrate. Make sure to connect the MPU6050 correctly to the I²C bus and restart."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The motion sensor is not available. Can not calibrate. Make sure to connect the MPU6050 correctly to the I²C bus and restart."));
+		return;
+	}
+
+	if (!TL::MotionSensor::isInitialized())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Can not calibrate motion sensor because it was not initialized."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(500, F("Can not calibrate motion sensor because it was not initialized."));
+		return;
+	}
+
+	const TL::MotionSensor::Error calibrationError = TL::MotionSensor::calibrate(true);
+	if (calibrationError == TL::MotionSensor::Error::ERROR_MPU6050_UNAVIALBLE)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to calibrate the motion sensor. The MPU6050 is not available."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(500, F("Failed to calibrate the motion sensor. The MPU6050 is not available."));
+		return;
+	}
+	else if (calibrationError == TL::MotionSensor::Error::ERROR_TOO_COLD)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Can not calibrate motion sensor becaues the temperature is too low."));
 		TL::MotionSensorEndpoint::sendSimpleResponse(412, F("Can not calibrate motion sensor becaues the temperature is too low."));
 		return;
 	}
-	else if (result == 3)
+	else if (calibrationError == TL::MotionSensor::Error::ERROR_TOO_WARM)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Can not calibrate motion sensor becaues the temperature is too high."));
 		TL::MotionSensorEndpoint::sendSimpleResponse(412, F("Can not calibrate motion sensor becaues the temperature is too high."));
 		return;
 	}
 
-	if (!TL::MotionSensorEndpoint::configuration->save())
+	const TL::Configuration::Error configSaveError = TL::Configuration::save();
+	if (configSaveError != TL::Configuration::Error::OK)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save motion sensor calibration data."));
 		TL::MotionSensorEndpoint::sendSimpleResponse(500, F("Failed to save motion sensor calibration data."));

@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a simple WiFi manager.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -25,18 +25,33 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
-#include "logging/Logger.h"
-
 namespace TL
 {
 	class WiFiManager
 	{
 	public:
-		WiFiManager();
-		~WiFiManager();
+		enum class Error
+		{
+			OK,					  // No error
+			ERROR_SET_MODE,		  // Failed to set WiFi mode
+			ERROR_START_AP,		  // Failed to start access point
+			ERROR_INVALID_SSID,	  // Invalid ssid
+			ERROR_INVALID_PW,	  // Invalid password
+			ERROR_CONNECT_FAILED, // Failed to connect to a WiFi network
+			ERROR_CONNECT_TIMEOUT // Failed to connect to a WiFi network due to timeout
+		};
 
-		bool startAccessPoint(const char *ssid, const char *password = 0, uint8_t channel = 1, bool hidden = 0, uint8_t maxConnections = 1);
-		bool connectTo(const char *ssid, const char *password = 0, const uint32_t timeout = 5000);
+		static TL::WiFiManager::Error begin();
+		static TL::WiFiManager::Error end();
+		static bool isInitialized();
+
+		static TL::WiFiManager::Error startAccessPoint(const char *ssid, const char *password = 0, uint8_t channel = 1, bool hidden = 0, uint8_t maxConnections = 1);
+		static TL::WiFiManager::Error connectTo(const char *ssid, const char *password, const uint32_t timeout);
+
+	private:
+		WiFiManager();
+
+		static bool initialized;
 	};
 }
 

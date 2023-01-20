@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a REST endpoint to calibrate the motion sensor.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -33,13 +33,10 @@ namespace TL
 	class MotionSensorEndpoint : public RestEndpoint
 	{
 	public:
-		static void begin(TL::Configuration *_configuration, TL::MotionSensor *_motionSensor);
+		static void begin();
 
 	private:
 		MotionSensorEndpoint();
-
-		static TL::Configuration *configuration;
-		static TL::MotionSensor *motionSensor;
 
 		static void getCalibrationData();
 		static void postCalibrationData();

@@ -205,19 +205,17 @@ void TL::SparkleAnimator::spawnSparks(std::vector<CRGB> &pixels)
 			}
 
 			spark.speed = this->speed / 255.0f;
-			spark.speed += spark.speed * (this->random(-255, 255) / 255.0f) * this->speedVariance;
+			spark.speed += (this->random(-255, 255) / 255.0f) * this->speedVariance;
 			spark.speed = this->random(0, 255) < 127 ? -spark.speed : spark.speed;
-			if (spark.speed < 0.2f && spark.speed > 0.0f)
-			{
-				spark.speed = 0.2f;
-			}
-			else if (spark.speed > -0.2f && spark.speed < 0.0f)
-			{
-				spark.speed = -0.2f;
-			}
+			spark.speed = spark.speed < 0.05f && spark.speed > 0.0f ? 0.05f : spark.speed;
+			spark.speed = spark.speed > -0.05f && spark.speed < 0.0f ? -0.05f : spark.speed;
+			spark.speed = spark.speed > 1.0f ? 1.0f : spark.speed;
+			spark.speed = spark.speed < -1.0f ? -1.0f : spark.speed;
 
 			spark.friction = this->sparkFriction;
-			spark.friction += spark.friction * (this->random(-255, 255) / 255.0f) * this->frictionVariance;
+			spark.friction += (this->random(-255, 255) / 255.0f) * this->frictionVariance;
+			spark.friction = spark.friction < 0.0f ? -spark.friction : spark.friction;
+			spark.friction = spark.friction > 1.0f ? 1.0f : spark.friction;
 
 			if (this->color.r == 0 && this->color.g == 0 && this->color.b == 0)
 			{
@@ -238,7 +236,9 @@ void TL::SparkleAnimator::spawnSparks(std::vector<CRGB> &pixels)
 			spark.brightness = 1.0f - (this->random(0, 255) / 255.0f) * this->brightnessVariance;
 
 			spark.fading = this->sparkFading;
-			spark.fading += spark.fading * (this->random(-255, 255) / 255.0f) * this->fadingVariance;
+			spark.fading += (this->random(-255, 255) / 255.0f) * this->fadingVariance;
+			spark.fading = spark.fading < 0.0f ? -spark.fading : spark.fading;
+			spark.fading = spark.fading > 1.0f ? 1.0f : spark.fading;
 
 			this->sparks.at(i) = spark;
 		}

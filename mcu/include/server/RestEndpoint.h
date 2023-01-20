@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a base class for a single REST endpoint.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -31,9 +31,8 @@ namespace TL
 	class RestEndpoint
 	{
 	public:
-		static void init(TL::WebServerManager *_webServerManager, String _baseUri);
+		static void init(String _baseUri);
 
-		static TL::WebServerManager *getServerManager();
 		static WebServer *getServer();
 		static String getBaseUri();
 
@@ -41,7 +40,6 @@ namespace TL
 		RestEndpoint();
 
 	protected:
-		static TL::WebServerManager *webServerManager;
 		static WebServer *webServer;
 		static String baseUri;
 
