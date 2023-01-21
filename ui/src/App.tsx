@@ -89,7 +89,7 @@ const dashboardRoute = zonesRoute.createRoute({
   component: () => <Zone routeId={dashboardRoute.id} />,
   meta: {
     name: <Trans i18nKey="zones.dashboard" />,
-    icon: <DashboardIcon className="h-8 w-8" />,
+    icon: <DashboardIcon className="h-8 w-8 stroke-slate dark:stroke-white" />,
     zoneId: 0,
   },
 });
@@ -99,7 +99,9 @@ const centerConsoleRoute = zonesRoute.createRoute({
   component: () => <Zone routeId={centerConsoleRoute.id} />,
   meta: {
     name: <Trans i18nKey="zones.centerConsole" />,
-    icon: <CenterConsoleIcon className="h-8 w-8" />,
+    icon: (
+      <CenterConsoleIcon className="h-8 w-8 stroke-slate dark:stroke-white" />
+    ),
     zoneId: 1,
   },
 });
@@ -109,7 +111,9 @@ const frontLeftDoorRoute = zonesRoute.createRoute({
   component: () => <Zone routeId={frontLeftDoorRoute.id} />,
   meta: {
     name: <Trans i18nKey="zones.frontLeftDoor" />,
-    icon: <DoorIcon className="h-8 w-8 -scale-x-100" />,
+    icon: (
+      <DoorIcon className="h-8 w-8 -scale-x-100 stroke-slate dark:stroke-white" />
+    ),
     zoneId: 2,
   },
 });
@@ -119,7 +123,7 @@ const frontRightDoorRoute = zonesRoute.createRoute({
   component: () => <Zone routeId={frontRightDoorRoute.id} />,
   meta: {
     name: <Trans i18nKey="zones.frontRightDoor" />,
-    icon: <DoorIcon className="h-8 w-8" />,
+    icon: <DoorIcon className="h-8 w-8 stroke-slate dark:stroke-white" />,
     zoneId: 3,
   },
 });
@@ -129,7 +133,9 @@ const rearLeftDoorRoute = zonesRoute.createRoute({
   component: () => <Zone routeId={rearLeftDoorRoute.id} />,
   meta: {
     name: <Trans i18nKey="zones.rearLeftDoor" />,
-    icon: <DoorIcon className="h-8 w-8 -scale-x-100" />,
+    icon: (
+      <DoorIcon className="h-8 w-8 -scale-x-100 stroke-slate dark:stroke-white" />
+    ),
     zoneId: 4,
   },
 });
@@ -139,7 +145,7 @@ const rearRightDoorRoute = zonesRoute.createRoute({
   component: () => <Zone routeId={rearRightDoorRoute.id} />,
   meta: {
     name: <Trans i18nKey="zones.rearRightDoor" />,
-    icon: <DoorIcon className="h-8 w-8" />,
+    icon: <DoorIcon className="h-8 w-8 stroke-slate dark:stroke-white" />,
     zoneId: 5,
   },
 });
@@ -149,7 +155,9 @@ const leftFootwellRoute = zonesRoute.createRoute({
   component: () => <Zone routeId={leftFootwellRoute.id} />,
   meta: {
     name: <Trans i18nKey="zones.leftFootwell" />,
-    icon: <FootwellLeftIcon className="h-8 w-8" />,
+    icon: (
+      <FootwellLeftIcon className="h-8 w-8 stroke-slate dark:stroke-white" />
+    ),
     zoneId: 6,
   },
 });
@@ -159,7 +167,9 @@ const rightFootwellRoute = zonesRoute.createRoute({
   component: () => <Zone routeId={rightFootwellRoute.id} />,
   meta: {
     name: <Trans i18nKey="zones.rightFootwell" />,
-    icon: <FootwellRightIcon className="h-8 w-8" />,
+    icon: (
+      <FootwellRightIcon className="h-8 w-8 stroke-slate dark:stroke-white" />
+    ),
     zoneId: 7,
   },
 });
@@ -177,7 +187,7 @@ const customAnimationsRoute = rootRoute.createRoute({
   },
   meta: {
     name: <Trans i18nKey="customAnimations.title" />,
-    icon: <FilmIcon className="h-6 w-6" />,
+    icon: <FilmIcon className="h-6 w-6 stroke-slate dark:stroke-white" />,
   },
 });
 
@@ -194,7 +204,9 @@ const settingsRoute = rootRoute.createRoute({
   },
   meta: {
     name: <Trans i18nKey="settings.title" />,
-    icon: <AdjustmentsVerticalIcon className="h-6 w-6" />,
+    icon: (
+      <AdjustmentsVerticalIcon className="h-6 w-6 stroke-slate dark:stroke-white" />
+    ),
   },
 });
 
@@ -228,7 +240,9 @@ const logFilesRoute = rootRoute.createRoute({
   },
   meta: {
     name: <Trans i18nKey="logFiles.title" />,
-    icon: <DocumentTextIcon className="h-6 w-6" />,
+    icon: (
+      <DocumentTextIcon className="h-6 w-6 stroke-slate dark:stroke-white" />
+    ),
   },
 });
 
@@ -270,7 +284,7 @@ const queryClient = new QueryClient({
 });
 
 const App = () => (
-  <div className=" bg-neutral text-slate dark:bg-slate dark:text-neutral">
+  <div className=" bg-white text-slate dark:bg-slate dark:text-white">
     <div className="container mx-auto min-h-screen p-12">
       <QueryClientProvider client={queryClient}>
         <RouterProvider

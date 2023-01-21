@@ -11,7 +11,7 @@ import { version } from '../../package.json';
 import { ReactComponent as Logo } from '../assets/logo.svg';
 import { AnimationType } from '../components';
 import i18n from '../i18n';
-import { toPercentage } from '../libs';
+import { changeTheme, toPercentage } from '../libs';
 import { useLed, useUi } from './api';
 
 const flatRoutes = (route: Route<AllRouteInfo, RouteInfo>): AnyRoute[] =>
@@ -34,6 +34,7 @@ export const Home = (): JSX.Element => {
 
   useUi({
     onSuccess: (data) => {
+      changeTheme(data.theme);
       i18n.changeLanguage(data.language);
     },
   });

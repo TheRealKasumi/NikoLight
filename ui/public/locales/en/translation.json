@@ -34,8 +34,7 @@
     "fanMinPwmValue": "Fan Min PWM (Stall Guard)",
     "fanMinTemperature": "Fan Start Temp (°C)",
     "language": "Language",
-    "lightSensor": "Light Sensor",
-    "lightSensorDuration": "Duration",
+    "lightSensorDuration": "Sensor Duration",
     "lightSensorMaxAmbientBrightness": "Maximum Brightness",
     "lightSensorMaxLedBrightness": "Maximum LED Brightness",
     "lightSensorMinAmbientBrightness": "Minimum Brightness",
@@ -50,7 +49,7 @@
       "AutomaticOnOffBH1750": "Automatic On/Off BH1750",
       "AutomaticOnOffMPU6050": "Automatic On/Off MPU6050"
     },
-    "lightSensorThreshold": "Threshold",
+    "lightSensorThreshold": "Sensor Threshold",
     "loggingAndDebugging": "Logging and Debugging",
     "logLevel": "Log Level",
     "logLevels": {
@@ -59,6 +58,7 @@
       "info": "Info",
       "warning": "Warning"
     },
+    "power": "Power",
     "regulator": "Regulator",
     "regulatorCutoffTemperature": "Shut Down Temperature (°C)",
     "regulatorHighTemperature": "Throttle Temperature (°C)",
@@ -66,6 +66,11 @@
     "reset": "Reset to default",
     "submit": "Apply Settings",
     "submitSuccessful": "Saved successfully!",
+    "theme": "Theme",
+    "themes": {
+      "dark": "Dark",
+      "light": "Light"
+    },
     "title": "Settings",
     "ui": "User Interface",
     "wifiHotspot": "Wifi Hotspot"

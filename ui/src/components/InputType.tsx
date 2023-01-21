@@ -23,9 +23,9 @@ export const InputType = <T extends FieldValues>({
       type="file"
       className={twMerge(
         'block w-full rounded-md p-1',
-        'bg-neutral dark:bg-gray',
-        'text-slate placeholder-sky placeholder-opacity-75 dark:text-neutral',
-        'file:mr-2 file:rounded-md file:border-0 file:bg-sky file:text-neutral',
+        'bg-cloud dark:bg-gray',
+        'placeholder-sky placeholder-opacity-75',
+        'file:mr-2 file:rounded-md file:border-0 file:bg-sky file:text-white',
         'focus-visible:sky focus:outline-none focus-visible:ring focus-visible:ring-opacity-75',
         className,
       )}

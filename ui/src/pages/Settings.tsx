@@ -16,7 +16,7 @@ import {
   Toast,
 } from '../components';
 import i18n from '../i18n';
-import { toPercentage } from '../libs';
+import { changeTheme, toPercentage } from '../libs';
 import {
   useSystem,
   useUi,
@@ -63,6 +63,7 @@ type FormData = {
   };
   ui: {
     language: string;
+    theme: string;
   };
 };
 
@@ -90,6 +91,7 @@ const DEFAULT_VALUES: FormData = {
   },
   ui: {
     language: 'en',
+    theme: 'dark',
   },
 };
 
@@ -144,6 +146,7 @@ const Form = (): JSX.Element => {
       },
       ui: {
         language: ui?.language,
+        theme: ui?.theme,
       },
     },
     mode: 'onChange',
@@ -159,6 +162,7 @@ const Form = (): JSX.Element => {
       { ...uiCopy, ...data.ui },
       {
         onSuccess: (_data, variables) => {
+          changeTheme(variables.theme);
           i18n.changeLanguage(variables.language);
         },
       },
@@ -200,7 +204,7 @@ const Form = (): JSX.Element => {
       <form onSubmit={onSubmit}>
         <fieldset className="mb-6">
           <legend className="mb-6 text-lg font-medium">
-            {t('settings.lightSensor')}
+            {t('settings.power')}
           </legend>
           <label className="mb-6 flex flex-row justify-between">
             <span className="basis-1/2 self-center">
@@ -466,6 +470,7 @@ const Form = (): JSX.Element => {
           <legend className="mb-6 text-lg font-medium">
             {t('settings.ui')}
           </legend>
+
           <label className="mb-6 flex flex-row justify-between">
             <span className="basis-1/2 self-center">
               {t('settings.language')}
@@ -474,6 +479,20 @@ const Form = (): JSX.Element => {
               <Select<FormData> control={control} name="ui.language">
                 <SelectItem value="de">Deutsch</SelectItem>
                 <SelectItem value="en">English</SelectItem>
+              </Select>
+            </div>
+          </label>
+
+          <label className="mb-6 flex flex-row justify-between">
+            <span className="basis-1/2 self-center">{t('settings.theme')}</span>
+            <div className="basis-1/2 text-right">
+              <Select<FormData> control={control} name="ui.theme">
+                <SelectItem value="dark">
+                  {t('settings.themes.dark')}
+                </SelectItem>
+                <SelectItem value="light">
+                  {t('settings.themes.light')}
+                </SelectItem>
               </Select>
             </div>
           </label>
