@@ -42,6 +42,7 @@
 #include "led/animator/SparkleAnimator.h"
 
 #include "sensor/MotionSensor.h"
+#include "hardware/AudioUnit.h"
 
 namespace TL
 {
@@ -75,6 +76,8 @@ namespace TL
 		static uint32_t getFrameInterval();
 
 		static void setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData);
+		static void setAudioAnalysis(const TL::AudioUnit::AudioAnalysis &audioAnalysis);
+
 		static void setRegulatorTemperature(const float regulatorTemperature);
 
 		static float getLedPowerDraw();

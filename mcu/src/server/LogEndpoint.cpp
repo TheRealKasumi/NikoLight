@@ -61,7 +61,7 @@ void TL::LogEndpoint::getLogSize()
 
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
 	DynamicJsonDocument jsonDoc(1024);
-	JsonObject log = jsonDoc.createNestedObject(F("log"));
+	const JsonObject log = jsonDoc.createNestedObject(F("log"));
 	log[F("size")] = logSize;
 	TL::LogEndpoint::sendJsonDocument(200, F("This is my current log size."), jsonDoc);
 }

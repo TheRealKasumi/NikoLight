@@ -166,13 +166,25 @@ uint32_t TL::LedManager::getFrameInterval()
 
 /**
  * @brief Set the current motion sensor data.
- * @param motionSensorData instance of the {@link TL::MotionSensor::MotionSensorData}
+ * @param motionSensorData motion sensor data
  */
 void TL::LedManager::setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData)
 {
 	for (size_t i = 0; i < TL::LedManager::ledAnimator.size(); i++)
 	{
 		TL::LedManager::ledAnimator.at(i)->setMotionSensorData(motionSensorData);
+	}
+}
+
+/**
+ * @brief Set the current audio analysis data.
+ * @param audioAnalysis audio analysis data
+ */
+void TL::LedManager::setAudioAnalysis(const TL::AudioUnit::AudioAnalysis &audioAnalysis)
+{
+	for (size_t i = 0; i < TL::LedManager::ledAnimator.size(); i++)
+	{
+		TL::LedManager::ledAnimator.at(i)->setAudioAnalysis(audioAnalysis);
 	}
 }
 

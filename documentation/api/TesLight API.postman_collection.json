@@ -1,6 +1,5 @@
 {
 	"info": {
-		"_postman_id": "7e57b9b5-edb4-4b23-91b3-e033376642b6",
 		"name": "TesLight API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "12963851"
@@ -507,6 +506,63 @@
 								"api",
 								"config",
 								"motion"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Audio Unit Configuration",
+			"item": [
+				{
+					"name": "Get Audio Unit Configuration",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/audio",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"audio"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Audio Unit Configuration",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"audioUnitConfig\":{\"noiseThreshold\":0,\"frequencyBinConfig\":[{\"start\":1,\"end\":3},{\"start\":4,\"end\":6},{\"start\":7,\"end\":13},{\"start\":14,\"end\":28},{\"start\":29,\"end\":62},{\"start\":63,\"end\":136},{\"start\":137,\"end\":298},{\"start\":299,\"end\":450}],\"peakDetectorConfig\":[{\"historySize\":60,\"threshold\":1.5,\"influence\":0.75,\"noiseGate\":1500},{\"historySize\":60,\"threshold\":1.5,\"influence\":0.75,\"noiseGate\":1500},{\"historySize\":60,\"threshold\":1.5,\"influence\":0.75,\"noiseGate\":1500},{\"historySize\":60,\"threshold\":1.5,\"influence\":0.75,\"noiseGate\":1500},{\"historySize\":60,\"threshold\":1.5,\"influence\":0.75,\"noiseGate\":1500},{\"historySize\":60,\"threshold\":1.5,\"influence\":0.75,\"noiseGate\":1500},{\"historySize\":60,\"threshold\":1.5,\"influence\":0.75,\"noiseGate\":1500},{\"historySize\":60,\"threshold\":1.5,\"influence\":0.75,\"noiseGate\":1500}]}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/audio",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"audio"
 							]
 						}
 					},

@@ -44,7 +44,7 @@ void TL::WiFiConfigurationEndpoint::getWiFiConfig()
 	}
 
 	DynamicJsonDocument jsonDoc(4096);
-	JsonObject config = jsonDoc.createNestedObject(F("wifiConfig"));
+	const JsonObject config = jsonDoc.createNestedObject(F("wifiConfig"));
 	config[F("accessPointSsid")] = TL::Configuration::getWiFiConfig().accessPointSsid;
 	config[F("accessPointPassword")] = TL::Configuration::getWiFiConfig().accessPointPassword;
 	config[F("accessPointChannel")] = TL::Configuration::getWiFiConfig().accessPointChannel;
@@ -114,14 +114,14 @@ void TL::WiFiConfigurationEndpoint::postWiFiConfig()
 		return;
 	}
 
-	JsonObject configuration = jsonDoc[F("wifiConfig")].as<JsonObject>();
+	const JsonObject configuration = jsonDoc[F("wifiConfig")].as<JsonObject>();
 	if (!TL::WiFiConfigurationEndpoint::validateConfiguration(configuration))
 	{
 		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The validation of the WiFi configuration failed."));
 		return;
 	}
 
-	TL::Configuration::WiFiConfig config = TL::Configuration::getWiFiConfig();
+	TL::Configuration::WiFiConfig config;
 	config.accessPointSsid = configuration[F("accessPointSsid")].as<String>();
 	config.accessPointPassword = configuration[F("accessPointPassword")].as<String>();
 	config.accessPointChannel = configuration[F("accessPointChannel")].as<uint8_t>();
@@ -136,20 +136,20 @@ void TL::WiFiConfigurationEndpoint::postWiFiConfig()
 		const TL::Configuration::Error configSaveError = TL::Configuration::save();
 		if (configSaveError == TL::Configuration::Error::ERROR_FILE_OPEN)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save LED configuration. The configuration file could not be opened."));
-			TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save LED configuration. The configuration file could not be opened."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save WiFi configuration. The configuration file could not be opened."));
+			TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save WiFi configuration. The configuration file could not be opened."));
 			return;
 		}
 		else if (configSaveError == TL::Configuration::Error::ERROR_FILE_WRITE)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save LED configuration. The configuration file could not be written."));
-			TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save LED configuration. The configuration file could not be written."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save WiFi configuration. The configuration file could not be written."));
+			TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save WiFi configuration. The configuration file could not be written."));
 			return;
 		}
 		else if (configSaveError != TL::Configuration::Error::OK)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save LED configuration."));
-			TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save LED configuration."));
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save WiFi configuration."));
+			TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save WiFi configuration."));
 			return;
 		}
 
@@ -194,92 +194,92 @@ bool TL::WiFiConfigurationEndpoint::validateConfiguration(const JsonObject &json
 {
 	if (!jsonObject[F("accessPointSsid")].is<String>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accessPointSsid\" field in configuration must be of type \"string\"."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"accessPointSsid\" field in configuration must be of type \"string\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accessPointSsid\" field must be of type \"string\"."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The \"accessPointSsid\" field must be of type \"string\"."));
 		return false;
 	}
 
 	if (!TL::WiFiConfigurationEndpoint::validateWiFiSsid(jsonObject[F("accessPointSsid")].as<String>()))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accessPointSsid\" field is invalid. It must be a valid WiFi SSID."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"accessPointSsid\" field is invalid. It must be a valid WiFi SSID."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accessPointSsid\" field is invalid. It must be a valid WiFi SSID."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The \"accessPointSsid\" field is invalid. It must be a valid WiFi SSID."));
 		return false;
 	}
 
 	if (!jsonObject[F("accessPointPassword")].is<String>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accessPointPassword\" field in configuration must be of type \"string\"."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"accessPointPassword\" field in configuration must be of type \"string\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accessPointPassword\" field must be of type \"string\"."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The \"accessPointPassword\" field must be of type \"string\"."));
 		return false;
 	}
 
 	if (!TL::WiFiConfigurationEndpoint::validateWiFiPassword(jsonObject[F("accessPointPassword")].as<String>()))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accessPointPassword\" field is invalid. It must be a valid WiFi password."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"accessPointPassword\" field is invalid. It must be a valid WiFi password."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accessPointPassword\" field is invalid. It must be a valid WiFi password."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The \"accessPointPassword\" field is invalid. It must be a valid WiFi password."));
 		return false;
 	}
 
 	if (!jsonObject[F("accessPointChannel")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accessPointChannel\" field in configuration must be of type \"uint8\"."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"accessPointChannel\" field in configuration must be of type \"uint8\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accessPointChannel\" field must be of type \"uint8\"."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The \"accessPointChannel\" field must be of type \"uint8\"."));
 		return false;
 	}
 
 	if (!TL::WiFiConfigurationEndpoint::isInRange(jsonObject[F("accessPointChannel")].as<uint8_t>(), 0, 12))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accessPointChannel\" field is invalid. It must be a valid WiFi channel."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"accessPointChannel\" field is invalid. It must be a valid WiFi channel."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accessPointChannel\" field is invalid. It must be a valid WiFi channel."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The \"accessPointChannel\" field is invalid. It must be a valid WiFi channel."));
 		return false;
 	}
 
 	if (!jsonObject[F("accessPointHidden")].is<bool>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accessPointHidden\" field in configuration must be of type \"bool\"."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"accessPointHidden\" field in configuration must be of type \"bool\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accessPointHidden\" field must be of type \"bool\"."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The \"accessPointHidden\" field must be of type \"bool\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("accessPointMaxConnections")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accessPointMaxConnections\" field in configuration must be of type \"uint8\"."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"accessPointMaxConnections\" field in configuration must be of type \"uint8\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accessPointMaxConnections\" field must be of type \"uint8\"."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The \"accessPointMaxConnections\" field must be of type \"uint8\"."));
 		return false;
 	}
 
 	if (!TL::WiFiConfigurationEndpoint::isInRange(jsonObject[F("accessPointMaxConnections")].as<uint8_t>(), 1, 4))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accessPointMaxConnections\" field is invalid. It must be between 1 and 4."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"accessPointMaxConnections\" field is invalid. It must be between 1 and 4."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accessPointMaxConnections\" field is invalid. It must be between 1 and 4."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The \"accessPointMaxConnections\" field is invalid. It must be between 1 and 4."));
 		return false;
 	}
 
 	/*if (!jsonObject[F("wifiSsid")].is<String>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"wifiSsid\" field in configuration must be of type \"string\"."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"wifiSsid\" field in configuration must be of type \"string\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"wifiSsid\" field must be of type \"string\"."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The \"wifiSsid\" field must be of type \"string\"."));
 		return false;
 	}
 
 	if (!TL::WiFiConfigurationEndpoint::validateWiFiSsid(jsonObject[F("wifiSsid")].as<String>()))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"wifiSsid\" field is invalid. It must be a valid WiFi SSID."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"wifiSsid\" field is invalid. It must be a valid WiFi SSID."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"wifiSsid\" field is invalid. It must be a valid WiFi SSID."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The \"wifiSsid\" field is invalid. It must be a valid WiFi SSID."));
 		return false;
 	}
 
 	if (!jsonObject[F("wifiPassword")].is<String>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"wifiPassword\" field in configuration must be of type \"string\"."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"wifiPassword\" field in configuration must be of type \"string\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"wifiPassword\" field must be of type \"string\"."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The \"wifiPassword\" field must be of type \"string\"."));
 		return false;
 	}
 
 	if (!TL::WiFiConfigurationEndpoint::validateWiFiPassword(jsonObject[F("wifiPassword")].as<String>()))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"wifiPassword\" field is invalid. It must be a valid WiFi password."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"wifiPassword\" field is invalid. It must be a valid WiFi password."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"wifiPassword\" field is invalid. It must be a valid WiFi password."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The \"wifiPassword\" field is invalid. It must be a valid WiFi password."));
 		return false;
 	}*/
 

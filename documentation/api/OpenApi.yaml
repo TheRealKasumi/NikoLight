@@ -25,6 +25,8 @@ tags:
      description: Read and update the WiFi configuration
    - name: Motion Sensor Calibration Configuration
      description: Read, update and run the motion sensor calibration
+   - name: Audio Unit Configuration
+     description: Read and update the audio unit configuration
    - name: UI Configuration
      description: Read and update the ui configuration
    - name: FSEQ Management
@@ -253,6 +255,48 @@ paths:
                         $ref: "#/components/schemas/ApiResponse"
             "412":
                description: The motion sensor is not ready to be calibrated.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+
+   "/config/audio":
+      get:
+         tags:
+            - Audio Unit Configuration
+         summary: Read the audio unit configuration.
+         description: Read the audio unit configuration.
+         operationId: getAudioUnitConfiguration
+         responses:
+            "200":
+               description: Response contains the current audio unit configuration.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/AudioUnitConfiguration"
+      post:
+         tags:
+            - Audio Unit Configuration
+         summary: Update the audio unit configuration.
+         description: Update the current audio unit configuration on the controller.
+         operationId: setAudioUnitConfiguration
+         requestBody:
+            $ref: "#/components/requestBodies/AudioUnitConfiguration"
+         responses:
+            "200":
+               description: The configuration was updated.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is invalid.
                content:
                   application/json:
                      schema:
@@ -910,6 +954,59 @@ components:
                      type: number
                      format: float
                      example: 0
+      AudioUnitConfiguration:
+         type: object
+         properties:
+            status:
+               type: integer
+               format: int32
+               example: 200
+            message:
+               type: string
+               example: Message
+            audioUnitConfig:
+               type: object
+               properties:
+                  noiseThreshold:
+                     type: integer
+                     format: uint16
+                     example: 0
+                  frequencyBinConfig:
+                     type: array
+                     minItems: 8
+                     maxItems: 8
+                     items:
+                        properties:
+                           start:
+                              type: integer
+                              format: uint16
+                              example: 1
+                           end:
+                              type: integer
+                              format: uint16
+                              example: 5
+                  peakDetectorConfig:
+                     type: array
+                     minItems: 8
+                     maxItems: 8
+                     items:
+                        properties:
+                           historySize:
+                              type: integer
+                              format: uint16
+                              example: 60
+                           threshold:
+                              type: number
+                              format: double
+                              example: 1.5
+                           influence:
+                              type: number
+                              format: double
+                              example: 0.75
+                           noiseGate:
+                              type: number
+                              format: double
+                              example: 1500
       UIConfiguration:
          type: object
          properties:
@@ -1205,6 +1302,63 @@ components:
                               type: number
                               format: float
                               example: 0
+      AudioUnitConfiguration:
+         description: Update the current audio unit configuration on the controller.
+         content:
+            application/json:
+               schema:
+                  type: object
+                  properties:
+                     status:
+                        type: integer
+                        format: int32
+                        example: 200
+                     message:
+                        type: string
+                        example: Message
+                     audioUnitConfig:
+                        type: object
+                        properties:
+                           noiseThreshold:
+                              type: integer
+                              format: uint16
+                              example: 0
+                           frequencyBinConfig:
+                              type: array
+                              minItems: 8
+                              maxItems: 8
+                              items:
+                                 properties:
+                                    start:
+                                       type: integer
+                                       format: uint16
+                                       example: 1
+                                    end:
+                                       type: integer
+                                       format: uint16
+                                       example: 5
+                           peakDetectorConfig:
+                              type: array
+                              minItems: 8
+                              maxItems: 8
+                              items:
+                                 properties:
+                                    historySize:
+                                       type: integer
+                                       format: uint16
+                                       example: 60
+                                    threshold:
+                                       type: number
+                                       format: double
+                                       example: 1.5
+                                    influence:
+                                       type: number
+                                       format: double
+                                       example: 0.75
+                                    noiseGate:
+                                       type: number
+                                       format: double
+                                       example: 1500
       UIConfiguration:
          description: Update the current UI configuration on the controller.
          content:

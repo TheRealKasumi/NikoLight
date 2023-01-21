@@ -190,7 +190,7 @@ bool TL::LedAnimator::getReverse()
 
 /**
  * @brief Set the motion sensor data.
- * @param motionSensorData instance of {@link TL::MotionSensor::MotionSensorData}
+ * @param motionSensorData motion sensor data
  */
 void TL::LedAnimator::setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData)
 {
@@ -198,12 +198,30 @@ void TL::LedAnimator::setMotionSensorData(const TL::MotionSensor::MotionSensorDa
 }
 
 /**
- * @brief Get the currently set and used motion sensor data.
- * @return currently set and used motion sensor data
+ * @brief Get the currently set motion sensor data.
+ * @return currently set motion sensor data
  */
-TL::MotionSensor::MotionSensorData TL::LedAnimator::getMotionSensorData()
+TL::MotionSensor::MotionSensorData &TL::LedAnimator::getMotionSensorData()
 {
 	return this->motionSensorData;
+}
+
+/**
+ * @brief Set the audio analysis data to be used by an animator.
+ * @param audioAnalysis audio analysis
+ */
+void TL::LedAnimator::setAudioAnalysis(const TL::AudioUnit::AudioAnalysis &audioAnalysis)
+{
+	this->audioAnalysis = audioAnalysis;
+}
+
+/**
+ * @brief Get the audio analysis data.
+ * @return audio analysis data
+ */
+TL::AudioUnit::AudioAnalysis &TL::LedAnimator::getAudioAnalysis()
+{
+	return this->audioAnalysis;
 }
 
 /**
