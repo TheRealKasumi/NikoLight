@@ -38,7 +38,7 @@ export const Select = <T extends FieldValues>({
         ref={field.ref}
         className={classNames(
           'inline-flex select-none items-center justify-center rounded-md px-4 py-2 text-sm font-medium',
-          'bg-neutral text-sky dark:bg-gray',
+          'bg-cloud text-sky dark:bg-gray',
           'focus:outline-none focus-visible:ring focus-visible:ring-sky focus-visible:ring-opacity-75',
           'group',
         )}
@@ -53,7 +53,7 @@ export const Select = <T extends FieldValues>({
           <SelectPrimitive.ScrollUpButton className="flex items-center justify-center">
             <ChevronUpIcon className="h-4 w-4" />
           </SelectPrimitive.ScrollUpButton>
-          <SelectPrimitive.Viewport className="rounded-lg bg-neutral p-2 shadow-lg dark:bg-gray">
+          <SelectPrimitive.Viewport className="rounded-lg bg-cloud p-2 dark:bg-gray">
             {children}
           </SelectPrimitive.Viewport>
           <SelectPrimitive.ScrollDownButton className="flex items-center justify-center">
