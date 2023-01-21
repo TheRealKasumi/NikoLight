@@ -66,6 +66,11 @@
     "reset": "Reset to default",
     "submit": "Apply Settings",
     "submitSuccessful": "Saved successfully!",
+    "theme": "Theme",
+    "themes": {
+      "dark": "Dark",
+      "light": "Light"
+    },
     "title": "Settings",
     "ui": "User Interface",
     "wifiHotspot": "Wifi Hotspot"

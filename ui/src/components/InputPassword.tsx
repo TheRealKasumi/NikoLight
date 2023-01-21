@@ -26,7 +26,7 @@ export const InputPassword = <T extends FieldValues>({
         type={isVisible ? 'text' : 'password'}
         className={twMerge(
           'w-full rounded-md p-1',
-          'bg-neutral dark:bg-gray',
+          'bg-cloud dark:bg-gray',
           'text-center text-sky placeholder-sky placeholder-opacity-75',
           'focus-visible:sky focus:outline-none focus-visible:ring focus-visible:ring-opacity-75',
           className,
