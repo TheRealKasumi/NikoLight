@@ -33,6 +33,15 @@
     "fanMaxTemperature": "Lüfter max Temperatur (°C)",
     "fanMinPwmValue": "Lüfter min PWM (Stall Guard)",
     "fanMinTemperature": "Lüfter min Temperatur (°C)",
+    "fanMode": "Lüftereinstellung",
+    "fanModes": {
+      "Automatic": "Automatisch",
+      "ManualOff": "Aus",
+      "Manual25": "25%",
+      "Manual50": "50%",
+      "Manual75": "75%",
+      "Manual100": "100%"
+    },
     "language": "Sprache",
     "lightSensorDuration": "Sensor Laufzeit",
     "lightSensorMaxAmbientBrightness": "Maximale Helligkeit",

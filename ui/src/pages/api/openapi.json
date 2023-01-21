@@ -11,7 +11,7 @@
   },
   "servers": [
     {
-      "url": "http://192.168.4.1/api"
+      "url": "/api"
     }
   ],
   "tags": [
@@ -63,9 +63,7 @@
   "paths": {
     "/connection_test": {
       "get": {
-        "tags": [
-          "Connection Test"
-        ],
+        "tags": ["Connection Test"],
         "summary": "Send a test request to check the connection to the controller.",
         "description": "Send a test request to check the connection to the controller.\nWhen the controller responds with status code 200, everything is up and running.",
         "operationId": "testConnection",
@@ -85,9 +83,7 @@
     },
     "/info/system": {
       "get": {
-        "tags": [
-          "System Information"
-        ],
+        "tags": ["System Information"],
         "summary": "Get the current system information.",
         "description": "Request the current system information from the controller.\nThis includes information about the soc, TesLight system and hardware.",
         "operationId": "getSystemInformation",
@@ -107,9 +103,7 @@
     },
     "/config/system": {
       "get": {
-        "tags": [
-          "System Configuration"
-        ],
+        "tags": ["System Configuration"],
         "summary": "Get system configuration.",
         "description": "Get the current system configuration from the controller.",
         "operationId": "getSystemConfig",
@@ -127,9 +121,7 @@
         }
       },
       "post": {
-        "tags": [
-          "System Configuration"
-        ],
+        "tags": ["System Configuration"],
         "summary": "Update system configuration.",
         "description": "Update the current system configuration on the controller.",
         "operationId": "setSystemConfig",
@@ -172,9 +164,7 @@
     },
     "/config/led": {
       "get": {
-        "tags": [
-          "LED/Zone Configuration"
-        ],
+        "tags": ["LED/Zone Configuration"],
         "summary": "Get LED/zone configuration.",
         "description": "Get the current LED/zone configuration from the controller.",
         "operationId": "getLedConfig",
@@ -192,9 +182,7 @@
         }
       },
       "post": {
-        "tags": [
-          "LED/Zone Configuration"
-        ],
+        "tags": ["LED/Zone Configuration"],
         "summary": "Update LED/zone configuration.",
         "description": "Update the current LED/zone configuration on the controller.",
         "operationId": "setLedConfig",
@@ -237,9 +225,7 @@
     },
     "/config/wifi": {
       "get": {
-        "tags": [
-          "WiFi Configuration"
-        ],
+        "tags": ["WiFi Configuration"],
         "summary": "WiFi configuration.",
         "description": "Get the current WiFi configuration from the controller.",
         "operationId": "getWifiConfig",
@@ -257,9 +243,7 @@
         }
       },
       "post": {
-        "tags": [
-          "WiFi Configuration"
-        ],
+        "tags": ["WiFi Configuration"],
         "summary": "Update WiFi configuration.",
         "description": "Update the current WiFi configuration on the controller.",
         "operationId": "setWiFiConfig",
@@ -302,9 +286,7 @@
     },
     "/config/motion": {
       "get": {
-        "tags": [
-          "Motion Sensor Calibration Configuration"
-        ],
+        "tags": ["Motion Sensor Calibration Configuration"],
         "summary": "Read the motion sensor calibration.",
         "description": "Read the motion sensor calibration.",
         "operationId": "getMotionSensorCalibration",
@@ -322,9 +304,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Motion Sensor Calibration Configuration"
-        ],
+        "tags": ["Motion Sensor Calibration Configuration"],
         "summary": "Update the motion sensor calibration.",
         "description": "Update the current motion sensor calibration on the controller.",
         "operationId": "setMotionSensorCalibration",
@@ -365,9 +345,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Motion Sensor Calibration Configuration"
-        ],
+        "tags": ["Motion Sensor Calibration Configuration"],
         "summary": "Automatically run the motion sensor calibration.",
         "description": "Automatically run the current motion sensor calibration on the controller.",
         "operationId": "calibrateMotionSensor",
@@ -407,9 +385,7 @@
     },
     "/config/ui": {
       "get": {
-        "tags": [
-          "UI Configuration"
-        ],
+        "tags": ["UI Configuration"],
         "summary": "Get UI configuration.",
         "description": "Get the current UI configuration from the controller.",
         "operationId": "getUIConfig",
@@ -427,9 +403,7 @@
         }
       },
       "post": {
-        "tags": [
-          "UI Configuration"
-        ],
+        "tags": ["UI Configuration"],
         "summary": "Update UI configuration.",
         "description": "Update the current UI configuration on the controller.",
         "operationId": "setUIConfig",
@@ -472,9 +446,7 @@
     },
     "/fseq": {
       "get": {
-        "tags": [
-          "FSEQ Management"
-        ],
+        "tags": ["FSEQ Management"],
         "summary": "List all FSEQ files on the controller.",
         "description": "List all FSEQ files currently stored on the controller and get their file size.",
         "operationId": "getFSEQList",
@@ -502,9 +474,7 @@
         }
       },
       "post": {
-        "tags": [
-          "FSEQ Management"
-        ],
+        "tags": ["FSEQ Management"],
         "summary": "Upload a new FSEQ file to the controller.",
         "description": "Upload a new FSEQ file to the controller and validate it.",
         "operationId": "uploadFSEQFile",
@@ -568,9 +538,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "FSEQ Management"
-        ],
+        "tags": ["FSEQ Management"],
         "summary": "Delete an FSEQ file from the controller.",
         "description": "Delete an FSEQ file from the controller.",
         "operationId": "deleteFSEQFile",
@@ -631,9 +599,7 @@
     },
     "/update": {
       "post": {
-        "tags": [
-          "Update"
-        ],
+        "tags": ["Update"],
         "summary": "Update the TesLight controller with a new firmware.",
         "description": "Upload a TesLight update package and update the controller with a new firmware.",
         "operationId": "uploadTUP",
@@ -688,9 +654,7 @@
     },
     "/log/size": {
       "get": {
-        "tags": [
-          "Log"
-        ],
+        "tags": ["Log"],
         "summary": "Get the size of the log file.",
         "description": "Get the current size of the log file stored on the controller.",
         "operationId": "getLogSize",
@@ -720,9 +684,7 @@
     },
     "/log": {
       "get": {
-        "tags": [
-          "Log"
-        ],
+        "tags": ["Log"],
         "summary": "Get a part of the log file.",
         "description": "Get a part of the log file. Note that this can be slow when a hug part of the file is read.",
         "operationId": "getLog",
@@ -770,9 +732,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Log"
-        ],
+        "tags": ["Log"],
         "summary": "Clear the log.",
         "description": "Clear the log file on the controller.",
         "operationId": "deleteLog",
@@ -802,9 +762,7 @@
     },
     "/reset/soft": {
       "post": {
-        "tags": [
-          "Reset"
-        ],
+        "tags": ["Reset"],
         "summary": "Restart the controller.",
         "description": "Restart the controller while keeping the configuration.",
         "operationId": "restartSoft",
@@ -824,9 +782,7 @@
     },
     "/reset/hard": {
       "post": {
-        "tags": [
-          "Reset"
-        ],
+        "tags": ["Reset"],
         "summary": "Restart the controller and reset the configuration.",
         "description": "Restart the controller and reset the configuration to defaults.",
         "operationId": "restartHard",
@@ -1078,6 +1034,11 @@
                 "type": "integer",
                 "format": "uint8",
                 "example": 85
+              },
+              "fanMode": {
+                "type": "integer",
+                "format": "uint8",
+                "example": 0
               },
               "fanMinPwmValue": {
                 "type": "integer",
@@ -1473,6 +1434,11 @@
                       "type": "integer",
                       "format": "uint8",
                       "example": 85
+                    },
+                    "fanMode": {
+                      "type": "integer",
+                      "format": "uint8",
+                      "example": 0
                     },
                     "fanMinPwmValue": {
                       "type": "integer",
