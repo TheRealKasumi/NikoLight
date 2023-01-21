@@ -29,6 +29,7 @@ TL::Configuration::SystemConfig TL::Configuration::systemConfig;
 TL::Configuration::LedConfig TL::Configuration::ledConfig[LED_NUM_ZONES];
 TL::Configuration::WiFiConfig TL::Configuration::wifiConfig;
 TL::Configuration::MotionSensorCalibration TL::Configuration::motionSensorCalibration;
+TL::Configuration::AudioUnitConfig TL::Configuration::audioUnitConfig;
 TL::Configuration::UIConfiguration TL::Configuration::uiConfiguration;
 
 /**
@@ -138,6 +139,24 @@ void TL::Configuration::setMotionSensorCalibration(const TL::Configuration::Moti
 }
 
 /**
+ * @brief Get the audio unit configuration.
+ * @return audio unit configuration
+ */
+TL::Configuration::AudioUnitConfig TL::Configuration::getAudioUnitConfig()
+{
+	return TL::Configuration::audioUnitConfig;
+}
+
+/**
+ * @brief Set the audio unit configuration;
+ * @param audioUnitConfig new audio unit configuration
+ */
+void TL::Configuration::setAudioUnitConfig(const TL::Configuration::AudioUnitConfig &audioUnitConfig)
+{
+	TL::Configuration::audioUnitConfig = audioUnitConfig;
+}
+
+/**
  * @brief Get the UI configuration.
  * @return UI configuration
  */
@@ -222,6 +241,18 @@ void TL::Configuration::loadDefaults()
 	TL::Configuration::motionSensorCalibration.gyroXDeg = 0.0f;
 	TL::Configuration::motionSensorCalibration.gyroYDeg = 0.0f;
 	TL::Configuration::motionSensorCalibration.gyroZDeg = 0.0f;
+
+	// Audio unit configuration
+	const uint16_t freqBands[AUDIO_UNIT_NUM_BANDS][2] = AUDIO_UNIT_DEFAULT_FREQ_BAND_INDEX;
+	TL::Configuration::audioUnitConfig.noiseThreshold = AUDIO_UNIT_DEFAULT_NOISE_THESHOLD;
+	for (size_t i = 0; i < AUDIO_UNIT_NUM_BANDS; i++)
+	{
+		TL::Configuration::audioUnitConfig.frequencyBandIndex[i] = std::make_pair(freqBands[i][0], freqBands[i][1]);
+		TL::Configuration::audioUnitConfig.peakDetectorConfig[i].historySize = AUDIO_UNIT_DEFAULT_PD_HIST_SIZE;
+		TL::Configuration::audioUnitConfig.peakDetectorConfig[i].threshold = AUDIO_UNIT_DEFAULT_PD_THRESHOLD;
+		TL::Configuration::audioUnitConfig.peakDetectorConfig[i].influence = AUDIO_UNIT_DEFAULT_PD_INFLUENCE;
+		TL::Configuration::audioUnitConfig.peakDetectorConfig[i].noiseGate = AUDIO_UNIT_DEFAULT_PD_NOISE_GATE;
+	}
 
 	// UI configuration
 	TL::Configuration::uiConfiguration.firmware = FW_VERSION;
@@ -323,6 +354,18 @@ TL::Configuration::Error TL::Configuration::load()
 	readError = file.read(TL::Configuration::motionSensorCalibration.gyroXDeg) == TL::BinaryFile::Error::OK ? readError : true;
 	readError = file.read(TL::Configuration::motionSensorCalibration.gyroYDeg) == TL::BinaryFile::Error::OK ? readError : true;
 	readError = file.read(TL::Configuration::motionSensorCalibration.gyroZDeg) == TL::BinaryFile::Error::OK ? readError : true;
+
+	// Audio unit configuration
+	readError = file.read(TL::Configuration::audioUnitConfig.noiseThreshold) == TL::BinaryFile::Error::OK ? readError : true;
+	for (size_t i = 0; i < AUDIO_UNIT_NUM_BANDS; i++)
+	{
+		readError = file.read(TL::Configuration::audioUnitConfig.frequencyBandIndex[i].first) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::audioUnitConfig.frequencyBandIndex[i].second) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].historySize) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].threshold) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].influence) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].noiseGate) == TL::BinaryFile::Error::OK ? readError : true;
+	}
 
 	// UI configuration
 	readError = file.readString(TL::Configuration::uiConfiguration.language) == TL::BinaryFile::Error::OK ? readError : true;
@@ -435,6 +478,18 @@ TL::Configuration::Error TL::Configuration::save()
 	writeError = file.write(TL::Configuration::motionSensorCalibration.gyroYDeg) == TL::BinaryFile::Error::OK ? writeError : true;
 	writeError = file.write(TL::Configuration::motionSensorCalibration.gyroZDeg) == TL::BinaryFile::Error::OK ? writeError : true;
 
+	// Audio unit configuration
+	writeError = file.write(TL::Configuration::audioUnitConfig.noiseThreshold) == TL::BinaryFile::Error::OK ? writeError : true;
+	for (size_t i = 0; i < AUDIO_UNIT_NUM_BANDS; i++)
+	{
+		writeError = file.write(TL::Configuration::audioUnitConfig.frequencyBandIndex[i].first) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::audioUnitConfig.frequencyBandIndex[i].second) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].historySize) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].threshold) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].influence) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].noiseGate) == TL::BinaryFile::Error::OK ? writeError : true;
+	}
+
 	// UI configuration
 	writeError = file.writeString(TL::Configuration::uiConfiguration.language) == TL::BinaryFile::Error::OK ? writeError : true;
 	writeError = file.writeString(TL::Configuration::uiConfiguration.theme) == TL::BinaryFile::Error::OK ? writeError : true;
@@ -517,6 +572,18 @@ uint16_t TL::Configuration::getSimpleHash()
 	hash = hash * 31 + TL::Configuration::motionSensorCalibration.gyroXDeg;
 	hash = hash * 31 + TL::Configuration::motionSensorCalibration.gyroYDeg;
 	hash = hash * 31 + TL::Configuration::motionSensorCalibration.gyroZDeg;
+
+	// Audio unit configuration
+	hash = hash * 31 + TL::Configuration::audioUnitConfig.noiseThreshold;
+	for (size_t i = 0; i < AUDIO_UNIT_NUM_BANDS; i++)
+	{
+		hash = hash * 31 + TL::Configuration::audioUnitConfig.frequencyBandIndex[i].first;
+		hash = hash * 31 + TL::Configuration::audioUnitConfig.frequencyBandIndex[i].second;
+		hash = hash * 31 + TL::Configuration::audioUnitConfig.peakDetectorConfig[i].historySize;
+		hash = hash * 31 + TL::Configuration::audioUnitConfig.peakDetectorConfig[i].threshold;
+		hash = hash * 31 + TL::Configuration::audioUnitConfig.peakDetectorConfig[i].influence;
+		hash = hash * 31 + TL::Configuration::audioUnitConfig.peakDetectorConfig[i].noiseGate;
+	}
 
 	// UI configuration
 	hash = hash * 32 + TL::Configuration::getSimpleStringHash(TL::Configuration::uiConfiguration.language);

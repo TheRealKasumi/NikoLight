@@ -22,11 +22,13 @@
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
 
+#include <tuple>
 #include <Arduino.h>
 #include <FS.h>
 
 #include "configuration/SystemConfiguration.h"
 #include "util/BinaryFile.h"
+#include "hardware/AudioUnit.h"
 
 namespace TL
 {
@@ -104,6 +106,13 @@ namespace TL
 			float gyroZDeg;	  // Z rotation in deg/s
 		};
 
+		struct AudioUnitConfig
+		{
+			uint16_t noiseThreshold;													// Threshold to filter out static noise
+			std::pair<uint16_t, uint16_t> frequencyBandIndex[AUDIO_UNIT_NUM_BANDS];		// Frequency band start and end bin indices
+			TL::AudioUnit::PeakDetectorConfig peakDetectorConfig[AUDIO_UNIT_NUM_BANDS]; // Settings for the peak detector
+		};
+
 		struct UIConfiguration
 		{
 			String firmware;
@@ -128,6 +137,9 @@ namespace TL
 		static TL::Configuration::MotionSensorCalibration getMotionSensorCalibration();
 		static void setMotionSensorCalibration(const TL::Configuration::MotionSensorCalibration &calibration);
 
+		static TL::Configuration::AudioUnitConfig getAudioUnitConfig();
+		static void setAudioUnitConfig(const TL::Configuration::AudioUnitConfig &audioUnitConfig);
+
 		static TL::Configuration::UIConfiguration getUIConfiguration();
 		static void setUIConfiguration(const TL::Configuration::UIConfiguration &uiConfiguration);
 
@@ -147,6 +159,7 @@ namespace TL
 		static TL::Configuration::LedConfig ledConfig[LED_NUM_ZONES];
 		static TL::Configuration::WiFiConfig wifiConfig;
 		static TL::Configuration::MotionSensorCalibration motionSensorCalibration;
+		static TL::Configuration::AudioUnitConfig audioUnitConfig;
 		static TL::Configuration::UIConfiguration uiConfiguration;
 
 		static uint16_t getSimpleHash();

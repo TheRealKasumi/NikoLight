@@ -31,7 +31,7 @@ void TL::UIConfigurationEndpoint::getUIConfig()
 	}
 
 	DynamicJsonDocument jsonDoc(256);
-	JsonObject uiConfig = jsonDoc.createNestedObject(F("uiConfig"));
+	const JsonObject uiConfig = jsonDoc.createNestedObject(F("uiConfig"));
 	uiConfig[F("firmware")] = TL::Configuration::getUIConfiguration().firmware;
 	uiConfig[F("language")] = TL::Configuration::getUIConfiguration().language;
 	uiConfig[F("theme")] = TL::Configuration::getUIConfiguration().theme;
@@ -91,7 +91,7 @@ void TL::UIConfigurationEndpoint::postUIConfig()
 		return;
 	}
 
-	JsonObject uiConfig = jsonDoc[F("uiConfig")].as<JsonObject>();
+	const JsonObject uiConfig = jsonDoc[F("uiConfig")].as<JsonObject>();
 	if (!TL::UIConfigurationEndpoint::validateUIConfig(uiConfig))
 	{
 		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The validation of the configuration failed."));
@@ -106,10 +106,22 @@ void TL::UIConfigurationEndpoint::postUIConfig()
 
 	TL::Configuration::setUIConfiguration(uiConfiguration);
 	const TL::Configuration::Error configSaveError = TL::Configuration::save();
-	if (configSaveError != TL::Configuration::Error::OK)
+	if (configSaveError == TL::Configuration::Error::ERROR_FILE_OPEN)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save UI configuration."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save UI configuration."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save ui configuration. The configuration file could not be opened."));
+		TL::UIConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save ui configuration. The configuration file could not be opened."));
+		return;
+	}
+	else if (configSaveError == TL::Configuration::Error::ERROR_FILE_WRITE)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save ui configuration. The configuration file could not be written."));
+		TL::UIConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save ui configuration. The configuration file could not be written."));
+		return;
+	}
+	else if (configSaveError != TL::Configuration::Error::OK)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save ui configuration."));
+		TL::UIConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save ui configuration."));
 		return;
 	}
 
@@ -127,22 +139,22 @@ bool TL::UIConfigurationEndpoint::validateUIConfig(const JsonObject &jsonObject)
 {
 	if (!jsonObject[F("language")].is<String>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"language\" field in configuration must be of type \"string\"."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"language\" field in configuration must be of type \"string\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"language\" field must be of type \"string\"."));
+		TL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The \"language\" field must be of type \"string\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("theme")].is<String>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"theme\" field in configuration must be of type \"string\"."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"theme\" field in configuration must be of type \"string\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"theme\" field must be of type \"string\"."));
+		TL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The \"theme\" field must be of type \"string\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("expertMode")].is<bool>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"expertMode\" field in configuration must be of type \"boolean\"."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"expertMode\" field in configuration must be of type \"boolean\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"expertMode\" field must be of type \"boolean\"."));
+		TL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The \"expertMode\" field must be of type \"boolean\"."));
 		return false;
 	}
 

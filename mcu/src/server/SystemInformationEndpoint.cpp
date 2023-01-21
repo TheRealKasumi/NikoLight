@@ -44,7 +44,7 @@ void TL::SystemInformationEndpoint::getSystemInformation()
 
 	DynamicJsonDocument jsonDoc(1024);
 
-	JsonObject socInfo = jsonDoc.createNestedObject(F("socInfo"));
+	const JsonObject socInfo = jsonDoc.createNestedObject(F("socInfo"));
 	socInfo[F("chipModel")] = TL::SystemInformation::getSocInfo().chipModel;
 	socInfo[F("chipRevision")] = TL::SystemInformation::getSocInfo().chipRevision;
 	socInfo[F("fwVersion")] = TL::SystemInformation::getSocInfo().fwVersion;
@@ -56,7 +56,7 @@ void TL::SystemInformationEndpoint::getSystemInformation()
 	socInfo[F("sketchSize")] = TL::SystemInformation::getSocInfo().sketchSize;
 	socInfo[F("freeSketchSpace")] = TL::SystemInformation::getSocInfo().freeSketchSpace;
 
-	JsonObject hardwareInfo = jsonDoc.createNestedObject(F("hardwareInfo"));
+	const JsonObject hardwareInfo = jsonDoc.createNestedObject(F("hardwareInfo"));
 	hardwareInfo[F("hwVersion")] = TL::SystemInformation::getHardwareInfo().hwVersion;
 	hardwareInfo[F("regulatorCount")] = TL::SystemInformation::getHardwareInfo().regulatorCount;
 	hardwareInfo[F("regulatorVoltage")] = TL::SystemInformation::getHardwareInfo().regulatorVoltage;
@@ -71,7 +71,7 @@ void TL::SystemInformationEndpoint::getSystemInformation()
 	hardwareInfo[F("bh1750")] = TL::SystemInformation::getHardwareInfo().bh1750;
 	hardwareInfo[F("audioUnit")] = TL::SystemInformation::getHardwareInfo().audioUnit;
 
-	JsonObject tlSystemInfo = jsonDoc.createNestedObject(F("tlSystemInfo"));
+	const JsonObject tlSystemInfo = jsonDoc.createNestedObject(F("tlSystemInfo"));
 	tlSystemInfo[F("rps")] = TL::SystemInformation::getTesLightInfo().rps;
 	tlSystemInfo[F("fps")] = TL::SystemInformation::getTesLightInfo().fps;
 	tlSystemInfo[F("ledCount")] = TL::SystemInformation::getTesLightInfo().ledCount;

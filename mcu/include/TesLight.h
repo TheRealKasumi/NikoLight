@@ -29,6 +29,11 @@
 #include "configuration/SystemConfiguration.h"
 #include "logging/Logger.h"
 #include "configuration/Configuration.h"
+#include "hardware/AnalogInput.h"
+#include "hardware/MPU6050.h"
+#include "hardware/DS18B20.h"
+#include "hardware/BH1750.h"
+#include "hardware/AudioUnit.h"
 #include "hardware/FanController.h"
 #include "led/LedManager.h"
 #include "sensor/TemperatureSensor.h"
@@ -46,6 +51,7 @@
 #include "server/UpdateEndpoint.h"
 #include "server/ResetEndpoint.h"
 #include "server/MotionSensorEndpoint.h"
+#include "server/AudioUnitConfigurationEndpoint.h"
 #include "server/UIConfigurationEndpoint.h"
 #include "util/FileUtil.h"
 #include "util/WatchDog.h"
@@ -63,10 +69,12 @@ private:
 	// Timer
 	static unsigned long lightSensorInterval;
 	static unsigned long motionSensorInterval;
+	static unsigned long audioUnitInterval;
 	static unsigned long renderTimer;
 	static unsigned long frameTimer;
 	static unsigned long lightSensorTimer;
 	static unsigned long motionSensorTimer;
+	static unsigned long audioUnitTimer;
 	static unsigned long temperatureTimer;
 	static unsigned long statusTimer;
 	static unsigned long statusPrintTimer;
@@ -82,8 +90,8 @@ private:
 	static void initializeLogger(const bool sdLogging);
 	static void initializeSdCard();
 	static void initializeSystemInformation();
-	static void initializeHardwareModules();
 	static void initializeConfiguration();
+	static void initializeHardwareModules();
 	static void initializeLedManager();
 	static void initializeMotionSensor();
 	static void initializeLightSensor();

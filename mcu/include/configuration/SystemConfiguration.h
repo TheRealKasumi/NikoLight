@@ -48,7 +48,7 @@
 #define LOG_DEFAULT_LEVEL 1 			// Default log level
 
 // Configuration of the runtime configuration
-#define CONFIGURATION_FILE_VERSION 10		  // Version of the configuration file
+#define CONFIGURATION_FILE_VERSION 12		  // Version of the configuration file
 #define CONFIGURATION_FILE_NAME "/config.tli" // File name of the configuration file
 
 // LED and effect configuration
@@ -105,10 +105,20 @@
 #define ANALOG_INPUT_MAX_VOLTAGE 3.3 // Maximum input voltage of the analog input
 
 // MPU6050 configuration
-#define MPU6050_IIC_ADDRESS 0x68 // I²C Adress of the MPU6050 motion sensor
+#define MPU6050_IIC_ADDRESS 0x68 // I²C address of the MPU6050 motion sensor
 
 // BH1750 configuration
-#define BH1750_IIC_ADDRESS 0x23	// I²C Adress of the BH1750 brightness sensor
+#define BH1750_IIC_ADDRESS 0x23	// I²C address of the BH1750 brightness sensor
+
+// Audio unit configuration
+#define AUDIO_UNIT_IIC_ADDRESS 42																							// I²C address of the TesLight Audio Unit
+#define AUDIO_UNIT_NUM_BANDS 8																								// Number of frequency bands the audio unit must provide
+#define AUDIO_UNIT_DEFAULT_NOISE_THESHOLD 0																					// Peak2Peak Threshold under which analog values are set to the average
+#define AUDIO_UNIT_DEFAULT_FREQ_BAND_INDEX {{1, 3}, {4, 6}, {7, 13}, {14, 28}, {29, 62}, {63, 136}, {137, 298}, {299, 450}} // Indices of the frequency bins to map them into the frequency bands
+#define AUDIO_UNIT_DEFAULT_PD_HIST_SIZE 60																					// History size of the peak detectors
+#define AUDIO_UNIT_DEFAULT_PD_THRESHOLD 1.5																					// Threshold of the peak detectors
+#define AUDIO_UNIT_DEFAULT_PD_INFLUENCE 0.75																				// Influence of the peak values on the peak detector
+#define AUDIO_UNIT_DEFAULT_PD_NOISE_GATE 1500																				// Noise gate of the peak detector 
 
 // Light sensor configuration
 #define LIGHT_SENSOR_DEFAULT_MODE 1 			// Default light sensor mode
@@ -151,6 +161,7 @@
 #define FAN_INTERVAL 500000				// Interval for running the fan controll in µs
 #define LIGHT_SENSOR_INTERVAL 40000		// Interval for the light sensor in µs
 #define MOTION_SENSOR_INTERVAL 20000	// Interval for the motion sensor in µs
+#define AUDIO_UNIT_INTERVAL 16666		// Interval for the audio unit in µs
 #define WEB_SERVER_INTERVAL 20000		// Interval for the web server to accept conenctions in µs
 #define STATUS_INTERVAL 500000			// Interval for collecting new status information in µs
 #define STATUS_PRINT_INTERVAL 5000000	// Interval for printing the current status in µs

@@ -45,7 +45,7 @@ void TL::MotionSensorEndpoint::getCalibrationData()
 	}
 
 	DynamicJsonDocument jsonDoc(512);
-	JsonObject calibration = jsonDoc.createNestedObject(F("motionSensorCalibration"));
+	const JsonObject calibration = jsonDoc.createNestedObject(F("motionSensorCalibration"));
 	calibration[F("accXRaw")] = TL::Configuration::getMotionSensorCalibration().accXRaw;
 	calibration[F("accYRaw")] = TL::Configuration::getMotionSensorCalibration().accYRaw;
 	calibration[F("accZRaw")] = TL::Configuration::getMotionSensorCalibration().accZRaw;
@@ -113,7 +113,7 @@ void TL::MotionSensorEndpoint::postCalibrationData()
 		return;
 	}
 
-	JsonObject calibration = jsonDoc[F("motionSensorCalibration")].as<JsonObject>();
+	const JsonObject calibration = jsonDoc[F("motionSensorCalibration")].as<JsonObject>();
 	if (!TL::MotionSensorEndpoint::validateConfiguration(calibration))
 	{
 		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The validation of the motion sensor calibration failed."));
@@ -136,10 +136,22 @@ void TL::MotionSensorEndpoint::postCalibrationData()
 
 	TL::Configuration::setMotionSensorCalibration(motionSensorCalibration);
 	const TL::Configuration::Error configSaveError = TL::Configuration::save();
-	if (configSaveError != TL::Configuration::Error::OK)
+	if (configSaveError == TL::Configuration::Error::ERROR_FILE_OPEN)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save motion sensor calibration data."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(500, F("Failed to save motion sensor calibration data."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save motion sensor calibration. The configuration file could not be opened."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(500, F("Failed to save motion sensor calibration. The configuration file could not be opened."));
+		return;
+	}
+	else if (configSaveError == TL::Configuration::Error::ERROR_FILE_WRITE)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save motion sensor calibration. The configuration file could not be written."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(500, F("Failed to save motion sensor calibration. The configuration file could not be written."));
+		return;
+	}
+	else if (configSaveError != TL::Configuration::Error::OK)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save motion sensor calibration."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(500, F("Failed to save motion sensor calibration."));
 		return;
 	}
 
@@ -216,85 +228,85 @@ bool TL::MotionSensorEndpoint::validateConfiguration(const JsonObject &jsonObjec
 {
 	if (!jsonObject[F("accXRaw")].is<int16_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accXRaw\" field must be of type \"int16\"."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(400, (String)F("The \"accXRaw\" field must be of type \"int16\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accXRaw\" field must be of type \"int16\"."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The \"accXRaw\" field must be of type \"int16\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("accYRaw")].is<int16_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accYRaw\" field must be of type \"int16\"."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(400, (String)F("The \"accYRaw\" field must be of type \"int16\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accYRaw\" field must be of type \"int16\"."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The \"accYRaw\" field must be of type \"int16\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("accZRaw")].is<int16_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accZRaw\" field must be of type \"int16\"."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(400, (String)F("The \"accZRaw\" field must be of type \"int16\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accZRaw\" field must be of type \"int16\"."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The \"accZRaw\" field must be of type \"int16\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("gyroXRaw")].is<int16_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"gyroXRaw\" field must be of type \"int16\"."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(400, (String)F("The \"gyroXRaw\" field must be of type \"int16\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"gyroXRaw\" field must be of type \"int16\"."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The \"gyroXRaw\" field must be of type \"int16\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("gyroYRaw")].is<int16_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"gyroYRaw\" field must be of type \"int16\"."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(400, (String)F("The \"gyroYRaw\" field must be of type \"int16\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"gyroYRaw\" field must be of type \"int16\"."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The \"gyroYRaw\" field must be of type \"int16\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("gyroZRaw")].is<int16_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"gyroZRaw\" field must be of type \"int16\"."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(400, (String)F("The \"gyroZRaw\" field must be of type \"int16\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"gyroZRaw\" field must be of type \"int16\"."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The \"gyroZRaw\" field must be of type \"int16\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("accXG")].is<float>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accXG\" field must be of type \"float\"."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(400, (String)F("The \"accXG\" field must be of type \"float\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accXG\" field must be of type \"float\"."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The \"accXG\" field must be of type \"float\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("accYG")].is<float>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accYG\" field must be of type \"float\"."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(400, (String)F("The \"accYG\" field must be of type \"float\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accYG\" field must be of type \"float\"."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The \"accYG\" field must be of type \"float\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("accZG")].is<float>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"accZG\" field must be of type \"float\"."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(400, (String)F("The \"accZG\" field must be of type \"float\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accZG\" field must be of type \"float\"."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The \"accZG\" field must be of type \"float\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("gyroXDeg")].is<float>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"gyroXDeg\" field must be of type \"float\"."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(400, (String)F("The \"gyroXDeg\" field must be of type \"float\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"gyroXDeg\" field must be of type \"float\"."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The \"gyroXDeg\" field must be of type \"float\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("gyroYDeg")].is<float>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"gyroYDeg\" field must be of type \"float\"."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(400, (String)F("The \"gyroYDeg\" field must be of type \"float\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"gyroYDeg\" field must be of type \"float\"."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The \"gyroYDeg\" field must be of type \"float\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("gyroZDeg")].is<float>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"gyroZDeg\" field must be of type \"float\"."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(400, (String)F("The \"gyroZDeg\" field must be of type \"float\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"gyroZDeg\" field must be of type \"float\"."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The \"gyroZDeg\" field must be of type \"float\"."));
 		return false;
 	}
 

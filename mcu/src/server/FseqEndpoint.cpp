@@ -45,7 +45,7 @@ void TL::FseqEndpoint::getFseqList()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the fseq list."));
 	DynamicJsonDocument jsonDoc(4096);
-	JsonArray fileList = jsonDoc.createNestedArray(F("fileList"));
+	const JsonArray fileList = jsonDoc.createNestedArray(F("fileList"));
 
 	if (!TL::FileUtil::listFiles(
 			fileSystem, FSEQ_DIRECTORY, [jsonDoc, fileList](const String fileName, const size_t fileSize)
