@@ -66,6 +66,11 @@
     "reset": "Auf Standardwerte zurücksetzen",
     "submit": "Einstellungen übernehmen",
     "submitSuccessful": "Erfolgreich gespeichert!",
+    "theme": "Darstellung",
+    "themes": {
+      "dark": "Dunkel",
+      "light": "Hell"
+    },
     "title": "Einstellungen",
     "ui": "Benutzeroberfläche",
     "wifiHotspot": "Wifi Hotspot"
