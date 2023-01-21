@@ -48,7 +48,7 @@
 #define LOG_DEFAULT_LEVEL 1 			// Default log level
 
 // Configuration of the runtime configuration
-#define CONFIGURATION_FILE_VERSION 10		  // Version of the configuration file
+#define CONFIGURATION_FILE_VERSION 11		  // Version of the configuration file
 #define CONFIGURATION_FILE_NAME "/config.tli" // File name of the configuration file
 
 // LED and effect configuration
@@ -125,12 +125,13 @@
 // Cooling fan configuration
 #define FAN_PWM_PIN 27			// Output pin for the fan
 #define FAN_PWM_CHANNEL 0		// PWM channel for the fan control
-#define FAN_PWM_FREQUENCY 60000	// PWM frequency of the fan in Hz
+#define FAN_PWM_FREQUENCY 50000	// PWM frequency of the fan in Hz
 #define FAN_PWM_RESOLUTION 8 	// Resolution of the fan control in bits
-#define FAN_PWM_MIN 75		 	// Minimum PWM value for the fan (stall guard)
-#define FAN_PWM_MAX 255		 	// Maximum PWm value for the fan
-#define FAN_TEMP_MIN 60		 	// Minimum temperature where the fan starts
-#define FAN_TEMP_MAX 80		 	// Maximum temeprature where the fan runs at full speed
+#define FAN_DEFAULT_MODE 0 		// Fan mode, 0 = automatic
+#define FAN_DEFAULT_PWM_MIN 75	// Minimum PWM value for the fan (stall guard)
+#define FAN_DEFAULT_PWM_MAX 255	// Maximum PWm value for the fan
+#define FAN_DEFAULT_TEMP_MIN 60	// Minimum temperature where the fan starts
+#define FAN_DEFAULT_TEMP_MAX 80	// Maximum temeprature where the fan runs at full speed
 
 // WiFi configuration
 #define AP_DEFAULT_SSID "TesLight"		 // Default SSID of the access point
