@@ -56,6 +56,7 @@ void TL::SystemConfigurationEndpoint::getSystemConfig()
 	config[F("regulatorPowerLimit")] = TL::Configuration::getSystemConfig().regulatorPowerLimit;
 	config[F("regulatorHighTemperature")] = TL::Configuration::getSystemConfig().regulatorHighTemperature;
 	config[F("regulatorCutoffTemperature")] = TL::Configuration::getSystemConfig().regulatorCutoffTemperature;
+	config[F("fanMode")] = TL::Configuration::getSystemConfig().fanMode;
 	config[F("fanMinPwmValue")] = TL::Configuration::getSystemConfig().fanMinPwmValue;
 	config[F("fanMaxPwmValue")] = TL::Configuration::getSystemConfig().fanMaxPwmValue;
 	config[F("fanMinTemperature")] = TL::Configuration::getSystemConfig().fanMinTemperature;
@@ -134,6 +135,7 @@ void TL::SystemConfigurationEndpoint::postSystemConfig()
 	config.regulatorPowerLimit = configuration[F("regulatorPowerLimit")].as<uint8_t>();
 	config.regulatorHighTemperature = configuration[F("regulatorHighTemperature")].as<uint8_t>();
 	config.regulatorCutoffTemperature = configuration[F("regulatorCutoffTemperature")].as<uint8_t>();
+	config.fanMode = configuration[F("fanMode")].as<uint8_t>();
 	config.fanMinPwmValue = configuration[F("fanMinPwmValue")].as<uint8_t>();
 	config.fanMaxPwmValue = configuration[F("fanMaxPwmValue")].as<uint8_t>();
 	config.fanMinTemperature = configuration[F("fanMinTemperature")].as<uint8_t>();
@@ -325,6 +327,20 @@ bool TL::SystemConfigurationEndpoint::validateConfiguration(const JsonObject &js
 	{
 		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorHighTemperature\" must be smaller than the \"regulatorCutoffTemperature\" value."));
 		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorHighTemperature\" must be smaller than the \"regulatorCutoffTemperature\" value."));
+		return false;
+	}
+
+	if (!jsonObject[F("fanMode")].is<uint8_t>())
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMode\" field in configuration must be of type \"uint8\"."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMode\" field in configuration must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("fanMode")].as<uint8_t>(), 0, 5))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMode\" field is invalid. It should be between 0 and 5."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMode\" field is invalid. It should be between 0 and 5."));
 		return false;
 	}
 

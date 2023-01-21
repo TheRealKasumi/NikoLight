@@ -13,6 +13,7 @@ import {
   Select,
   SelectItem,
   Slider,
+  Switch,
   Toast,
 } from '../components';
 import i18n from '../i18n';
@@ -72,6 +73,7 @@ type FormData = {
     accessPointSsid: string;
   };
   ui: {
+    expertMode: boolean;
     language: string;
     theme: string;
   };
@@ -101,6 +103,7 @@ const DEFAULT_VALUES: FormData = {
     accessPointSsid: 'TesLight',
   },
   ui: {
+    expertMode: false,
     language: 'en',
     theme: 'dark',
   },
@@ -157,6 +160,7 @@ const Form = (): JSX.Element => {
         accessPointSsid: wifi?.accessPointSsid,
       },
       ui: {
+        expertMode: ui?.expertMode,
         language: ui?.language,
         theme: ui?.theme,
       },
@@ -529,6 +533,15 @@ const Form = (): JSX.Element => {
                   {t('settings.themes.light')}
                 </SelectItem>
               </Select>
+            </div>
+          </label>
+
+          <label className="mb-6 flex flex-row justify-between">
+            <span className="basis-1/2 self-center">
+              {t('settings.expertMode')}
+            </span>
+            <div className="basis-1/2 text-right">
+              <Switch<FormData> control={control} name="ui.expertMode" />
             </div>
           </label>
         </fieldset>
