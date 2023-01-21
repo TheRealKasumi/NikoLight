@@ -200,7 +200,7 @@ const Form = (): JSX.Element => {
       <form onSubmit={onSubmit}>
         <fieldset className="mb-6">
           <legend className="mb-6 text-lg font-medium">
-            {t('settings.lightSensor')}
+            {t('settings.power')}
           </legend>
           <label className="mb-6 flex flex-row justify-between">
             <span className="basis-1/2 self-center">
