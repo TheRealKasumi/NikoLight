@@ -774,6 +774,10 @@ components:
                      type: integer
                      format: uint8
                      example: 85
+                  fanMode:
+                     type: integer
+                     format: uint8
+                     example: 0
                   fanMinPwmValue:
                      type: integer
                      format: uint8
@@ -1127,6 +1131,10 @@ components:
                               type: integer
                               format: uint8
                               example: 85
+                           fanMode:
+                              type: integer
+                              format: uint8
+                              example: 0
                            fanMinPwmValue:
                               type: integer
                               format: uint8

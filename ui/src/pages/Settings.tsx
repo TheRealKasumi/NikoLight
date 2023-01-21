@@ -13,6 +13,7 @@ import {
   Select,
   SelectItem,
   Slider,
+  Switch,
   Toast,
 } from '../components';
 import i18n from '../i18n';
@@ -39,12 +40,22 @@ enum LightSensorMode {
   AutomaticOnOffMPU6050,
 }
 
+enum FanMode {
+  Automatic,
+  ManualOff,
+  Manual25,
+  Manual50,
+  Manual75,
+  Manual100,
+}
+
 type FormData = {
   system: {
     fanMaxPwmValue: number;
     fanMaxTemperature: number;
     fanMinPwmValue: number;
     fanMinTemperature: number;
+    fanMode: string;
     lightSensorDuration: number;
     lightSensorMaxAmbientBrightness: number;
     lightSensorMaxLedBrightness: number;
@@ -62,6 +73,7 @@ type FormData = {
     accessPointSsid: string;
   };
   ui: {
+    expertMode: boolean;
     language: string;
     theme: string;
   };
@@ -73,6 +85,7 @@ const DEFAULT_VALUES: FormData = {
     fanMaxTemperature: 80,
     fanMinPwmValue: 75,
     fanMinTemperature: 60,
+    fanMode: '0',
     lightSensorDuration: 6,
     lightSensorMaxAmbientBrightness: 255,
     lightSensorMaxLedBrightness: 255,
@@ -90,6 +103,7 @@ const DEFAULT_VALUES: FormData = {
     accessPointSsid: 'TesLight',
   },
   ui: {
+    expertMode: false,
     language: 'en',
     theme: 'dark',
   },
@@ -126,6 +140,7 @@ const Form = (): JSX.Element => {
         fanMaxTemperature: system?.fanMaxTemperature,
         fanMinPwmValue: system?.fanMinPwmValue,
         fanMinTemperature: system?.fanMinTemperature,
+        fanMode: system?.fanMode.toString(),
         lightSensorDuration: system?.lightSensorDuration,
         lightSensorMaxAmbientBrightness:
           system?.lightSensorMaxAmbientBrightness,
@@ -145,6 +160,7 @@ const Form = (): JSX.Element => {
         accessPointSsid: wifi?.accessPointSsid,
       },
       ui: {
+        expertMode: ui?.expertMode,
         language: ui?.language,
         theme: ui?.theme,
       },
@@ -156,7 +172,7 @@ const Form = (): JSX.Element => {
     const wifiCopy: Wifi = JSON.parse(JSON.stringify(wifi));
     const uiCopy: Ui = JSON.parse(JSON.stringify(ui));
     const systemCopy: System = JSON.parse(JSON.stringify(system));
-    const { lightSensorMode, logLevel, ...rest } = data.system;
+    const { fanMode, lightSensorMode, logLevel, ...rest } = data.system;
 
     await mutateAsyncUi(
       { ...uiCopy, ...data.ui },
@@ -171,6 +187,7 @@ const Form = (): JSX.Element => {
     await mutateAsyncSystem({
       ...systemCopy,
       ...rest,
+      fanMode: Number(fanMode),
       lightSensorMode: Number(lightSensorMode),
       logLevel: Number(logLevel),
     });
@@ -410,60 +427,82 @@ const Form = (): JSX.Element => {
               name="system.regulatorCutoffTemperature"
             />
           </label>
-          <label className="mb-6 flex flex-col">
-            <span className="mb-2">
-              {t('settings.fanMinTemperature')}:{' '}
-              {watch('system.fanMinTemperature')}
+          <label className="mb-6 flex flex-row justify-between">
+            <span className="basis-1/2 self-center">
+              {t('settings.fanMode')}
             </span>
-            <Slider<FormData>
-              className="w-full"
-              min={45}
-              max={70}
-              step={1}
-              control={control}
-              name="system.fanMinTemperature"
-            />
+            <div className="basis-1/2 text-right">
+              <Select<FormData> control={control} name="system.fanMode">
+                {Object.entries(FanMode)
+                  .filter(([key]) => isNaN(Number(key)))
+                  .map(([key, value]) => (
+                    <SelectItem key={key} value={value.toString()}>
+                      {t(`settings.fanModes.${key}`)}
+                    </SelectItem>
+                  ))}
+              </Select>
+            </div>
           </label>
-          <label className="mb-6 flex flex-col">
-            <span className="mb-2">
-              {t('settings.fanMaxTemperature')}:{' '}
-              {watch('system.fanMaxTemperature')}
-            </span>
-            <Slider<FormData>
-              className="w-full"
-              min={60}
-              max={90}
-              step={1}
-              control={control}
-              name="system.fanMaxTemperature"
-            />
-          </label>
-          <label className="mb-6 flex flex-col">
-            <span className="mb-2">
-              {t('settings.fanMinPwmValue')}: {watch('system.fanMinPwmValue')}
-            </span>
-            <Slider<FormData>
-              className="w-full"
-              min={0}
-              max={255}
-              step={1}
-              control={control}
-              name="system.fanMinPwmValue"
-            />
-          </label>
-          <label className="mb-6 flex flex-col">
-            <span className="mb-2">
-              {t('settings.fanMaxPwmValue')}: {watch('system.fanMaxPwmValue')}
-            </span>
-            <Slider<FormData>
-              className="w-full"
-              min={0}
-              max={255}
-              step={1}
-              control={control}
-              name="system.fanMaxPwmValue"
-            />
-          </label>
+          {FanMode.Automatic === Number(watch('system.fanMode')) && (
+            <>
+              <label className="mb-6 flex flex-col">
+                <span className="mb-2">
+                  {t('settings.fanMinTemperature')}:{' '}
+                  {watch('system.fanMinTemperature')}
+                </span>
+                <Slider<FormData>
+                  className="w-full"
+                  min={45}
+                  max={70}
+                  step={1}
+                  control={control}
+                  name="system.fanMinTemperature"
+                />
+              </label>
+              <label className="mb-6 flex flex-col">
+                <span className="mb-2">
+                  {t('settings.fanMaxTemperature')}:{' '}
+                  {watch('system.fanMaxTemperature')}
+                </span>
+                <Slider<FormData>
+                  className="w-full"
+                  min={60}
+                  max={90}
+                  step={1}
+                  control={control}
+                  name="system.fanMaxTemperature"
+                />
+              </label>
+              <label className="mb-6 flex flex-col">
+                <span className="mb-2">
+                  {t('settings.fanMinPwmValue')}:{' '}
+                  {watch('system.fanMinPwmValue')}
+                </span>
+                <Slider<FormData>
+                  className="w-full"
+                  min={0}
+                  max={255}
+                  step={1}
+                  control={control}
+                  name="system.fanMinPwmValue"
+                />
+              </label>
+              <label className="mb-6 flex flex-col">
+                <span className="mb-2">
+                  {t('settings.fanMaxPwmValue')}:{' '}
+                  {watch('system.fanMaxPwmValue')}
+                </span>
+                <Slider<FormData>
+                  className="w-full"
+                  min={0}
+                  max={255}
+                  step={1}
+                  control={control}
+                  name="system.fanMaxPwmValue"
+                />
+              </label>
+            </>
+          )}
         </fieldset>
 
         <fieldset className="mb-6">
@@ -494,6 +533,15 @@ const Form = (): JSX.Element => {
                   {t('settings.themes.light')}
                 </SelectItem>
               </Select>
+            </div>
+          </label>
+
+          <label className="mb-6 flex flex-row justify-between">
+            <span className="basis-1/2 self-center">
+              {t('settings.expertMode')}
+            </span>
+            <div className="basis-1/2 text-right">
+              <Switch<FormData> control={control} name="ui.expertMode" />
             </div>
           </label>
         </fieldset>

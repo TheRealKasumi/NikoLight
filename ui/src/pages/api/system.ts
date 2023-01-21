@@ -13,6 +13,7 @@ export type System = {
   fanMaxTemperature: number;
   fanMinPwmValue: number;
   fanMinTemperature: number;
+  fanMode: number;
   lightSensorDuration: number;
   lightSensorMaxAmbientBrightness: number;
   lightSensorMaxLedBrightness: number;

@@ -191,10 +191,11 @@ void TL::Configuration::loadDefaults()
 	TL::Configuration::systemConfig.regulatorPowerLimit = REGULATOR_POWER_LIMIT * REGULATOR_COUNT;
 	TL::Configuration::systemConfig.regulatorHighTemperature = REGULATOR_HIGH_TEMP;
 	TL::Configuration::systemConfig.regulatorCutoffTemperature = REGULATOR_CUT_OFF_TEMP;
-	TL::Configuration::systemConfig.fanMinPwmValue = FAN_PWM_MIN;
-	TL::Configuration::systemConfig.fanMaxPwmValue = FAN_PWM_MAX;
-	TL::Configuration::systemConfig.fanMinTemperature = FAN_TEMP_MIN;
-	TL::Configuration::systemConfig.fanMaxTemperature = FAN_TEMP_MAX;
+	TL::Configuration::systemConfig.fanMode = FAN_DEFAULT_MODE;
+	TL::Configuration::systemConfig.fanMinPwmValue = FAN_DEFAULT_PWM_MIN;
+	TL::Configuration::systemConfig.fanMaxPwmValue = FAN_DEFAULT_PWM_MAX;
+	TL::Configuration::systemConfig.fanMinTemperature = FAN_DEFAULT_TEMP_MIN;
+	TL::Configuration::systemConfig.fanMaxTemperature = FAN_DEFAULT_TEMP_MAX;
 
 	// LED config
 	const uint8_t ledPins[LED_NUM_ZONES] = LED_DEFAULT_OUTPUT_PINS;
@@ -306,6 +307,7 @@ TL::Configuration::Error TL::Configuration::load()
 	readError = file.read(TL::Configuration::systemConfig.regulatorPowerLimit) == TL::BinaryFile::Error::OK ? readError : true;
 	readError = file.read(TL::Configuration::systemConfig.regulatorHighTemperature) == TL::BinaryFile::Error::OK ? readError : true;
 	readError = file.read(TL::Configuration::systemConfig.regulatorCutoffTemperature) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.fanMode) == TL::BinaryFile::Error::OK ? readError : true;
 	readError = file.read(TL::Configuration::systemConfig.fanMinPwmValue) == TL::BinaryFile::Error::OK ? readError : true;
 	readError = file.read(TL::Configuration::systemConfig.fanMaxPwmValue) == TL::BinaryFile::Error::OK ? readError : true;
 	readError = file.read(TL::Configuration::systemConfig.fanMinTemperature) == TL::BinaryFile::Error::OK ? readError : true;
@@ -429,6 +431,7 @@ TL::Configuration::Error TL::Configuration::save()
 	writeError = file.write(TL::Configuration::systemConfig.regulatorPowerLimit) == TL::BinaryFile::Error::OK ? writeError : true;
 	writeError = file.write(TL::Configuration::systemConfig.regulatorHighTemperature) == TL::BinaryFile::Error::OK ? writeError : true;
 	writeError = file.write(TL::Configuration::systemConfig.regulatorCutoffTemperature) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.fanMode) == TL::BinaryFile::Error::OK ? writeError : true;
 	writeError = file.write(TL::Configuration::systemConfig.fanMinPwmValue) == TL::BinaryFile::Error::OK ? writeError : true;
 	writeError = file.write(TL::Configuration::systemConfig.fanMaxPwmValue) == TL::BinaryFile::Error::OK ? writeError : true;
 	writeError = file.write(TL::Configuration::systemConfig.fanMinTemperature) == TL::BinaryFile::Error::OK ? writeError : true;
@@ -524,6 +527,7 @@ uint16_t TL::Configuration::getSimpleHash()
 	hash = hash * 31 + TL::Configuration::systemConfig.regulatorPowerLimit;
 	hash = hash * 31 + TL::Configuration::systemConfig.regulatorHighTemperature;
 	hash = hash * 31 + TL::Configuration::systemConfig.regulatorCutoffTemperature;
+	hash = hash * 31 + TL::Configuration::systemConfig.fanMode;
 	hash = hash * 31 + TL::Configuration::systemConfig.fanMinPwmValue;
 	hash = hash * 31 + TL::Configuration::systemConfig.fanMaxPwmValue;
 	hash = hash * 31 + TL::Configuration::systemConfig.fanMinTemperature;

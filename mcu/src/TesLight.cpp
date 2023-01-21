@@ -57,7 +57,7 @@ void TesLight::begin()
 	TesLight::initializeMotionSensor();		 // Initalize the motion sensor
 	TesLight::initializeLightSensor();		 // Initialize the light sensor
 	TesLight::initializeTemperatureSensor(); // Initialize the temperature sensor
-	TesLight::initializeFanController();	 // Initialize the fan controller
+	TesLight::initializeFan();				 // Initialize the fan controller
 	TesLight::initializeWiFiManager();		 // Initialize the WiFi manager
 	TesLight::initializeWebServerManager();	 // Initialize the web server manager
 	TesLight::initializeRestApi();			 // Iniaialize the rest api
@@ -406,24 +406,29 @@ void TesLight::initializeTemperatureSensor()
 }
 
 /**
- * @brief Initialize the fan controller. It has a dependency on the {@link TL::Configuration} which must be initialized
- * 		  beforehand. If it was not initialized before calling this function, the controller will reboot.
+ * @brief Initialize the fan controller. It has a dependency on the {@link TL::Configuration} which must be initialized beforehand.
+ * 		  If it was not initialized before calling this function, the controller will reboot.
  */
-void TesLight::initializeFanController()
+void TesLight::initializeFan()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize fan controller."));
-	const TL::FanController::Error fanControllerError = TL::FanController::begin(FAN_PWM_PIN, FAN_PWM_CHANNEL, FAN_PWM_FREQUENCY, FAN_PWM_RESOLUTION);
-	if (fanControllerError == TL::FanController::Error::ERROR_CONFIG_UNAVAILABLE)
+	const TL::Fan::Error fanError = TL::Fan::begin(FAN_PWM_PIN, FAN_PWM_CHANNEL, FAN_PWM_FREQUENCY, FAN_PWM_RESOLUTION);
+	if (fanError == TL::Fan::Error::ERROR_CONFIG_UNAVAILABLE)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize fan controller because the configuration is not initialized. Rebooting."));
 		TL::Updater::reboot(F("Failed to initialize fan controller."), 0);
 	}
-	else if (fanControllerError == TL::FanController::Error::ERROR_SETUP_PIN)
+	else if (fanError == TL::Fan::Error::ERROR_TEMP_UNAVAILABLE)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize fan controller because the temperature sensor is not initialized. Rebooting."));
+		TL::Updater::reboot(F("Failed to initialize fan controller."), 0);
+	}
+	else if (fanError == TL::Fan::Error::ERROR_SETUP_PIN)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize fan controller because the pwm channel could not be configured. Rebooting."));
 		TL::Updater::reboot(F("Failed to initialize fan controller."), 0);
 	}
-	else if (fanControllerError != TL::FanController::Error::OK)
+	else if (fanError != TL::Fan::Error::OK)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize fan controller due to unknown error. Rebooting."));
 		TL::Updater::reboot(F("Failed to initialize fan controller."), 0);
@@ -737,8 +742,19 @@ void TesLight::run()
 	// Handle the fan controller
 	if (checkTimer(temperatureTimer, FAN_INTERVAL))
 	{
-		TL::FanController::setTemperature(TL::Configuration::getSystemConfig().fanMaxTemperature);
-		// Todo read fan speed from here to set in system info
+		const TL::Fan::Error fanError = TL::Fan::run(static_cast<TL::Fan::FanMode>(TL::Configuration::getSystemConfig().fanMode));
+		if (fanError == TL::Fan::Error::ERROR_TEMP_UNAVAILABLE)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to update cooling fan because the temperature could not be read. Using fallback."));
+		}
+		else if (fanError != TL::Fan::Error::OK)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to update cooling fan."));
+		}
+
+		TL::SystemInformation::HardwareInformation hwInfo = TL::SystemInformation::getHardwareInfo();
+		hwInfo.fanSpeed = TL::Fan::getPwmValue();
+		TL::SystemInformation::setHardwareInfo(hwInfo);
 	}
 
 	// Update the soc, led and hardware information
