@@ -29,6 +29,7 @@
   "settings": {
     "accessPointPassword": "Passwort",
     "accessPointSsid": "SSID",
+    "expertMode": "Experten-Modus",
     "fanMaxPwmValue": "Lüfter max PWM",
     "fanMaxTemperature": "Lüfter max Temperatur (°C)",
     "fanMinPwmValue": "Lüfter min PWM (Stall Guard)",
