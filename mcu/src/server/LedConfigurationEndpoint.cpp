@@ -44,10 +44,10 @@ void TL::LedConfigurationEndpoint::getLedConfig()
 	}
 
 	DynamicJsonDocument jsonDoc(5500);
-	JsonArray ledConfig = jsonDoc.createNestedArray(F("ledConfig"));
+	const JsonArray ledConfig = jsonDoc.createNestedArray(F("ledConfig"));
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		JsonObject ledZone = ledConfig.createNestedObject();
+		const JsonObject ledZone = ledConfig.createNestedObject();
 		ledZone[F("ledPin")] = TL::Configuration::getLedConfig(i).ledPin;
 		ledZone[F("ledCount")] = TL::Configuration::getLedConfig(i).ledCount;
 		ledZone[F("type")] = TL::Configuration::getLedConfig(i).type;
@@ -58,13 +58,13 @@ void TL::LedConfigurationEndpoint::getLedConfig()
 		ledZone[F("fadeSpeed")] = TL::Configuration::getLedConfig(i).fadeSpeed;
 		ledZone[F("ledVoltage")] = TL::Configuration::getLedConfig(i).ledVoltage;
 
-		JsonArray animationSettings = ledZone.createNestedArray(F("animationSettings"));
+		const JsonArray animationSettings = ledZone.createNestedArray(F("animationSettings"));
 		for (uint8_t j = 0; j < ANIMATOR_NUM_ANIMATION_SETTINGS; j++)
 		{
 			animationSettings.add(TL::Configuration::getLedConfig(i).animationSettings[j]);
 		}
 
-		JsonArray channelCurrents = ledZone.createNestedArray(F("channelCurrents"));
+		const JsonArray channelCurrents = ledZone.createNestedArray(F("channelCurrents"));
 		for (uint8_t j = 0; j < 3; j++)
 		{
 			channelCurrents.add(TL::Configuration::getLedConfig(i).ledChannelCurrent[j]);
@@ -125,7 +125,7 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 		return;
 	}
 
-	JsonArray ledConfig = jsonDoc[F("ledConfig")].as<JsonArray>();
+	const JsonArray ledConfig = jsonDoc[F("ledConfig")].as<JsonArray>();
 	if (ledConfig.size() != LED_NUM_ZONES)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledConfig\" must contain exactly ") + LED_NUM_ZONES + F(" zones."));
@@ -136,7 +136,7 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 	TL::Configuration::LedConfig config[LED_NUM_ZONES];
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		JsonObject ledZone = ledConfig[i];
+		const JsonObject ledZone = ledConfig[i];
 		if (!TL::LedConfigurationEndpoint::validateLedZone(ledZone, i))
 		{
 			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The validation of the LED configuration failed."));
@@ -153,13 +153,13 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 		config[i].fadeSpeed = ledZone[F("fadeSpeed")].as<uint8_t>();
 		config[i].ledVoltage = ledZone[F("ledVoltage")].as<float>();
 
-		JsonArray animationSettings = ledZone[F("animationSettings")].as<JsonArray>();
+		const JsonArray animationSettings = ledZone[F("animationSettings")].as<JsonArray>();
 		for (uint8_t j = 0; j < ANIMATOR_NUM_ANIMATION_SETTINGS; j++)
 		{
 			config[i].animationSettings[j] = animationSettings[j].as<uint8_t>();
 		}
 
-		JsonArray channelCurrents = ledZone[F("channelCurrents")].as<JsonArray>();
+		const JsonArray channelCurrents = ledZone[F("channelCurrents")].as<JsonArray>();
 		for (uint8_t j = 0; j < 3; j++)
 		{
 			config[i].ledChannelCurrent[j] = channelCurrents[j].as<uint8_t>();
@@ -250,99 +250,99 @@ bool TL::LedConfigurationEndpoint::validateLedZone(const JsonObject &jsonObject,
 {
 	if (!jsonObject[F("ledPin")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledPin\" field in configuration ") + index + F(" must be of type \"uint8\"."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"ledPin\" field in configuration ") + index + F(" must be of type \"uint8\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledPin\" field at index ") + index + F(" must be of type \"uint8\"."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"ledPin\" field at index ") + index + F(" must be of type \"uint8\"."));
 		return false;
 	}
 
 	if (!TL::LedConfigurationEndpoint::isValidPin(jsonObject[F("ledPin")].as<uint8_t>()))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledPin\" field in configuration ") + index + F(" must be a valid output pin."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"ledPin\" field in configuration ") + index + F(" must be a valid output pin."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledPin\" field at index ") + index + F(" must be a valid output pin."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"ledPin\" field at index ") + index + F(" must be a valid output pin."));
 		return false;
 	}
 
 	if (!jsonObject[F("ledCount")].is<uint16_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledCount\" field in configuration ") + index + F(" must be of type \"uint16\"."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"ledCount\" field in configuration ") + index + F(" must be of type \"uint16\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledCount\" field at index ") + index + F(" must be of type \"uint16\"."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"ledCount\" field at index ") + index + F(" must be of type \"uint16\"."));
 		return false;
 	}
 
 	if (!TL::LedConfigurationEndpoint::isInRange(jsonObject[F("ledCount")].as<uint16_t>(), 2L, 250L))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledCount\" field in configuration ") + index + F(" must be between 2 and 250."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"ledCount\" field in configuration ") + index + F(" must be between 2 and 250."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledCount\" field at index ") + index + F(" must be between 2 and 250."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"ledCount\" field at index ") + index + F(" must be between 2 and 250."));
 		return false;
 	}
 
 	if (!jsonObject[F("type")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field in configuration ") + index + F(" must be of type \"uint8\"."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field in configuration ") + index + F(" must be of type \"uint8\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field at index ") + index + F(" must be of type \"uint8\"."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field at index ") + index + F(" must be of type \"uint8\"."));
 		return false;
 	}
 
 	if (!TL::LedConfigurationEndpoint::isInRange(jsonObject[F("type")].as<uint8_t>(), 0L, 6L) && jsonObject[F("type")].as<uint8_t>() != 255)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field in configuration ") + index + F(" must be between 0 and 6."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field in configuration ") + index + F(" must be between 0 and 6."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field at index ") + index + F(" must be between 0 and 6."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field at index ") + index + F(" must be between 0 and 6."));
 		return false;
 	}
 
 	if (!TL::MotionSensor::isInitialized() && TL::LedConfigurationEndpoint::isInRange(jsonObject[F("type")].as<uint8_t>(), 5L, 6L))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field in configuration ") + index + F(" is invalid. No effect using the motion sensor can be selected because it is not available."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field in configuration ") + index + F(" is invalid. No effect using the motion sensor can be selected because it is not available."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field at index ") + index + F(" is invalid. No effect using the motion sensor can be selected because it is not available."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field at index ") + index + F(" is invalid. No effect using the motion sensor can be selected because it is not available."));
 		return false;
 	}
 
 	if (!jsonObject[F("speed")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"speed\" field in configuration ") + index + F(" must be of type \"uint8\"."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"speed\" field in configuration ") + index + F(" must be of type \"uint8\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"speed\" field at index ") + index + F(" must be of type \"uint8\"."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"speed\" field at index ") + index + F(" must be of type \"uint8\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("offset")].is<uint16_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"offset\" field in configuration ") + index + F(" must be of type \"uint16\"."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"offset\" field in configuration ") + index + F(" must be of type \"uint16\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"offset\" field at index ") + index + F(" must be of type \"uint16\"."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"offset\" field at index ") + index + F(" must be of type \"uint16\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("brightness")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"brightness\" field in configuration ") + index + F(" must be of type \"uint8\"."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"brightness\" field in configuration ") + index + F(" must be of type \"uint8\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"brightness\" field at index ") + index + F(" must be of type \"uint8\"."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"brightness\" field at index ") + index + F(" must be of type \"uint8\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("reverse")].is<bool>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"reverse\" field in configuration ") + index + F(" must be of type \"bool\"."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"reverse\" field in configuration ") + index + F(" must be of type \"bool\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"reverse\" field at index ") + index + F(" must be of type \"bool\"."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"reverse\" field at index ") + index + F(" must be of type \"bool\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("fadeSpeed")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fadeSpeed\" field in configuration ") + index + F(" must be of type \"uint8\"."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fadeSpeed\" field in configuration ") + index + F(" must be of type \"uint8\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fadeSpeed\" field at index ") + index + F(" must be of type \"uint8\"."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fadeSpeed\" field at index ") + index + F(" must be of type \"uint8\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("ledVoltage")].is<float>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledVoltage\" field in configuration ") + index + F(" must be of type \"float\"."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"ledVoltage\" field in configuration ") + index + F(" must be of type \"float\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledVoltage\" field at index ") + index + F(" must be of type \"float\"."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"ledVoltage\" field at index ") + index + F(" must be of type \"float\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("animationSettings")].is<JsonArray>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"animationSettings\" field in configuration ") + index + F(" must be of type \"array\"."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"animationSettings\" field in configuration ") + index + F(" must be of type \"array\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"animationSettings\" field at index ") + index + F(" must be of type \"array\"."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"animationSettings\" field at index ") + index + F(" must be of type \"array\"."));
 		return false;
 	}
 
@@ -357,8 +357,8 @@ bool TL::LedConfigurationEndpoint::validateLedZone(const JsonObject &jsonObject,
 	{
 		if (!jsonObject[F("animationSettings")][i].is<uint8_t>())
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"animationSettings\" field in configuration ") + index + F(" must only contain elements of type \"uint8\"."));
-			TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"animationSettings\" field in configuration ") + index + F(" must only contain elements of type \"uint8\"."));
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"animationSettings\" field at index ") + index + F(" must only contain elements of type \"uint8\"."));
+			TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"animationSettings\" field at index ") + index + F(" must only contain elements of type \"uint8\"."));
 			return false;
 		}
 	}
@@ -372,8 +372,8 @@ bool TL::LedConfigurationEndpoint::validateLedZone(const JsonObject &jsonObject,
 
 	if (!jsonObject[F("channelCurrents")].is<JsonArray>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"channelCurrents\" field in configuration ") + index + F(" must be of type \"array\"."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"channelCurrents\" field in configuration ") + index + F(" must be of type \"array\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"channelCurrents\" field at index ") + index + F(" must be of type \"array\"."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"channelCurrents\" field at index ") + index + F(" must be of type \"array\"."));
 		return false;
 	}
 
@@ -388,8 +388,8 @@ bool TL::LedConfigurationEndpoint::validateLedZone(const JsonObject &jsonObject,
 	{
 		if (!jsonObject[F("channelCurrents")][i].is<uint8_t>())
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"channelCurrents\" field in configuration ") + index + F(" must only contain elements of type \"uint8\"."));
-			TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"channelCurrents\" field in configuration ") + index + F(" must only contain elements of type \"uint8\"."));
+			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"channelCurrents\" field at index ") + index + F(" must only contain elements of type \"uint8\"."));
+			TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"channelCurrents\" field at index ") + index + F(" must only contain elements of type \"uint8\"."));
 			return false;
 		}
 	}

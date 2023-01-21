@@ -23,10 +23,12 @@
 
 unsigned long TesLight::lightSensorInterval = LIGHT_SENSOR_INTERVAL;
 unsigned long TesLight::motionSensorInterval = MOTION_SENSOR_INTERVAL;
+unsigned long TesLight::audioUnitInterval = AUDIO_UNIT_INTERVAL;
 unsigned long TesLight::renderTimer = 0;
 unsigned long TesLight::frameTimer = 0;
 unsigned long TesLight::lightSensorTimer = 0;
 unsigned long TesLight::motionSensorTimer = 0;
+unsigned long TesLight::audioUnitTimer = 0;
 unsigned long TesLight::temperatureTimer = 0;
 unsigned long TesLight::statusTimer = 0;
 unsigned long TesLight::statusPrintTimer = 0;
@@ -49,8 +51,8 @@ void TesLight::begin()
 	TesLight::initializeLogger(true);		 // Switch to SD card logging
 	TesLight::handleUpdate();				 // Check for system updates and install
 	TesLight::initializeSystemInformation(); // Initialize and print the soc information
-	TesLight::initializeHardwareModules();	 // Initialize hardware modules and print information
 	TesLight::initializeConfiguration();	 // Initialize the configuration
+	TesLight::initializeHardwareModules();	 // Initialize hardware modules and print information
 	TesLight::initializeLedManager();		 // Initialize the LED manager
 	TesLight::initializeMotionSensor();		 // Initalize the motion sensor
 	TesLight::initializeLightSensor();		 // Initialize the light sensor
@@ -154,58 +156,6 @@ void TesLight::initializeSystemInformation()
 }
 
 /**
- * @brief Initialize harware modules on the I²C and OneWire bus.
- * 		  If the initialization fails, the controller will restart.
- * 		  The controller will not restart for missing or failed hardware modules.
- */
-void TesLight::initializeHardwareModules()
-{
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize analog input."));
-	TL::AnalogInput::begin(ANALOG_INPUT_PIN, ANALOG_INPUT_MODE, ANALOG_INPUT_MAX_VOLTAGE);
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Analog input initialized."));
-
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Initialize I²C bus at ") + IIC_FREQUENCY / 1000 + F("kHz."));
-	if (Wire.begin(static_cast<int>(IIC_SDA_PIN), static_cast<int>(IIC_SCL_PIN), static_cast<uint32_t>(IIC_FREQUENCY)))
-	{
-		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("I²C bus initialized."));
-	}
-	else
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize I²C bus. Rebooting"));
-		TL::Updater::reboot(F("Failed to initialize I²C bus."), 0);
-	}
-
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Search and initialize hardware modules."));
-	TL::MPU6050::begin(MPU6050_IIC_ADDRESS);
-	TL::DS18B20::begin(ONE_WIRE_PIN);
-	TL::BH1750::begin(BH1750_IIC_ADDRESS);
-
-	TL::SystemInformation::HardwareInformation hwInfo = TL::SystemInformation::getHardwareInfo();
-	hwInfo.mpu6050 = TL::MPU6050::isInitialized();
-	hwInfo.ds18b20 = TL::DS18B20::isInitialized() ? TL::DS18B20::getNumSensors() : 0;
-	hwInfo.bh1750 = TL::BH1750::isInitialized();
-	hwInfo.audioUnit = 0;
-	TL::SystemInformation::setHardwareInfo(hwInfo);
-
-	if (hwInfo.mpu6050 > 0)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Found MPU6050 motion sensor."));
-	}
-	if (hwInfo.ds18b20 > 0)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Found ") + hwInfo.ds18b20 + F(" DS18B20 temperature sensors."));
-	}
-	if (hwInfo.bh1750 > 0)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Found BH1750 light sensor."));
-	}
-	if (hwInfo.audioUnit > 0)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Found TesLight Audio Unit."));
-	}
-}
-
-/**
  * @brief Initialize and load the TesLight configuraiton.
  * 		  When the configuration can not be loaded, it will continue with defaults.
  */
@@ -243,6 +193,92 @@ void TesLight::initializeConfiguration()
 	}
 
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("TesLight configuration initialized."));
+}
+
+/**
+ * @brief Initialize harware modules on the I²C and OneWire bus.
+ * 		  If the initialization fails, the controller will restart.
+ * 		  The controller will not restart for missing or failed hardware modules.
+ */
+void TesLight::initializeHardwareModules()
+{
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize analog input."));
+	TL::AnalogInput::begin(ANALOG_INPUT_PIN, ANALOG_INPUT_MODE, ANALOG_INPUT_MAX_VOLTAGE);
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Analog input initialized."));
+
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Initialize I²C bus at ") + IIC_FREQUENCY / 1000 + F("kHz."));
+	if (Wire.begin(static_cast<int>(IIC_SDA_PIN), static_cast<int>(IIC_SCL_PIN), static_cast<uint32_t>(IIC_FREQUENCY)))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("I²C bus initialized."));
+	}
+	else
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize I²C bus. Rebooting"));
+		TL::Updater::reboot(F("Failed to initialize I²C bus."), 0);
+	}
+
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Search and initialize hardware modules."));
+	TL::MPU6050::begin(MPU6050_IIC_ADDRESS);
+	TL::DS18B20::begin(ONE_WIRE_PIN);
+	TL::BH1750::begin(BH1750_IIC_ADDRESS);
+	TL::AudioUnit::begin(AUDIO_UNIT_IIC_ADDRESS);
+
+	if (TL::AudioUnit::isInitialized())
+	{
+		if (TL::AudioUnit::getFrequencyBandCount() == AUDIO_UNIT_NUM_BANDS)
+		{
+			TL::AudioUnit::AudioUnitConfig audioUnitConfig;
+			audioUnitConfig.noiseThreshold = TL::Configuration::getAudioUnitConfig().noiseThreshold;
+			audioUnitConfig.frequencyBandIndex.resize(AUDIO_UNIT_NUM_BANDS);
+			for (size_t i = 0; i < AUDIO_UNIT_NUM_BANDS; i++)
+			{
+				audioUnitConfig.frequencyBandIndex.at(i) = TL::Configuration::getAudioUnitConfig().frequencyBandIndex[i];
+			}
+
+			const TL::AudioUnit::Error audioConfigError = TL::AudioUnit::setAudioUnitConfig(audioUnitConfig);
+			if (audioConfigError != TL::AudioUnit::Error::OK)
+			{
+				TL::AudioUnit::end();
+			}
+
+			for (size_t i = 0; i < AUDIO_UNIT_NUM_BANDS; i++)
+			{
+				const TL::AudioUnit::Error audioError = TL::AudioUnit::setPeakDetectorConfig(TL::Configuration::getAudioUnitConfig().peakDetectorConfig[i], i);
+				if (audioError != TL::AudioUnit::Error::OK)
+				{
+					TL::AudioUnit::end();
+				}
+			}
+		}
+		else
+		{
+			TL::AudioUnit::end();
+		}
+	}
+
+	TL::SystemInformation::HardwareInformation hwInfo = TL::SystemInformation::getHardwareInfo();
+	hwInfo.mpu6050 = TL::MPU6050::isInitialized();
+	hwInfo.ds18b20 = TL::DS18B20::isInitialized() ? TL::DS18B20::getNumSensors() : 0;
+	hwInfo.bh1750 = TL::BH1750::isInitialized();
+	hwInfo.audioUnit = TL::AudioUnit::isInitialized();
+	TL::SystemInformation::setHardwareInfo(hwInfo);
+
+	if (hwInfo.mpu6050 > 0)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Found MPU6050 motion sensor."));
+	}
+	if (hwInfo.ds18b20 > 0)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Found ") + hwInfo.ds18b20 + F(" DS18B20 temperature sensors."));
+	}
+	if (hwInfo.bh1750 > 0)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Found BH1750 light sensor."));
+	}
+	if (hwInfo.audioUnit > 0)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Found TesLight Audio Unit."));
+	}
 }
 
 /**
@@ -457,6 +493,8 @@ void TesLight::initializeRestApi()
 	TL::ResetEndpoint::begin(&SD);
 	TL::MotionSensorEndpoint::init(F("/api/"));
 	TL::MotionSensorEndpoint::begin();
+	TL::AudioUnitConfigurationEndpoint::init(F("/api/"));
+	TL::AudioUnitConfigurationEndpoint::begin();
 	TL::UIConfigurationEndpoint::init(F("/api/"));
 	TL::UIConfigurationEndpoint::begin();
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("REST API initialized."));
@@ -477,6 +515,7 @@ void TesLight::initializeTimers()
 	frameTimer = mic;
 	lightSensorTimer = mic;
 	motionSensorTimer = mic;
+	audioUnitTimer = mic;
 	temperatureTimer = mic;
 	statusTimer = mic;
 	statusPrintTimer = mic;
@@ -683,7 +722,24 @@ void TesLight::run()
 		}
 	}
 
-	// Handle the fan
+	// Handle the audio unit
+	if (checkTimer(audioUnitTimer, audioUnitInterval) && TL::AudioUnit::isInitialized())
+	{
+		TL::AudioUnit::AudioAnalysis audioAnalysis;
+		const TL::AudioUnit::Error audioError = TL::AudioUnit::getAudioAnalysis(audioAnalysis);
+		if (audioError == TL::AudioUnit::Error::OK)
+		{
+			TL::LedManager::setAudioAnalysis(audioAnalysis);
+			audioUnitInterval = AUDIO_UNIT_INTERVAL;
+		}
+		else
+		{
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read audio analysis data. Delaying next read by 1s"));
+			audioUnitInterval = 1000000;
+		}
+	}
+
+	// Handle the fan controller
 	if (checkTimer(temperatureTimer, FAN_INTERVAL))
 	{
 		const TL::Fan::Error fanError = TL::Fan::run(static_cast<TL::Fan::FanMode>(TL::Configuration::getSystemConfig().fanMode));
@@ -722,12 +778,12 @@ void TesLight::run()
 		{
 			if (TL::TemperatureSensor::getMaxTemperature(hwInfo.regulatorTemperature) != TL::TemperatureSensor::Error::OK)
 			{
-				hwInfo.regulatorTemperature = TL::Configuration::getSystemConfig().fanMaxTemperature;
+				hwInfo.regulatorTemperature = 0.0f;
 			}
 		}
 		else
 		{
-			hwInfo.regulatorTemperature = TL::Configuration::getSystemConfig().fanMaxTemperature;
+			hwInfo.regulatorTemperature = 0.0f;
 		}
 		TL::SystemInformation::setHardwareInfo(hwInfo);
 
