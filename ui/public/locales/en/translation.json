@@ -34,6 +34,15 @@
     "fanMaxTemperature": "Fan Full Speed Temp (°C)",
     "fanMinPwmValue": "Fan Min PWM (Stall Guard)",
     "fanMinTemperature": "Fan Start Temp (°C)",
+    "fanMode": "Fan Mode",
+    "fanModes": {
+      "Automatic": "Automatic",
+      "ManualOff": "Off",
+      "Manual25": "25%",
+      "Manual50": "50%",
+      "Manual75": "75%",
+      "Manual100": "100%"
+    },
     "language": "Language",
     "lightSensorDuration": "Sensor Duration",
     "lightSensorMaxAmbientBrightness": "Maximum Brightness",
