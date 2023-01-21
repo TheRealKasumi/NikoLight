@@ -55,6 +55,7 @@ const mock: {
       fanMaxPwmValue: 255,
       fanMinTemperature: 60,
       fanMaxTemperature: 80,
+      fanMode: 0,
     },
   },
   led: {
