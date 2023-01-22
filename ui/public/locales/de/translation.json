@@ -135,6 +135,7 @@
     "birthRate": "Wahrscheinlichkeit neuer Funken",
     "brightness": "Helligkeit",
     "brightnessVariance": "Helligkeitsabweichung",
+    "bounceAtCorner": "Partikel abprallen",
     "channelCurrents": "LED-Strom pro Kanal (MA)",
     "color1": "Farbe 1",
     "color2": "Farbe 2",
