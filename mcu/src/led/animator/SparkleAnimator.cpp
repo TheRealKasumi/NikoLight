@@ -36,19 +36,12 @@
  * @param frictionVariance variance in friction in the range 0.0 to 1.0
  * @param fadingVariance variance in fading in the range 0.0 to 1.0
  * @param bounceAtCorner when set to true, the particles will bounce at the end of the LED strip
-<<<<<<< HEAD
  * @param frequencyBandMask bit mask to mask frequency bands in audio mode
-=======
->>>>>>> main
  */
 TL::SparkleAnimator::SparkleAnimator(const TL::SparkleAnimator::SpawnPosition spawnPosition, const uint8_t sparkCount, const CRGB color,
 									 const float sparkFriction, const float sparkFading, const float sparkTail, const float birthRate,
 									 const float spawnVariance, const float speedVariance, const float brightnessVariance, const float frictionVariance,
-<<<<<<< HEAD
 									 const float fadingVariance, const bool bounceAtCorner, const uint8_t frequencyBandMask)
-=======
-									 const float fadingVariance, const bool bounceAtCorner)
->>>>>>> main
 {
 	this->spawnPosition = spawnPosition;
 	this->sparks.resize(sparkCount);
@@ -63,12 +56,9 @@ TL::SparkleAnimator::SparkleAnimator(const TL::SparkleAnimator::SpawnPosition sp
 	this->frictionVariance = frictionVariance;
 	this->fadingVariance = fadingVariance;
 	this->bounceAtCorner = bounceAtCorner;
-<<<<<<< HEAD
 	this->frequencyBandMask = frequencyBandMask;
 	this->colorAngle = 0.0f;
 	this->audioSequence = 0;
-=======
->>>>>>> main
 
 	this->limit((uint16_t)0, (uint16_t)255, this->offset);
 	this->limit(0.0f, 1.0f, this->sparkFriction);
