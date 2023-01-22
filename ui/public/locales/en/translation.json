@@ -24,7 +24,12 @@
     "title": "Log Files"
   },
   "notification": {
-    "headline": "Something went wrong"
+    "error": {
+      "headline": "Something went wrong"
+    },
+    "warning": {
+      "headline": "Warning"
+    }
   },
   "settings": {
     "accessPointPassword": "Password",
@@ -43,6 +48,7 @@
       "Manual75": "75%",
       "Manual100": "100%"
     },
+    "fanModeAutomaticWithoutTemperatureSensors": "No temperature sensors are connected. The fan speed is automatically set to 100%.",
     "language": "Language",
     "lightSensorDuration": "Sensor Duration",
     "lightSensorMaxAmbientBrightness": "Maximum Brightness",

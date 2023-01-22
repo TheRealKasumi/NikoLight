@@ -29,7 +29,7 @@ export const Update = (): JSX.Element => {
     <>
       {isSuccess && <Toast title={t('update.updateSuccessful')} />}
 
-      {isError && <Notification message={error.message} />}
+      {isError && <Notification state="error" message={error.message} />}
 
       {isLoading && <Loading overlay />}
 
