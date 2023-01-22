@@ -35,11 +35,12 @@
  * @param brightnessVariance variance in brightness in the range 0.0 to 1.0
  * @param frictionVariance variance in friction in the range 0.0 to 1.0
  * @param fadingVariance variance in fading in the range 0.0 to 1.0
+ * @param bounceAtCorner when set to true, the particles will bounce at the end of the LED strip
  */
 TL::SparkleAnimator::SparkleAnimator(const TL::SparkleAnimator::SpawnPosition spawnPosition, const uint8_t sparkCount, const CRGB color,
 									 const float sparkFriction, const float sparkFading, const float sparkTail, const float birthRate,
 									 const float spawnVariance, const float speedVariance, const float brightnessVariance, const float frictionVariance,
-									 const float fadingVariance)
+									 const float fadingVariance, const bool bounceAtCorner)
 {
 	this->spawnPosition = spawnPosition;
 	this->sparks.resize(sparkCount);
@@ -53,6 +54,7 @@ TL::SparkleAnimator::SparkleAnimator(const TL::SparkleAnimator::SpawnPosition sp
 	this->brightnessVariance = brightnessVariance;
 	this->frictionVariance = frictionVariance;
 	this->fadingVariance = fadingVariance;
+	this->bounceAtCorner = bounceAtCorner;
 
 	this->limit((uint16_t)0, (uint16_t)255, this->offset);
 	this->limit(0.0f, 1.0f, this->sparkFriction);
@@ -259,9 +261,20 @@ void TL::SparkleAnimator::runSparks(std::vector<CRGB> &pixels)
 			spark.speed -= spark.speed * spark.friction;
 			spark.brightness -= spark.brightness * spark.fading;
 
-			if (spark.position < 0.0f || spark.position >= pixels.size() ||
-				spark.brightness * this->animationBrightness * this->ambientBrightness <= 1.0f / 255.0f ||
-				abs(spark.speed) < 1.0 / 60.0f)
+			if (spark.position < 0.0f || spark.position >= pixels.size())
+			{
+				if (this->bounceAtCorner)
+				{
+					spark.position = spark.position < 0.0f ? 0.0f : pixels.size() - 1;
+					spark.speed = -spark.speed;
+				}
+				else
+				{
+					spark.visible = false;
+				}
+			}
+
+			if (spark.brightness * this->animationBrightness * this->ambientBrightness <= 1.0f / 255.0f || abs(spark.speed) < 1.0 / 60.0f)
 			{
 				spark.visible = false;
 			}

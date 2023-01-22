@@ -52,7 +52,7 @@ namespace TL
 		SparkleAnimator(const TL::SparkleAnimator::SpawnPosition spawnPosition, const uint8_t sparkCount, const CRGB color,
 						const float sparkFriction, const float sparkFading, const float sparkTail, const float birthRate,
 						const float spawnVariance, const float speedVariance, const float brightnessVariance, const float frictionVariance,
-						const float fadingVariance);
+						const float fadingVariance, const bool bounceAtCorner);
 		~SparkleAnimator();
 
 		void init(std::vector<CRGB> &pixels);
@@ -74,6 +74,7 @@ namespace TL
 		float brightnessVariance;
 		float frictionVariance;
 		float fadingVariance;
+		bool bounceAtCorner;
 
 		float colorAngle;
 

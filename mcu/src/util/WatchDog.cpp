@@ -1,5 +1,5 @@
 /**
- * @file FileUtil.cpp
+ * @file WatchDog.cpp
  * @author TheRealKasumi
  * @brief Implementation of the {@link TL::WatchDog}.
  *
@@ -27,7 +27,7 @@
  * @return ERROR_OUT_OF_MEMORY when there was no memory for the allocation
  * @return ERROR_ALREADY_SUBSCRIBED when the task alreadyd subscribed to a wdt
  * @return ERROR_WDT_NOT_INIT when the wdt was not initialized beforehand
- *  * @return ERROR_UNKNOWN when a unknown error occurs
+ * @return ERROR_UNKNOWN when a unknown error occurs
  */
 TL::WatchDog::Error TL::WatchDog::initializeTaskWatchdog()
 {
