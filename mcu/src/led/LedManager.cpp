@@ -382,7 +382,8 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 				ledConfig.animationSettings[14] / 255.0f,
 				ledConfig.animationSettings[15] / 255.0f,
 				ledConfig.animationSettings[16] / 10240.0f,
-				ledConfig.animationSettings[17] / 5120.0f));
+				ledConfig.animationSettings[17] / 5120.0f,
+				ledConfig.animationSettings[18]));
 		}
 
 		// Gradient type

@@ -266,7 +266,7 @@ TL::AudioUnit::Error TL::AudioUnit::setPeakDetectorConfig(TL::AudioUnit::PeakDet
 	TL::AudioUnit::deviceFunction = 101;
 	Wire.beginTransmission(TL::AudioUnit::deviceAddress);
 	Wire.write(TL::AudioUnit::deviceFunction);
-	Wire.write(0);
+	Wire.write(index);
 	Wire.write(reinterpret_cast<uint8_t *>(&peakDetectorConfig.historySize), sizeof(peakDetectorConfig.historySize));
 	Wire.write(reinterpret_cast<uint8_t *>(&peakDetectorConfig.threshold), sizeof(peakDetectorConfig.threshold));
 	Wire.write(reinterpret_cast<uint8_t *>(&peakDetectorConfig.influence), sizeof(peakDetectorConfig.influence));
