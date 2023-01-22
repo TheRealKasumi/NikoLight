@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Contains a base class for all led animators.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
@@ -28,6 +28,7 @@
 
 #include "FastLED.h"
 #include "sensor/MotionSensor.h"
+#include "hardware/AudioUnit.h"
 
 namespace TL
 {
@@ -56,7 +57,10 @@ namespace TL
 		bool getReverse();
 
 		void setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData);
-		TL::MotionSensor::MotionSensorData getMotionSensorData();
+		TL::MotionSensor::MotionSensorData &getMotionSensorData();
+
+		void setAudioAnalysis(const TL::AudioUnit::AudioAnalysis &audioAnalysis);
+		TL::AudioUnit::AudioAnalysis &getAudioAnalysis();
 
 		virtual void init(std::vector<CRGB> &pixels) = 0;
 		virtual void render(std::vector<CRGB> &pixels) = 0;
@@ -71,6 +75,7 @@ namespace TL
 		bool reverse;
 
 		TL::MotionSensor::MotionSensorData motionSensorData;
+		TL::AudioUnit::AudioAnalysis audioAnalysis;
 
 		void applyBrightness(std::vector<CRGB> &pixels);
 		static int32_t random(const int32_t min, const int32_t max);

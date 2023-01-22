@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Class with general helper function to deal with files and folders.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  * 
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness

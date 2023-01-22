@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Contains a REST endpoint to load update packages to the TesLight controller.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  * 
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness

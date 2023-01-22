@@ -20,6 +20,10 @@
       "description": "Test the connection to the TesLight controller"
     },
     {
+      "name": "System Information",
+      "description": "Read the system information from the TesLight controller"
+    },
+    {
       "name": "System Configuration",
       "description": "Read and update the system configuration"
     },
@@ -34,6 +38,10 @@
     {
       "name": "Motion Sensor Calibration Configuration",
       "description": "Read, update and run the motion sensor calibration"
+    },
+    {
+      "name": "Audio Unit Configuration",
+      "description": "Read and update the audio unit configuration"
     },
     {
       "name": "UI Configuration",
@@ -70,6 +78,26 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/info/system": {
+      "get": {
+        "tags": ["System Information"],
+        "summary": "Get the current system information.",
+        "description": "Request the current system information from the controller.\nThis includes information about the soc, TesLight system and hardware.",
+        "operationId": "getSystemInformation",
+        "responses": {
+          "200": {
+            "description": "The system information from the controller",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemInformation"
                 }
               }
             }
@@ -338,6 +366,71 @@
           },
           "412": {
             "description": "The motion sensor is not ready to be calibrated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to process the request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/config/audio": {
+      "get": {
+        "tags": [
+          "Audio Unit Configuration"
+        ],
+        "summary": "Read the audio unit configuration.",
+        "description": "Read the audio unit configuration.",
+        "operationId": "getAudioUnitConfiguration",
+        "responses": {
+          "200": {
+            "description": "Response contains the current audio unit configuration.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AudioUnitConfiguration"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Audio Unit Configuration"
+        ],
+        "summary": "Update the audio unit configuration.",
+        "description": "Update the current audio unit configuration on the controller.",
+        "operationId": "setAudioUnitConfiguration",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/AudioUnitConfiguration"
+        },
+        "responses": {
+          "200": {
+            "description": "The configuration was updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid.",
             "content": {
               "application/json": {
                 "schema": {
@@ -793,6 +886,154 @@
           }
         }
       },
+      "SystemInformation": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "example": 0
+          },
+          "message": {
+            "type": "string",
+            "example": "Message or error"
+          },
+          "socInfo": {
+            "type": "object",
+            "properties": {
+              "chipModel": {
+                "type": "string",
+                "example": "ESP32"
+              },
+              "chipRevision": {
+                "type": "integer",
+                "format": "uint32",
+                "example": 1
+              },
+              "cpuCores": {
+                "type": "integer",
+                "format": "uint32",
+                "example": 2
+              },
+              "cpuClock": {
+                "type": "integer",
+                "format": "uint32",
+                "example": 240000000
+              },
+              "freeHeap": {
+                "type": "integer",
+                "format": "uint32",
+                "example": 265332
+              },
+              "flashSize": {
+                "type": "integer",
+                "format": "uint32",
+                "example": 4194304
+              },
+              "flashSpeed": {
+                "type": "integer",
+                "format": "uint32",
+                "example": 40000000
+              },
+              "sketchSize": {
+                "type": "integer",
+                "format": "uint32",
+                "example": 1161168
+              },
+              "freeSketchSpace": {
+                "type": "integer",
+                "format": "uint32",
+                "example": 1966080
+              }
+            }
+          },
+          "tlSystemInfo": {
+            "type": "object",
+            "properties": {
+              "rps": {
+                "type": "number",
+                "format": "float32",
+                "example": 60
+              },
+              "fps": {
+                "type": "number",
+                "format": "float32",
+                "example": 60
+              },
+              "ledCount": {
+                "type": "integer",
+                "format": "uint16",
+                "example": 720
+              }
+            }
+          },
+          "hardwareInfo": {
+            "type": "object",
+            "properties": {
+              "regulatorCount": {
+                "type": "integer",
+                "format": "uint32",
+                "example": 2
+              },
+              "regulatorVoltage": {
+                "type": "number",
+                "format": "float32",
+                "example": 5
+              },
+              "regulatorCurrentLimit": {
+                "type": "number",
+                "format": "float32",
+                "example": 6
+              },
+              "regulatorCurrentDraw": {
+                "type": "number",
+                "format": "float32",
+                "example": 2.5
+              },
+              "regulatorPowerLimit": {
+                "type": "number",
+                "format": "float32",
+                "example": 30
+              },
+              "regulatorPowerDraw": {
+                "type": "number",
+                "format": "float32",
+                "example": 15
+              },
+              "regulatorTemperature": {
+                "type": "number",
+                "format": "float32",
+                "example": 50
+              },
+              "fanSpeed": {
+                "type": "integer",
+                "format": "uint8",
+                "example": 0
+              },
+              "mpu6050": {
+                "type": "integer",
+                "format": "uint8",
+                "example": 1
+              },
+              "ds18b20": {
+                "type": "integer",
+                "format": "uint8",
+                "example": 2
+              },
+              "bh1750": {
+                "type": "integer",
+                "format": "uint8",
+                "example": 1
+              },
+              "audioUnit": {
+                "type": "integer",
+                "format": "uint8",
+                "example": 1
+              }
+            }
+          }
+        }
+      },
       "SystemConfiguration": {
         "type": "object",
         "properties": {
@@ -862,6 +1103,11 @@
                 "type": "integer",
                 "format": "uint8",
                 "example": 85
+              },
+              "fanMode": {
+                "type": "integer",
+                "format": "uint8",
+                "example": 0
               },
               "fanMinPwmValue": {
                 "type": "integer",
@@ -1096,6 +1342,78 @@
           }
         }
       },
+      "AudioUnitConfiguration": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "example": "Message"
+          },
+          "audioUnitConfig": {
+            "type": "object",
+            "properties": {
+              "noiseThreshold": {
+                "type": "integer",
+                "format": "uint16",
+                "example": 0
+              },
+              "frequencyBinConfig": {
+                "type": "array",
+                "minItems": 8,
+                "maxItems": 8,
+                "items": {
+                  "properties": {
+                    "start": {
+                      "type": "integer",
+                      "format": "uint16",
+                      "example": 1
+                    },
+                    "end": {
+                      "type": "integer",
+                      "format": "uint16",
+                      "example": 5
+                    }
+                  }
+                }
+              },
+              "peakDetectorConfig": {
+                "type": "array",
+                "minItems": 8,
+                "maxItems": 8,
+                "items": {
+                  "properties": {
+                    "historySize": {
+                      "type": "integer",
+                      "format": "uint16",
+                      "example": 60
+                    },
+                    "threshold": {
+                      "type": "number",
+                      "format": "double",
+                      "example": 1.5
+                    },
+                    "influence": {
+                      "type": "number",
+                      "format": "double",
+                      "example": 0.75
+                    },
+                    "noiseGate": {
+                      "type": "number",
+                      "format": "double",
+                      "example": 1500
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "UIConfiguration": {
         "type": "object",
         "properties": {
@@ -1257,6 +1575,11 @@
                       "type": "integer",
                       "format": "uint8",
                       "example": 85
+                    },
+                    "fanMode": {
+                      "type": "integer",
+                      "format": "uint8",
+                      "example": 0
                     },
                     "fanMinPwmValue": {
                       "type": "integer",
@@ -1480,6 +1803,85 @@
                       "type": "number",
                       "format": "float",
                       "example": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "AudioUnitConfiguration": {
+        "description": "Update the current audio unit configuration on the controller.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "format": "int32",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Message"
+                },
+                "audioUnitConfig": {
+                  "type": "object",
+                  "properties": {
+                    "noiseThreshold": {
+                      "type": "integer",
+                      "format": "uint16",
+                      "example": 0
+                    },
+                    "frequencyBinConfig": {
+                      "type": "array",
+                      "minItems": 8,
+                      "maxItems": 8,
+                      "items": {
+                        "properties": {
+                          "start": {
+                            "type": "integer",
+                            "format": "uint16",
+                            "example": 1
+                          },
+                          "end": {
+                            "type": "integer",
+                            "format": "uint16",
+                            "example": 5
+                          }
+                        }
+                      }
+                    },
+                    "peakDetectorConfig": {
+                      "type": "array",
+                      "minItems": 8,
+                      "maxItems": 8,
+                      "items": {
+                        "properties": {
+                          "historySize": {
+                            "type": "integer",
+                            "format": "uint16",
+                            "example": 60
+                          },
+                          "threshold": {
+                            "type": "number",
+                            "format": "double",
+                            "example": 1.5
+                          },
+                          "influence": {
+                            "type": "number",
+                            "format": "double",
+                            "example": 0.75
+                          },
+                          "noiseGate": {
+                            "type": "number",
+                            "format": "double",
+                            "example": 1500
+                          }
+                        }
+                      }
                     }
                   }
                 }

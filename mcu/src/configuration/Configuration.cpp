@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains the implementation of {@link TL::Configuration}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -21,80 +21,103 @@
  */
 #include "configuration/Configuration.h"
 
+bool TL::Configuration::initialized = false;
+FS *TL::Configuration::fileSystem;
+String TL::Configuration::fileName;
+uint16_t TL::Configuration::configurationVersion;
+TL::Configuration::SystemConfig TL::Configuration::systemConfig;
+TL::Configuration::LedConfig TL::Configuration::ledConfig[LED_NUM_ZONES];
+TL::Configuration::WiFiConfig TL::Configuration::wifiConfig;
+TL::Configuration::MotionSensorCalibration TL::Configuration::motionSensorCalibration;
+TL::Configuration::AudioUnitConfig TL::Configuration::audioUnitConfig;
+TL::Configuration::UIConfiguration TL::Configuration::uiConfiguration;
+
 /**
- * @brief Create a new instance of {@link TL::Configuration}.
+ * @brief Initialize the configuration.
  * @param fileSystem pointer to a {@link FS}
  * @param fileName file name of the configuration file
  */
-TL::Configuration::Configuration(FS *fileSystem, const String fileName)
+void TL::Configuration::begin(FS *fileSystem, const String fileName)
 {
-	this->fileSystem = fileSystem;
-	this->fileName = fileName;
-	this->configurationVersion = CONFIGURATION_FILE_VERSION;
-	this->loadDefaults();
+	TL::Configuration::initialized = true;
+	TL::Configuration::fileSystem = fileSystem;
+	TL::Configuration::fileName = fileName;
+	TL::Configuration::configurationVersion = CONFIGURATION_FILE_VERSION;
+	TL::Configuration::loadDefaults();
 }
 
 /**
- * @brief Destroy the {@link TL::Configuration} instance.
+ * @brief Deinitialize the configuration.
  */
-TL::Configuration::~Configuration()
+void TL::Configuration::end()
 {
+	TL::Configuration::initialized = false;
 }
 
 /**
- * @brief Get the System config.
- * @return instance of {@link TL::Configuration::SystemConfig}
+ * @brief Return if the configuration was initialized.
+ * @return true when initialized
+ * @return false when not initialized
+ */
+bool TL::Configuration::isInitialized()
+{
+	return TL::Configuration::initialized;
+}
+
+/**
+ * @brief Get the system configuration.
+ * @return system configuration
  */
 TL::Configuration::SystemConfig TL::Configuration::getSystemConfig()
 {
-	return this->systemConfig;
+	return TL::Configuration::systemConfig;
 }
 
 /**
- * @brief Set the System config.
- * @param SystemConfig config to set
+ * @brief Set the system configuration.
+ * @param systemConfig new system configuration
  */
 void TL::Configuration::setSystemConfig(TL::Configuration::SystemConfig &systemConfig)
 {
-	this->systemConfig = systemConfig;
+	TL::Configuration::systemConfig = systemConfig;
 }
 
 /**
- * @brief Get the {@link TL::Configuration::LedConfig}.
- * @param index index of the config
- * @return instance of {TL::Configuration::LedConfig}
+ * @brief Get the LED configuration for a specific zone.
+ * @param index index of the zone
+ * @return LED configuration for the zone
  */
 TL::Configuration::LedConfig TL::Configuration::getLedConfig(const uint8_t index)
 {
-	return this->ledConfig[index];
+	return TL::Configuration::ledConfig[index];
 }
 
 /**
- * @brief Set the {@link TL::Configuration::LedConfig}.
- * @param ledConfig instance of {@link TL::Configuration::LedConfig}
- * @param index index of the config
+ * @brief Set the LED configuration for a specific zone.
+ * @param ledConfig new LED configuration for the zone
+ * @param index index of the zone
  */
 void TL::Configuration::setLedConfig(const TL::Configuration::LedConfig &ledConfig, const uint8_t index)
 {
-	this->ledConfig[index] = ledConfig;
+	TL::Configuration::ledConfig[index] = ledConfig;
 }
 
 /**
- * @brief Get the WiFi config.
- * @return instance of {@link TL::Configuration::WiFiConfig}
+ * @brief Get the WiFi configuration.
+ * @return WiFi configuration
  */
 TL::Configuration::WiFiConfig TL::Configuration::getWiFiConfig()
 {
-	return this->wifiConfig;
+	return TL::Configuration::wifiConfig;
 }
 
 /**
- * @brief Set the WiFi config.
- * @param wifionfig config to set
+ * @brief Set the WiFi configuration.
+ * @param wifionfig new WiFi configuration
  */
 void TL::Configuration::setWiFiConfig(TL::Configuration::WiFiConfig &wifiConfig)
 {
-	this->wifiConfig = wifiConfig;
+	TL::Configuration::wifiConfig = wifiConfig;
 }
 
 /**
@@ -103,16 +126,34 @@ void TL::Configuration::setWiFiConfig(TL::Configuration::WiFiConfig &wifiConfig)
  */
 TL::Configuration::MotionSensorCalibration TL::Configuration::getMotionSensorCalibration()
 {
-	return this->motionSensorCalibration;
+	return TL::Configuration::motionSensorCalibration;
 }
 
 /**
  * @brief Set the motion sensor calibration data.
- * @param calibration calibration data of the motion sensor
+ * @param calibration new calibration data for the motion sensor
  */
 void TL::Configuration::setMotionSensorCalibration(const TL::Configuration::MotionSensorCalibration &calibration)
 {
-	this->motionSensorCalibration = calibration;
+	TL::Configuration::motionSensorCalibration = calibration;
+}
+
+/**
+ * @brief Get the audio unit configuration.
+ * @return audio unit configuration
+ */
+TL::Configuration::AudioUnitConfig TL::Configuration::getAudioUnitConfig()
+{
+	return TL::Configuration::audioUnitConfig;
+}
+
+/**
+ * @brief Set the audio unit configuration;
+ * @param audioUnitConfig new audio unit configuration
+ */
+void TL::Configuration::setAudioUnitConfig(const TL::Configuration::AudioUnitConfig &audioUnitConfig)
+{
+	TL::Configuration::audioUnitConfig = audioUnitConfig;
 }
 
 /**
@@ -121,16 +162,16 @@ void TL::Configuration::setMotionSensorCalibration(const TL::Configuration::Moti
  */
 TL::Configuration::UIConfiguration TL::Configuration::getUIConfiguration()
 {
-	return this->uiConfiguration;
+	return TL::Configuration::uiConfiguration;
 }
 
 /**
  * @brief Set the UI configuration.
- * @param uiConfiguration configuration of the UI
+ * @param uiConfiguration new UI configuration
  */
 void TL::Configuration::setUIConfiguration(const TL::Configuration::UIConfiguration &uiConfiguration)
 {
-	this->uiConfiguration = uiConfiguration;
+	TL::Configuration::uiConfiguration = uiConfiguration;
 }
 
 /**
@@ -139,266 +180,329 @@ void TL::Configuration::setUIConfiguration(const TL::Configuration::UIConfigurat
 void TL::Configuration::loadDefaults()
 {
 	// System config
-	this->systemConfig.logLevel = LOG_DEFAULT_LEVEL;
-	this->systemConfig.lightSensorMode = LIGHT_SENSOR_DEFAULT_MODE;
-	this->systemConfig.lightSensorThreshold = LIGHT_SENSOR_DEFAULT_THRESHOLD;
-	this->systemConfig.lightSensorMinAmbientBrightness = LIGHT_SENSOR_DEFAULT_MIN_AMBIENT;
-	this->systemConfig.lightSensorMaxAmbientBrightness = LIGHT_SENSOR_DEFAULT_MAX_AMBIENT;
-	this->systemConfig.lightSensorMinLedBrightness = LIGHT_SENSOR_DEFAULT_MIN_LED;
-	this->systemConfig.lightSensorMaxLedBrightness = LIGHT_SENSOR_DEFAULT_MAX_LED;
-	this->systemConfig.lightSensorDuration = LIGHT_SENSOR_DEFAULT_DURATION;
-	this->systemConfig.regulatorPowerLimit = REGULATOR_POWER_LIMIT * REGULATOR_COUNT;
-	this->systemConfig.regulatorHighTemperature = REGULATOR_HIGH_TEMP;
-	this->systemConfig.regulatorCutoffTemperature = REGULATOR_CUT_OFF_TEMP;
-	this->systemConfig.fanMinPwmValue = FAN_PWM_MIN;
-	this->systemConfig.fanMaxPwmValue = FAN_PWM_MAX;
-	this->systemConfig.fanMinTemperature = FAN_TEMP_MIN;
-	this->systemConfig.fanMaxTemperature = FAN_TEMP_MAX;
+	TL::Configuration::systemConfig.logLevel = LOG_DEFAULT_LEVEL;
+	TL::Configuration::systemConfig.lightSensorMode = LIGHT_SENSOR_DEFAULT_MODE;
+	TL::Configuration::systemConfig.lightSensorThreshold = LIGHT_SENSOR_DEFAULT_THRESHOLD;
+	TL::Configuration::systemConfig.lightSensorMinAmbientBrightness = LIGHT_SENSOR_DEFAULT_MIN_AMBIENT;
+	TL::Configuration::systemConfig.lightSensorMaxAmbientBrightness = LIGHT_SENSOR_DEFAULT_MAX_AMBIENT;
+	TL::Configuration::systemConfig.lightSensorMinLedBrightness = LIGHT_SENSOR_DEFAULT_MIN_LED;
+	TL::Configuration::systemConfig.lightSensorMaxLedBrightness = LIGHT_SENSOR_DEFAULT_MAX_LED;
+	TL::Configuration::systemConfig.lightSensorDuration = LIGHT_SENSOR_DEFAULT_DURATION;
+	TL::Configuration::systemConfig.regulatorPowerLimit = REGULATOR_POWER_LIMIT * REGULATOR_COUNT;
+	TL::Configuration::systemConfig.regulatorHighTemperature = REGULATOR_HIGH_TEMP;
+	TL::Configuration::systemConfig.regulatorCutoffTemperature = REGULATOR_CUT_OFF_TEMP;
+	TL::Configuration::systemConfig.fanMode = FAN_DEFAULT_MODE;
+	TL::Configuration::systemConfig.fanMinPwmValue = FAN_DEFAULT_PWM_MIN;
+	TL::Configuration::systemConfig.fanMaxPwmValue = FAN_DEFAULT_PWM_MAX;
+	TL::Configuration::systemConfig.fanMinTemperature = FAN_DEFAULT_TEMP_MIN;
+	TL::Configuration::systemConfig.fanMaxTemperature = FAN_DEFAULT_TEMP_MAX;
 
 	// LED config
 	const uint8_t ledPins[LED_NUM_ZONES] = LED_DEFAULT_OUTPUT_PINS;
 	const uint8_t ledCounts[LED_NUM_ZONES] = LED_DEFAULT_COUNTS;
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		this->ledConfig[i].ledPin = ledPins[i];
-		this->ledConfig[i].ledCount = ledCounts[i];
-		this->ledConfig[i].type = ANIMATOR_DEFAULT_TYPE;
-		this->ledConfig[i].speed = ANIMATOR_DEFAULT_SPEED;
-		this->ledConfig[i].offset = ANIMATOR_DEFAULT_OFFSET;
-		this->ledConfig[i].brightness = ANIMATOR_DEFAULT_BRIGHTNESS;
-		this->ledConfig[i].reverse = ANIMATOR_DEFAULT_REVERSE;
-		this->ledConfig[i].fadeSpeed = ANIMATOR_DEFAULT_FADE_SPEED;
+		TL::Configuration::ledConfig[i].ledPin = ledPins[i];
+		TL::Configuration::ledConfig[i].ledCount = ledCounts[i];
+		TL::Configuration::ledConfig[i].type = ANIMATOR_DEFAULT_TYPE;
+		TL::Configuration::ledConfig[i].speed = ANIMATOR_DEFAULT_SPEED;
+		TL::Configuration::ledConfig[i].offset = ANIMATOR_DEFAULT_OFFSET;
+		TL::Configuration::ledConfig[i].brightness = ANIMATOR_DEFAULT_BRIGHTNESS;
+		TL::Configuration::ledConfig[i].reverse = ANIMATOR_DEFAULT_REVERSE;
+		TL::Configuration::ledConfig[i].fadeSpeed = ANIMATOR_DEFAULT_FADE_SPEED;
 		for (uint8_t j = 0; j < ANIMATOR_NUM_ANIMATION_SETTINGS; j++)
 		{
-			this->ledConfig[i].animationSettings[j] = 0;
+			TL::Configuration::ledConfig[i].animationSettings[j] = 0;
 		}
-		this->ledConfig[i].ledVoltage = REGULATOR_DEFAULT_VOLTAGE;
-		this->ledConfig[i].ledChannelCurrent[0] = LED_DEFAULT_CHANNEL_CURRENT;
-		this->ledConfig[i].ledChannelCurrent[1] = LED_DEFAULT_CHANNEL_CURRENT;
-		this->ledConfig[i].ledChannelCurrent[2] = LED_DEFAULT_CHANNEL_CURRENT;
+		TL::Configuration::ledConfig[i].ledVoltage = REGULATOR_DEFAULT_VOLTAGE;
+		TL::Configuration::ledConfig[i].ledChannelCurrent[0] = LED_DEFAULT_CHANNEL_CURRENT;
+		TL::Configuration::ledConfig[i].ledChannelCurrent[1] = LED_DEFAULT_CHANNEL_CURRENT;
+		TL::Configuration::ledConfig[i].ledChannelCurrent[2] = LED_DEFAULT_CHANNEL_CURRENT;
 	}
 
 	// WiFi config
-	this->wifiConfig.accessPointSsid = F(AP_DEFAULT_SSID);
-	this->wifiConfig.accessPointPassword = F(AP_DEDAULT_PASSWORD);
-	this->wifiConfig.accessPointChannel = AP_DEFAULT_CHANNEL;
-	this->wifiConfig.accessPointHidden = AP_DEFAULT_HIDDEN;
-	this->wifiConfig.accessPointMaxConnections = AP_DEFAULT_MAX_CONN;
-	this->wifiConfig.wifiSsid = F(WIFI_DEFAULT_SSID);
-	this->wifiConfig.wifiPassword = F(WIFI_DEFAULT_PASSWORD);
+	TL::Configuration::wifiConfig.accessPointSsid = F(AP_DEFAULT_SSID);
+	TL::Configuration::wifiConfig.accessPointPassword = F(AP_DEDAULT_PASSWORD);
+	TL::Configuration::wifiConfig.accessPointChannel = AP_DEFAULT_CHANNEL;
+	TL::Configuration::wifiConfig.accessPointHidden = AP_DEFAULT_HIDDEN;
+	TL::Configuration::wifiConfig.accessPointMaxConnections = AP_DEFAULT_MAX_CONN;
+	TL::Configuration::wifiConfig.wifiSsid = F(WIFI_DEFAULT_SSID);
+	TL::Configuration::wifiConfig.wifiPassword = F(WIFI_DEFAULT_PASSWORD);
 
 	// Motion sensor calibration
-	this->motionSensorCalibration.accXRaw = 0;
-	this->motionSensorCalibration.accYRaw = 0;
-	this->motionSensorCalibration.accZRaw = 0;
-	this->motionSensorCalibration.gyroXRaw = 0;
-	this->motionSensorCalibration.gyroYRaw = 0;
-	this->motionSensorCalibration.gyroZRaw = 0;
-	this->motionSensorCalibration.accXG = 0.0f;
-	this->motionSensorCalibration.accYG = 0.0f;
-	this->motionSensorCalibration.accZG = 0.0f;
-	this->motionSensorCalibration.gyroXDeg = 0.0f;
-	this->motionSensorCalibration.gyroYDeg = 0.0f;
-	this->motionSensorCalibration.gyroZDeg = 0.0f;
+	TL::Configuration::motionSensorCalibration.accXRaw = 0;
+	TL::Configuration::motionSensorCalibration.accYRaw = 0;
+	TL::Configuration::motionSensorCalibration.accZRaw = 0;
+	TL::Configuration::motionSensorCalibration.gyroXRaw = 0;
+	TL::Configuration::motionSensorCalibration.gyroYRaw = 0;
+	TL::Configuration::motionSensorCalibration.gyroZRaw = 0;
+	TL::Configuration::motionSensorCalibration.accXG = 0.0f;
+	TL::Configuration::motionSensorCalibration.accYG = 0.0f;
+	TL::Configuration::motionSensorCalibration.accZG = 0.0f;
+	TL::Configuration::motionSensorCalibration.gyroXDeg = 0.0f;
+	TL::Configuration::motionSensorCalibration.gyroYDeg = 0.0f;
+	TL::Configuration::motionSensorCalibration.gyroZDeg = 0.0f;
+
+	// Audio unit configuration
+	const uint16_t freqBands[AUDIO_UNIT_NUM_BANDS][2] = AUDIO_UNIT_DEFAULT_FREQ_BAND_INDEX;
+	TL::Configuration::audioUnitConfig.noiseThreshold = AUDIO_UNIT_DEFAULT_NOISE_THESHOLD;
+	for (size_t i = 0; i < AUDIO_UNIT_NUM_BANDS; i++)
+	{
+		TL::Configuration::audioUnitConfig.frequencyBandIndex[i] = std::make_pair(freqBands[i][0], freqBands[i][1]);
+		TL::Configuration::audioUnitConfig.peakDetectorConfig[i].historySize = AUDIO_UNIT_DEFAULT_PD_HIST_SIZE;
+		TL::Configuration::audioUnitConfig.peakDetectorConfig[i].threshold = AUDIO_UNIT_DEFAULT_PD_THRESHOLD;
+		TL::Configuration::audioUnitConfig.peakDetectorConfig[i].influence = AUDIO_UNIT_DEFAULT_PD_INFLUENCE;
+		TL::Configuration::audioUnitConfig.peakDetectorConfig[i].noiseGate = AUDIO_UNIT_DEFAULT_PD_NOISE_GATE;
+	}
 
 	// UI configuration
-	this->uiConfiguration.firmware = FW_VERSION;
-	this->uiConfiguration.language = UI_DEFAULT_LANGUAGE;
-	this->uiConfiguration.theme = UI_DEFAULT_THEME;
-	this->uiConfiguration.expertMode = UI_DEFAULT_EXPERT;
+	TL::Configuration::uiConfiguration.firmware = FW_VERSION;
+	TL::Configuration::uiConfiguration.language = UI_DEFAULT_LANGUAGE;
+	TL::Configuration::uiConfiguration.theme = UI_DEFAULT_THEME;
+	TL::Configuration::uiConfiguration.expertMode = UI_DEFAULT_EXPERT;
 }
 
 /**
  * @brief Load the configuration from a binary file.
  * @param loadDefaultIfNotExist load default values when the file could not be found
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the file was loaded
+ * @return ERROR_FILE_OPEN when the file could not be opened
+ * @return ERROR_FILE_READ when the file could not be read
+ * @return ERROR_FILE_VERSION when the file version does not match
+ * @return ERROR_FILE_HASH when the file hash doesn't match
  */
-bool TL::Configuration::load()
+TL::Configuration::Error TL::Configuration::load()
 {
-	TL::BinaryFile file(this->fileSystem);
-	if (!file.open(this->fileName, FILE_READ))
+	TL::BinaryFile file(TL::Configuration::fileSystem);
+	const TL::BinaryFile::Error openError = file.open(TL::Configuration::fileName, FILE_READ);
+	if (openError != TL::BinaryFile::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::ERROR, SOURCE_LOCATION, (String)F("Failed to load configuration file: ") + fileName);
-		return false;
+		return TL::Configuration::Error::ERROR_FILE_OPEN;
+	}
+
+	// Read the file version
+	uint16_t configFileVersion = 0;
+	if (file.read(configFileVersion) != TL::BinaryFile::Error::OK)
+	{
+		return TL::Configuration::Error::ERROR_FILE_READ;
 	}
 
 	// Check the configuration file version
-	uint16_t configFileVersion = 0;
-	if (!file.read(configFileVersion) || configFileVersion != this->configurationVersion)
+	if (configFileVersion != TL::Configuration::configurationVersion)
 	{
-		TL::Logger::log(TL::Logger::ERROR, SOURCE_LOCATION, F("Configuration file version does not match."));
 		file.close();
-		return false;
+		return TL::Configuration::Error::ERROR_FILE_VERSION;
 	}
 
 	// System config
-	file.read(this->systemConfig.logLevel);
-	file.read(this->systemConfig.lightSensorMode);
-	file.read(this->systemConfig.lightSensorThreshold);
-	file.read(this->systemConfig.lightSensorMinAmbientBrightness);
-	file.read(this->systemConfig.lightSensorMaxAmbientBrightness);
-	file.read(this->systemConfig.lightSensorMinLedBrightness);
-	file.read(this->systemConfig.lightSensorMaxLedBrightness);
-	file.read(this->systemConfig.lightSensorDuration);
-	file.read(this->systemConfig.regulatorPowerLimit);
-	file.read(this->systemConfig.regulatorHighTemperature);
-	file.read(this->systemConfig.regulatorCutoffTemperature);
-	file.read(this->systemConfig.fanMinPwmValue);
-	file.read(this->systemConfig.fanMaxPwmValue);
-	file.read(this->systemConfig.fanMinTemperature);
-	file.read(this->systemConfig.fanMaxTemperature);
+	bool readError = false;
+	readError = file.read(TL::Configuration::systemConfig.logLevel) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.lightSensorMode) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.lightSensorThreshold) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.lightSensorMinAmbientBrightness) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.lightSensorMaxAmbientBrightness) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.lightSensorMinLedBrightness) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.lightSensorMaxLedBrightness) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.lightSensorDuration) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.regulatorPowerLimit) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.regulatorHighTemperature) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.regulatorCutoffTemperature) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.fanMode) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.fanMinPwmValue) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.fanMaxPwmValue) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.fanMinTemperature) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::systemConfig.fanMaxTemperature) == TL::BinaryFile::Error::OK ? readError : true;
 
 	// LED config
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		file.read(this->ledConfig[i].ledPin);
-		file.read(this->ledConfig[i].ledCount);
-		file.read(this->ledConfig[i].type);
-		file.read(this->ledConfig[i].speed);
-		file.read(this->ledConfig[i].offset);
-		file.read(this->ledConfig[i].brightness);
-		file.read(this->ledConfig[i].reverse);
-		file.read(this->ledConfig[i].fadeSpeed);
+		readError = file.read(TL::Configuration::ledConfig[i].ledPin) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::ledConfig[i].ledCount) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::ledConfig[i].type) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::ledConfig[i].speed) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::ledConfig[i].offset) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::ledConfig[i].brightness) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::ledConfig[i].reverse) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::ledConfig[i].fadeSpeed) == TL::BinaryFile::Error::OK ? readError : true;
 		for (uint8_t j = 0; j < ANIMATOR_NUM_ANIMATION_SETTINGS; j++)
 		{
-			file.read(this->ledConfig[i].animationSettings[j]);
+			readError = file.read(TL::Configuration::ledConfig[i].animationSettings[j]) == TL::BinaryFile::Error::OK ? readError : true;
 		}
-		file.read(this->ledConfig[i].ledVoltage);
-		file.read(this->ledConfig[i].ledChannelCurrent[0]);
-		file.read(this->ledConfig[i].ledChannelCurrent[1]);
-		file.read(this->ledConfig[i].ledChannelCurrent[2]);
+		readError = file.read(TL::Configuration::ledConfig[i].ledVoltage) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::ledConfig[i].ledChannelCurrent[0]) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::ledConfig[i].ledChannelCurrent[1]) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::ledConfig[i].ledChannelCurrent[2]) == TL::BinaryFile::Error::OK ? readError : true;
 	}
 
 	// WiFi config
-	file.readString(this->wifiConfig.accessPointSsid);
-	file.readString(this->wifiConfig.accessPointPassword);
-	file.read(this->wifiConfig.accessPointChannel);
-	file.read(this->wifiConfig.accessPointHidden);
-	file.read(this->wifiConfig.accessPointMaxConnections);
-	file.readString(this->wifiConfig.wifiSsid);
-	file.readString(this->wifiConfig.wifiPassword);
+	readError = file.readString(TL::Configuration::wifiConfig.accessPointSsid) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.readString(TL::Configuration::wifiConfig.accessPointPassword) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::wifiConfig.accessPointChannel) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::wifiConfig.accessPointHidden) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::wifiConfig.accessPointMaxConnections) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.readString(TL::Configuration::wifiConfig.wifiSsid) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.readString(TL::Configuration::wifiConfig.wifiPassword) == TL::BinaryFile::Error::OK ? readError : true;
 
 	// Motion sensor calibration
-	file.read(this->motionSensorCalibration.accXRaw);
-	file.read(this->motionSensorCalibration.accYRaw);
-	file.read(this->motionSensorCalibration.accZRaw);
-	file.read(this->motionSensorCalibration.gyroXRaw);
-	file.read(this->motionSensorCalibration.gyroYRaw);
-	file.read(this->motionSensorCalibration.gyroZRaw);
-	file.read(this->motionSensorCalibration.accXG);
-	file.read(this->motionSensorCalibration.accYG);
-	file.read(this->motionSensorCalibration.accZG);
-	file.read(this->motionSensorCalibration.gyroXDeg);
-	file.read(this->motionSensorCalibration.gyroYDeg);
-	file.read(this->motionSensorCalibration.gyroZDeg);
+	readError = file.read(TL::Configuration::motionSensorCalibration.accXRaw) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::motionSensorCalibration.accYRaw) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::motionSensorCalibration.accZRaw) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::motionSensorCalibration.gyroXRaw) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::motionSensorCalibration.gyroYRaw) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::motionSensorCalibration.gyroZRaw) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::motionSensorCalibration.accXG) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::motionSensorCalibration.accYG) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::motionSensorCalibration.accZG) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::motionSensorCalibration.gyroXDeg) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::motionSensorCalibration.gyroYDeg) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::motionSensorCalibration.gyroZDeg) == TL::BinaryFile::Error::OK ? readError : true;
+
+	// Audio unit configuration
+	readError = file.read(TL::Configuration::audioUnitConfig.noiseThreshold) == TL::BinaryFile::Error::OK ? readError : true;
+	for (size_t i = 0; i < AUDIO_UNIT_NUM_BANDS; i++)
+	{
+		readError = file.read(TL::Configuration::audioUnitConfig.frequencyBandIndex[i].first) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::audioUnitConfig.frequencyBandIndex[i].second) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].historySize) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].threshold) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].influence) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].noiseGate) == TL::BinaryFile::Error::OK ? readError : true;
+	}
 
 	// UI configuration
-	file.readString(this->uiConfiguration.language);
-	file.readString(this->uiConfiguration.theme);
-	file.read(this->uiConfiguration.expertMode);
+	readError = file.readString(TL::Configuration::uiConfiguration.language) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.readString(TL::Configuration::uiConfiguration.theme) == TL::BinaryFile::Error::OK ? readError : true;
+	readError = file.read(TL::Configuration::uiConfiguration.expertMode) == TL::BinaryFile::Error::OK ? readError : true;
+
+	// Check for read errors
+	if (readError)
+	{
+		file.close();
+		return TL::Configuration::Error::ERROR_FILE_READ;
+	}
+
+	// Read the file hash
+	uint16_t fileHash = 0;
+	if (file.read(fileHash) != TL::BinaryFile::Error::OK)
+	{
+		file.close();
+		return TL::Configuration::Error::ERROR_FILE_READ;
+	}
 
 	// Check the hash
-	uint16_t fileHash = 0;
-	if (!file.read(fileHash) || fileHash != this->getSimpleHash())
+	if (fileHash != TL::Configuration::getSimpleHash())
 	{
-		TL::Logger::log(TL::Logger::ERROR, SOURCE_LOCATION, F("Configuration file hash does not match."));
 		file.close();
-		return false;
+		return TL::Configuration::Error::ERROR_FILE_HASH;
 	}
 
 	file.close();
-	return true;
+	return TL::Configuration::Error::OK;
 }
 
 /**
  * @brief Save to configuration to a file.
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the file was saved
+ * @return ERROR_FILE_OPEN when the file could not be opened
+ * @return ERROR_FILE_WRITE when the file could not be written
  */
-bool TL::Configuration::save()
+TL::Configuration::Error TL::Configuration::save()
 {
-	TL::BinaryFile file(this->fileSystem);
-	if (!file.open(this->fileName, FILE_WRITE))
+	TL::BinaryFile file(TL::Configuration::fileSystem);
+	const TL::BinaryFile::Error openError = file.open(TL::Configuration::fileName, FILE_WRITE);
+	if (openError != TL::BinaryFile::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::ERROR, SOURCE_LOCATION, F("Failed to open configuration file."));
-		return false;
+		return TL::Configuration::Error::ERROR_FILE_OPEN;
 	}
 
 	// Write the configuration file version
-	file.write(this->configurationVersion);
+	bool writeError = false;
+	writeError = file.write(TL::Configuration::configurationVersion) == TL::BinaryFile::Error::OK ? writeError : true;
 
 	// System cofiguration
-	file.write((uint8_t)this->systemConfig.logLevel);
-	file.write((uint8_t)this->systemConfig.lightSensorMode);
-	file.write(this->systemConfig.lightSensorThreshold);
-	file.write(this->systemConfig.lightSensorMinAmbientBrightness);
-	file.write(this->systemConfig.lightSensorMaxAmbientBrightness);
-	file.write(this->systemConfig.lightSensorMinLedBrightness);
-	file.write(this->systemConfig.lightSensorMaxLedBrightness);
-	file.write(this->systemConfig.lightSensorDuration);
-	file.write(this->systemConfig.regulatorPowerLimit);
-	file.write(this->systemConfig.regulatorHighTemperature);
-	file.write(this->systemConfig.regulatorCutoffTemperature);
-	file.write(this->systemConfig.fanMinPwmValue);
-	file.write(this->systemConfig.fanMaxPwmValue);
-	file.write(this->systemConfig.fanMinTemperature);
-	file.write(this->systemConfig.fanMaxTemperature);
+	writeError = file.write(static_cast<uint8_t>(TL::Configuration::systemConfig.logLevel)) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(static_cast<uint8_t>(TL::Configuration::systemConfig.lightSensorMode)) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.lightSensorThreshold) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.lightSensorMinAmbientBrightness) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.lightSensorMaxAmbientBrightness) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.lightSensorMinLedBrightness) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.lightSensorMaxLedBrightness) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.lightSensorDuration) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.regulatorPowerLimit) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.regulatorHighTemperature) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.regulatorCutoffTemperature) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.fanMode) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.fanMinPwmValue) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.fanMaxPwmValue) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.fanMinTemperature) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::systemConfig.fanMaxTemperature) == TL::BinaryFile::Error::OK ? writeError : true;
 
 	// LED configuration
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		file.write(this->ledConfig[i].ledPin);
-		file.write(this->ledConfig[i].ledCount);
-		file.write(this->ledConfig[i].type);
-		file.write(this->ledConfig[i].speed);
-		file.write(this->ledConfig[i].offset);
-		file.write(this->ledConfig[i].brightness);
-		file.write(this->ledConfig[i].reverse);
-		file.write(this->ledConfig[i].fadeSpeed);
+		writeError = file.write(TL::Configuration::ledConfig[i].ledPin) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::ledConfig[i].ledCount) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::ledConfig[i].type) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::ledConfig[i].speed) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::ledConfig[i].offset) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::ledConfig[i].brightness) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::ledConfig[i].reverse) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::ledConfig[i].fadeSpeed) == TL::BinaryFile::Error::OK ? writeError : true;
 		for (uint8_t j = 0; j < ANIMATOR_NUM_ANIMATION_SETTINGS; j++)
 		{
-			file.write(this->ledConfig[i].animationSettings[j]);
+			writeError = file.write(TL::Configuration::ledConfig[i].animationSettings[j]) == TL::BinaryFile::Error::OK ? writeError : true;
 		}
-		file.write(this->ledConfig[i].ledVoltage);
-		file.write(this->ledConfig[i].ledChannelCurrent[0]);
-		file.write(this->ledConfig[i].ledChannelCurrent[1]);
-		file.write(this->ledConfig[i].ledChannelCurrent[2]);
+		writeError = file.write(TL::Configuration::ledConfig[i].ledVoltage) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::ledConfig[i].ledChannelCurrent[0]) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::ledConfig[i].ledChannelCurrent[1]) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::ledConfig[i].ledChannelCurrent[2]) == TL::BinaryFile::Error::OK ? writeError : true;
 	}
 
 	// WiFi configuration
-	file.writeString(this->wifiConfig.accessPointSsid);
-	file.writeString(this->wifiConfig.accessPointPassword);
-	file.write(this->wifiConfig.accessPointChannel);
-	file.write(this->wifiConfig.accessPointHidden);
-	file.write(this->wifiConfig.accessPointMaxConnections);
-	file.writeString(this->wifiConfig.wifiSsid);
-	file.writeString(this->wifiConfig.wifiPassword);
+	writeError = file.writeString(TL::Configuration::wifiConfig.accessPointSsid) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.writeString(TL::Configuration::wifiConfig.accessPointPassword) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::wifiConfig.accessPointChannel) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::wifiConfig.accessPointHidden) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::wifiConfig.accessPointMaxConnections) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.writeString(TL::Configuration::wifiConfig.wifiSsid) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.writeString(TL::Configuration::wifiConfig.wifiPassword) == TL::BinaryFile::Error::OK ? writeError : true;
 
 	// Motion sensor calibration
-	file.write(this->motionSensorCalibration.accXRaw);
-	file.write(this->motionSensorCalibration.accYRaw);
-	file.write(this->motionSensorCalibration.accZRaw);
-	file.write(this->motionSensorCalibration.gyroXRaw);
-	file.write(this->motionSensorCalibration.gyroYRaw);
-	file.write(this->motionSensorCalibration.gyroZRaw);
-	file.write(this->motionSensorCalibration.accXG);
-	file.write(this->motionSensorCalibration.accYG);
-	file.write(this->motionSensorCalibration.accZG);
-	file.write(this->motionSensorCalibration.gyroXDeg);
-	file.write(this->motionSensorCalibration.gyroYDeg);
-	file.write(this->motionSensorCalibration.gyroZDeg);
+	writeError = file.write(TL::Configuration::motionSensorCalibration.accXRaw) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::motionSensorCalibration.accYRaw) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::motionSensorCalibration.accZRaw) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::motionSensorCalibration.gyroXRaw) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::motionSensorCalibration.gyroYRaw) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::motionSensorCalibration.gyroZRaw) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::motionSensorCalibration.accXG) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::motionSensorCalibration.accYG) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::motionSensorCalibration.accZG) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::motionSensorCalibration.gyroXDeg) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::motionSensorCalibration.gyroYDeg) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::motionSensorCalibration.gyroZDeg) == TL::BinaryFile::Error::OK ? writeError : true;
+
+	// Audio unit configuration
+	writeError = file.write(TL::Configuration::audioUnitConfig.noiseThreshold) == TL::BinaryFile::Error::OK ? writeError : true;
+	for (size_t i = 0; i < AUDIO_UNIT_NUM_BANDS; i++)
+	{
+		writeError = file.write(TL::Configuration::audioUnitConfig.frequencyBandIndex[i].first) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::audioUnitConfig.frequencyBandIndex[i].second) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].historySize) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].threshold) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].influence) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::audioUnitConfig.peakDetectorConfig[i].noiseGate) == TL::BinaryFile::Error::OK ? writeError : true;
+	}
 
 	// UI configuration
-	file.writeString(this->uiConfiguration.language);
-	file.writeString(this->uiConfiguration.theme);
-	file.write(this->uiConfiguration.expertMode);
+	writeError = file.writeString(TL::Configuration::uiConfiguration.language) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.writeString(TL::Configuration::uiConfiguration.theme) == TL::BinaryFile::Error::OK ? writeError : true;
+	writeError = file.write(TL::Configuration::uiConfiguration.expertMode) == TL::BinaryFile::Error::OK ? writeError : true;
 
 	// Write the hash
-	file.write(this->getSimpleHash());
+	writeError = file.write(TL::Configuration::getSimpleHash()) == TL::BinaryFile::Error::OK ? writeError : true;
 
 	file.close();
-	return true;
+	return !writeError ? TL::Configuration::Error::OK : TL::Configuration::Error::ERROR_FILE_WRITE;
 }
 
 /**
@@ -410,72 +514,85 @@ uint16_t TL::Configuration::getSimpleHash()
 	uint16_t hash = 7;
 
 	// Configuration file version
-	hash = hash * 31 + this->configurationVersion;
+	hash = hash * 31 + TL::Configuration::configurationVersion;
 
 	// System configuration
-	hash = hash * 31 + this->systemConfig.logLevel;
-	hash = hash * 31 + this->systemConfig.lightSensorMode;
-	hash = hash * 31 + this->systemConfig.lightSensorThreshold;
-	hash = hash * 31 + this->systemConfig.lightSensorMinAmbientBrightness;
-	hash = hash * 31 + this->systemConfig.lightSensorMaxAmbientBrightness;
-	hash = hash * 31 + this->systemConfig.lightSensorMinLedBrightness;
-	hash = hash * 31 + this->systemConfig.lightSensorMaxLedBrightness;
-	hash = hash * 31 + this->systemConfig.regulatorPowerLimit;
-	hash = hash * 31 + this->systemConfig.regulatorHighTemperature;
-	hash = hash * 31 + this->systemConfig.regulatorCutoffTemperature;
-	hash = hash * 31 + this->systemConfig.fanMinPwmValue;
-	hash = hash * 31 + this->systemConfig.fanMaxPwmValue;
-	hash = hash * 31 + this->systemConfig.fanMinTemperature;
-	hash = hash * 31 + this->systemConfig.fanMaxTemperature;
+	hash = hash * 31 + TL::Configuration::systemConfig.logLevel;
+	hash = hash * 31 + TL::Configuration::systemConfig.lightSensorMode;
+	hash = hash * 31 + TL::Configuration::systemConfig.lightSensorThreshold;
+	hash = hash * 31 + TL::Configuration::systemConfig.lightSensorMinAmbientBrightness;
+	hash = hash * 31 + TL::Configuration::systemConfig.lightSensorMaxAmbientBrightness;
+	hash = hash * 31 + TL::Configuration::systemConfig.lightSensorMinLedBrightness;
+	hash = hash * 31 + TL::Configuration::systemConfig.lightSensorMaxLedBrightness;
+	hash = hash * 31 + TL::Configuration::systemConfig.regulatorPowerLimit;
+	hash = hash * 31 + TL::Configuration::systemConfig.regulatorHighTemperature;
+	hash = hash * 31 + TL::Configuration::systemConfig.regulatorCutoffTemperature;
+	hash = hash * 31 + TL::Configuration::systemConfig.fanMode;
+	hash = hash * 31 + TL::Configuration::systemConfig.fanMinPwmValue;
+	hash = hash * 31 + TL::Configuration::systemConfig.fanMaxPwmValue;
+	hash = hash * 31 + TL::Configuration::systemConfig.fanMinTemperature;
+	hash = hash * 31 + TL::Configuration::systemConfig.fanMaxTemperature;
 
 	// LED configuration
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		hash = hash * 31 + this->ledConfig[i].ledPin;
-		hash = hash * 31 + this->ledConfig[i].ledCount;
-		hash = hash * 31 + this->ledConfig[i].type;
-		hash = hash * 31 + this->ledConfig[i].speed;
-		hash = hash * 31 + this->ledConfig[i].offset;
-		hash = hash * 31 + this->ledConfig[i].brightness;
-		hash = hash * 31 + this->ledConfig[i].reverse;
-		hash = hash * 31 + this->ledConfig[i].fadeSpeed;
+		hash = hash * 31 + TL::Configuration::ledConfig[i].ledPin;
+		hash = hash * 31 + TL::Configuration::ledConfig[i].ledCount;
+		hash = hash * 31 + TL::Configuration::ledConfig[i].type;
+		hash = hash * 31 + TL::Configuration::ledConfig[i].speed;
+		hash = hash * 31 + TL::Configuration::ledConfig[i].offset;
+		hash = hash * 31 + TL::Configuration::ledConfig[i].brightness;
+		hash = hash * 31 + TL::Configuration::ledConfig[i].reverse;
+		hash = hash * 31 + TL::Configuration::ledConfig[i].fadeSpeed;
 		for (uint8_t j = 0; j < ANIMATOR_NUM_ANIMATION_SETTINGS; j++)
 		{
-			hash = hash * 31 + this->ledConfig[i].animationSettings[j];
+			hash = hash * 31 + TL::Configuration::ledConfig[i].animationSettings[j];
 		}
-		hash = hash * 31 + this->ledConfig[i].ledVoltage;
-		hash = hash * 31 + this->ledConfig[i].ledChannelCurrent[0];
-		hash = hash * 31 + this->ledConfig[i].ledChannelCurrent[1];
-		hash = hash * 31 + this->ledConfig[i].ledChannelCurrent[2];
+		hash = hash * 31 + TL::Configuration::ledConfig[i].ledVoltage;
+		hash = hash * 31 + TL::Configuration::ledConfig[i].ledChannelCurrent[0];
+		hash = hash * 31 + TL::Configuration::ledConfig[i].ledChannelCurrent[1];
+		hash = hash * 31 + TL::Configuration::ledConfig[i].ledChannelCurrent[2];
 	}
 
 	// WiFi configuration
-	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.accessPointSsid);
-	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.accessPointPassword);
-	hash = hash * 31 + this->wifiConfig.accessPointChannel;
-	hash = hash * 31 + this->wifiConfig.accessPointHidden;
-	hash = hash * 31 + this->wifiConfig.accessPointMaxConnections;
-	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.wifiSsid);
-	hash = hash * 31 + this->getSimpleStringHash(this->wifiConfig.wifiPassword);
+	hash = hash * 31 + TL::Configuration::getSimpleStringHash(TL::Configuration::wifiConfig.accessPointSsid);
+	hash = hash * 31 + TL::Configuration::getSimpleStringHash(TL::Configuration::wifiConfig.accessPointPassword);
+	hash = hash * 31 + TL::Configuration::wifiConfig.accessPointChannel;
+	hash = hash * 31 + TL::Configuration::wifiConfig.accessPointHidden;
+	hash = hash * 31 + TL::Configuration::wifiConfig.accessPointMaxConnections;
+	hash = hash * 31 + TL::Configuration::getSimpleStringHash(TL::Configuration::wifiConfig.wifiSsid);
+	hash = hash * 31 + TL::Configuration::getSimpleStringHash(TL::Configuration::wifiConfig.wifiPassword);
 
 	// Motion sensor calibration
-	hash = hash * 31 + this->motionSensorCalibration.accXRaw;
-	hash = hash * 31 + this->motionSensorCalibration.accYRaw;
-	hash = hash * 31 + this->motionSensorCalibration.accZRaw;
-	hash = hash * 31 + this->motionSensorCalibration.gyroXRaw;
-	hash = hash * 31 + this->motionSensorCalibration.gyroYRaw;
-	hash = hash * 31 + this->motionSensorCalibration.gyroZRaw;
-	hash = hash * 31 + this->motionSensorCalibration.accXG;
-	hash = hash * 31 + this->motionSensorCalibration.accYG;
-	hash = hash * 31 + this->motionSensorCalibration.accZG;
-	hash = hash * 31 + this->motionSensorCalibration.gyroXDeg;
-	hash = hash * 31 + this->motionSensorCalibration.gyroYDeg;
-	hash = hash * 31 + this->motionSensorCalibration.gyroZDeg;
+	hash = hash * 31 + TL::Configuration::motionSensorCalibration.accXRaw;
+	hash = hash * 31 + TL::Configuration::motionSensorCalibration.accYRaw;
+	hash = hash * 31 + TL::Configuration::motionSensorCalibration.accZRaw;
+	hash = hash * 31 + TL::Configuration::motionSensorCalibration.gyroXRaw;
+	hash = hash * 31 + TL::Configuration::motionSensorCalibration.gyroYRaw;
+	hash = hash * 31 + TL::Configuration::motionSensorCalibration.gyroZRaw;
+	hash = hash * 31 + TL::Configuration::motionSensorCalibration.accXG;
+	hash = hash * 31 + TL::Configuration::motionSensorCalibration.accYG;
+	hash = hash * 31 + TL::Configuration::motionSensorCalibration.accZG;
+	hash = hash * 31 + TL::Configuration::motionSensorCalibration.gyroXDeg;
+	hash = hash * 31 + TL::Configuration::motionSensorCalibration.gyroYDeg;
+	hash = hash * 31 + TL::Configuration::motionSensorCalibration.gyroZDeg;
+
+	// Audio unit configuration
+	hash = hash * 31 + TL::Configuration::audioUnitConfig.noiseThreshold;
+	for (size_t i = 0; i < AUDIO_UNIT_NUM_BANDS; i++)
+	{
+		hash = hash * 31 + TL::Configuration::audioUnitConfig.frequencyBandIndex[i].first;
+		hash = hash * 31 + TL::Configuration::audioUnitConfig.frequencyBandIndex[i].second;
+		hash = hash * 31 + TL::Configuration::audioUnitConfig.peakDetectorConfig[i].historySize;
+		hash = hash * 31 + TL::Configuration::audioUnitConfig.peakDetectorConfig[i].threshold;
+		hash = hash * 31 + TL::Configuration::audioUnitConfig.peakDetectorConfig[i].influence;
+		hash = hash * 31 + TL::Configuration::audioUnitConfig.peakDetectorConfig[i].noiseGate;
+	}
 
 	// UI configuration
-	hash = hash * 32 + this->getSimpleStringHash(this->uiConfiguration.language);
-	hash = hash * 32 + this->getSimpleStringHash(this->uiConfiguration.theme);
-	hash = hash * 32 + this->uiConfiguration.expertMode;
+	hash = hash * 32 + TL::Configuration::getSimpleStringHash(TL::Configuration::uiConfiguration.language);
+	hash = hash * 32 + TL::Configuration::getSimpleStringHash(TL::Configuration::uiConfiguration.theme);
+	hash = hash * 32 + TL::Configuration::uiConfiguration.expertMode;
 
 	return hash;
 }

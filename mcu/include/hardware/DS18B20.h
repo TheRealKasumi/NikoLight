@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains a class for reading the DS18B20 digital temperature sensor.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -23,18 +23,24 @@
 #define DS18B20_H
 
 #include <stdint.h>
-#include <memory>
 #include <vector>
 
 #include "OneWire.h"
-#include "logging/Logger.h"
 
 namespace TL
 {
 	class DS18B20
 	{
 	public:
-		enum DS18B20Res
+		enum class Error
+		{
+			OK,					// No error
+			ERROR_OW_COMM,		// OneWire bus communication error
+			ERROR_OW_CRC,		// Invalid crc received
+			ERROR_OUT_OF_BOUNDS // Index is out of bounds
+		};
+
+		enum DS18B20Res : uint8_t
 		{
 			DS18B20_9_BIT = 0B00011111,
 			DS18B20_10_BIT = 0B00111111,
@@ -42,29 +48,31 @@ namespace TL
 			DS18B20_12_BIT = 0B01111111
 		};
 
-		DS18B20(const uint8_t busPin);
-		~DS18B20();
+		static TL::DS18B20::Error begin(const uint8_t busPin);
+		static void end();
+		static bool isInitialized();
 
-		bool begin();
+		static size_t getNumSensors();
+		static TL::DS18B20::Error getSensorAddress(uint64_t &sensorAddress, const size_t sensorIndex);
 
-		size_t getNumSensors();
-		uint64_t getSensorAddress(const size_t sensorIndex);
+		static TL::DS18B20::Error setResolution(const TL::DS18B20::DS18B20Res resolution, const size_t sensorIndex);
+		static TL::DS18B20::Error getResolution(TL::DS18B20::DS18B20Res &resolution, const size_t sensorIndex);
 
-		bool setResolution(const size_t sensorIndex, const TL::DS18B20::DS18B20Res resolution);
-		bool getResolution(const size_t sensorIndex, TL::DS18B20::DS18B20Res &resolution);
-
-		bool startMeasurement(const size_t sensorIndex);
-		bool isMeasurementReady(const size_t sensorIndex);
-		bool getTemperature(const size_t sensorIndex, float &temp);
+		static TL::DS18B20::Error startMeasurement(const size_t sensorIndex);
+		static TL::DS18B20::Error isMeasurementReady(bool &isReady, const size_t sensorIndex);
+		static TL::DS18B20::Error getTemperature(float &temp, const size_t sensorIndex);
 
 	private:
-		std::unique_ptr<OneWire> oneWire;
-		std::vector<uint64_t> sensorAddress;
-		std::vector<TL::DS18B20::DS18B20Res> resolution;
-		std::vector<float> lastMeasurement;
-		std::vector<unsigned long> measurementReadyTime;
+		DS18B20();
 
-		bool getSensors(std::vector<uint64_t> &sensorAddress);
+		static bool initialized;
+		static OneWire oneWire;
+		static std::vector<uint64_t> sensorAddress;
+		static std::vector<TL::DS18B20::DS18B20Res> resolution;
+		static std::vector<float> lastMeasurement;
+		static std::vector<unsigned long> measurementReadyTime;
+
+		static TL::DS18B20::Error getSensors(std::vector<uint64_t> &sensorAddress);
 	};
 }
 

@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Implementation of the {@link TL::TemperatureSensor}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -21,77 +21,88 @@
  */
 #include "sensor/TemperatureSensor.h"
 
+bool TL::TemperatureSensor::initialized = false;
+
 /**
- * @brief Create a new instance of {@link TL::TemperatureSensor}.
+ * @brief Start the temperature sensor.
+ * @return OK when the temperature sensor was initialized
+ * @return ERROR_DS18B20_UNAVAILABLE when no temperature sensor is available
  */
-TL::TemperatureSensor::TemperatureSensor()
+TL::TemperatureSensor::Error TL::TemperatureSensor::begin()
 {
-	this->ds18b20.reset(new TL::DS18B20(ONE_WIRE_PIN));
-	if (!this->ds18b20->begin())
+	TL::TemperatureSensor::initialized = false;
+	if (!TL::DS18B20::isInitialized() || TL::DS18B20::getNumSensors() == 0)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialize temperature sensor."));
-		return;
+		return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 	}
 
-	for (uint8_t i = 0; i < this->ds18b20->getNumSensors(); i++)
+	for (size_t i = 0; i < TL::DS18B20::getNumSensors(); i++)
 	{
-		if (!this->ds18b20->setResolution(i, (TL::DS18B20::DS18B20Res)TEMP_SENSOR_RESOLUTION))
+		if (TL::DS18B20::setResolution(TL::DS18B20::DS18B20Res::DS18B20_10_BIT, i) != TL::DS18B20::Error::OK)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set temperature sensor resolution."));
+			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 		}
-		if (!this->ds18b20->startMeasurement(i))
+		if (TL::DS18B20::startMeasurement(i) != TL::DS18B20::Error::OK)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to start the temperature measurement."));
+			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 		}
 	}
+
+	TL::TemperatureSensor::initialized = true;
+	return TL::TemperatureSensor::Error::OK;
 }
 
 /**
- * @brief Delete the {@link TL::TemperatureSensor} instance.
+ * @brief Stop the temperature sensor.
  */
-TL::TemperatureSensor::~TemperatureSensor()
+void TL::TemperatureSensor::end()
 {
+	TL::TemperatureSensor::initialized = false;
 }
 
 /**
- * @brief Get the number of temperature sensors.
- * @return number of sensors
+ * @brief Check if the temperature sensor was initialized.
+ * @return true when initialized
+ * @return false when not initialized
  */
-uint8_t TL::TemperatureSensor::getNumSensors()
+bool TL::TemperatureSensor::isInitialized()
 {
-	return this->ds18b20->getNumSensors();
+	return TL::TemperatureSensor::initialized;
 }
 
 /**
  * @brief Get the minimum temperature from all sensors.
  * @param temp variable to hold the temperature value, will be 0.0 if no sensor is present
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the temperature sensor was initialized
+ * @return ERROR_DS18B20_UNAVAILABLE when no temperature sensor is available
  */
-bool TL::TemperatureSensor::getMinTemperature(float &temp)
+TL::TemperatureSensor::Error TL::TemperatureSensor::getMinTemperature(float &temp)
 {
-	if (this->ds18b20->getNumSensors() == 0)
+	if (!TL::DS18B20::isInitialized() || TL::DS18B20::getNumSensors() == 0)
 	{
 		temp = 0.0f;
-		return true;
+		return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 	}
 
 	temp = 1000.0f;
-	for (uint8_t i = 0; i < this->ds18b20->getNumSensors(); i++)
+	for (size_t i = 0; i < TL::DS18B20::getNumSensors(); i++)
 	{
 		float currentTemp;
-		if (!this->ds18b20->getTemperature(i, currentTemp))
+		if (TL::DS18B20::getTemperature(currentTemp, i) != TL::DS18B20::Error::OK)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to get temperature from sensor ") + i + F("."));
-			return false;
+			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 		}
 
-		if (this->ds18b20->isMeasurementReady(i))
+		bool isReady;
+		if (TL::DS18B20::isMeasurementReady(isReady, i) != TL::DS18B20::Error::OK)
 		{
-			if (!this->ds18b20->startMeasurement(i))
+			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+		}
+		if (isReady)
+		{
+			if (TL::DS18B20::startMeasurement(i) != TL::DS18B20::Error::OK)
 			{
-				TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to start temperature measurement on sensor ") + i + F("."));
-				return false;
+				return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 			}
 		}
 
@@ -100,39 +111,43 @@ bool TL::TemperatureSensor::getMinTemperature(float &temp)
 			temp = currentTemp;
 		}
 	}
-	return true;
+
+	return TL::TemperatureSensor::Error::OK;
 }
 
 /**
  * @brief Get the maximum temperature of all sensors.
  * @param temp variable to hold the temperature value, will be 0.0 if no sensor is present
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the temperature sensor was initialized
+ * @return ERROR_DS18B20_UNAVAILABLE when no temperature sensor is available
  */
-bool TL::TemperatureSensor::getMaxTemperature(float &temp)
+TL::TemperatureSensor::Error TL::TemperatureSensor::getMaxTemperature(float &temp)
 {
-	if (this->ds18b20->getNumSensors() == 0)
+	if (!TL::DS18B20::isInitialized() || TL::DS18B20::getNumSensors() == 0)
 	{
 		temp = 0.0f;
-		return true;
+		return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 	}
 
 	temp = -1000.0f;
-	for (uint8_t i = 0; i < this->ds18b20->getNumSensors(); i++)
+	for (size_t i = 0; i < TL::DS18B20::getNumSensors(); i++)
 	{
 		float currentTemp = 0.0f;
-		if (!this->ds18b20->getTemperature(i, currentTemp))
+		if (TL::DS18B20::getTemperature(currentTemp, i) != TL::DS18B20::Error::OK)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to get temperature from sensor ") + i + F("."));
-			return false;
+			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 		}
 
-		if (this->ds18b20->isMeasurementReady(i))
+		bool isReady;
+		if (TL::DS18B20::isMeasurementReady(isReady, i) != TL::DS18B20::Error::OK)
 		{
-			if (!this->ds18b20->startMeasurement(i))
+			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+		}
+		if (isReady)
+		{
+			if (TL::DS18B20::startMeasurement(i) != TL::DS18B20::Error::OK)
 			{
-				TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to start temperature measurement on sensor ") + i + F("."));
-				return false;
+				return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 			}
 		}
 
@@ -141,44 +156,49 @@ bool TL::TemperatureSensor::getMaxTemperature(float &temp)
 			temp = currentTemp;
 		}
 	}
-	return true;
+
+	return TL::TemperatureSensor::Error::OK;
 }
 
 /**
  * @brief Get the average temperature from all sensors.
  * @param temp variable to hold the temperature value, will be 0.0 if no sensor is present
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the temperature sensor was initialized
+ * @return ERROR_DS18B20_UNAVAILABLE when no temperature sensor is available
  */
-bool TL::TemperatureSensor::getAverageTemperature(float &temp)
+TL::TemperatureSensor::Error TL::TemperatureSensor::getAverageTemperature(float &temp)
 {
-	if (this->ds18b20->getNumSensors() == 0)
+	if (!TL::DS18B20::isInitialized() || TL::DS18B20::getNumSensors() == 0)
 	{
 		temp = 0.0f;
-		return true;
+		return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 	}
 
 	temp = 0.0f;
-	for (uint8_t i = 0; i < this->ds18b20->getNumSensors(); i++)
+	for (size_t i = 0; i < TL::DS18B20::getNumSensors(); i++)
 	{
 		float currentTemp = 0.0f;
-		if (!this->ds18b20->getTemperature(i, currentTemp))
+		if (TL::DS18B20::getTemperature(currentTemp, i) != TL::DS18B20::Error::OK)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to get temperature from sensor ") + i + F("."));
-			return false;
+			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 		}
 
-		if (this->ds18b20->isMeasurementReady(i))
+		bool isReady;
+		if (TL::DS18B20::isMeasurementReady(isReady, i) != TL::DS18B20::Error::OK)
 		{
-			if (!this->ds18b20->startMeasurement(i))
+			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+		}
+		if (isReady)
+		{
+			if (TL::DS18B20::startMeasurement(i) != TL::DS18B20::Error::OK)
 			{
-				TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to start temperature measurement on sensor ") + i + F("."));
-				return false;
+				return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 			}
 		}
 
 		temp += currentTemp;
 	}
-	temp / this->ds18b20->getNumSensors();
-	return true;
+	temp / TL::DS18B20::getNumSensors();
+
+	return TL::TemperatureSensor::Error::OK;
 }

@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Contains the implementation for the {@link TL::TupFile}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -41,55 +41,64 @@ TL::TupFile::~TupFile()
  * @brief Open a TUP file and verify it.
  * @param fileSystem file system where the file is located
  * @param fileName name of the file to open
- * @return true when the file is opened
- * @return false when the file could not be opened
+ * @return OK when the update file was loaded
+ * @return ERROR_FILE_NOT_FOUND when the file was not found
+ * @return ERROR_FILE_READ when the file could not be read
+ * @return ERROR_IS_DIRECTORY when a directory instead of a file was found
+ * @return ERROR_INVALID_HEADER when the TUP header is invalid
+ * @return ERROR_INVALID_DATA when the file data is invalid or corrupted
+ * @return ERROR_EMPTY_FILE when the file continas no data
+ * @return ERROR_MAGIC_NUMBERS when the magic numbers are invalid
+ * @return ERROR_FILE_VERSION when the file version does not match
+ * @return ERROR_FILE_HASH the file hash is invalid
  */
-bool TL::TupFile::load(FS *fileSystem, const String fileName)
+TL::TupFile::Error TL::TupFile::load(FS *fileSystem, const String fileName)
 {
 	this->close();
 	this->file = fileSystem->open(fileName, FILE_READ);
 	if (!this->file)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open TUP file. The file was not found."));
-		return false;
+		return TL::TupFile::Error::ERROR_FILE_NOT_FOUND;
 	}
 	else if (this->file.isDirectory())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to open TUP file. It is a directory."));
 		this->close();
-		return false;
+		return TL::TupFile::Error::ERROR_IS_DIRECTORY;
 	}
 
-	if (!this->loadTupHeader())
+	const TL::TupFile::Error headerError = this->loadTupHeader();
+	if (headerError != TL::TupFile::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TUP file header is invalid."));
 		this->close();
-		return false;
+		return headerError;
 	}
 
-	if (!this->verify())
+	const TL::TupFile::Error verifyError = this->verify();
+	if (verifyError != TL::TupFile::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to verify TUP file. The file is invalid or corrupted."));
 		this->close();
-		return false;
+		return verifyError;
 	}
 
-	return true;
+	return TL::TupFile::Error::OK;
 }
 
 /**
  * @brief Unpack the content of the valid package to a specified folder on the file system.
  * @param fileSystem file system to which to data is unpacked
  * @param root root folder to which the data is unpacked
- * @return true when the unpacking was successful
- * @return false when there was an error unpacking the data
+ * @return OK when the unpacking was successful
+ * @return ERROR_EMPTY_FILE when the TUP has no data
+ * @return ERROR_FILE_READ when the file could not be read
+ * @return ERROR_INVALID_BLOCK_NAME the TUP contains a invalid block name
+ * @return ERROR_CREATE_DIR when a directory could not be created while unpacking
+ * @return ERROR_CREATE_FILE when a file could not be created while unpacking
  */
-bool TL::TupFile::unpack(FS *fileSystem, const String root)
+TL::TupFile::Error TL::TupFile::unpack(FS *fileSystem, const String root)
 {
 	if (!this->file.seek(13))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to unpack TUP file. There is no content."));
-		return false;
+		return TL::TupFile::Error::ERROR_EMPTY_FILE;
 	}
 
 	TL::TupFile::TupDataBlock dataBlock;
@@ -97,25 +106,24 @@ bool TL::TupFile::unpack(FS *fileSystem, const String root)
 	dataBlock.path = new char[256];
 	for (uint32_t i = 0; i < this->tupHeader.numberBlocks; i++)
 	{
-		this->file.read((uint8_t *)&dataBlock.type, 1);
-		this->file.read((uint8_t *)&dataBlock.pathLength, 2);
+		bool readError = false;
+		readError = this->file.read((uint8_t *)&dataBlock.type, 1) != 1 ? true : readError;
+		readError = this->file.read((uint8_t *)&dataBlock.pathLength, 2) != 2 ? true : readError;
 		if (dataBlock.pathLength > 255)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Invalid name for data block ") + String(i) + F(". Can not continue."));
 			delete[] dataBlock.path;
-			return false;
+			return TL::TupFile::Error::ERROR_INVALID_BLOCK_NAME;
 		}
-		this->file.read((uint8_t *)dataBlock.path, dataBlock.pathLength);
-		this->file.read((uint8_t *)&dataBlock.size, 4);
+		readError = this->file.read((uint8_t *)dataBlock.path, dataBlock.pathLength) != dataBlock.pathLength ? true : readError;
+		readError = this->file.read((uint8_t *)&dataBlock.size, 4) != 4 ? true : readError;
 
 		const String absolutePath = this->createAbsolutePath(root + F("/"), dataBlock.path, dataBlock.pathLength);
 		if (dataBlock.type == TL::TupFile::TupDataType::DIRECTORY)
 		{
 			if (!fileSystem->mkdir(absolutePath))
 			{
-				TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to create directory \"") + absolutePath + F("\". Can not continue."));
 				delete[] dataBlock.path;
-				return false;
+				return TL::TupFile::Error::ERROR_CREATE_DIR;
 			}
 		}
 		else if (dataBlock.type == TL::TupFile::TupDataType::FILE || dataBlock.type == TL::TupFile::TupDataType::FIRMWARE)
@@ -123,9 +131,8 @@ bool TL::TupFile::unpack(FS *fileSystem, const String root)
 			File file = fileSystem->open(absolutePath, FILE_WRITE);
 			if (!file)
 			{
-				TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to write file \"") + absolutePath + F("\". Can not continue."));
 				delete[] dataBlock.path;
-				return false;
+				return TL::TupFile::Error::ERROR_CREATE_FILE;
 			}
 
 			uint8_t buffer[1024];
@@ -139,6 +146,10 @@ bool TL::TupFile::unpack(FS *fileSystem, const String root)
 				}
 
 				chunkSize = this->file.read(buffer, chunkSize);
+				if (chunkSize == 0)
+				{
+					return TL::TupFile::Error::ERROR_FILE_READ;
+				}
 				readBytes += chunkSize;
 
 				uint32_t bytesWritten = 0;
@@ -150,10 +161,15 @@ bool TL::TupFile::unpack(FS *fileSystem, const String root)
 
 			file.close();
 		}
+
+		if (readError)
+		{
+			return TL::TupFile::Error::ERROR_FILE_READ;
+		}
 	}
 
 	delete[] dataBlock.path;
-	return true;
+	return TL::TupFile::Error::OK;
 }
 
 /**
@@ -193,68 +209,71 @@ void TL::TupFile::initHeader()
 
 /**
  * @brief Load the TUP header from a opened TUP file.
- * @return true when the header was loaded successfully
- * @return false when there was an error loading the header
+ * @return OK when the header was loaded successfully
+ * @return ERROR_FILE_NOT_FOUND when there was an error opening the file
+ * @return ERROR_EMPTY_FILE when the file continas no data
+ * @return ERROR_MAGIC_NUMBERS when the magic numbers are invalid
+ * @return ERROR_FILE_VERSION when the file version does not match
+ * @return ERROR_FILE_READ when the file could not be read
  */
-bool TL::TupFile::loadTupHeader()
+TL::TupFile::Error TL::TupFile::loadTupHeader()
 {
 	if (!this->file)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Could not load TUP header because the file could not be opened."));
-		return false;
+		return TL::TupFile::Error::ERROR_FILE_NOT_FOUND;
 	}
 	else if (this->file.size() < 13)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Could not load TUP header. The file is invalid."));
-		return false;
+		return TL::TupFile::Error::ERROR_EMPTY_FILE;
 	}
 
-	this->file.read((uint8_t *)this->tupHeader.magic, 4);
-	this->file.read((uint8_t *)&this->tupHeader.fileVersion, 1);
-	this->file.read((uint8_t *)&this->tupHeader.hash, 4);
-	this->file.read((uint8_t *)&this->tupHeader.numberBlocks, 4);
+	bool readError = false;
+	readError = this->file.read((uint8_t *)this->tupHeader.magic, 4) == 4 ? readError : true;
+	readError = this->file.read((uint8_t *)&this->tupHeader.fileVersion, 1) == 1 ? readError : true;
+	readError = this->file.read((uint8_t *)&this->tupHeader.hash, 4) == 4 ? readError : true;
+	readError = this->file.read((uint8_t *)&this->tupHeader.numberBlocks, 4) == 4 ? readError : true;
+	if (readError)
+	{
+		return TL::TupFile::Error::ERROR_FILE_READ;
+	}
 
 	if (this->tupHeader.magic[0] != 'T' || this->tupHeader.magic[1] != 'L' || this->tupHeader.magic[2] != 'U' || this->tupHeader.magic[3] != 'P')
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to load TUP header. Magic numbers are invalid."));
-		return false;
+		return TL::TupFile::Error::ERROR_MAGIC_NUMBERS;
 	}
 
 	if (this->tupHeader.fileVersion != 1)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to load TUP header. Invalid file version."));
-		return false;
+		return TL::TupFile::Error::ERROR_FILE_VERSION;
 	}
 
 	if (this->tupHeader.numberBlocks == 0)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The number of data blocks is invalid. It must not be null."));
-		return false;
+		return TL::TupFile::Error::ERROR_EMPTY_FILE;
 	}
 
-	return true;
+	return TL::TupFile::Error::OK;
 }
 
 /**
  * @brief Verify a {@link TL::TupFile}.
- * @return true when the file is valid
- * @return false when the file is invalid
+ * @return OK when the file is valid
+ * @return ERROR_FILE_HASH when the file is invalid
  */
-bool TL::TupFile::verify()
+TL::TupFile::Error TL::TupFile::verify()
 {
-	return this->generateHash() == this->tupHeader.hash;
+	return this->generateHash() == this->tupHeader.hash ? TL::TupFile::Error::OK : TL::TupFile::Error::ERROR_FILE_HASH;
 }
 
 /**
  * @brief Generate the simple hash to verify the TUP file.
- * @return uint32_t hash
+ * @return hash
  */
 uint32_t TL::TupFile::generateHash()
 {
 	if (!this->file.seek(13))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to generate hash for TUP file. There is no content."));
-		return false;
+		return 0;
 	}
 
 	TL::TupFile::TupDataBlock dataBlock;
@@ -267,7 +286,6 @@ uint32_t TL::TupFile::generateHash()
 		this->file.read((uint8_t *)&dataBlock.pathLength, 2);
 		if (dataBlock.pathLength > 255)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The name of the data block is invalid."));
 			delete[] dataBlock.path;
 			return 0;
 		}

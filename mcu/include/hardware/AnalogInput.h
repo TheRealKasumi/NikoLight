@@ -1,10 +1,10 @@
 /**
- * @file FanController.h
+ * @file AnalogInput.h
  * @author TheRealKasumi
- * @brief Contains a class to control the cooling fan.
+ * @brief Contains a class for reading the analog input from the TesLight board.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -19,27 +19,43 @@
  * from the owner.
  *
  */
-#ifndef FAN_CONTROLLER_H
-#define FAN_CONTROLLER_H
+#ifndef ANALOG_INPUT_H
+#define ANALOG_INPUT_H
 
 #include <Arduino.h>
-#include "configuration/SystemConfiguration.h"
-#include "configuration/Configuration.h"
-#include "logging/Logger.h"
 
 namespace TL
 {
-	class FanController
+	class AnalogInput
 	{
 	public:
-		FanController(const uint8_t fanPin, TL::Configuration *configuration);
-		~FanController();
+		static void begin(const uint8_t inputPin);
+		static void begin(const uint8_t inputPin, const uint8_t inputMode);
+		static void begin(const uint8_t inputPin, const uint8_t inputMode, const float maxVoltage);
+		static void end();
+		static bool isInitialized();
 
-		void setTemperature(const uint8_t temp);
+		static void setInputPin(const uint8_t inputPin);
+		static uint8_t getInputPin();
+
+		static void setInputMode(const uint8_t inputMode);
+		static uint8_t getInputMode();
+
+		static void setMaxVoltage(const float maxVoltage);
+		static float getMaxVoltage();
+
+		static uint16_t getAnalogValue();
+		static float getAnalogVoltage(const bool usePolynomialCorrection = true);
 
 	private:
-		uint8_t fanPin;
-		TL::Configuration *configuration;
+		AnalogInput();
+
+		static bool initialized;
+		static uint8_t inputPin;
+		static uint8_t inputMode;
+		static float maxVoltage;
+
+		static void setupPin();
 	};
 }
 

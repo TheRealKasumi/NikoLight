@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Implementation of a REST endpoint to load update packages to the TesLight controller
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  * 
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
@@ -37,7 +37,7 @@ void TL::UpdateEndpoint::begin(FS *_fileSystem)
 	TL::UpdateEndpoint::fileSystem->mkdir(UPDATE_DIRECTORY);
 
 	TL::Logger::log(TL::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Register update endpoints."));
-	TL::UpdateEndpoint::webServerManager->addUploadRequestHandler((getBaseUri() + F("update")).c_str(), http_method::HTTP_POST, TL::UpdateEndpoint::postPackage, TL::UpdateEndpoint::packageUpload);
+	TL::WebServerManager::addUploadRequestHandler((getBaseUri() + F("update")).c_str(), http_method::HTTP_POST, TL::UpdateEndpoint::postPackage, TL::UpdateEndpoint::packageUpload);
 }
 
 /**

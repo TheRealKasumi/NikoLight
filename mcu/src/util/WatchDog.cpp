@@ -1,10 +1,10 @@
 /**
- * @file FileUtil.cpp
+ * @file WatchDog.cpp
  * @author TheRealKasumi
  * @brief Implementation of the {@link TL::WatchDog}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -23,30 +23,95 @@
 
 /**
  * @brief Initialize the task watchdog timer.
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the watchdog was initialized
+ * @return ERROR_OUT_OF_MEMORY when there was no memory for the allocation
+ * @return ERROR_ALREADY_SUBSCRIBED when the task alreadyd subscribed to a wdt
+ * @return ERROR_WDT_NOT_INIT when the wdt was not initialized beforehand
+ * @return ERROR_UNKNOWN when a unknown error occurs
  */
-bool TL::WatchDog::initializeTaskWatchdog()
+TL::WatchDog::Error TL::WatchDog::initializeTaskWatchdog()
 {
-	return esp_task_wdt_init(WATCHDOG_RESET_TIME, true) == ESP_OK && esp_task_wdt_add(NULL) == ESP_OK;
+	const esp_err_t initError = esp_task_wdt_init(WATCHDOG_RESET_TIME, true);
+	if (initError == ESP_ERR_NO_MEM)
+	{
+		return TL::WatchDog::Error::ERROR_OUT_OF_MEMORY;
+	}
+	else if (initError != ESP_OK)
+	{
+		return TL::WatchDog::Error::ERROR_UNKNOWN;
+	}
+
+	const esp_err_t addError = esp_task_wdt_add(NULL);
+	if (addError == ESP_ERR_INVALID_ARG)
+	{
+		return TL::WatchDog::Error::ERROR_ALREADY_SUBSCRIBED;
+	}
+	else if (addError == ESP_ERR_INVALID_STATE)
+	{
+		return TL::WatchDog::Error::ERROR_WDT_NOT_INIT;
+	}
+	else if (addError != ESP_OK)
+	{
+		return TL::WatchDog::Error::ERROR_UNKNOWN;
+	}
+
+	return TL::WatchDog::Error::OK;
 }
 
 /**
  * @brief Reset the task watchdog timer.
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the watchdog was reset
+ * @return ERROR_WDT_NOT_FOUND when no watchdog was subscribed by the current task
+ * @return ERROR_WDT_NOT_INIT when the wdt was not initialized beforehand
+ * @return ERROR_UNKNOWN when a unknown error occurs
  */
-bool TL::WatchDog::resetTaskWatchdog()
+TL::WatchDog::Error TL::WatchDog::resetTaskWatchdog()
 {
-	return esp_task_wdt_reset() == ESP_OK;
+	const esp_err_t resetError = esp_task_wdt_reset();
+	if (resetError == ESP_ERR_NOT_FOUND)
+	{
+		return TL::WatchDog::Error::ERROR_WDT_NOT_FOUND;
+	}
+	else if (resetError == ESP_ERR_INVALID_STATE)
+	{
+		return TL::WatchDog::Error::ERROR_WDT_NOT_INIT;
+	}
+	else if (resetError != ESP_OK)
+	{
+		return TL::WatchDog::Error::ERROR_UNKNOWN;
+	}
+
+	return TL::WatchDog::Error::OK;
 }
 
 /**
  * @brief Delete the task watchdog timer.
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the wdt was deleted
+ * @return ERROR_WDT_NOT_FOUND when no watchdog was subscribed by the current task
+ * @return ERROR_WDT_NOT_INIT when the wdt was not initialized beforehand
+ * @return ERROR_UNKNOWN when a unknown error occurs
  */
-bool TL::WatchDog::deleteTaskWatchdog()
+TL::WatchDog::Error TL::WatchDog::deleteTaskWatchdog()
 {
-	return esp_task_wdt_reset() == ESP_OK && esp_task_wdt_delete(NULL) == ESP_OK;
+	const TL::WatchDog::Error resetError = TL::WatchDog::resetTaskWatchdog();
+	if (resetError != TL::WatchDog::Error::OK)
+	{
+		return resetError;
+	}
+
+	const esp_err_t deleteError = esp_task_wdt_delete(NULL);
+	if (deleteError == ESP_ERR_INVALID_ARG)
+	{
+		return TL::WatchDog::Error::ERROR_WDT_NOT_FOUND;
+	}
+	else if (deleteError == ESP_ERR_INVALID_STATE)
+	{
+		return TL::WatchDog::Error::ERROR_WDT_NOT_INIT;
+	}
+	else if (deleteError != ESP_OK)
+	{
+		return TL::WatchDog::Error::ERROR_UNKNOWN;
+	}
+
+	return TL::WatchDog::Error::OK;
 }

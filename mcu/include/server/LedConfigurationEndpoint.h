@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Contains a REST endpoint to configure the LED settings.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
@@ -22,10 +22,11 @@
 #ifndef LED_CONFIGURATION_ENDPOINT_H
 #define LED_CONFIGURATION_ENDPOINT_H
 
-#include <functional>
 #include "server/RestEndpoint.h"
 #include "configuration/Configuration.h"
 #include "configuration/SystemConfiguration.h"
+#include "led/LedManager.h"
+#include "sensor/MotionSensor.h"
 #include "logging/Logger.h"
 
 namespace TL
@@ -33,13 +34,10 @@ namespace TL
 	class LedConfigurationEndpoint : public RestEndpoint
 	{
 	public:
-		static void begin(TL::Configuration *_configuration, std::function<bool()> _configChangedCallback);
+		static void begin();
 
 	private:
 		LedConfigurationEndpoint();
-
-		static TL::Configuration *configuration;
-		static std::function<bool()> configChangedCallback;
 
 		static void getLedConfig();
 		static void postLedConfig();

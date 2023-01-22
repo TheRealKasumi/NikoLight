@@ -1,4 +1,7 @@
-import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowTopRightOnSquareIcon,
+  ChevronRightIcon,
+} from '@heroicons/react/24/outline';
 import {
   AllRouteInfo,
   AnyRoute,
@@ -9,9 +12,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import { version } from '../../package.json';
 import { ReactComponent as Logo } from '../assets/logo.svg';
+import { ReactComponent as SwaggerIcon } from '../assets/swagger.svg';
 import { AnimationType } from '../components';
 import i18n from '../i18n';
-import { toPercentage } from '../libs';
+import { changeTheme, toPercentage } from '../libs';
 import { useLed, useUi } from './api';
 
 const flatRoutes = (route: Route<AllRouteInfo, RouteInfo>): AnyRoute[] =>
@@ -32,8 +36,9 @@ export const Home = (): JSX.Element => {
   const { routeTree } = useRouter();
   const routes = flatRoutes(routeTree);
 
-  useUi({
+  const { data: uiData } = useUi({
     onSuccess: (data) => {
+      changeTheme(data.theme);
       i18n.changeLanguage(data.language);
     },
   });
@@ -43,6 +48,7 @@ export const Home = (): JSX.Element => {
       <h1 className="text-3xl">TesLight</h1>
       <h2 className="text-base text-zinc">v{version}</h2>
       <Logo className="my-12 h-44" />
+
       {routes.map((route) => {
         const meta = route.options.meta;
 
@@ -98,6 +104,22 @@ export const Home = (): JSX.Element => {
           </route.Link>
         );
       })}
+
+      {uiData?.expertMode && (
+        <a href="./swagger.html" target="_blank" rel="noreferrer">
+          <div className="my-6 flex flex-row">
+            <div className="w-12 flex-none self-center">
+              <SwaggerIcon className="h-6 w-6 stroke-slate dark:stroke-white" />
+            </div>
+            <div className="grow">
+              <p>Swagger UI</p>
+            </div>
+            <div className="w-6 flex-none self-center text-right text-zinc">
+              <ArrowTopRightOnSquareIcon className="h-4 w-4" />
+            </div>
+          </div>
+        </a>
+      )}
     </>
   );
 };

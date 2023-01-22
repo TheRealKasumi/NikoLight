@@ -24,7 +24,7 @@ import {
   Toast,
 } from '../components';
 import { toPercentage } from '../libs';
-import { useLed, useUpdateLed } from '../pages/api';
+import { useLed, useSystemInfo, useUpdateLed } from '../pages/api';
 
 type FormData = {
   animationSettings: [
@@ -88,6 +88,7 @@ type FormProps = { zoneId: number };
 
 const Form = ({ zoneId }: FormProps): JSX.Element => {
   const { t } = useTranslation();
+  const { data: systemInfo } = useSystemInfo();
   const { data } = useLed();
   const { mutateAsync, isSuccess, isError, error } = useUpdateLed();
   const zone = data?.[zoneId];
@@ -229,11 +230,29 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
     }
   };
 
+  const getAvailableAnimationTypes = () => {
+    const hasMPU6050 = (systemInfo?.hardwareInfo.mpu6050 ?? 0) > 0;
+
+    return Object.entries(AnimationType)
+      .filter(([key]) => isNaN(Number(key)))
+      .filter(([, value]) => value !== AnimationType.FSEQ)
+      .filter(
+        ([, value]) =>
+          value !== AnimationType.RainbowMotion ||
+          (value === AnimationType.RainbowMotion && hasMPU6050),
+      )
+      .filter(
+        ([, value]) =>
+          value !== AnimationType.GradientMotion ||
+          (value === AnimationType.GradientMotion && hasMPU6050),
+      );
+  };
+
   return (
     <>
       {isSuccess && <Toast title={t('zone.submitSuccessful')} />}
 
-      {isError && <Notification message={error.message} />}
+      {isError && <Notification state="error" message={error.message} />}
 
       <form onSubmit={onSubmit}>
         <fieldset className="mb-6">
@@ -251,14 +270,11 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
                 name="type"
                 onValueChange={onTypeChange}
               >
-                {Object.entries(AnimationType)
-                  .filter(([key]) => isNaN(Number(key)))
-                  .filter(([, value]) => value !== AnimationType.FSEQ)
-                  .map(([key, value]) => (
-                    <SelectItem key={key} value={value.toString()}>
-                      {t(`zone.animationTypes.${key}`)}
-                    </SelectItem>
-                  ))}
+                {getAvailableAnimationTypes().map(([key, value]) => (
+                  <SelectItem key={key} value={value.toString()}>
+                    {t(`zone.animationTypes.${key}`)}
+                  </SelectItem>
+                ))}
               </Select>
             </div>
           </label>
@@ -476,6 +492,18 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
                   max={255}
                   step={1}
                 />
+              </label>
+
+              <label className="mb-6 flex flex-row justify-between">
+                <span className="basis-1/2 self-center">
+                  {t('zone.bounceAtCorner')}
+                </span>
+                <div className="basis-1/2 text-right">
+                  <Switch<FormData>
+                    control={control}
+                    name="animationSettings.18"
+                  />
+                </div>
               </label>
 
               <Collapsible

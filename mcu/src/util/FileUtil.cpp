@@ -3,8 +3,8 @@
  * @author TheRealKasumi
  * @brief Implementation of the {@link TL::FileUtil}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
- * 
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -93,7 +93,7 @@ bool TL::FileUtil::getFileIdentifier(FS *fileSystem, const String fileName, uint
 	identifier = 7;
 	for (uint16_t i = 0; i < fileName.length(); i++)
 	{
-		identifier = identifier * 31 + (uint8_t)fileName[i];
+		identifier = identifier * 31 + static_cast<uint8_t>(fileName[i]);
 	}
 	identifier = identifier * 31 + file.size();
 	identifier = identifier * 31 + file.getLastWrite();

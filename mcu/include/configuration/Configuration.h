@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Contains a class to load and save the (runtime) configuration.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
@@ -22,18 +22,29 @@
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
 
+#include <tuple>
 #include <Arduino.h>
 #include <FS.h>
 
 #include "configuration/SystemConfiguration.h"
 #include "util/BinaryFile.h"
-#include "logging/Logger.h"
+#include "hardware/AudioUnit.h"
 
 namespace TL
 {
 	class Configuration
 	{
 	public:
+		enum class Error
+		{
+			OK,					// No error
+			ERROR_FILE_OPEN,	// Failed to open file
+			ERROR_FILE_READ,	// Failed to read file
+			ERROR_FILE_WRITE,	// Failed to write file
+			ERROR_FILE_VERSION, // Unmatching file version
+			ERROR_FILE_HASH		// Unmatching file hash
+		};
+
 		struct SystemConfig
 		{
 			uint8_t logLevel;						 // Logging level
@@ -47,6 +58,7 @@ namespace TL
 			uint8_t regulatorPowerLimit;			 // Limit in W
 			uint8_t regulatorHighTemperature;		 // Temp in °C where brightness is reduced
 			uint8_t regulatorCutoffTemperature;		 // Temp in °C where LEDs are turned off
+			uint8_t fanMode;						 // Mode of the cooling fan
 			uint8_t fanMinPwmValue;					 // Minimum pwm value output to the fan (stall guard)
 			uint8_t fanMaxPwmValue;					 // Maximum pwm value output to the fan
 			uint8_t fanMinTemperature;				 // Minimum temp in °C where the fan starts
@@ -95,6 +107,13 @@ namespace TL
 			float gyroZDeg;	  // Z rotation in deg/s
 		};
 
+		struct AudioUnitConfig
+		{
+			uint16_t noiseThreshold;													// Threshold to filter out static noise
+			std::pair<uint16_t, uint16_t> frequencyBandIndex[AUDIO_UNIT_NUM_BANDS];		// Frequency band start and end bin indices
+			TL::AudioUnit::PeakDetectorConfig peakDetectorConfig[AUDIO_UNIT_NUM_BANDS]; // Settings for the peak detector
+		};
+
 		struct UIConfiguration
 		{
 			String firmware;
@@ -103,41 +122,49 @@ namespace TL
 			bool expertMode;
 		};
 
-		Configuration(FS *fileSystem, const String fileName);
-		~Configuration();
+		static void begin(FS *fileSystem, const String fileName);
+		static void end();
+		static bool isInitialized();
 
-		TL::Configuration::SystemConfig getSystemConfig();
-		void setSystemConfig(TL::Configuration::SystemConfig &systemConfig);
+		static TL::Configuration::SystemConfig getSystemConfig();
+		static void setSystemConfig(TL::Configuration::SystemConfig &systemConfig);
 
-		TL::Configuration::LedConfig getLedConfig(const uint8_t index);
-		void setLedConfig(const TL::Configuration::LedConfig &ledConfig, const uint8_t index);
+		static TL::Configuration::LedConfig getLedConfig(const uint8_t index);
+		static void setLedConfig(const TL::Configuration::LedConfig &ledConfig, const uint8_t index);
 
-		TL::Configuration::WiFiConfig getWiFiConfig();
-		void setWiFiConfig(TL::Configuration::WiFiConfig &wifiConfig);
+		static TL::Configuration::WiFiConfig getWiFiConfig();
+		static void setWiFiConfig(TL::Configuration::WiFiConfig &wifiConfig);
 
-		TL::Configuration::MotionSensorCalibration getMotionSensorCalibration();
-		void setMotionSensorCalibration(const TL::Configuration::MotionSensorCalibration &calibration);
+		static TL::Configuration::MotionSensorCalibration getMotionSensorCalibration();
+		static void setMotionSensorCalibration(const TL::Configuration::MotionSensorCalibration &calibration);
 
-		TL::Configuration::UIConfiguration getUIConfiguration();
-		void setUIConfiguration(const TL::Configuration::UIConfiguration &uiConfiguration);
+		static TL::Configuration::AudioUnitConfig getAudioUnitConfig();
+		static void setAudioUnitConfig(const TL::Configuration::AudioUnitConfig &audioUnitConfig);
 
-		void loadDefaults();
-		bool load();
-		bool save();
+		static TL::Configuration::UIConfiguration getUIConfiguration();
+		static void setUIConfiguration(const TL::Configuration::UIConfiguration &uiConfiguration);
+
+		static void loadDefaults();
+		static TL::Configuration::Error load();
+		static TL::Configuration::Error save();
 
 	private:
-		FS *fileSystem;
-		String fileName;
-		uint16_t configurationVersion;
+		Configuration();
 
-		TL::Configuration::SystemConfig systemConfig;
-		TL::Configuration::LedConfig ledConfig[LED_NUM_ZONES];
-		TL::Configuration::WiFiConfig wifiConfig;
-		TL::Configuration::MotionSensorCalibration motionSensorCalibration;
-		TL::Configuration::UIConfiguration uiConfiguration;
+		static bool initialized;
+		static FS *fileSystem;
+		static String fileName;
+		static uint16_t configurationVersion;
 
-		uint16_t getSimpleHash();
-		uint16_t getSimpleStringHash(const String input);
+		static TL::Configuration::SystemConfig systemConfig;
+		static TL::Configuration::LedConfig ledConfig[LED_NUM_ZONES];
+		static TL::Configuration::WiFiConfig wifiConfig;
+		static TL::Configuration::MotionSensorCalibration motionSensorCalibration;
+		static TL::Configuration::AudioUnitConfig audioUnitConfig;
+		static TL::Configuration::UIConfiguration uiConfiguration;
+
+		static uint16_t getSimpleHash();
+		static uint16_t getSimpleStringHash(const String input);
 	};
 }
 

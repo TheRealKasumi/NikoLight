@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Contains the implementation of {@link TL::LedAnimator}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
@@ -190,7 +190,7 @@ bool TL::LedAnimator::getReverse()
 
 /**
  * @brief Set the motion sensor data.
- * @param motionSensorData instance of {@link TL::MotionSensor::MotionSensorData}
+ * @param motionSensorData motion sensor data
  */
 void TL::LedAnimator::setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData)
 {
@@ -198,12 +198,30 @@ void TL::LedAnimator::setMotionSensorData(const TL::MotionSensor::MotionSensorDa
 }
 
 /**
- * @brief Get the currently set and used motion sensor data.
- * @return currently set and used motion sensor data
+ * @brief Get the currently set motion sensor data.
+ * @return currently set motion sensor data
  */
-TL::MotionSensor::MotionSensorData TL::LedAnimator::getMotionSensorData()
+TL::MotionSensor::MotionSensorData &TL::LedAnimator::getMotionSensorData()
 {
 	return this->motionSensorData;
+}
+
+/**
+ * @brief Set the audio analysis data to be used by an animator.
+ * @param audioAnalysis audio analysis
+ */
+void TL::LedAnimator::setAudioAnalysis(const TL::AudioUnit::AudioAnalysis &audioAnalysis)
+{
+	this->audioAnalysis = audioAnalysis;
+}
+
+/**
+ * @brief Get the audio analysis data.
+ * @return audio analysis data
+ */
+TL::AudioUnit::AudioAnalysis &TL::LedAnimator::getAudioAnalysis()
+{
+	return this->audioAnalysis;
 }
 
 /**
@@ -256,7 +274,7 @@ float TL::LedAnimator::trapezoid(float angle)
 {
 	// This will limit the angle to [0...360]
 	float factor = angle / 360.0f;
-	factor -= (int)factor;
+	factor -= static_cast<int>(factor);
 	angle = factor * 360.0f;
 	if (angle < 0.0f)
 	{
@@ -296,7 +314,7 @@ float TL::LedAnimator::trapezoid2(float angle)
 {
 	// This will limit the angle to [0...360]
 	float factor = angle / 360.0f;
-	factor -= (int)factor;
+	factor -= static_cast<int>(factor);
 	angle = factor * 360.0f;
 	if (angle < 0.0f)
 	{

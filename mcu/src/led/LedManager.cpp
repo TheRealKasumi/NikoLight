@@ -3,7 +3,7 @@
  * @author TheRealKasumi
  * @brief Implementation of the {@link TL::LedManager}.
  *
- * @copyright Copyright (c) 2022 TheRealKasumi
+ * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
@@ -22,48 +22,85 @@
 
 #include "led/LedManager.h"
 
+bool TL::LedManager::initialized = false;
+std::vector<std::vector<CRGB>> TL::LedManager::ledData;
+std::vector<std::unique_ptr<TL::LedAnimator>> TL::LedManager::ledAnimator;
+std::unique_ptr<TL::FseqLoader> TL::LedManager::fseqLoader;
+uint32_t TL::LedManager::renderInterval;
+uint32_t TL::LedManager::frameInterval;
+float TL::LedManager::regulatorTemperature;
+
 /**
- * @brief Create a new instance of {@link TL::LedManager}.
- * @param config pointer to the configuration
+ * @brief Start the LED manager.
+ * @return OK when the LED manager was initialized
+ * @return ERROR_CONFIG_UNAVAILABLE when the configuration was not initialized
  */
-TL::LedManager::LedManager(TL::Configuration *config)
+TL::LedManager::Error TL::LedManager::begin()
 {
-	this->config = config;
-	this->renderInterval = RENDER_INTERVAL;
-	this->frameInterval = FRAME_INTERVAL;
-	this->regulatorTemperature = 0.0f;
+	TL::LedManager::initialized = false;
+	TL::LedManager::renderInterval = RENDER_INTERVAL;
+	TL::LedManager::frameInterval = FRAME_INTERVAL;
+	TL::LedManager::regulatorTemperature = 0.0f;
+
+	if (!TL::Configuration::isInitialized())
+	{
+		return TL::LedManager::Error::ERROR_CONFIG_UNAVAILABLE;
+	}
+
+	TL::LedManager::initialized = true;
+	return TL::LedManager::Error::OK;
 }
 
 /**
- * @brief Destroy the {@link TL::LedManager} instance and clear memory.
+ * @brief Stop the LED manager.
  */
-TL::LedManager::~LedManager()
+void TL::LedManager::end()
 {
-	this->clearAnimations();
+	TL::LedManager::clearAnimations();
+}
+
+/**
+ * @brief Check if the LED manager is initialized.
+ * @return true when initialized
+ * @return false when not initialized
+ */
+bool TL::LedManager::isInitialized()
+{
+	return TL::LedManager::initialized;
 }
 
 /**
  * @brief Clear and create new LED data and animators from the configuration.
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the animation were reloaded
+ * @return ERROR_CONFIG_UNAVAILABLE when the configuration was not initialized
+ * @return ERROR_CREATE_LED_DATA when the LED data could not be created
+ * @return ERROR_UNKNOWN_ANIMATOR_TYPE when one of the animator types is unknown
+ * @return ERROR_INVALID_FSEQ when a custom animation was set but the fseq file is invalid
+ * @return ERROR_FILE_NOT_FOUND when the animation file was not found
+ * @return ERROR_INVALID_LED_CONFIGURATION when the current LED configuration does not match the custom animation
  */
-bool TL::LedManager::reloadAnimations()
+TL::LedManager::Error TL::LedManager::reloadAnimations()
 {
-	this->clearAnimations();
-
-	if (!this->createLedData())
+	if (!TL::Configuration::isInitialized())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to create new LED data."));
-		return false;
+		return TL::LedManager::Error::ERROR_CONFIG_UNAVAILABLE;
 	}
 
-	if (!this->createAnimators())
+	TL::LedManager::clearAnimations();
+
+	const TL::LedManager::Error ledDataError = TL::LedManager::createLedData();
+	if (ledDataError != TL::LedManager::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to create new animators."));
-		return false;
+		return ledDataError;
 	}
 
-	return true;
+	const TL::LedManager::Error animatorError = TL::LedManager::createAnimators();
+	if (animatorError != TL::LedManager::Error::OK)
+	{
+		return animatorError;
+	}
+
+	return TL::LedManager::Error::OK;
 }
 
 /**
@@ -72,9 +109,9 @@ bool TL::LedManager::reloadAnimations()
 void TL::LedManager::clearAnimations()
 {
 	FastLED.clear();
-	this->ledData.clear();
-	this->ledAnimator.clear();
-	this->fseqLoader.reset();
+	TL::LedManager::ledData.clear();
+	TL::LedManager::ledAnimator.clear();
+	TL::LedManager::fseqLoader.reset();
 }
 
 /**
@@ -83,9 +120,9 @@ void TL::LedManager::clearAnimations()
  */
 void TL::LedManager::setAmbientBrightness(const float ambientBrightness)
 {
-	for (size_t i = 0; i < this->ledAnimator.size(); i++)
+	for (size_t i = 0; i < TL::LedManager::ledAnimator.size(); i++)
 	{
-		this->ledAnimator.at(i)->setAmbientBrightness(ambientBrightness);
+		TL::LedManager::ledAnimator.at(i)->setAmbientBrightness(ambientBrightness);
 	}
 }
 
@@ -96,7 +133,7 @@ void TL::LedManager::setAmbientBrightness(const float ambientBrightness)
  */
 void TL::LedManager::setRenderInterval(const uint32_t renderInterval)
 {
-	this->renderInterval = renderInterval >= 10000 ? renderInterval : 10000;
+	TL::LedManager::renderInterval = renderInterval >= 10000 ? renderInterval : 10000;
 }
 
 /**
@@ -105,7 +142,7 @@ void TL::LedManager::setRenderInterval(const uint32_t renderInterval)
  */
 uint32_t TL::LedManager::getRenderInterval()
 {
-	return this->renderInterval;
+	return TL::LedManager::renderInterval;
 }
 
 /**
@@ -115,7 +152,7 @@ uint32_t TL::LedManager::getRenderInterval()
  */
 void TL::LedManager::setFrameInterval(const uint32_t frameInterval)
 {
-	this->frameInterval = frameInterval >= 10000 ? frameInterval : 10000;
+	TL::LedManager::frameInterval = frameInterval >= 10000 ? frameInterval : 10000;
 }
 
 /**
@@ -124,18 +161,30 @@ void TL::LedManager::setFrameInterval(const uint32_t frameInterval)
  */
 uint32_t TL::LedManager::getFrameInterval()
 {
-	return this->frameInterval;
+	return TL::LedManager::frameInterval;
 }
 
 /**
  * @brief Set the current motion sensor data.
- * @param motionSensorData instance of the {@link TL::MotionSensor::MotionSensorData}
+ * @param motionSensorData motion sensor data
  */
 void TL::LedManager::setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData)
 {
-	for (size_t i = 0; i < this->ledAnimator.size(); i++)
+	for (size_t i = 0; i < TL::LedManager::ledAnimator.size(); i++)
 	{
-		this->ledAnimator.at(i)->setMotionSensorData(motionSensorData);
+		TL::LedManager::ledAnimator.at(i)->setMotionSensorData(motionSensorData);
+	}
+}
+
+/**
+ * @brief Set the current audio analysis data.
+ * @param audioAnalysis audio analysis data
+ */
+void TL::LedManager::setAudioAnalysis(const TL::AudioUnit::AudioAnalysis &audioAnalysis)
+{
+	for (size_t i = 0; i < TL::LedManager::ledAnimator.size(); i++)
+	{
+		TL::LedManager::ledAnimator.at(i)->setAudioAnalysis(audioAnalysis);
 	}
 }
 
@@ -145,7 +194,7 @@ void TL::LedManager::setMotionSensorData(const TL::MotionSensor::MotionSensorDat
  */
 void TL::LedManager::setRegulatorTemperature(const float regulatorTemperature)
 {
-	this->regulatorTemperature = regulatorTemperature;
+	TL::LedManager::regulatorTemperature = regulatorTemperature;
 }
 
 /**
@@ -155,7 +204,7 @@ void TL::LedManager::setRegulatorTemperature(const float regulatorTemperature)
 float TL::LedManager::getLedPowerDraw()
 {
 	float regulatorPower[REGULATOR_COUNT];
-	this->calculateRegulatorPowerDraw(regulatorPower);
+	TL::LedManager::calculateRegulatorPowerDraw(regulatorPower);
 
 	float sum = 0.0f;
 	for (uint8_t i = 0; i < REGULATOR_COUNT; i++)
@@ -172,9 +221,9 @@ float TL::LedManager::getLedPowerDraw()
 size_t TL::LedManager::getLedCount()
 {
 	size_t count = 0;
-	for (size_t i = 0; i < this->ledData.size(); i++)
+	for (size_t i = 0; i < TL::LedManager::ledData.size(); i++)
 	{
-		count += this->ledData.at(i).size();
+		count += TL::LedManager::ledData.at(i).size();
 	}
 	return count;
 }
@@ -184,12 +233,12 @@ size_t TL::LedManager::getLedCount()
  */
 void TL::LedManager::render()
 {
-	for (size_t i = 0; i < this->ledAnimator.size() && i < this->ledData.size(); i++)
+	for (size_t i = 0; i < TL::LedManager::ledAnimator.size() && i < TL::LedManager::ledData.size(); i++)
 	{
-		this->ledAnimator.at(i)->render(this->ledData.at(i));
+		TL::LedManager::ledAnimator.at(i)->render(TL::LedManager::ledData.at(i));
 	}
-	this->limitPowerConsumption();
-	this->limitRegulatorTemperature();
+	TL::LedManager::limitPowerConsumption();
+	TL::LedManager::limitRegulatorTemperature();
 }
 
 /**
@@ -202,153 +251,145 @@ void TL::LedManager::show()
 
 /**
  * @brief Create the LED data and assign it to the FastLED library.
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the LED data was created
+ * @return ERROR_CREATE_LED_DATA when the LED data could not be created because the data could not be linked to a pin
  */
-bool TL::LedManager::createLedData()
+TL::LedManager::Error TL::LedManager::createLedData()
 {
-	this->ledData.assign(LED_NUM_ZONES, std::vector<CRGB>());
+	TL::LedManager::ledData.assign(LED_NUM_ZONES, std::vector<CRGB>());
 	for (size_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		const TL::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
-		this->ledData.at(i).assign(ledConfig.ledCount, CRGB::Black);
+		const TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
+		TL::LedManager::ledData.at(i).assign(ledConfig.ledCount, CRGB::Black);
 
 		switch (ledConfig.ledPin)
 		{
 		case 13:
-			FastLED.addLeds<NEOPIXEL, 13>(&this->ledData.at(i).front(), ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 13>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		case 14:
-			FastLED.addLeds<NEOPIXEL, 14>(&this->ledData.at(i).front(), ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 14>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		case 15:
-			FastLED.addLeds<NEOPIXEL, 15>(&this->ledData.at(i).front(), ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 15>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		case 16:
-			FastLED.addLeds<NEOPIXEL, 16>(&this->ledData.at(i).front(), ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 16>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		case 17:
-			FastLED.addLeds<NEOPIXEL, 17>(&this->ledData.at(i).front(), ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 17>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		case 21:
-			FastLED.addLeds<NEOPIXEL, 21>(&this->ledData.at(i).front(), ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 21>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		case 22:
-			FastLED.addLeds<NEOPIXEL, 22>(&this->ledData.at(i).front(), ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 22>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		case 25:
-			FastLED.addLeds<NEOPIXEL, 25>(&this->ledData.at(i).front(), ledConfig.ledCount);
+			FastLED.addLeds<NEOPIXEL, 25>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
 			break;
 		default:
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to link the created pixel data to the FastLED lib because the pin is invalid. It must be one of [13, 14, 15, 16, 17, 21, 22, 25]."));
-			return false;
+			return TL::LedManager::Error::ERROR_CREATE_LED_DATA;
 		}
 	}
-	return true;
+	return TL::LedManager::Error::OK;
 }
 
 /**
  * @brief Create the LED animators based on the configuration.
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the animators were created
+ * @return ERROR_UNKNOWN_ANIMATOR_TYPE when one of the animator types is unknown
+ * @return ERROR_INVALID_FSEQ when a custom animation was set but the fseq file is invalid
+ * @return ERROR_FILE_NOT_FOUND when the animation file was not found
+ * @return ERROR_INVALID_LED_CONFIGURATION when the animation file is incompatible with the LED configuration
  */
-bool TL::LedManager::createAnimators()
+TL::LedManager::Error TL::LedManager::createAnimators()
 {
 	// Custom animations will be used when the first animator type is set to 255
-	// The used file identifier is set by the animationSettings [20-23]
-	// Field 24 is reserved to store the previous, calculated animation type
-	const bool customAnimation = this->config->getLedConfig(0).type == 255;
+	// The used file identifier is set by the custom fields [10-13]
+	// Field 14 is reserved to store the previous, calculated animation type
+	const bool customAnimation = TL::Configuration::getLedConfig(0).type == 255;
 	uint32_t identifier = 0;
-	memcpy(&identifier, &this->config->getLedConfig(0).animationSettings[20], sizeof(identifier));
+	memcpy(&identifier, &TL::Configuration::getLedConfig(0).animationSettings[20], sizeof(identifier));
 	if (!customAnimation)
 	{
-		const size_t ledCount = this->getLedCount();
-		if (ledCount <= 850)
-		{
-			// 60 FPS
-			this->setRenderInterval(RENDER_INTERVAL);
-			this->setFrameInterval(FRAME_INTERVAL);
-		}
-		else if (ledCount > 850 && ledCount <= 1000)
-		{
-			// 40 FPS
-			this->setRenderInterval(RENDER_INTERVAL);
-			this->setFrameInterval(FRAME_INTERVAL * 1.5f);
-		}
-		else
-		{
-			// 30 FPS
-			this->setRenderInterval(RENDER_INTERVAL);
-			this->setFrameInterval(FRAME_INTERVAL * 2.0f);
-		}
-
-		return this->loadCalculatedAnimations();
+		return TL::LedManager::loadCalculatedAnimations();
 	}
 	else
 	{
 		String fileName;
 		if (TL::FileUtil::getFileNameFromIdentifier(&SD, FSEQ_DIRECTORY, identifier, fileName) && fileName.length() > 0)
 		{
-			this->fseqLoader.reset(new TL::FseqLoader(&SD));
-			if (!this->fseqLoader->loadFromFile(FSEQ_DIRECTORY + (String)F("/") + fileName))
-			{
-				TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to load fseq file. The animation can not be played."));
-				this->fseqLoader.reset();
-				return false;
-			}
+			return TL::LedManager::loadCustomAnimation(fileName);
 		}
 		else
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Failed to determine file name for animation file with id ") + String(identifier) + F("."));
-			return false;
+			return TL::LedManager::Error::ERROR_FILE_NOT_FOUND;
 		}
-
-		this->setRenderInterval((uint32_t)this->fseqLoader->getHeader().stepTime * 1000);
-		this->setFrameInterval((uint32_t)this->fseqLoader->getHeader().stepTime * 1000);
-		return this->loadCustomAnimation();
 	}
 }
 
 /**
  * @brief Load animators for calculated animations.
- * @return true when successful
- * @return false when there was an error
+ * @return OK when the calcualted animators were loaded
+ * @return ERROR_UNKNOWN_ANIMATOR_TYPE when one of the animator types is unknown
  */
-bool TL::LedManager::loadCalculatedAnimations()
+TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 {
-	this->ledAnimator.resize(LED_NUM_ZONES);
-	for (size_t i = 0; i < this->ledAnimator.size(); i++)
+	const size_t ledCount = TL::LedManager::getLedCount();
+	if (ledCount <= 850)
 	{
-		const TL::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
+		// 60 FPS
+		TL::LedManager::setRenderInterval(RENDER_INTERVAL);
+		TL::LedManager::setFrameInterval(FRAME_INTERVAL);
+	}
+	else if (ledCount > 850 && ledCount <= 1000)
+	{
+		// 40 FPS
+		TL::LedManager::setRenderInterval(RENDER_INTERVAL);
+		TL::LedManager::setFrameInterval(FRAME_INTERVAL * 1.5f);
+	}
+	else
+	{
+		// 30 FPS
+		TL::LedManager::setRenderInterval(RENDER_INTERVAL);
+		TL::LedManager::setFrameInterval(FRAME_INTERVAL * 2.0f);
+	}
+
+	TL::LedManager::ledAnimator.resize(LED_NUM_ZONES);
+	for (size_t i = 0; i < TL::LedManager::ledAnimator.size(); i++)
+	{
+		const TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
 
 		// Rainbow type
 		if (ledConfig.type == 0)
 		{
-			this->ledAnimator.at(i).reset(new TL::RainbowAnimator((TL::RainbowAnimator::RainbowMode)ledConfig.animationSettings[0]));
+			TL::LedManager::ledAnimator.at(i).reset(new TL::RainbowAnimator((TL::RainbowAnimator::RainbowMode)ledConfig.animationSettings[0]));
 		}
 
 		// Sparkle type
 		else if (ledConfig.type == 1)
 		{
-			this->ledAnimator.at(i).reset(new TL::SparkleAnimator(
+			TL::LedManager::ledAnimator.at(i).reset(new TL::SparkleAnimator(
 				(TL::SparkleAnimator::SpawnPosition)ledConfig.animationSettings[0],
 				ledConfig.animationSettings[8] / 2 + 1,
 				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
-				ledConfig.animationSettings[9] / 4096.0f,
-				ledConfig.animationSettings[10] / 1024.0f,
+				ledConfig.animationSettings[9] / 10240.0f,
+				ledConfig.animationSettings[10] / 5120.0f,
 				ledConfig.animationSettings[11] / 255.0f,
 				ledConfig.animationSettings[12] / 1024.0f,
 				ledConfig.animationSettings[13] / 255.0f,
-				ledConfig.animationSettings[14] / 1024.0f,
-				ledConfig.animationSettings[15] / 1024.0f,
-				ledConfig.animationSettings[16] / 1024.0f,
-				ledConfig.animationSettings[17] / 1024.0f));
+				ledConfig.animationSettings[14] / 255.0f,
+				ledConfig.animationSettings[15] / 255.0f,
+				ledConfig.animationSettings[16] / 10240.0f,
+				ledConfig.animationSettings[17] / 5120.0f,
+				ledConfig.animationSettings[18]));
 		}
 
 		// Gradient type
 		else if (ledConfig.type == 2)
 		{
-			this->ledAnimator.at(i).reset(new TL::GradientAnimator(
+			TL::LedManager::ledAnimator.at(i).reset(new TL::GradientAnimator(
 				(TL::GradientAnimator::GradientMode)ledConfig.animationSettings[0],
 				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
 				CRGB(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
@@ -357,13 +398,13 @@ bool TL::LedManager::loadCalculatedAnimations()
 		// Static color type
 		else if (ledConfig.type == 3)
 		{
-			this->ledAnimator.at(i).reset(new TL::StaticColorAnimator(CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3])));
+			TL::LedManager::ledAnimator.at(i).reset(new TL::StaticColorAnimator(CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3])));
 		}
 
 		// Color bar type
 		else if (ledConfig.type == 4)
 		{
-			this->ledAnimator.at(i).reset(new TL::ColorBarAnimator(
+			TL::LedManager::ledAnimator.at(i).reset(new TL::ColorBarAnimator(
 				(TL::ColorBarAnimator::ColorBarMode)ledConfig.animationSettings[0],
 				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
 				CRGB(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
@@ -372,7 +413,7 @@ bool TL::LedManager::loadCalculatedAnimations()
 		// Rainbow motion type
 		else if (ledConfig.type == 5)
 		{
-			this->ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(
+			TL::LedManager::ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(
 				(TL::RainbowAnimatorMotion::RainbowMode)ledConfig.animationSettings[0],
 				(TL::MotionSensor::MotionSensorValue)ledConfig.animationSettings[7]));
 		}
@@ -380,7 +421,7 @@ bool TL::LedManager::loadCalculatedAnimations()
 		// Gradient motion type
 		else if (ledConfig.type == 6)
 		{
-			this->ledAnimator.at(i).reset(new TL::GradientAnimatorMotion(
+			TL::LedManager::ledAnimator.at(i).reset(new TL::GradientAnimatorMotion(
 				(TL::GradientAnimatorMotion::GradientMode)ledConfig.animationSettings[0],
 				(TL::MotionSensor::MotionSensorValue)ledConfig.animationSettings[7],
 				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
@@ -390,46 +431,66 @@ bool TL::LedManager::loadCalculatedAnimations()
 		// Unknown type
 		else
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Animator type for animator ") + String(i) + F(" is unknown. Invalid value ") + String(ledConfig.type) + F(". Using a static color instead"));
-			return false;
+			return TL::LedManager::Error::ERROR_UNKNOWN_ANIMATOR_TYPE;
 		}
 
-		this->ledAnimator.at(i)->setSpeed(ledConfig.speed);
-		this->ledAnimator.at(i)->setOffset(ledConfig.offset);
-		this->ledAnimator.at(i)->setAnimationBrightness(ledConfig.brightness / 255.0f);
-		this->ledAnimator.at(i)->setFadeSpeed(ledConfig.fadeSpeed / 4096.0f);
-		this->ledAnimator.at(i)->setReverse(ledConfig.reverse);
-		this->ledAnimator.at(i)->init(this->ledData.at(i));
+		TL::LedManager::ledAnimator.at(i)->setSpeed(ledConfig.speed);
+		TL::LedManager::ledAnimator.at(i)->setOffset(ledConfig.offset);
+		TL::LedManager::ledAnimator.at(i)->setAnimationBrightness(ledConfig.brightness / 255.0f);
+		TL::LedManager::ledAnimator.at(i)->setFadeSpeed(ledConfig.fadeSpeed / 4096.0f);
+		TL::LedManager::ledAnimator.at(i)->setReverse(ledConfig.reverse);
+		TL::LedManager::ledAnimator.at(i)->init(TL::LedManager::ledData.at(i));
 	}
-	return true;
+	return TL::LedManager::Error::OK;
 }
 
 /**
  * @brief Load a custom animator and play the animation from the fseq loader.
- * @return true when successful
- * @return false when there was an error
+ * @param fileName name of the fseq file to load
+ * @return OK when the custom animation was loaded
+ * @return ERROR_INVALID_FSEQ when a custom animation was set but the fseq file is invalid
+ * @return ERROR_INVALID_LED_CONFIGURATION when the LED configuration is invalid for the custom animation
  */
-bool TL::LedManager::loadCustomAnimation()
+TL::LedManager::Error TL::LedManager::loadCustomAnimation(const String &fileName)
 {
-	if (this->fseqLoader->getHeader().channelCount != this->getLedCount() * 3)
+	TL::LedManager::fseqLoader.reset(new TL::FseqLoader(&SD));
+	const TL::FseqLoader::Error fseqError = TL::LedManager::fseqLoader->loadFromFile(FSEQ_DIRECTORY + (String)F("/") + fileName);
+	if (fseqError != TL::FseqLoader::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The fseq file can not be used with the current LED configuration because the LED count doesn't match the channel count."));
-		return false;
+		TL::LedManager::fseqLoader.reset();
+		return TL::LedManager::Error::ERROR_INVALID_FSEQ;
 	}
 
-	this->ledAnimator.resize(LED_NUM_ZONES);
-	for (size_t i = 0; i < this->ledAnimator.size(); i++)
+	const uint32_t channelCount = TL::LedManager::getLedCount() * 3;
+	const uint32_t roundedChannelCount = channelCount % 4 ? channelCount + (4 - channelCount % 4) : channelCount;
+	const uint8_t fillerBytes = roundedChannelCount - channelCount;
+	if (TL::LedManager::fseqLoader->getHeader().channelCount != roundedChannelCount)
 	{
-		const TL::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
-		this->ledAnimator.at(i).reset(new TL::FseqAnimator(this->fseqLoader.get(), true));
-		this->ledAnimator.at(i)->setSpeed(ledConfig.speed);
-		this->ledAnimator.at(i)->setOffset(ledConfig.offset);
-		this->ledAnimator.at(i)->setAnimationBrightness(ledConfig.brightness / 255.0f);
-		this->ledAnimator.at(i)->setFadeSpeed(ledConfig.fadeSpeed / 4096.0f);
-		this->ledAnimator.at(i)->setReverse(ledConfig.reverse);
-		this->ledAnimator.at(i)->init(this->ledData.at(i));
+		Serial.println(channelCount);
+		Serial.println(roundedChannelCount);
+		Serial.println(TL::LedManager::fseqLoader->getHeader().channelCount);
+		Serial.println(fillerBytes);
+		return TL::LedManager::Error::ERROR_INVALID_LED_CONFIGURATION;
 	}
-	return true;
+	TL::LedManager::fseqLoader->setFillerBytes(fillerBytes);
+	TL::LedManager::fseqLoader->setZoneCount(LED_NUM_ZONES);
+
+	TL::LedManager::setRenderInterval(static_cast<uint32_t>(TL::LedManager::fseqLoader->getHeader().stepTime) * 1000);
+	TL::LedManager::setFrameInterval(static_cast<uint32_t>(TL::LedManager::fseqLoader->getHeader().stepTime) * 1000);
+
+	TL::LedManager::ledAnimator.resize(LED_NUM_ZONES);
+	for (size_t i = 0; i < TL::LedManager::ledAnimator.size(); i++)
+	{
+		const TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
+		TL::LedManager::ledAnimator.at(i).reset(new TL::FseqAnimator(TL::LedManager::fseqLoader.get(), true));
+		TL::LedManager::ledAnimator.at(i)->setSpeed(ledConfig.speed);
+		TL::LedManager::ledAnimator.at(i)->setOffset(ledConfig.offset);
+		TL::LedManager::ledAnimator.at(i)->setAnimationBrightness(ledConfig.brightness / 255.0f);
+		TL::LedManager::ledAnimator.at(i)->setFadeSpeed(ledConfig.fadeSpeed / 4096.0f);
+		TL::LedManager::ledAnimator.at(i)->setReverse(ledConfig.reverse);
+		TL::LedManager::ledAnimator.at(i)->init(TL::LedManager::ledData.at(i));
+	}
+	return TL::LedManager::Error::OK;
 }
 
 /**
@@ -443,18 +504,18 @@ void TL::LedManager::calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_
 		regulatorPower[i] = 0.0f;
 	}
 
-	for (size_t i = 0; i < this->ledData.size(); i++)
+	for (size_t i = 0; i < TL::LedManager::ledData.size(); i++)
 	{
-		TL::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
+		TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
 		float zoneCurrent = 0.0f;
-		for (size_t j = 0; j < this->ledData.at(i).size(); j++)
+		for (size_t j = 0; j < TL::LedManager::ledData.at(i).size(); j++)
 		{
-			zoneCurrent += ledConfig.ledChannelCurrent[0] * this->ledData.at(i).at(j).r / 255.0f;
-			zoneCurrent += ledConfig.ledChannelCurrent[1] * this->ledData.at(i).at(j).g / 255.0f;
-			zoneCurrent += ledConfig.ledChannelCurrent[2] * this->ledData.at(i).at(j).b / 255.0f;
+			zoneCurrent += ledConfig.ledChannelCurrent[0] * TL::LedManager::ledData.at(i).at(j).r / 255.0f;
+			zoneCurrent += ledConfig.ledChannelCurrent[1] * TL::LedManager::ledData.at(i).at(j).g / 255.0f;
+			zoneCurrent += ledConfig.ledChannelCurrent[2] * TL::LedManager::ledData.at(i).at(j).b / 255.0f;
 		}
 
-		const uint8_t regulatorIndex = this->getRegulatorIndexFromPin(ledConfig.ledPin);
+		const uint8_t regulatorIndex = TL::LedManager::getRegulatorIndexFromPin(ledConfig.ledPin);
 		regulatorPower[regulatorIndex] += zoneCurrent * ledConfig.ledVoltage / 1000.0f;
 	}
 }
@@ -465,13 +526,13 @@ void TL::LedManager::calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_
 void TL::LedManager::limitPowerConsumption()
 {
 	float regulatorPower[REGULATOR_COUNT];
-	this->calculateRegulatorPowerDraw(regulatorPower);
+	TL::LedManager::calculateRegulatorPowerDraw(regulatorPower);
 
-	TL::Configuration::SystemConfig systemConfig = this->config->getSystemConfig();
-	for (size_t i = 0; i < this->ledData.size(); i++)
+	TL::Configuration::SystemConfig systemConfig = TL::Configuration::getSystemConfig();
+	for (size_t i = 0; i < TL::LedManager::ledData.size(); i++)
 	{
-		TL::Configuration::LedConfig ledConfig = this->config->getLedConfig(i);
-		const uint8_t regulatorIndex = this->getRegulatorIndexFromPin(ledConfig.ledPin);
+		TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
+		const uint8_t regulatorIndex = TL::LedManager::getRegulatorIndexFromPin(ledConfig.ledPin);
 		float multiplicator = ((float)systemConfig.regulatorPowerLimit / REGULATOR_COUNT) / regulatorPower[regulatorIndex];
 		if (multiplicator < 0.0f)
 		{
@@ -482,11 +543,11 @@ void TL::LedManager::limitPowerConsumption()
 			multiplicator = 1.0f;
 		}
 
-		for (size_t j = 0; j < this->ledData.at(i).size(); j++)
+		for (size_t j = 0; j < TL::LedManager::ledData.at(i).size(); j++)
 		{
-			this->ledData.at(i).at(j).r *= multiplicator;
-			this->ledData.at(i).at(j).g *= multiplicator;
-			this->ledData.at(i).at(j).b *= multiplicator;
+			TL::LedManager::ledData.at(i).at(j).r *= multiplicator;
+			TL::LedManager::ledData.at(i).at(j).g *= multiplicator;
+			TL::LedManager::ledData.at(i).at(j).b *= multiplicator;
 		}
 	}
 }
@@ -496,7 +557,7 @@ void TL::LedManager::limitPowerConsumption()
  */
 void TL::LedManager::limitRegulatorTemperature()
 {
-	float multiplicator = 1.0f - (this->regulatorTemperature - this->config->getSystemConfig().regulatorHighTemperature) / (this->config->getSystemConfig().regulatorCutoffTemperature - this->config->getSystemConfig().regulatorHighTemperature);
+	float multiplicator = 1.0f - (TL::LedManager::regulatorTemperature - TL::Configuration::getSystemConfig().regulatorHighTemperature) / (TL::Configuration::getSystemConfig().regulatorCutoffTemperature - TL::Configuration::getSystemConfig().regulatorHighTemperature);
 	if (multiplicator < 0.0f)
 	{
 		multiplicator = 0.0f;
@@ -506,13 +567,13 @@ void TL::LedManager::limitRegulatorTemperature()
 		multiplicator = 1.0f;
 	}
 
-	for (size_t i = 0; i < this->ledData.size(); i++)
+	for (size_t i = 0; i < TL::LedManager::ledData.size(); i++)
 	{
-		for (size_t j = 0; j < this->ledData.at(i).size(); j++)
+		for (size_t j = 0; j < TL::LedManager::ledData.at(i).size(); j++)
 		{
-			this->ledData.at(i).at(j).r *= multiplicator;
-			this->ledData.at(i).at(j).g *= multiplicator;
-			this->ledData.at(i).at(j).b *= multiplicator;
+			TL::LedManager::ledData.at(i).at(j).r *= multiplicator;
+			TL::LedManager::ledData.at(i).at(j).g *= multiplicator;
+			TL::LedManager::ledData.at(i).at(j).b *= multiplicator;
 		}
 	}
 }
