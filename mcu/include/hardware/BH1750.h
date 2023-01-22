@@ -36,7 +36,7 @@ namespace TL
 			ERROR_IIC_COMM // I²C communication failed
 		};
 
-		enum BH1750Res : uint8_t
+		enum class BH1750Res : uint8_t
 		{
 			BH1750_HIGH = 0b00010000,
 			BH1750_LOW = 0b00010011

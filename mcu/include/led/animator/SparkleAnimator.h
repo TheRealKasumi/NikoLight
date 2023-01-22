@@ -24,13 +24,14 @@
 
 #include <vector>
 #include "led/animator/LedAnimator.h"
+#include "configuration/SystemConfiguration.h"
 
 namespace TL
 {
 	class SparkleAnimator : public LedAnimator
 	{
 	public:
-		enum SpawnPosition
+		enum class SpawnPosition : uint8_t
 		{
 			SPAWN_LEFT = 0,
 			SPAWN_RIGHT = 1,
@@ -52,7 +53,7 @@ namespace TL
 		SparkleAnimator(const TL::SparkleAnimator::SpawnPosition spawnPosition, const uint8_t sparkCount, const CRGB color,
 						const float sparkFriction, const float sparkFading, const float sparkTail, const float birthRate,
 						const float spawnVariance, const float speedVariance, const float brightnessVariance, const float frictionVariance,
-						const float fadingVariance, const bool bounceAtCorner);
+						const float fadingVariance, const bool bounceAtCorner, const uint8_t frequencyBandMask);
 		~SparkleAnimator();
 
 		void init(std::vector<CRGB> &pixels);
@@ -75,8 +76,10 @@ namespace TL
 		float frictionVariance;
 		float fadingVariance;
 		bool bounceAtCorner;
+		uint8_t frequencyBandMask;
 
 		float colorAngle;
+		uint8_t audioSequence;
 
 		void spawnSparks(std::vector<CRGB> &pixels);
 		void runSparks(std::vector<CRGB> &pixels);

@@ -205,6 +205,7 @@ void TL::Configuration::loadDefaults()
 		TL::Configuration::ledConfig[i].ledPin = ledPins[i];
 		TL::Configuration::ledConfig[i].ledCount = ledCounts[i];
 		TL::Configuration::ledConfig[i].type = ANIMATOR_DEFAULT_TYPE;
+		TL::Configuration::ledConfig[i].dataSource = ANIMATOR_DEFAULT_DATA_SOURCE;
 		TL::Configuration::ledConfig[i].speed = ANIMATOR_DEFAULT_SPEED;
 		TL::Configuration::ledConfig[i].offset = ANIMATOR_DEFAULT_OFFSET;
 		TL::Configuration::ledConfig[i].brightness = ANIMATOR_DEFAULT_BRIGHTNESS;
@@ -319,6 +320,7 @@ TL::Configuration::Error TL::Configuration::load()
 		readError = file.read(TL::Configuration::ledConfig[i].ledPin) == TL::BinaryFile::Error::OK ? readError : true;
 		readError = file.read(TL::Configuration::ledConfig[i].ledCount) == TL::BinaryFile::Error::OK ? readError : true;
 		readError = file.read(TL::Configuration::ledConfig[i].type) == TL::BinaryFile::Error::OK ? readError : true;
+		readError = file.read(TL::Configuration::ledConfig[i].dataSource) == TL::BinaryFile::Error::OK ? readError : true;
 		readError = file.read(TL::Configuration::ledConfig[i].speed) == TL::BinaryFile::Error::OK ? readError : true;
 		readError = file.read(TL::Configuration::ledConfig[i].offset) == TL::BinaryFile::Error::OK ? readError : true;
 		readError = file.read(TL::Configuration::ledConfig[i].brightness) == TL::BinaryFile::Error::OK ? readError : true;
@@ -443,6 +445,7 @@ TL::Configuration::Error TL::Configuration::save()
 		writeError = file.write(TL::Configuration::ledConfig[i].ledPin) == TL::BinaryFile::Error::OK ? writeError : true;
 		writeError = file.write(TL::Configuration::ledConfig[i].ledCount) == TL::BinaryFile::Error::OK ? writeError : true;
 		writeError = file.write(TL::Configuration::ledConfig[i].type) == TL::BinaryFile::Error::OK ? writeError : true;
+		writeError = file.write(TL::Configuration::ledConfig[i].dataSource) == TL::BinaryFile::Error::OK ? writeError : true;
 		writeError = file.write(TL::Configuration::ledConfig[i].speed) == TL::BinaryFile::Error::OK ? writeError : true;
 		writeError = file.write(TL::Configuration::ledConfig[i].offset) == TL::BinaryFile::Error::OK ? writeError : true;
 		writeError = file.write(TL::Configuration::ledConfig[i].brightness) == TL::BinaryFile::Error::OK ? writeError : true;
@@ -539,6 +542,7 @@ uint16_t TL::Configuration::getSimpleHash()
 		hash = hash * 31 + TL::Configuration::ledConfig[i].ledPin;
 		hash = hash * 31 + TL::Configuration::ledConfig[i].ledCount;
 		hash = hash * 31 + TL::Configuration::ledConfig[i].type;
+		hash = hash * 31 + TL::Configuration::ledConfig[i].dataSource;
 		hash = hash * 31 + TL::Configuration::ledConfig[i].speed;
 		hash = hash * 31 + TL::Configuration::ledConfig[i].offset;
 		hash = hash * 31 + TL::Configuration::ledConfig[i].brightness;

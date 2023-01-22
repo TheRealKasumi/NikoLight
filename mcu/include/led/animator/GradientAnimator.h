@@ -4,7 +4,7 @@
  * @brief Contains a class to render a gradient.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -30,7 +30,7 @@ namespace TL
 	class GradientAnimator : public LedAnimator
 	{
 	public:
-		enum GradientMode
+		enum class GradientMode
 		{
 			GRADIENT_LINEAR = 0,
 			GRADIENT_CENTER = 1

@@ -822,6 +822,10 @@ components:
                         type: integer
                         format: uint8
                         example: 0
+                     dataSource:
+                        type: integer
+                        format: uint8
+                        example: 0
                      speed:
                         type: integer
                         format: uint8
@@ -1173,6 +1177,10 @@ components:
                                  format: uint8
                                  example: 2
                               type:
+                                 type: integer
+                                 format: uint8
+                                 example: 0
+                              dataSource:
                                  type: integer
                                  format: uint8
                                  example: 0

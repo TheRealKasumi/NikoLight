@@ -4,7 +4,7 @@
  * @brief Contains a class to render a gradient based on the cars motion.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -31,14 +31,13 @@ namespace TL
 	class GradientAnimatorMotion : public LedAnimator
 	{
 	public:
-		enum GradientMode
+		enum class GradientMode : uint8_t
 		{
 			GRADIENT_LINEAR = 0,
 			GRADIENT_CENTER = 1
 		};
 
-		GradientAnimatorMotion(const TL::GradientAnimatorMotion::GradientMode gradientMode, TL::MotionSensor::MotionSensorValue motionSensorValue,
-							   const CRGB color1, const CRGB color2);
+		GradientAnimatorMotion(const TL::GradientAnimatorMotion::GradientMode gradientMode, const CRGB color1, const CRGB color2);
 		~GradientAnimatorMotion();
 
 		void init(std::vector<CRGB> &pixels);
@@ -47,7 +46,6 @@ namespace TL
 	private:
 		TL::GradientAnimatorMotion::GradientMode gradientMode;
 		CRGB color[2];
-		TL::MotionSensor::MotionSensorValue motionSensorValue;
 
 		float getMotionOffset();
 	};

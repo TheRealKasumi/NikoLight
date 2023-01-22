@@ -36,11 +36,12 @@
  * @param frictionVariance variance in friction in the range 0.0 to 1.0
  * @param fadingVariance variance in fading in the range 0.0 to 1.0
  * @param bounceAtCorner when set to true, the particles will bounce at the end of the LED strip
+ * @param frequencyBandMask bit mask to mask frequency bands in audio mode
  */
 TL::SparkleAnimator::SparkleAnimator(const TL::SparkleAnimator::SpawnPosition spawnPosition, const uint8_t sparkCount, const CRGB color,
 									 const float sparkFriction, const float sparkFading, const float sparkTail, const float birthRate,
 									 const float spawnVariance, const float speedVariance, const float brightnessVariance, const float frictionVariance,
-									 const float fadingVariance, const bool bounceAtCorner)
+									 const float fadingVariance, const bool bounceAtCorner, const uint8_t frequencyBandMask)
 {
 	this->spawnPosition = spawnPosition;
 	this->sparks.resize(sparkCount);
@@ -55,6 +56,9 @@ TL::SparkleAnimator::SparkleAnimator(const TL::SparkleAnimator::SpawnPosition sp
 	this->frictionVariance = frictionVariance;
 	this->fadingVariance = fadingVariance;
 	this->bounceAtCorner = bounceAtCorner;
+	this->frequencyBandMask = frequencyBandMask;
+	this->colorAngle = 0.0f;
+	this->audioSequence = 0;
 
 	this->limit((uint16_t)0, (uint16_t)255, this->offset);
 	this->limit(0.0f, 1.0f, this->sparkFriction);
@@ -85,6 +89,7 @@ void TL::SparkleAnimator::init(std::vector<CRGB> &pixels)
 	this->pixelMask.assign(pixels.size(), false);
 	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
 	this->colorAngle = 0.0f;
+	this->audioSequence = 0;
 	for (size_t i = 0; i < this->sparks.size(); i++)
 	{
 		TL::SparkleAnimator::Spark spark = this->sparks.at(i);
@@ -105,7 +110,31 @@ void TL::SparkleAnimator::init(std::vector<CRGB> &pixels)
  */
 void TL::SparkleAnimator::render(std::vector<CRGB> &pixels)
 {
-	this->spawnSparks(pixels);
+	// Check if new sparks should be spawned depending on the data source
+	if (this->getDataSource() == TL::LedAnimator::DataSource::DS_AUDIO_FREQUENCY_TRIGGER)
+	{
+		// Get the audio frequency analysis
+		const TL::AudioUnit::AudioAnalysis audioAnalysis = this->getAudioAnalysis();
+		if (audioAnalysis.frequencyBandTriggers.size() == AUDIO_UNIT_NUM_BANDS && audioAnalysis.seq != this->audioSequence)
+		{
+			// Check the sequency number
+			this->audioSequence = audioAnalysis.seq;
+			for (size_t i = 0; i < AUDIO_UNIT_NUM_BANDS; i++)
+			{
+				// Spawn new sparks depending on the band mask and the tigger status
+				if (this->frequencyBandMask & (0B10000000 >> i) && audioAnalysis.frequencyBandTriggers.at(i).trigger == TL::AudioUnit::Trigger::TRIGGER_RISING)
+				{
+					this->spawnSparks(pixels);
+				}
+			}
+		}
+	}
+	else
+	{
+		this->spawnSparks(pixels);
+	}
+
+	// Run the sparks
 	this->runSparks(pixels);
 
 	// Clear the mask to store for which pixels a spark was rendere
@@ -167,17 +196,29 @@ void TL::SparkleAnimator::render(std::vector<CRGB> &pixels)
 
 /**
  * @brief Spawn new sparks from the set of currently invisible ones.
- * @note AT THE TIME OF WRITING THIS FUNCTION I WAS HITTING AN ICE
- * WHEN COMPILING WITH THE O3 FLAG. THERE WAS ABSOLUTELY NO WAY AROUND IT.
- * DUE TO THIS, THE O3 FLAG WAS REMOVED.IN CASE THIS PROBLEM GETS SOLVED
- * IN THE FUTURE, THE O3 FLAG COULD BE ENABLED AGAIN.
  */
 void TL::SparkleAnimator::spawnSparks(std::vector<CRGB> &pixels)
 {
+	size_t spawnCounter = 0;
 	for (size_t i = 0; i < this->sparks.size(); i++)
 	{
+		if (this->getDataSource() == TL::LedAnimator::DataSource::DS_AUDIO_FREQUENCY_TRIGGER)
+		{
+			if (spawnCounter >= this->birthRate * this->sparks.size())
+			{
+				break;
+			}
+		}
+		else
+		{
+			if (this->random(0, 1000) < (1000.0f - this->birthRate * 1000.0f))
+			{
+				continue;
+			}
+		}
+
 		TL::SparkleAnimator::Spark spark = this->sparks.at(i);
-		if (!spark.visible && this->random(0, 1000) > (1000.0f - this->birthRate * 1000.0f))
+		if (!spark.visible)
 		{
 			spark.visible = true;
 
@@ -243,6 +284,7 @@ void TL::SparkleAnimator::spawnSparks(std::vector<CRGB> &pixels)
 			spark.fading = spark.fading > 1.0f ? 1.0f : spark.fading;
 
 			this->sparks.at(i) = spark;
+			spawnCounter++;
 		}
 	}
 }

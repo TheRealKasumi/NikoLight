@@ -35,8 +35,37 @@ namespace TL
 	class LedAnimator
 	{
 	public:
+		enum class DataSource : uint8_t
+		{
+			DS_NONE = 0,							  // No data source, animator is providing the data itself
+			DS_RANDOM = 1,							  // Random data is used for the animation
+			DS_MOTION_ACC_X_RAW = 2,				  // Raw x acceleration is used for the animation
+			DS_MOTION_ACC_Y_RAW = 3,				  // Raw y acceleration is used for the animation
+			DS_MOTION_ACC_Z_RAW = 4,				  // Raw z acceleration is used for the animation
+			DS_MOTION_GY_X_RAW = 5,					  // Raw x rotation is used for the animation
+			DS_MOTION_GY_Y_RAW = 6,					  // Raw y rotation is used for the animation
+			DS_MOTION_GY_Z_RAW = 7,					  // Raw z rotation is used for the animation
+			DS_MOTION_ACC_X_G = 8,					  // Acceleration on x axis in g is used for the animation
+			DS_MOTION_ACC_Y_G = 9,					  // Acceleration on y axis in g is used for the animation
+			DS_MOTION_ACC_Z_G = 10,					  // Acceleration on z axis in g is used for the animation
+			DS_MOTION_GY_X_DEG = 11,				  // Rotation around the x axis in deg/s is used for the animation
+			DS_MOTION_GY_Y_DEG = 12,				  // Rotation around the y axis in deg/s is used for the animation
+			DS_MOTION_GY_Z_DEG = 13,				  // Rotation around the z axis in deg/s is used for the animation
+			DS_MOTION_PITCH = 14,					  // Pitch angle of the unit is used for the animation
+			DS_MOTION_ROLL = 15,					  // Roll angle of the unit is used for the animation
+			DS_MOTION_YAW = 16,						  // Yaw angle of the unit is used for the animation
+			DS_MOTION_ROLL_COMPENSATED_ACC_X_G = 17,  // Roll angle compensated acceleration on x axis in g is used for the animation
+			DS_MOTION_PITCH_COMPENSATED_ACC_Y_G = 18, // Pitch angle compensated acceleration on y axis in g is used for the animation
+			DS_AUDIO_FREQUENCY_TRIGGER = 19,		  // Frequency triggers of the audio unit are used for the animation
+			DS_AUDIO_FREQUENCY_VALUE = 20,			  // Frequency value of the audio unit are used for the animation
+			DS_AUDIO_VOLUME_PEAK = 21				  // Volume peak of the audio unit are used for the animation
+		};
+
 		LedAnimator();
 		virtual ~LedAnimator() = 0;
+
+		void setDataSource(const TL::LedAnimator::DataSource dataSource);
+		TL::LedAnimator::DataSource getDataSource();
 
 		void setSpeed(const uint8_t speed);
 		uint8_t getSpeed();
@@ -66,6 +95,7 @@ namespace TL
 		virtual void render(std::vector<CRGB> &pixels) = 0;
 
 	protected:
+		TL::LedAnimator::DataSource dataSource;
 		uint8_t speed;
 		uint16_t offset;
 		float animationBrightness;

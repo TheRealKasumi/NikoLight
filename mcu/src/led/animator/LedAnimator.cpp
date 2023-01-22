@@ -26,6 +26,7 @@
  */
 TL::LedAnimator::LedAnimator()
 {
+	this->dataSource = TL::LedAnimator::DataSource::DS_NONE;
 	this->speed = 0;
 	this->offset = 0;
 	this->animationBrightness = 0.0f;
@@ -53,6 +54,24 @@ TL::LedAnimator::LedAnimator()
  */
 TL::LedAnimator::~LedAnimator()
 {
+}
+
+/**
+ * @brief Set the data source used by the animation.
+ * @param dataSource data source the animation is using
+ */
+void TL::LedAnimator::setDataSource(const TL::LedAnimator::DataSource dataSource)
+{
+	this->dataSource = dataSource;
+}
+
+/**
+ * @brief Get the currently used data source used by the animation.
+ * @return currently used data source
+ */
+TL::LedAnimator::DataSource TL::LedAnimator::getDataSource()
+{
+	return this->dataSource;
 }
 
 /**

@@ -43,7 +43,7 @@ void TL::LedConfigurationEndpoint::getLedConfig()
 		return;
 	}
 
-	DynamicJsonDocument jsonDoc(5500);
+	DynamicJsonDocument jsonDoc(5600);
 	const JsonArray ledConfig = jsonDoc.createNestedArray(F("ledConfig"));
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
@@ -51,6 +51,7 @@ void TL::LedConfigurationEndpoint::getLedConfig()
 		ledZone[F("ledPin")] = TL::Configuration::getLedConfig(i).ledPin;
 		ledZone[F("ledCount")] = TL::Configuration::getLedConfig(i).ledCount;
 		ledZone[F("type")] = TL::Configuration::getLedConfig(i).type;
+		ledZone[F("dataSource")] = TL::Configuration::getLedConfig(i).dataSource;
 		ledZone[F("speed")] = TL::Configuration::getLedConfig(i).speed;
 		ledZone[F("offset")] = TL::Configuration::getLedConfig(i).offset;
 		ledZone[F("brightness")] = TL::Configuration::getLedConfig(i).brightness;
@@ -110,7 +111,7 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 		return;
 	}
 
-	DynamicJsonDocument jsonDoc(5500);
+	DynamicJsonDocument jsonDoc(5600);
 	if (!TL::LedConfigurationEndpoint::parseJsonDocument(jsonDoc, body))
 	{
 		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
@@ -146,6 +147,7 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 		config[i].ledPin = ledZone[F("ledPin")].as<uint8_t>();
 		config[i].ledCount = ledZone[F("ledCount")].as<uint16_t>();
 		config[i].type = ledZone[F("type")].as<uint8_t>();
+		config[i].dataSource = ledZone[F("dataSource")].as<uint8_t>();
 		config[i].speed = ledZone[F("speed")].as<uint8_t>();
 		config[i].offset = ledZone[F("offset")].as<uint16_t>();
 		config[i].brightness = ledZone[F("brightness")].as<uint8_t>();
@@ -290,10 +292,31 @@ bool TL::LedConfigurationEndpoint::validateLedZone(const JsonObject &jsonObject,
 		return false;
 	}
 
-	if (!TL::MotionSensor::isInitialized() && TL::LedConfigurationEndpoint::isInRange(jsonObject[F("type")].as<uint8_t>(), 5L, 6L))
+	if (!jsonObject[F("dataSource")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field at index ") + index + F(" is invalid. No effect using the motion sensor can be selected because it is not available."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field at index ") + index + F(" is invalid. No effect using the motion sensor can be selected because it is not available."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"dataSource\" field at index ") + index + F(" must be of type \"uint8\"."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"dataSource\" field at index ") + index + F(" must be of type \"uint8\"."));
+		return false;
+	}
+
+	if (!TL::LedConfigurationEndpoint::isInRange(jsonObject[F("dataSource")].as<uint8_t>(), 0L, 21L))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"dataSource\" field at index ") + index + F(" must be between 0 and 21."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"dataSource\" field at index ") + index + F(" must be between 0 and 21."));
+		return false;
+	}
+
+	if (!TL::MotionSensor::isInitialized() && TL::LedConfigurationEndpoint::isInRange(jsonObject[F("dataSource")].as<uint8_t>(), 2L, 18L))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"dataSource\" field at index ") + index + F(" is invalid. No motion sensor based data source can be selected because it is not available."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"dataSource\" field at index ") + index + F(" is invalid. No motion sensor based data source can be selected because it is not available."));
+		return false;
+	}
+
+	if (!TL::AudioUnit::isInitialized() && TL::LedConfigurationEndpoint::isInRange(jsonObject[F("dataSource")].as<uint8_t>(), 19L, 21L))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"dataSource\" field at index ") + index + F(" is invalid. No audio based data source can be selected because the audio unit is not available."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"dataSource\" field at index ") + index + F(" is invalid. No audio based data source can be selected because the audio unit is not available."));
 		return false;
 	}
 
