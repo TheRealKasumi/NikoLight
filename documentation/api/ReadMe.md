@@ -44,7 +44,7 @@ There all combinations are listed.
 | animationSettings[15] | /            | Brightness Variance | /             | /           | /             | /              | /               | Don't change  |
 | animationSettings[16] | /            | Friction Variance   | /             | /           | /             | /              | /               | Don't change  |
 | animationSettings[17] | /            | Fading Variance     | /             | /           | /             | /              | /               | Don't change  |
-| animationSettings[18] | /            | /                   | /             | /           | /             | /              | /               | Don't change  |
+| animationSettings[18] | /            | Bounce              | /             | /           | /             | /              | /               | Don't change  |
 | animationSettings[19] | /            | /                   | /             | /           | /             | /              | /               | Don't change  |
 | animationSettings[20] | Reserved     | Reserved            | Reserved      | Reserved    | Reserved      | Reserved       | Reserved        | File ID       |
 | animationSettings[21] | Reserved     | Reserved            | Reserved      | Reserved    | Reserved      | Reserved       | Reserved        | File ID       |
