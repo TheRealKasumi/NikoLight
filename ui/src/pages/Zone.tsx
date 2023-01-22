@@ -494,6 +494,18 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
                 />
               </label>
 
+              <label className="mb-6 flex flex-row justify-between">
+                <span className="basis-1/2 self-center">
+                  {t('zone.bounceAtCorner')}
+                </span>
+                <div className="basis-1/2 text-right">
+                  <Switch<FormData>
+                    control={control}
+                    name="animationSettings.18"
+                  />
+                </div>
+              </label>
+
               <Collapsible
                 title={t('zone.variance')}
                 className="mb-6"
