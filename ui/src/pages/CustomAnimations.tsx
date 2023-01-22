@@ -153,13 +153,22 @@ const Form = (): JSX.Element => {
       {isUploadSuccess && (
         <Toast title={t('customAnimations.uploadSuccessful')} />
       )}
+
       {isDeleteSuccess && (
         <Toast title={t('customAnimations.deleteSuccessful')} />
       )}
 
-      {isUploadError && <Notification message={uploadError.message} />}
-      {isDeleteError && <Notification message={deleteError.message} />}
-      {isUpdateError && <Notification message={updateError.message} />}
+      {isUploadError && (
+        <Notification state="error" message={uploadError.message} />
+      )}
+
+      {isDeleteError && (
+        <Notification state="error" message={deleteError.message} />
+      )}
+
+      {isUpdateError && (
+        <Notification state="error" message={updateError.message} />
+      )}
 
       {isUploadLoading && <Loading overlay />}
 
