@@ -24,7 +24,12 @@
     "title": "Log-Dateien"
   },
   "notification": {
-    "headline": "Etwas ist schief gelaufen"
+    "error": {
+      "headline": "Etwas ist schief gelaufen"
+    },
+    "warning": {
+      "headline": "Achtung"
+    }
   },
   "settings": {
     "accessPointPassword": "Passwort",
@@ -43,6 +48,7 @@
       "Manual75": "75%",
       "Manual100": "100%"
     },
+    "fanModeAutomaticWithoutTemperatureSensors": "Keine Temperatursensoren sind angeschlossen. Die Lüftergeschwindigkeit wird automatisch auf 100% gesetzt.",
     "language": "Sprache",
     "lightSensorDuration": "Sensor Laufzeit",
     "lightSensorMaxAmbientBrightness": "Maximale Helligkeit",

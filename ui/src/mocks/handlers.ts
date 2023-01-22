@@ -1,5 +1,5 @@
 import { rest } from 'msw';
-import type { Fseq, Led, System, Ui, Wifi } from '../pages/api';
+import type { Fseq, Led, System, SystemInfo, Ui, Wifi } from '../pages/api';
 import { throttledRes } from './throttledRes';
 
 const mock: {
@@ -15,7 +15,11 @@ const mock: {
   ui: {
     uiConfig: Ui;
   };
+  info: {
+    system: SystemInfo;
+  };
   motion: {
+    // TODO: Update type
     motionSensorCalibration: {
       accXRaw: number;
       accYRaw: number;
@@ -29,7 +33,7 @@ const mock: {
       gyroXDeg: number;
       gyroYDeg: number;
       gyroZDeg: number;
-    }; // TODO: Update type
+    };
   };
   fseq: {
     fileList: Fseq[];
@@ -93,6 +97,40 @@ const mock: {
       theme: 'dark',
     },
   },
+  info: {
+    system: {
+      socInfo: {
+        chipModel: 'ESP32',
+        chipRevision: 1,
+        cpuCores: 2,
+        cpuClock: 240000000,
+        freeHeap: 265332,
+        flashSize: 4194304,
+        flashSpeed: 40000000,
+        sketchSize: 1161168,
+        freeSketchSpace: 1966080,
+      },
+      tlSystemInfo: {
+        rps: 60,
+        fps: 60,
+        ledCount: 720,
+      },
+      hardwareInfo: {
+        regulatorCount: 2,
+        regulatorVoltage: 5,
+        regulatorCurrentLimit: 6,
+        regulatorCurrentDraw: 2.5,
+        regulatorPowerLimit: 30,
+        regulatorPowerDraw: 15,
+        regulatorTemperature: 50,
+        fanSpeed: 0,
+        mpu6050: 1,
+        ds18b20: 2,
+        bh1750: 1,
+        audioUnit: 1,
+      },
+    },
+  },
   motion: {
     motionSensorCalibration: {
       accXRaw: 0,
@@ -131,6 +169,18 @@ export const handlers = [
   rest.get('/api/connection_test', (_req, res, ctx) =>
     res(ctx.status(200), ctx.json({ status: 200, message: 'ok' })),
   ),
+
+  // ------------------
+  // System Information
+  // ------------------
+
+  rest.get('/api/info/system', (_req, res, ctx) => {
+    console.debug(`Get system information: ${mock.info.system}`);
+    return res(
+      ctx.status(200),
+      ctx.json({ status: 200, message: 'ok', ...mock.info.system }),
+    );
+  }),
 
   // --------------------
   // System Configuration
@@ -186,9 +236,9 @@ export const handlers = [
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 
-  // ------------------
+  // ----------------
   // UI Configuration
-  // ------------------
+  // ----------------
 
   rest.get('/api/config/ui', (_req, res, ctx) => {
     console.debug(`Get UI configuration: ${mock.ui}`);
@@ -204,9 +254,9 @@ export const handlers = [
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 
-  // -----
+  // ---------------------------------------
   // Motion Sensor Calibration Configuration
-  // -----
+  // ---------------------------------------
 
   rest.get('/api/config/motion', (_req, res, ctx) => {
     console.debug(`Get motion configuration: ${mock.motion}`);

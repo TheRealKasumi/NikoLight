@@ -26,6 +26,7 @@ export const Slider = <T extends FieldValues>({
       step={1}
       className={twMerge(
         'relative flex h-5 w-64 touch-none items-center',
+        'radix-disabled:opacity-50',
         className,
       )}
       {...props}
@@ -40,7 +41,7 @@ export const Slider = <T extends FieldValues>({
       </SliderPrimitive.Track>
       <SliderPrimitive.Thumb
         className={classNames(
-          'block h-5 w-5 cursor-pointer rounded-full bg-zinc dark:bg-neutral',
+          'block h-5 w-5 cursor-pointer rounded-full bg-zinc radix-disabled:cursor-default dark:bg-neutral',
           'focus:outline-none focus-visible:ring focus-visible:ring-green focus-visible:ring-opacity-75',
         )}
       />
