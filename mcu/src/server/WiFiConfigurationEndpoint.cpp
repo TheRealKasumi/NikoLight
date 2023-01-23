@@ -172,7 +172,7 @@ void TL::WiFiConfigurationEndpoint::postWiFiConfig()
 			TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("Failed to start WiFi access point. The password is invalid."));
 			return;
 		}
-		else
+		else if (wifiError != TL::WiFiManager::Error::OK)
 		{
 			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to start WiFi access point."));
 			TL::WiFiConfigurationEndpoint::sendSimpleResponse(500, F("Failed to start WiFi access point."));
