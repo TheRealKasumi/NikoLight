@@ -41,7 +41,7 @@ specifiers:
   react: ^18.2.0
   react-dom: ^18.2.0
   react-error-boundary: ^3.1.4
-  react-hook-form: ^7.42.0
+  react-hook-form: ^7.42.1
   react-i18next: ^12.1.4
   rgb-hex: ^4.0.0
   swagger-ui-react: ^4.15.5
@@ -70,7 +70,7 @@ dependencies:
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-error-boundary: 3.1.4_react@18.2.0
-  react-hook-form: 7.42.0_react@18.2.0
+  react-hook-form: 7.42.1_react@18.2.0
   react-i18next: 12.1.4_iakk3dtjhjpukdoa4oua5khgci
   rgb-hex: 4.0.0
   swagger-ui-react: 4.15.5_biqbaboplfbrettd7655fr4n2y
@@ -4282,8 +4282,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-hook-form/7.42.0_react@18.2.0:
-    resolution: {integrity: sha512-XDEjSUZmT68FOSv2FaD3XlN1sa2HB9vIQ9SVKsogGrHUY43o2aANQDC9LgHa4zusqCMKLG3qitpTcEhpYWHBFw==}
+  /react-hook-form/7.42.1_react@18.2.0:
+    resolution: {integrity: sha512-2UIGqwMZksd5HS55crTT1ATLTr0rAI4jS7yVuqTaoRVDhY2Qc4IyjskCmpnmdYqUNOYFy04vW253tb2JRVh+IQ==}
     engines: {node: '>=12.22.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18

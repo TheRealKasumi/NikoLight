@@ -36,7 +36,12 @@ const Form = (): JSX.Element => {
     undefined,
   );
 
-  const { handleSubmit, control, formState, reset } = useForm<FormData>({
+  const {
+    handleSubmit,
+    control,
+    formState: { isSubmitting },
+    reset,
+  } = useForm<FormData>({
     defaultValues: {
       fileName: '',
     },
@@ -246,7 +251,7 @@ const Form = (): JSX.Element => {
           />
         </label>
 
-        <Button type="submit" disabled={formState.isSubmitting}>
+        <Button type="submit" disabled={isSubmitting}>
           {t('customAnimations.upload')}
         </Button>
       </form>
