@@ -1,5 +1,5 @@
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
-import { Suspense } from 'react';
+import { Suspense, type MouseEvent } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -135,7 +135,13 @@ const Form = (): JSX.Element => {
     error: uiError,
   } = useUpdateUi();
 
-  const { handleSubmit, watch, control, reset, formState } = useForm<FormData>({
+  const {
+    handleSubmit,
+    watch,
+    control,
+    reset,
+    formState: { dirtyFields, isSubmitting },
+  } = useForm<FormData>({
     defaultValues: {
       system: {
         fanMaxPwmValue: system?.fanMaxPwmValue,
@@ -170,7 +176,7 @@ const Form = (): JSX.Element => {
     mode: 'onChange',
   });
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit(async (data, event) => {
     const wifiCopy: Wifi = JSON.parse(JSON.stringify(wifi));
     const uiCopy: Ui = JSON.parse(JSON.stringify(ui));
     const systemCopy: System = JSON.parse(JSON.stringify(system));
@@ -202,7 +208,13 @@ const Form = (): JSX.Element => {
     );
 
     // Update WiFi configuration only if there was a change.
-    if (formState.dirtyFields.wifi) {
+    if (
+      dirtyFields.wifi ||
+      (event?.target.type === 'reset' &&
+        (DEFAULT_VALUES.wifi.accessPointSsid !== wifi?.accessPointSsid ||
+          DEFAULT_VALUES.wifi.accessPointPassword !==
+            wifi?.accessPointPassword))
+    ) {
       await mutateAsyncWifi({ ...wifiCopy, ...data.wifi });
     }
 
@@ -210,9 +222,9 @@ const Form = (): JSX.Element => {
     reset({}, { keepValues: true });
   });
 
-  const onReset = async () => {
+  const onReset = async (event: MouseEvent<HTMLButtonElement>) => {
     reset(DEFAULT_VALUES);
-    return await onSubmit();
+    return await onSubmit(event);
   };
 
   const getAvailablePowerModes = () => {
@@ -244,7 +256,7 @@ const Form = (): JSX.Element => {
     <>
       {isSystemSuccess &&
         isUiSuccess &&
-        (isWifiSuccess || !formState.dirtyFields.wifi) && (
+        (isWifiSuccess || !dirtyFields.wifi) && (
           <Toast title={t('settings.submitSuccessful')} />
         )}
 
@@ -620,19 +632,11 @@ const Form = (): JSX.Element => {
           </label>
         </fieldset>
 
-        <Button
-          type="submit"
-          className="mb-4"
-          disabled={formState.isSubmitting}
-        >
+        <Button type="submit" className="mb-4" disabled={isSubmitting}>
           {t('settings.submit')}
         </Button>
 
-        <Button
-          type="reset"
-          onClick={onReset}
-          disabled={formState.isSubmitting}
-        >
+        <Button type="reset" onClick={onReset} disabled={isSubmitting}>
           {t('settings.reset')}
         </Button>
       </form>

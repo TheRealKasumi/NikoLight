@@ -93,36 +93,42 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
   const { mutateAsync, isSuccess, isError, error } = useUpdateLed();
   const zone = data?.[zoneId];
 
-  const { handleSubmit, watch, control, reset, formState, setValue } =
-    useForm<FormData>({
-      defaultValues: {
-        brightness: zone?.brightness,
-        color1: `#${rgbHex(
-          zone?.animationSettings[1] ?? 0,
-          zone?.animationSettings[2] ?? 0,
-          zone?.animationSettings[3] ?? 0,
-        )}`,
-        color2: `#${rgbHex(
-          zone?.animationSettings[4] ?? 0,
-          zone?.animationSettings[5] ?? 0,
-          zone?.animationSettings[6] ?? 0,
-        )}`,
-        fadeSpeed: zone?.fadeSpeed,
-        reverse: zone?.reverse,
-        channelCurrents: zone?.channelCurrents[0],
-        ledCount: zone?.ledCount,
-        ledVoltage: zone?.ledVoltage,
-        offset: zone?.offset,
-        speed: zone?.speed,
-        type: zone?.type.toString(),
-        animationSettings: [...Array(25)].map((_, index) =>
-          index === 0 || index === 7
-            ? zone?.animationSettings[index].toString()
-            : zone?.animationSettings[index],
-        ) as FormData['animationSettings'],
-      },
-      mode: 'onChange',
-    });
+  const {
+    handleSubmit,
+    watch,
+    control,
+    reset,
+    formState: { isSubmitting, defaultValues },
+    setValue,
+  } = useForm<FormData>({
+    defaultValues: {
+      brightness: zone?.brightness,
+      color1: `#${rgbHex(
+        zone?.animationSettings[1] ?? 0,
+        zone?.animationSettings[2] ?? 0,
+        zone?.animationSettings[3] ?? 0,
+      )}`,
+      color2: `#${rgbHex(
+        zone?.animationSettings[4] ?? 0,
+        zone?.animationSettings[5] ?? 0,
+        zone?.animationSettings[6] ?? 0,
+      )}`,
+      fadeSpeed: zone?.fadeSpeed,
+      reverse: zone?.reverse,
+      channelCurrents: zone?.channelCurrents[0],
+      ledCount: zone?.ledCount,
+      ledVoltage: zone?.ledVoltage,
+      offset: zone?.offset,
+      speed: zone?.speed,
+      type: zone?.type.toString(),
+      animationSettings: [...Array(25)].map((_, index) =>
+        index === 0 || index === 7
+          ? zone?.animationSettings[index].toString()
+          : zone?.animationSettings[index],
+      ) as FormData['animationSettings'],
+    },
+    mode: 'onChange',
+  });
 
   const onSubmit = handleSubmit(
     async ({
@@ -509,7 +515,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
               <Collapsible
                 title={t('zone.variance')}
                 className="mb-6"
-                defaultOpen={formState.defaultValues?.animationSettings?.some(
+                defaultOpen={defaultValues?.animationSettings?.some(
                   (value, index) =>
                     index >= 13 && index <= 17 && (value ?? 0) > 0,
                 )}
@@ -657,19 +663,11 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
           )}
         </fieldset>
 
-        <Button
-          type="submit"
-          className="mb-4"
-          disabled={formState.isSubmitting}
-        >
+        <Button type="submit" className="mb-4" disabled={isSubmitting}>
           {t('zone.submit')}
         </Button>
 
-        <Button
-          type="reset"
-          onClick={onReset}
-          disabled={formState.isSubmitting}
-        >
+        <Button type="reset" onClick={onReset} disabled={isSubmitting}>
           {t('zone.reset')}
         </Button>
       </form>

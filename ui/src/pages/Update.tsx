@@ -9,7 +9,12 @@ type FormData = {
 
 export const Update = (): JSX.Element => {
   const { t } = useTranslation();
-  const { handleSubmit, control, formState, reset } = useForm<FormData>({
+  const {
+    handleSubmit,
+    control,
+    formState: { isSubmitting },
+    reset,
+  } = useForm<FormData>({
     mode: 'onChange',
   });
   const { mutateAsync, isSuccess, isError, isLoading, error } = useUpload();
@@ -64,7 +69,7 @@ export const Update = (): JSX.Element => {
           }}
         />
 
-        <Button type="submit" disabled={formState.isSubmitting}>
+        <Button type="submit" disabled={isSubmitting}>
           {t('update.submit')}
         </Button>
       </form>
