@@ -1,0 +1,22 @@
+name: build TesLight Update Packaging Tool
+on:
+  push:
+    branches: ["main", "releases/**", "feat/DevOps_Auto_build_for_Update_Packages"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up GCC
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: latest
+          platform: x64
+        shell: cmd
+        working-directory: ./update-package-tool
+        run: mkdir build && g++ -g src\*.cpp -o build\tupt.exe
