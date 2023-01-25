@@ -19,5 +19,5 @@ jobs:
 
       - name: g++ build
         shell: cmd
-        working-directory: ./update-package-tool
+        working-directory: update-package-tool
         run: mkdir build && g++ -g src\*.cpp -o build\tupt.exe
