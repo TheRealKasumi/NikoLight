@@ -1,9 +1,9 @@
 name: build TesLight Update Packaging Tool
 on:
   push:
-    branches: ["main", "releases/**", "feat/DevOps_Auto_build_for_Update_Packages"]
+    branches: #["main", "releases/**", "feat/DevOps_Auto_build_for_Update_Packages"]
   pull_request:
-    branches: ["main"]
+    branches: #["main"]
   workflow_dispatch:
 jobs:
   build:
