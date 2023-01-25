@@ -20,4 +20,12 @@ jobs:
       - name: g++ build
         shell: cmd
         working-directory: update-package-tool
-        run: mkdir build && g++ -g src\*.cpp -o build\tupt.exe
+        run: |
+          mkdir build
+          g++ -g src\*.cpp -o build\tupt.exe
+
+      - name: publish TesLight Update Packaging Tool
+        uses: actions/upload-artifact@v3
+        with:
+          name: TesLight_Update_Packaging_Tool
+          path: build\tupt.exe
