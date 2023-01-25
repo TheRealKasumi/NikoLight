@@ -11,11 +11,16 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+        with:
+          # Full git history is needed to get a proper
+          # list of changed files within `super-linter`
+          fetch-depth: 0
 
       - name: print g++ version
         shell: cmd
         run: gcc --version
 
+      # use latest MinGW if current is not sufficient
       # - name: Set up MinGW
       #   uses: egor-tensin/setup-mingw@v2
       #   with:
