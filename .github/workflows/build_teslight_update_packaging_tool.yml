@@ -1,9 +1,9 @@
 name: build TesLight Update Packaging Tool
 on:
   push:
-    branches: #["main", "releases/**", "feat/DevOps_Auto_build_for_Update_Packages"]
+    branches: ["main", "releases/**", "feat/DevOps_Auto_build_for_Update_Packages"]
   pull_request:
-    branches: #["main"]
+    branches: ["main"]
   workflow_dispatch:
 jobs:
   build:
@@ -17,6 +17,8 @@ jobs:
         with:
           version: latest
           platform: x64
+
+      - name: g++ build
         shell: cmd
         working-directory: ./update-package-tool
         run: mkdir build && g++ -g src\*.cpp -o build\tupt.exe
