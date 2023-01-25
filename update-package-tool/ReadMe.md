@@ -22,11 +22,11 @@ So the decision was made to update everything on the system with a single packag
 ## Build
 
 You can use any C++17 compatible compiler to build this tool.
-I used [g++](https://www.mingw-w64.org/) on Windows.
+I used [gcc](https://www.mingw-w64.org/) on Windows but this tool can also be built on Linux and Mac.
 
 ```sh
 mkdir build
-g++ -g src\*.cpp -o build\tupt.exe
+g++ -std=c++17 -g ./src/*.cpp -o build/tupt.exe
 ```
 
 ## Usage
