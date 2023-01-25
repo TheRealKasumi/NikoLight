@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	std::wcout.imbue(std::locale("en_US.UTF-8"));
 #else
 	std::wcout.sync_with_stdio(false);
-	std::wcout.imbue(std::locale("en_US.utf-8"));
+	std::wcout.imbue(std::locale("en_US.utf8"));
 #endif
 
 	printHeader();
