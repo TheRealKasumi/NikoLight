@@ -29,7 +29,7 @@
  * @param sparkFriction friction of the sparks which is slowing them down in the range 0.0 to 1.0
  * @param sparkFading fading speed of the sparks in the range 0.0 to 1.0
  * @param sparktail tail length of the sparks in the range 0.0 to 1.0
- * @param birthRate probability with which a new spark is born each cycle
+ * @param birthRate probability with which a new spark is born each cycle/number of particles per audio peak
  * @param spawnVariance variance in the spawn position in the range 0.0 to 1.0
  * @param speedVariance variance in speed in the range 0.0 to 1.0
  * @param brightnessVariance variance in brightness in the range 0.0 to 1.0
@@ -191,6 +191,10 @@ void TL::SparkleAnimator::render(std::vector<CRGB> &pixels)
 	}
 
 	pixels = this->pixelBuffer;
+	if (this->reverse)
+	{
+		this->reversePixels(pixels);
+	}
 	this->applyBrightness(pixels);
 }
 
@@ -224,15 +228,9 @@ void TL::SparkleAnimator::spawnSparks(std::vector<CRGB> &pixels)
 
 			switch (this->spawnPosition)
 			{
-			case TL::SparkleAnimator::SpawnPosition::SPAWN_LEFT:
+			case TL::SparkleAnimator::SpawnPosition::SPAWN_SIDE:
 				spark.position = (this->offset / 255.0f) * (pixels.size() - 1.0f);
 				spark.position += this->random(0, pixels.size() - 1.0f) * this->spawnVariance;
-				spark.position = spark.position >= 0 ? spark.position : 0;
-				spark.position = spark.position < pixels.size() ? spark.position : pixels.size() - 1;
-				break;
-			case TL::SparkleAnimator::SpawnPosition::SPAWN_RIGHT:
-				spark.position = (pixels.size() - 1.0f) - (this->offset / 255.0f) * (pixels.size() - 1);
-				spark.position -= this->random(0, pixels.size() - 1.0f) * this->spawnVariance;
 				spark.position = spark.position >= 0 ? spark.position : 0;
 				spark.position = spark.position < pixels.size() ? spark.position : pixels.size() - 1;
 				break;

@@ -107,6 +107,7 @@ namespace TL
 		TL::MotionSensor::MotionSensorData motionSensorData;
 		TL::AudioUnit::AudioAnalysis audioAnalysis;
 
+		void reversePixels(std::vector<CRGB> &pixels);
 		void applyBrightness(std::vector<CRGB> &pixels);
 		static int32_t random(const int32_t min, const int32_t max);
 		static float trapezoid(float angle);

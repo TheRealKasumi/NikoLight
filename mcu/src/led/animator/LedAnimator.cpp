@@ -244,6 +244,15 @@ TL::AudioUnit::AudioAnalysis &TL::LedAnimator::getAudioAnalysis()
 }
 
 /**
+ * @brief Reverse the order of all pixels to reverse the animation.
+ * @param pixels reference to the vector holding the LED pixel data
+ */
+void TL::LedAnimator::reversePixels(std::vector<CRGB> &pixels)
+{
+	std::reverse(pixels.begin(), pixels.end());
+}
+
+/**
  * @brief Apply the brightness settings to all pixels.
  * @param pixels reference to the vector holding the LED pixel data
  */

@@ -120,6 +120,10 @@ void TL::GradientAnimatorMotion::render(std::vector<CRGB> &pixels)
 		}
 	}
 
+	if (this->reverse)
+	{
+		this->reversePixels(pixels);
+	}
 	this->applyBrightness(pixels);
 }
 
@@ -187,5 +191,5 @@ float TL::GradientAnimatorMotion::getMotionOffset()
 		motionValue = 0.5f;
 	}
 
-	return 0.5f + (this->reverse ? -motionValue : motionValue);
+	return 0.5f + motionValue;
 }
