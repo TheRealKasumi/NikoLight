@@ -265,7 +265,7 @@ void TL::SparkleAnimator::spawnSparks(std::vector<CRGB> &pixels)
 			}
 
 			spark.speed = this->speed / 64.0f;
-			// spark.speed += (this->random(-255, 255) / 255.0f) * this->speedVariance;
+			spark.speed += (this->random(-255, 255) / 64.0f) * this->speedVariance;
 			spark.speed = this->random(0, 255) < 127 ? -spark.speed : spark.speed;
 			spark.speed = spark.speed < 0.05f && spark.speed > 0.0f ? 0.05f : spark.speed;
 			spark.speed = spark.speed > -0.05f && spark.speed < 0.0f ? -0.05f : spark.speed;
