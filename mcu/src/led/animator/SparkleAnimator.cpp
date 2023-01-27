@@ -95,6 +95,7 @@ void TL::SparkleAnimator::init(std::vector<CRGB> &pixels)
 		TL::SparkleAnimator::Spark spark = this->sparks.at(i);
 		spark.visible = false;
 		spark.position = 0.0f;
+		spark.lastPosition = 0.0f;
 		spark.speed = 0.0f;
 		spark.friction = 0.0f;
 		spark.color = CRGB::Black;
@@ -146,23 +147,38 @@ void TL::SparkleAnimator::render(std::vector<CRGB> &pixels)
 		const TL::SparkleAnimator::Spark spark = this->sparks.at(i);
 		if (spark.visible)
 		{
-			const CRGB pixel = this->pixelBuffer.at(spark.position);
-			int16_t red = pixel.r;
-			int16_t green = pixel.g;
-			int16_t blue = pixel.b;
-
 			float exposure = abs(spark.speed);
 			exposure = exposure <= 1.0f ? exposure : 1.0f;
 
-			red += spark.color.r * spark.brightness * exposure;
-			green += spark.color.g * spark.brightness * exposure;
-			blue += spark.color.b * spark.brightness * exposure;
+			const float dist = spark.position - spark.lastPosition;
+			const bool isPositive = dist >= 0;
+			const float absDist = abs(dist);
+			for (size_t j = 0; j < absDist; j++)
+			{
+				if (isPositive && spark.position - j < 0)
+				{
+					break;
+				}
+				else if (!isPositive && spark.position + j > pixels.size())
+				{
+					break;
+				}
 
-			red = red <= 255 ? red : 255;
-			green = green <= 255 ? green : 255;
-			blue = blue <= 255 ? blue : 255;
+				const CRGB pixel = this->pixelBuffer.at(isPositive ? spark.position - j : spark.position + j);
+				int16_t red = pixel.r;
+				int16_t green = pixel.g;
+				int16_t blue = pixel.b;
 
-			this->pixelBuffer.at(spark.position).setRGB(red, green, blue);
+				red += spark.color.r * spark.brightness * exposure;
+				green += spark.color.g * spark.brightness * exposure;
+				blue += spark.color.b * spark.brightness * exposure;
+
+				red = red <= 255 ? red : 255;
+				green = green <= 255 ? green : 255;
+				blue = blue <= 255 ? blue : 255;
+
+				this->pixelBuffer.at(isPositive ? spark.position - j : spark.position + j).setRGB(red, green, blue);
+			}
 			this->pixelMask.at(spark.position) = true;
 		}
 	}
@@ -233,25 +249,28 @@ void TL::SparkleAnimator::spawnSparks(std::vector<CRGB> &pixels)
 				spark.position += this->random(0, pixels.size() - 1.0f) * this->spawnVariance;
 				spark.position = spark.position >= 0 ? spark.position : 0;
 				spark.position = spark.position < pixels.size() ? spark.position : pixels.size() - 1;
+				spark.lastPosition = spark.position;
 				break;
 			case TL::SparkleAnimator::SpawnPosition::SPAWN_CENTER:
 				spark.position = pixels.size() / 2.0f;
 				spark.position += this->random(-spark.position, spark.position) * this->spawnVariance;
 				spark.position = spark.position >= 0 ? spark.position : 0;
 				spark.position = spark.position < pixels.size() ? spark.position : pixels.size() - 1;
+				spark.lastPosition = spark.position;
 				break;
 			case TL::SparkleAnimator::SpawnPosition::SPAWN_RANDOM:
 				spark.position = this->random(0, pixels.size() - 1);
+				spark.lastPosition = spark.position;
 				break;
 			}
 
-			spark.speed = this->speed / 255.0f;
-			spark.speed += (this->random(-255, 255) / 255.0f) * this->speedVariance;
+			spark.speed = this->speed / 64.0f;
+			// spark.speed += (this->random(-255, 255) / 255.0f) * this->speedVariance;
 			spark.speed = this->random(0, 255) < 127 ? -spark.speed : spark.speed;
 			spark.speed = spark.speed < 0.05f && spark.speed > 0.0f ? 0.05f : spark.speed;
 			spark.speed = spark.speed > -0.05f && spark.speed < 0.0f ? -0.05f : spark.speed;
-			spark.speed = spark.speed > 1.0f ? 1.0f : spark.speed;
-			spark.speed = spark.speed < -1.0f ? -1.0f : spark.speed;
+			spark.speed = spark.speed > 3.0f ? 3.0f : spark.speed;
+			spark.speed = spark.speed < -3.0f ? -3.0f : spark.speed;
 
 			spark.friction = this->sparkFriction;
 			spark.friction += (this->random(-255, 255) / 255.0f) * this->frictionVariance;
@@ -297,6 +316,7 @@ void TL::SparkleAnimator::runSparks(std::vector<CRGB> &pixels)
 		TL::SparkleAnimator::Spark spark = this->sparks.at(i);
 		if (spark.visible)
 		{
+			spark.lastPosition = spark.position;
 			spark.position += spark.speed;
 			spark.speed -= spark.speed * spark.friction;
 			spark.brightness -= spark.brightness * spark.fading;
@@ -306,6 +326,7 @@ void TL::SparkleAnimator::runSparks(std::vector<CRGB> &pixels)
 				if (this->bounceAtCorner)
 				{
 					spark.position = spark.position < 0.0f ? 0.0f : pixels.size() - 1;
+					spark.lastPosition = spark.position;
 					spark.speed = -spark.speed;
 				}
 				else

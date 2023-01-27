@@ -104,10 +104,10 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 	}
 
 	const String body = TL::LedConfigurationEndpoint::webServer->arg(F("plain"));
-	if (body.length() == 0 || body.length() > 2048)
+	if (body.length() == 0 || body.length() > 4096)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 2048 bytes."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 2048 bytes."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 4096 bytes."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 4096 bytes."));
 		return;
 	}
 

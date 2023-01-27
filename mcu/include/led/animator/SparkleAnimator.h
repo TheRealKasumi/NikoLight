@@ -40,13 +40,14 @@ namespace TL
 
 		struct Spark
 		{
-			bool visible;	  // Visibility of a spark
-			float position;	  // Position of a spark
-			float speed;	  // Speed of a spark
-			float friction;	  // Friction of a spark
-			CRGB color;		  // Color of a spark
-			float brightness; // Brightness of a spark
-			float fading;	  // Fafing speed of a spark
+			bool visible;		// Visibility of a spark
+			float position;		// Position of a spark
+			float lastPosition; // Previous position of a spark
+			float speed;		// Speed of a spark
+			float friction;		// Friction of a spark
+			CRGB color;			// Color of a spark
+			float brightness;	// Brightness of a spark
+			float fading;		// Fafing speed of a spark
 		};
 
 		SparkleAnimator(const TL::SparkleAnimator::SpawnPosition spawnPosition, const uint8_t sparkCount, const CRGB color,
