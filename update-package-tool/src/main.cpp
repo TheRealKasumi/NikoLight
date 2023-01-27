@@ -30,6 +30,9 @@ int main(int argc, char *argv[])
 {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 	_setmode(_fileno(stdout), _O_U16TEXT);
+#elif __APPLE__
+	std::wcout.sync_with_stdio(false);
+	std::wcout.imbue(std::locale("en_US.UTF-8"));
 #else
 	std::wcout.sync_with_stdio(false);
 	std::wcout.imbue(std::locale("en_US.utf8"));
