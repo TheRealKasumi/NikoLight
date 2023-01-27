@@ -511,17 +511,17 @@ void TesLight::initializeTimers()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize/reset timers."));
 	unsigned long mic = micros();
-	renderTimer = mic;
-	frameTimer = mic;
-	lightSensorTimer = mic;
-	motionSensorTimer = mic;
-	audioUnitTimer = mic;
-	temperatureTimer = mic;
-	statusTimer = mic;
-	statusPrintTimer = mic;
-	webServerTimer = mic;
-	renderCounter = 0;
-	frameCounter = 0;
+	TesLight::renderTimer = mic;
+	TesLight::frameTimer = mic;
+	TesLight::lightSensorTimer = mic;
+	TesLight::motionSensorTimer = mic;
+	TesLight::audioUnitTimer = mic;
+	TesLight::temperatureTimer = mic;
+	TesLight::statusTimer = mic;
+	TesLight::statusPrintTimer = mic;
+	TesLight::webServerTimer = mic;
+	TesLight::renderCounter = 0;
+	TesLight::frameCounter = 0;
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Timers initialized to ") + mic + F("."));
 }
 
@@ -674,73 +674,73 @@ bool TesLight::checkTimer(unsigned long &timer, unsigned long cycleTime)
 void TesLight::run()
 {
 	// Handle the pixel rendering
-	if (checkTimer(renderTimer, TL::LedManager::getRenderInterval()))
+	if (TesLight::checkTimer(TesLight::renderTimer, TL::LedManager::getRenderInterval()))
 	{
 		TL::LedManager::render();
-		renderCounter++;
+		TesLight::renderCounter++;
 	}
 
 	// Handle the LEDs
-	if (checkTimer(frameTimer, TL::LedManager::getFrameInterval()))
+	if (TesLight::checkTimer(TesLight::frameTimer, TL::LedManager::getFrameInterval()))
 	{
 		TL::LedManager::show();
-		frameCounter++;
-		ledPowerCounter += TL::LedManager::getLedPowerDraw();
+		TesLight::frameCounter++;
+		TesLight::ledPowerCounter += TL::LedManager::getLedPowerDraw();
 	}
 
 	// Handle the light sensor
-	if (checkTimer(lightSensorTimer, lightSensorInterval) && TL::LightSensor::isInitialized())
+	if (TesLight::checkTimer(TesLight::lightSensorTimer, TesLight::lightSensorInterval) && TL::LightSensor::isInitialized())
 	{
 		float brightness;
 		const TL::LightSensor::Error lightSensorError = TL::LightSensor::getBrightness(brightness);
 		if (lightSensorError == TL::LightSensor::Error::OK)
 		{
 			TL::LedManager::setAmbientBrightness(brightness);
-			lightSensorInterval = LIGHT_SENSOR_INTERVAL;
+			TesLight::lightSensorInterval = LIGHT_SENSOR_INTERVAL;
 		}
 		else
 		{
 			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read light sensor data. Delaying next read by 1s."));
 			TL::LedManager::setAmbientBrightness(1.0f);
-			lightSensorInterval = 1000000;
+			TesLight::lightSensorInterval = 1000000;
 		}
 	}
 
 	// Handle the motion sensor
-	if (checkTimer(motionSensorTimer, motionSensorInterval) && TL::MotionSensor::isInitialized())
+	if (TesLight::checkTimer(TesLight::motionSensorTimer, TesLight::motionSensorInterval) && TL::MotionSensor::isInitialized())
 	{
 		const TL::MotionSensor::Error motionSensorError = TL::MotionSensor::run();
 		if (motionSensorError == TL::MotionSensor::Error::OK)
 		{
 			TL::LedManager::setMotionSensorData(TL::MotionSensor::getMotion());
-			motionSensorInterval = MOTION_SENSOR_INTERVAL;
+			TesLight::motionSensorInterval = MOTION_SENSOR_INTERVAL;
 		}
 		else
 		{
 			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read motion sensor data. Delaying next read by 1s"));
-			motionSensorInterval = 1000000;
+			TesLight::motionSensorInterval = 1000000;
 		}
 	}
 
 	// Handle the audio unit
-	if (checkTimer(audioUnitTimer, audioUnitInterval) && TL::AudioUnit::isInitialized())
+	if (TesLight::checkTimer(TesLight::audioUnitTimer, TesLight::audioUnitInterval) && TL::AudioUnit::isInitialized())
 	{
 		TL::AudioUnit::AudioAnalysis audioAnalysis;
 		const TL::AudioUnit::Error audioError = TL::AudioUnit::getAudioAnalysis(audioAnalysis);
 		if (audioError == TL::AudioUnit::Error::OK)
 		{
 			TL::LedManager::setAudioAnalysis(audioAnalysis);
-			audioUnitInterval = AUDIO_UNIT_INTERVAL;
+			TesLight::audioUnitInterval = AUDIO_UNIT_INTERVAL;
 		}
 		else
 		{
 			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to read audio analysis data. Delaying next read by 1s"));
-			audioUnitInterval = 1000000;
+			TesLight::audioUnitInterval = 1000000;
 		}
 	}
 
 	// Handle the fan controller
-	if (checkTimer(temperatureTimer, FAN_INTERVAL))
+	if (TesLight::checkTimer(TesLight::temperatureTimer, FAN_INTERVAL))
 	{
 		const TL::Fan::Error fanError = TL::Fan::run(static_cast<TL::Fan::FanMode>(TL::Configuration::getSystemConfig().fanMode));
 		if (fanError == TL::Fan::Error::ERROR_TEMP_UNAVAILABLE)
@@ -758,7 +758,7 @@ void TesLight::run()
 	}
 
 	// Update the soc, led and hardware information
-	if (checkTimer(statusTimer, STATUS_INTERVAL))
+	if (TesLight::checkTimer(TesLight::statusTimer, STATUS_INTERVAL))
 	{
 		// Update the SOC information
 		TL::SystemInformation::updateSocInfo();
@@ -787,13 +787,13 @@ void TesLight::run()
 		}
 		TL::SystemInformation::setHardwareInfo(hwInfo);
 
-		renderCounter = 0;
-		frameCounter = 0;
-		ledPowerCounter = 0.0f;
+		TesLight::renderCounter = 0;
+		TesLight::frameCounter = 0;
+		TesLight::ledPowerCounter = 0.0f;
 	}
 
 	// Print the system status
-	if (checkTimer(statusPrintTimer, STATUS_PRINT_INTERVAL))
+	if (TesLight::checkTimer(TesLight::statusPrintTimer, STATUS_PRINT_INTERVAL))
 	{
 		const TL::SystemInformation::SocInfo socInfo = TL::SystemInformation::getSocInfo();
 		const TL::SystemInformation::TLInformation tlInfo = TL::SystemInformation::getTesLightInfo();
@@ -811,7 +811,7 @@ void TesLight::run()
 	}
 
 	// Handle web server requests
-	if (checkTimer(webServerTimer, WEB_SERVER_INTERVAL))
+	if (TesLight::checkTimer(TesLight::webServerTimer, WEB_SERVER_INTERVAL))
 	{
 		// Stop the watchdog to not trigger it during longer requests
 		TL::WatchDog::deleteTaskWatchdog();

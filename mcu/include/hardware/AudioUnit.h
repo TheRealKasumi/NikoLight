@@ -53,7 +53,7 @@ namespace TL
 			double noiseGate;	  // Dont trigger when the value is below the noise gate
 		};
 
-		enum Trigger : uint8_t
+		enum class Trigger : uint8_t
 		{
 			TRIGGER_LOW = 0,	// No peak detected
 			TRIGGER_RISING = 1, // Peak got just detected in the current frame

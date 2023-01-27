@@ -36,7 +36,7 @@ namespace TL
 			ERROR_IIC_COMM // Error in the I²C communication
 		};
 
-		enum MPU6050AccScale : uint8_t
+		enum class MPU6050AccScale : uint8_t
 		{
 			SCALE_2G = 0B00000000,
 			SCALE_4G = 0B00001000,
@@ -44,7 +44,7 @@ namespace TL
 			SCALE_16G = 0B00011000
 		};
 
-		enum MPU6050GyScale : uint8_t
+		enum class MPU6050GyScale : uint8_t
 		{
 			SCALE_250DS = 0B00000000,
 			SCALE_500DS = 0B00001000,

@@ -80,7 +80,7 @@ bool TL::BH1750::isInitialized()
 TL::BH1750::Error TL::BH1750::setResolution(const TL::BH1750::BH1750Res resolution)
 {
 	TL::BH1750::resolution = resolution;
-	return TL::BH1750::write(TL::BH1750::resolution);
+	return TL::BH1750::write(static_cast<uint8_t>(TL::BH1750::resolution));
 }
 
 /**

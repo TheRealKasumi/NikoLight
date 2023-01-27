@@ -137,7 +137,7 @@ TL::MPU6050::Error TL::MPU6050::setAccScale(TL::MPU6050::MPU6050AccScale accScal
 	TL::MPU6050::accScale = accScale;
 	Wire.beginTransmission(TL::MPU6050::deviceAddress);
 	Wire.write(0x1C);
-	Wire.write(TL::MPU6050::accScale);
+	Wire.write(static_cast<uint8_t>(TL::MPU6050::accScale));
 	if (Wire.endTransmission(true) != 0)
 	{
 		return TL::MPU6050::Error::ERROR_IIC_COMM;
@@ -165,7 +165,7 @@ TL::MPU6050::Error TL::MPU6050::setGyScale(TL::MPU6050::MPU6050GyScale gyScale)
 	TL::MPU6050::gyScale = gyScale;
 	Wire.beginTransmission(TL::MPU6050::deviceAddress);
 	Wire.write(0x1B);
-	Wire.write(TL::MPU6050::gyScale);
+	Wire.write(static_cast<uint8_t>(TL::MPU6050::gyScale));
 	if (Wire.endTransmission(true) != 0)
 	{
 		return TL::MPU6050::Error::ERROR_IIC_COMM;

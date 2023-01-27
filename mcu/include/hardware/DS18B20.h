@@ -40,7 +40,7 @@ namespace TL
 			ERROR_OUT_OF_BOUNDS // Index is out of bounds
 		};
 
-		enum DS18B20Res : uint8_t
+		enum class DS18B20Res : uint8_t
 		{
 			DS18B20_9_BIT = 0B00011111,
 			DS18B20_10_BIT = 0B00111111,

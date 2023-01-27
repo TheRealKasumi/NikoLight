@@ -30,7 +30,7 @@ namespace TL
 	class ColorBarAnimator : public LedAnimator
 	{
 	public:
-		enum ColorBarMode
+		enum class ColorBarMode
 		{
 			COLOR_BAR_LINEAR_HARD = 0,
 			COLOR_BAR_LINEAR_SMOOTH = 1,

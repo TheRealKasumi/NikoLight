@@ -4,7 +4,7 @@
  * @brief Implementation of the {@link TL::GradientAnimatorMotion}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -24,17 +24,14 @@
 /**
  * @brief Create a new instance of {@link TL::GradientAnimatorMotion}.
  * @param gradientMode mode of the gradient
- * @param motionSensorValue value that is influencing the animation
  * @param color1 first color value
  * @param color2 second color value
  */
-TL::GradientAnimatorMotion::GradientAnimatorMotion(const TL::GradientAnimatorMotion::GradientMode gradientMode, TL::MotionSensor::MotionSensorValue motionSensorValue,
-												   const CRGB color1, const CRGB color2)
+TL::GradientAnimatorMotion::GradientAnimatorMotion(const TL::GradientAnimatorMotion::GradientMode gradientMode, const CRGB color1, const CRGB color2)
 {
 	this->gradientMode = gradientMode;
 	this->color[0] = color1;
 	this->color[1] = color2;
-	this->motionSensorValue = motionSensorValue;
 }
 
 /**
@@ -123,6 +120,10 @@ void TL::GradientAnimatorMotion::render(std::vector<CRGB> &pixels)
 		}
 	}
 
+	if (this->reverse)
+	{
+		this->reversePixels(pixels);
+	}
 	this->applyBrightness(pixels);
 }
 
@@ -133,43 +134,43 @@ void TL::GradientAnimatorMotion::render(std::vector<CRGB> &pixels)
 float TL::GradientAnimatorMotion::getMotionOffset()
 {
 	float motionValue = 0.0f;
-	if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ACC_X_G)
+	if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ACC_X_G)
 	{
 		motionValue = this->motionSensorData.accXG;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ACC_Y_G)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ACC_Y_G)
 	{
 		motionValue = this->motionSensorData.accYG;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ACC_Z_G)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ACC_Z_G)
 	{
 		motionValue = this->motionSensorData.accZG;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::GY_X_DEG)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_GY_X_DEG)
 	{
 		motionValue = this->motionSensorData.gyroXDeg / 30.0f;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::GY_Y_DEG)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_GY_Y_DEG)
 	{
 		motionValue = this->motionSensorData.gyroYDeg / 30.0f;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::GY_Z_DEG)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_GY_Z_DEG)
 	{
 		motionValue = this->motionSensorData.gyroZDeg / 30.0f;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::PITCH)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_PITCH)
 	{
 		motionValue = this->motionSensorData.pitch / 30.0f;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ROLL)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ROLL)
 	{
 		motionValue = this->motionSensorData.roll / 30.0f;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ROLL_COMPENSATED_ACC_X_G)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ROLL_COMPENSATED_ACC_X_G)
 	{
 		motionValue = this->motionSensorData.rollCompensatedAccXG;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::PITCH_COMPENSATED_ACC_Y_G)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_PITCH_COMPENSATED_ACC_Y_G)
 	{
 		motionValue = this->motionSensorData.pitchCompensatedAccYG;
 	}
@@ -190,5 +191,5 @@ float TL::GradientAnimatorMotion::getMotionOffset()
 		motionValue = 0.5f;
 	}
 
-	return 0.5f + (this->reverse ? -motionValue : motionValue);
+	return 0.5f + motionValue;
 }
