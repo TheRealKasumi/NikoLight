@@ -73,6 +73,7 @@ const mock: {
       reverse: false,
       fadeSpeed: 30,
       ledVoltage: 5,
+      dataSource: 0,
       animationSettings: [
         2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0,

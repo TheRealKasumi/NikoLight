@@ -5,8 +5,7 @@ enum RainbowMode {
 }
 
 enum SpawnPosition {
-  Left,
-  Right,
+  Side,
   Center,
   Random,
 }
@@ -43,15 +42,72 @@ export const AnimationMode = {
   [AnimationType.GradientMotion]: GradientMode,
 } as const;
 
-export enum MotionSensorValue {
-  ACC_X_G = 6,
-  ACC_Y_G = 7,
-  ACC_Z_G = 8,
-  GY_X_DEG = 9,
-  GY_Y_DEG = 10,
-  GY_Z_DEG = 11,
-  PITCH = 12,
-  ROLL = 13,
-  ROLL_COMPENSATED_ACC_X_G = 15,
-  PITCH_COMPENSATED_ACC_Y_G = 16,
+export enum AnimationDataSource {
+  NONE,
+  RANDOM,
+  ACC_X_RAW,
+  ACC_Y_RAW,
+  ACC_Z_RAW,
+  GY_X_RAW,
+  GY_Y_RAW,
+  GY_Z_RAW,
+  ACC_X_G,
+  ACC_Y_G,
+  ACC_Z_G,
+  GY_X_DEG,
+  GY_Y_DEG,
+  GY_Z_DEG,
+  PITCH,
+  ROLL,
+  YAW,
+  ROLL_COMPENSATED_ACC_X_G,
+  PITCH_COMPENSATED_ACC_Y_G,
+  AUDIO_FREQUENCY_TRIGGER,
+  AUDIO_FREQUENCY_VALUE,
+  AUDIO_VOLUME_PEAK,
 }
+
+export const getDataSourceForType = (type: AnimationType) => {
+  switch (type) {
+    case AnimationType.RainbowMotion:
+    case AnimationType.GradientMotion:
+      return [
+        AnimationDataSource.ACC_X_G,
+        AnimationDataSource.ACC_Y_G,
+        AnimationDataSource.ACC_Z_G,
+        AnimationDataSource.GY_X_DEG,
+        AnimationDataSource.GY_Y_DEG,
+        AnimationDataSource.GY_Z_DEG,
+        AnimationDataSource.PITCH,
+        AnimationDataSource.ROLL,
+        AnimationDataSource.ROLL_COMPENSATED_ACC_X_G,
+        AnimationDataSource.PITCH_COMPENSATED_ACC_Y_G,
+      ];
+    case AnimationType.Sparkle:
+      return [
+        AnimationDataSource.RANDOM,
+        AnimationDataSource.AUDIO_FREQUENCY_TRIGGER,
+      ];
+    default:
+      return [];
+  }
+};
+
+export const getAnimationTypesForAvailableHardware = ({
+  hasMPU6050,
+}: {
+  hasMPU6050: boolean;
+}) =>
+  Object.entries(AnimationType)
+    .filter(([key]) => isNaN(Number(key)))
+    .filter(([, value]) => value !== AnimationType.FSEQ)
+    .filter(
+      ([, value]) =>
+        value !== AnimationType.RainbowMotion ||
+        (value === AnimationType.RainbowMotion && hasMPU6050),
+    )
+    .filter(
+      ([, value]) =>
+        value !== AnimationType.GradientMotion ||
+        (value === AnimationType.GradientMotion && hasMPU6050),
+    );
