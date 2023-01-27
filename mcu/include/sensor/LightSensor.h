@@ -46,7 +46,7 @@ namespace TL
 			ERROR_UNKNOWN_MODE,		   // The light sensor mode is unknown
 		};
 
-		enum LightSensorMode : uint8_t
+		enum class LightSensorMode : uint8_t
 		{
 			ALWAYS_OFF = 0,
 			ALWAYS_ON = 1,

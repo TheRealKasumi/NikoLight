@@ -33,18 +33,18 @@ There all combinations are listed.
 | animationSettings[4]  | /            | /                   | Color Red 2   | /           | Color Red 2   | /              | Color Red 2     | Don't change  |
 | animationSettings[5]  | /            | /                   | Color Green 2 | /           | Color Green 2 | /              | Color Green 2   | Don't change  |
 | animationSettings[6]  | /            | /                   | Color Blue 2  | /           | Color Blue 2  | /              | Color Blue 2    | Don't change  |
-| animationSettings[7]  | /            | /                   | /             | /           | /             | Sensor Value   | Sensor Value    | Don't change  |
-| animationSettings[8]  | /            | Spark Count         | /             | /           | /             | /              | /               | Don't change  |
-| animationSettings[9]  | /            | Friction            | /             | /           | /             | /              | /               | Don't change  |
-| animationSettings[10] | /            | Fading              | /             | /           | /             | /              | /               | Don't change  |
-| animationSettings[11] | /            | Tail                | /             | /           | /             | /              | /               | Don't change  |
-| animationSettings[12] | /            | Birth Rate          | /             | /           | /             | /              | /               | Don't change  |
-| animationSettings[13] | /            | Spawn Variance      | /             | /           | /             | /              | /               | Don't change  |
-| animationSettings[14] | /            | Speed Variance      | /             | /           | /             | /              | /               | Don't change  |
-| animationSettings[15] | /            | Brightness Variance | /             | /           | /             | /              | /               | Don't change  |
-| animationSettings[16] | /            | Friction Variance   | /             | /           | /             | /              | /               | Don't change  |
-| animationSettings[17] | /            | Fading Variance     | /             | /           | /             | /              | /               | Don't change  |
-| animationSettings[18] | /            | Bounce              | /             | /           | /             | /              | /               | Don't change  |
+| animationSettings[7]  | /            | Spark Count         | /             | /           | /             | /              | /               | Don't change  |
+| animationSettings[8]  | /            | Friction            | /             | /           | /             | /              | /               | Don't change  |
+| animationSettings[9]  | /            | Fading              | /             | /           | /             | /              | /               | Don't change  |
+| animationSettings[10] | /            | Tail                | /             | /           | /             | /              | /               | Don't change  |
+| animationSettings[11] | /            | Birth Rate          | /             | /           | /             | /              | /               | Don't change  |
+| animationSettings[12] | /            | Spawn Variance      | /             | /           | /             | /              | /               | Don't change  |
+| animationSettings[13] | /            | Speed Variance      | /             | /           | /             | /              | /               | Don't change  |
+| animationSettings[14] | /            | Brightness Variance | /             | /           | /             | /              | /               | Don't change  |
+| animationSettings[15] | /            | Friction Variance   | /             | /           | /             | /              | /               | Don't change  |
+| animationSettings[16] | /            | Fading Variance     | /             | /           | /             | /              | /               | Don't change  |
+| animationSettings[17] | /            | Bounce              | /             | /           | /             | /              | /               | Don't change  |
+| animationSettings[18] | /            | Frequency Band Mask | /             | /           | /             | /              | /               | Don't change  |
 | animationSettings[19] | /            | /                   | /             | /           | /             | /              | /               | Don't change  |
 | animationSettings[20] | Reserved     | Reserved            | Reserved      | Reserved    | Reserved      | Reserved       | Reserved        | File ID       |
 | animationSettings[21] | Reserved     | Reserved            | Reserved      | Reserved    | Reserved      | Reserved       | Reserved        | File ID       |

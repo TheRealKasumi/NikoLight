@@ -129,7 +129,7 @@ TL::DS18B20::Error TL::DS18B20::setResolution(const TL::DS18B20::DS18B20Res reso
 	TL::DS18B20::oneWire.write(0x4E, 0);
 	TL::DS18B20::oneWire.write(0x00, 0);
 	TL::DS18B20::oneWire.write(0x00, 0);
-	TL::DS18B20::oneWire.write(resolution);
+	TL::DS18B20::oneWire.write(static_cast<uint8_t>(resolution));
 	TL::DS18B20::resolution.at(sensorIndex) = resolution;
 
 	return TL::DS18B20::Error::OK;

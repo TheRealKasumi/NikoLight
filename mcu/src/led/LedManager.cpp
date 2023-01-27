@@ -371,18 +371,19 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 		else if (ledConfig.type == 1)
 		{
 			TL::LedManager::ledAnimator.at(i).reset(new TL::SparkleAnimator(
-				(TL::SparkleAnimator::SpawnPosition)ledConfig.animationSettings[0],
-				ledConfig.animationSettings[8] / 2 + 1,
+				static_cast<TL::SparkleAnimator::SpawnPosition>(ledConfig.animationSettings[0]),
+				ledConfig.animationSettings[7] / 2 + 1,
 				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
-				ledConfig.animationSettings[9] / 10240.0f,
-				ledConfig.animationSettings[10] / 5120.0f,
-				ledConfig.animationSettings[11] / 255.0f,
-				ledConfig.animationSettings[12] / 1024.0f,
+				ledConfig.animationSettings[8] / 5120.0f,
+				ledConfig.animationSettings[9] / 2560.0f,
+				ledConfig.animationSettings[10] / 255.0f,
+				ledConfig.animationSettings[11] / 1024.0f,
+				ledConfig.animationSettings[12] / 255.0f,
 				ledConfig.animationSettings[13] / 255.0f,
 				ledConfig.animationSettings[14] / 255.0f,
-				ledConfig.animationSettings[15] / 255.0f,
-				ledConfig.animationSettings[16] / 10240.0f,
-				ledConfig.animationSettings[17] / 5120.0f,
+				ledConfig.animationSettings[15] / 5120.0f,
+				ledConfig.animationSettings[16] / 2560.0f,
+				ledConfig.animationSettings[17],
 				ledConfig.animationSettings[18]));
 		}
 
@@ -390,7 +391,7 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 		else if (ledConfig.type == 2)
 		{
 			TL::LedManager::ledAnimator.at(i).reset(new TL::GradientAnimator(
-				(TL::GradientAnimator::GradientMode)ledConfig.animationSettings[0],
+				static_cast<TL::GradientAnimator::GradientMode>(ledConfig.animationSettings[0]),
 				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
 				CRGB(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
 		}
@@ -405,7 +406,7 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 		else if (ledConfig.type == 4)
 		{
 			TL::LedManager::ledAnimator.at(i).reset(new TL::ColorBarAnimator(
-				(TL::ColorBarAnimator::ColorBarMode)ledConfig.animationSettings[0],
+				static_cast<TL::ColorBarAnimator::ColorBarMode>(ledConfig.animationSettings[0]),
 				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
 				CRGB(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
 		}
@@ -413,17 +414,14 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 		// Rainbow motion type
 		else if (ledConfig.type == 5)
 		{
-			TL::LedManager::ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(
-				(TL::RainbowAnimatorMotion::RainbowMode)ledConfig.animationSettings[0],
-				(TL::MotionSensor::MotionSensorValue)ledConfig.animationSettings[7]));
+			TL::LedManager::ledAnimator.at(i).reset(new TL::RainbowAnimatorMotion(static_cast<TL::RainbowAnimatorMotion::RainbowMode>(ledConfig.animationSettings[0])));
 		}
 
 		// Gradient motion type
 		else if (ledConfig.type == 6)
 		{
 			TL::LedManager::ledAnimator.at(i).reset(new TL::GradientAnimatorMotion(
-				(TL::GradientAnimatorMotion::GradientMode)ledConfig.animationSettings[0],
-				(TL::MotionSensor::MotionSensorValue)ledConfig.animationSettings[7],
+				static_cast<TL::GradientAnimatorMotion::GradientMode>(ledConfig.animationSettings[0]),
 				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
 				CRGB(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
 		}
@@ -434,6 +432,7 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 			return TL::LedManager::Error::ERROR_UNKNOWN_ANIMATOR_TYPE;
 		}
 
+		TL::LedManager::ledAnimator.at(i)->setDataSource(static_cast<TL::LedAnimator::DataSource>(ledConfig.dataSource));
 		TL::LedManager::ledAnimator.at(i)->setSpeed(ledConfig.speed);
 		TL::LedManager::ledAnimator.at(i)->setOffset(ledConfig.offset);
 		TL::LedManager::ledAnimator.at(i)->setAnimationBrightness(ledConfig.brightness / 255.0f);
@@ -466,10 +465,6 @@ TL::LedManager::Error TL::LedManager::loadCustomAnimation(const String &fileName
 	const uint8_t fillerBytes = roundedChannelCount - channelCount;
 	if (TL::LedManager::fseqLoader->getHeader().channelCount != roundedChannelCount)
 	{
-		Serial.println(channelCount);
-		Serial.println(roundedChannelCount);
-		Serial.println(TL::LedManager::fseqLoader->getHeader().channelCount);
-		Serial.println(fillerBytes);
 		return TL::LedManager::Error::ERROR_INVALID_LED_CONFIGURATION;
 	}
 	TL::LedManager::fseqLoader->setFillerBytes(fillerBytes);
@@ -483,6 +478,7 @@ TL::LedManager::Error TL::LedManager::loadCustomAnimation(const String &fileName
 	{
 		const TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
 		TL::LedManager::ledAnimator.at(i).reset(new TL::FseqAnimator(TL::LedManager::fseqLoader.get(), true));
+		TL::LedManager::ledAnimator.at(i)->setDataSource(static_cast<TL::LedAnimator::DataSource>(ledConfig.dataSource));
 		TL::LedManager::ledAnimator.at(i)->setSpeed(ledConfig.speed);
 		TL::LedManager::ledAnimator.at(i)->setOffset(ledConfig.offset);
 		TL::LedManager::ledAnimator.at(i)->setAnimationBrightness(ledConfig.brightness / 255.0f);

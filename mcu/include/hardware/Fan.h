@@ -40,7 +40,7 @@ namespace TL
 			ERROR_UNKNOWN_MODE		  // Unknown fan mode
 		};
 
-		enum FanMode : uint8_t
+		enum class FanMode : uint8_t
 		{
 			AUTOMATIC = 0,	// Auomatic fan speed control
 			MANUAL_OFF = 1, // Manual fan speed 0%

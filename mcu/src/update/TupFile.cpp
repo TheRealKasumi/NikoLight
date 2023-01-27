@@ -292,7 +292,7 @@ uint32_t TL::TupFile::generateHash()
 		this->file.read((uint8_t *)dataBlock.path, dataBlock.pathLength <= 255 ? dataBlock.pathLength : 255);
 		this->file.read((uint8_t *)&dataBlock.size, 4);
 
-		hash = hash * 31 + dataBlock.type;
+		hash = hash * 31 + static_cast<uint8_t>(dataBlock.type);
 		hash = hash * 31 + dataBlock.pathLength;
 
 		for (uint32_t j = 0; j < dataBlock.pathLength; j++)

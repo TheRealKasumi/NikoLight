@@ -4,7 +4,7 @@
  * @brief Implementation of the {@link TL::GradientAnimator}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -61,19 +61,19 @@ void TL::GradientAnimator::render(std::vector<CRGB> &pixels)
 		const float middle = (this->offset / 255.0f - 0.5f) * 2.0f;
 		if (middle < 0.0f)
 		{
-			pixels.at(0).setRGB(this->color[this->reverse ? 1 : 0].r, this->color[this->reverse ? 1 : 0].g, this->color[this->reverse ? 1 : 0].b);
+			pixels.at(0).setRGB(this->color[1].r, this->color[1].g, this->color[1].b);
 			pixels.at(1).setRGB(
-				(-middle * this->color[this->reverse ? 1 : 0].r + (1 + middle) * this->color[this->reverse ? 0 : 1].r),
-				(-middle * this->color[this->reverse ? 1 : 0].g + (1 + middle) * this->color[this->reverse ? 0 : 1].g),
-				(-middle * this->color[this->reverse ? 1 : 0].b + (1 + middle) * this->color[this->reverse ? 0 : 1].b));
+				(-middle * this->color[1].r + (1 + middle) * this->color[0].r),
+				(-middle * this->color[1].g + (1 + middle) * this->color[0].g),
+				(-middle * this->color[1].b + (1 + middle) * this->color[0].b));
 		}
 		else
 		{
 			pixels.at(0).setRGB(
-				(middle * this->color[this->reverse ? 0 : 1].r + (1 - middle) * this->color[this->reverse ? 1 : 0].r),
-				(middle * this->color[this->reverse ? 0 : 1].g + (1 - middle) * this->color[this->reverse ? 1 : 0].g),
-				(middle * this->color[this->reverse ? 0 : 1].b + (1 - middle) * this->color[this->reverse ? 1 : 0].b));
-			pixels.at(1).setRGB(this->color[this->reverse ? 0 : 1].r, this->color[this->reverse ? 0 : 1].g, this->color[this->reverse ? 0 : 1].b);
+				(middle * this->color[0].r + (1 - middle) * this->color[1].r),
+				(middle * this->color[0].g + (1 - middle) * this->color[1].g),
+				(middle * this->color[0].b + (1 - middle) * this->color[1].b));
+			pixels.at(1).setRGB(this->color[0].r, this->color[0].g, this->color[0].b);
 		}
 	}
 	else
@@ -114,11 +114,15 @@ void TL::GradientAnimator::render(std::vector<CRGB> &pixels)
 				}
 			}
 			pixels.at(i).setRGB(
-				(position * this->color[this->reverse ? 1 : 0].r + (1 - position) * this->color[this->reverse ? 0 : 1].r),
-				(position * this->color[this->reverse ? 1 : 0].g + (1 - position) * this->color[this->reverse ? 0 : 1].g),
-				(position * this->color[this->reverse ? 1 : 0].b + (1 - position) * this->color[this->reverse ? 0 : 1].b));
+				(position * this->color[1].r + (1 - position) * this->color[0].r),
+				(position * this->color[1].g + (1 - position) * this->color[0].g),
+				(position * this->color[1].b + (1 - position) * this->color[0].b));
 		}
 	}
 
+	if (this->reverse)
+	{
+		this->reversePixels(pixels);
+	}
 	this->applyBrightness(pixels);
 }

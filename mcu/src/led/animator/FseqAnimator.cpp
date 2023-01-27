@@ -78,13 +78,7 @@ void TL::FseqAnimator::render(std::vector<CRGB> &pixels)
 
 	if (this->reverse)
 	{
-		for (uint16_t i = 0, j = pixels.size() - 1; i < j; i++, j--)
-		{
-			CRGB temp = pixels.at(i);
-			pixels.at(i) = pixels.at(j);
-			pixels.at(j) = temp;
-		}
+		this->reversePixels(pixels);
 	}
-
 	this->applyBrightness(pixels);
 }

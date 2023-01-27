@@ -55,7 +55,7 @@ namespace TL
 			uint32_t numberBlocks;
 		};
 
-		enum TupDataType : uint8_t
+		enum class TupDataType : uint8_t
 		{
 			FIRMWARE = 0,
 			FILE = 1,

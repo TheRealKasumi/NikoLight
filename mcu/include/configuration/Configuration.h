@@ -70,6 +70,7 @@ namespace TL
 			uint8_t ledPin;												// Physical pin for the LED output
 			uint16_t ledCount;											// Number of LEDs
 			uint8_t type;												// Type of the animation
+			uint8_t dataSource;											// Data source of the animation
 			uint8_t speed;												// Speed of the animation
 			uint16_t offset;											// Offset for the animation
 			uint8_t brightness;											// Brightness of the LED channel

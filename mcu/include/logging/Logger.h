@@ -33,7 +33,7 @@ namespace TL
 	class Logger
 	{
 	public:
-		enum LogLevel : uint8_t
+		enum class LogLevel : uint8_t
 		{
 			DEBUG = 0,
 			INFO = 1,

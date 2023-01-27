@@ -26,6 +26,7 @@
  */
 TL::LedAnimator::LedAnimator()
 {
+	this->dataSource = TL::LedAnimator::DataSource::DS_NONE;
 	this->speed = 0;
 	this->offset = 0;
 	this->animationBrightness = 0.0f;
@@ -53,6 +54,24 @@ TL::LedAnimator::LedAnimator()
  */
 TL::LedAnimator::~LedAnimator()
 {
+}
+
+/**
+ * @brief Set the data source used by the animation.
+ * @param dataSource data source the animation is using
+ */
+void TL::LedAnimator::setDataSource(const TL::LedAnimator::DataSource dataSource)
+{
+	this->dataSource = dataSource;
+}
+
+/**
+ * @brief Get the currently used data source used by the animation.
+ * @return currently used data source
+ */
+TL::LedAnimator::DataSource TL::LedAnimator::getDataSource()
+{
+	return this->dataSource;
 }
 
 /**
@@ -222,6 +241,15 @@ void TL::LedAnimator::setAudioAnalysis(const TL::AudioUnit::AudioAnalysis &audio
 TL::AudioUnit::AudioAnalysis &TL::LedAnimator::getAudioAnalysis()
 {
 	return this->audioAnalysis;
+}
+
+/**
+ * @brief Reverse the order of all pixels to reverse the animation.
+ * @param pixels reference to the vector holding the LED pixel data
+ */
+void TL::LedAnimator::reversePixels(std::vector<CRGB> &pixels)
+{
+	std::reverse(pixels.begin(), pixels.end());
 }
 
 /**

@@ -27,6 +27,7 @@
 #include "configuration/SystemConfiguration.h"
 #include "led/LedManager.h"
 #include "sensor/MotionSensor.h"
+#include "hardware/AudioUnit.h"
 #include "logging/Logger.h"
 
 namespace TL
