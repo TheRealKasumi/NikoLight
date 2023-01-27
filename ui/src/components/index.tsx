@@ -14,3 +14,4 @@ export * from './Select';
 export * from './Slider';
 export * from './Switch';
 export * from './Toast';
+export * from './ToggleGroup';

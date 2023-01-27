@@ -13,13 +13,12 @@ import {
 
 type SelectProps<T extends FieldValues> = Omit<
   SelectPrimitive.SelectProps,
-  'name' | 'ref' | 'value'
+  'name' | 'onValueChange' | 'ref' | 'value'
 > &
   UseControllerProps<T>;
 
 export const Select = <T extends FieldValues>({
   children,
-  onValueChange,
   ...props
 }: SelectProps<T>): JSX.Element => {
   const { field } = useController(props);
@@ -28,10 +27,7 @@ export const Select = <T extends FieldValues>({
     <SelectPrimitive.Root
       {...props}
       name={field.name}
-      onValueChange={(value) => {
-        field.onChange(value);
-        onValueChange && onValueChange(value);
-      }}
+      onValueChange={field.onChange}
       value={field.value}
     >
       <SelectPrimitive.Trigger

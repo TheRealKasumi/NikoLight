@@ -389,9 +389,7 @@
     },
     "/config/audio": {
       "get": {
-        "tags": [
-          "Audio Unit Configuration"
-        ],
+        "tags": ["Audio Unit Configuration"],
         "summary": "Read the audio unit configuration.",
         "description": "Read the audio unit configuration.",
         "operationId": "getAudioUnitConfiguration",
@@ -409,9 +407,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Audio Unit Configuration"
-        ],
+        "tags": ["Audio Unit Configuration"],
         "summary": "Update the audio unit configuration.",
         "description": "Update the current audio unit configuration on the controller.",
         "operationId": "setAudioUnitConfiguration",
@@ -1166,6 +1162,11 @@
                   "format": "uint8",
                   "example": 0
                 },
+                "dataSource": {
+                  "type": "integer",
+                  "format": "uint8",
+                  "example": 0
+                },
                 "speed": {
                   "type": "integer",
                   "format": "uint8",
@@ -1632,6 +1633,11 @@
                         "example": 2
                       },
                       "type": {
+                        "type": "integer",
+                        "format": "uint8",
+                        "example": 0
+                      },
+                      "dataSource": {
                         "type": "integer",
                         "format": "uint8",
                         "example": 0
