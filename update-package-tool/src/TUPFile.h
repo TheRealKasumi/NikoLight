@@ -10,6 +10,7 @@
 #define TUP_FILE_H
 
 #include <stdint.h>
+#include <cstring>
 #include <vector>
 #include <queue>
 #include <filesystem>
