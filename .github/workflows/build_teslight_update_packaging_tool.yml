@@ -71,6 +71,14 @@ jobs:
           name: TesLight_Update_Packaging_Tool_for_Linux
           path: update-package-tool/build/tupt_for_linux.exe
 
+  PlatformIO_build:
+    - name: PlatformIO build
+      uses: TheRealKasumi/TesLight/.github/workflows/PlatformIO-Build.yml@main
+
+  UI_build:
+    - name: UI build
+      uses: TheRealKasumi/TesLight/.github/workflows/ui.yml@main
+
   generate_tup_file:
     needs: [build_update_tool_for_linux]
     runs-on: ubuntu-latest
@@ -86,12 +94,6 @@ jobs:
         with:
           name: TesLight_Update_Packaging_Tool_for_Linux
           path: update-package-tool/build
-
-      - name: PlatformIO build
-        uses: TheRealKasumi/TesLight/.github/workflows/PlatformIO-Build.yml@main
-
-      - name: UI build
-        uses: TheRealKasumi/TesLight/.github/workflows/ui.yml@main
 
       - name: print directory
         shell: bash
