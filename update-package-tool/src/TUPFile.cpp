@@ -131,7 +131,7 @@ void TUPFile::addFolder(const std::filesystem::path path)
 	dataBlock.type = TUPDataType::DIRECTORY;
 	dataBlock.pathLength = path.string().length();
 	dataBlock.path = new char[dataBlock.pathLength];
-	memcpy(dataBlock.path, path.string().c_str(), dataBlock.pathLength);
+	std::memcpy(dataBlock.path, path.string().c_str(), dataBlock.pathLength);
 	dataBlock.size = 0;
 	dataBlock.data = nullptr;
 	this->dataBlocks.push_back(dataBlock);
@@ -162,7 +162,7 @@ bool TUPFile::addFile(const std::filesystem::path fileName, const std::filesyste
 	dataBlock.type = name == "firmware.bin" ? TUPDataType::FIRMWARE : TUPDataType::FILE;
 	dataBlock.pathLength = name.string().length();
 	dataBlock.path = new char[dataBlock.pathLength];
-	memcpy(dataBlock.path, name.string().c_str(), dataBlock.pathLength);
+	std::memcpy(dataBlock.path, name.string().c_str(), dataBlock.pathLength);
 	dataBlock.size = fileSize;
 	dataBlock.data = new uint8_t[fileSize];
 
