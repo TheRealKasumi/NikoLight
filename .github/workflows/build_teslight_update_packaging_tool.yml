@@ -48,11 +48,11 @@ jobs:
           fetch-depth: 0
 
       - name: print g++ version
-        shell: cmd
+        shell: bash
         run: gcc --version
 
       - name: g++ build
-        shell: cmd
+        shell: bash
         working-directory: update-package-tool
         run: |
           mkdir build
@@ -62,4 +62,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: TesLight_Update_Packaging_Tool_for_Linux
-          path: update-package-tool\build\tupt_for_linux.exe
+          path: update-package-tool/build/tupt_for_linux.exe
