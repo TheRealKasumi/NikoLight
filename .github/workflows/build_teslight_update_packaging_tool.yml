@@ -6,7 +6,7 @@ on:
     branches: ["main"]
   workflow_dispatch:
 jobs:
-  build:
+  build_update_tool_for_windows:
     runs-on: windows-latest
     steps:
       - name: Checkout Code
@@ -30,10 +30,36 @@ jobs:
         working-directory: update-package-tool
         run: |
           mkdir build
-          g++ -g src\*.cpp -o build\tupt.exe
+          g++ -std=c++17 -g ./src/*.cpp -o build/tupt_for_windows.exe
 
-      - name: publish TesLight Update Packaging Tool
+      - name: publish TesLight Update Packaging Tool for Windows
         uses: actions/upload-artifact@v3
         with:
-          name: TesLight_Update_Packaging_Tool
-          path: update-package-tool\build\tupt.exe
+          name: TesLight_Update_Packaging_Tool_for_Windows
+          path: update-package-tool\build\tupt_for_windows.exe
+
+  build_update_tool_for_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          # Full checkout is needed not just the commited code
+          fetch-depth: 0
+
+       - name: print g++ version
+         shell: cmd
+         run: gcc --version
+
+      - name: g++ build
+        shell: cmd
+        working-directory: update-package-tool
+        run: |
+          mkdir build
+          g++ -std=c++17 -g ./src/*.cpp -o build/tupt_for_linux.exe
+
+      - name: publish TesLight Update Packaging Tool for Linux
+        uses: actions/upload-artifact@v3
+        with:
+          name: TesLight_Update_Packaging_Tool_for_Linux
+          path: update-package-tool\build\tupt_for_linux.exe
