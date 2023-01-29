@@ -1,10 +1,11 @@
-name: build TesLight Update Packaging Tool
+name: build TesLight Update Packaging Tool and TUP file
 on:
   push:
     branches: ["main", "releases/**", "feat/DevOps_Auto_build_for_Update_Packages"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:
+  workflow_call:
 jobs:
   build_update_tool_for_windows:
     runs-on: windows-latest
@@ -53,9 +54,9 @@ jobs:
           version: latest
           platform: x64
 
-      - name: print g++ version
-        shell: bash
-        run: gcc --version
+      # - name: print g++ version
+      #   shell: bash
+      #   run: gcc --version
 
       - name: g++ build
         shell: bash
@@ -69,3 +70,41 @@ jobs:
         with:
           name: TesLight_Update_Packaging_Tool_for_Linux
           path: update-package-tool/build/tupt_for_linux.exe
+
+  generate_tup_file:
+    needs: [build_update_tool_for_linux]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          # Full checkout is needed not just the commited code
+          fetch-depth: 0
+
+      - name: Download a single artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: TesLight_Update_Packaging_Tool_for_Linux
+          path: update-package-tool/build
+
+      - name: PlatformIO build
+        uses: TheRealKasumi/TesLight/.github/workflows/PlatformIO-Build.yml@main
+
+      - name: UI build
+        uses: TheRealKasumi/TesLight/.github/workflows/ui.yml@main
+
+      - name: print directory
+        shell: bash
+        run: ls -la
+
+      - name: tup build
+        shell: bash
+        working-directory: update-package-tool
+        run: |
+          tupt_for_linux.exe update.tup <folder>
+
+      - name: publish TesLight Update Package File
+        uses: actions/upload-artifact@v3
+        with:
+          name: TesLight_Update_Package
+          path: update-package-tool/build/tup.
