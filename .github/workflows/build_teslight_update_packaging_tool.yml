@@ -78,7 +78,7 @@ jobs:
       uses: TheRealKasumi/TesLight/.github/workflows/ui.yml@feat/DevOps_Auto_build_for_Update_Packages
 
   generate_tup_file:
-    needs: [build_update_tool_for_linux]
+    needs: [build_update_tool_for_linux, PlatformIO_build, UI_build]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
