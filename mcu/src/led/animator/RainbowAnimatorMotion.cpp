@@ -4,7 +4,7 @@
  * @brief Implementation of the {@TL::RainbowAnimatorMotion}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -23,14 +23,12 @@
 
 /**
  * @brief Create a new instance of {@link TL::RainbowAnimatorMotion}.
- *
  * @param rainbowMode display mode of the rainbow
  */
-TL::RainbowAnimatorMotion::RainbowAnimatorMotion(const TL::RainbowAnimatorMotion::RainbowMode rainbowMode, const TL::MotionSensor::MotionSensorValue motionSensorValue)
+TL::RainbowAnimatorMotion::RainbowAnimatorMotion(const TL::RainbowAnimatorMotion::RainbowMode rainbowMode)
 {
 	this->angle = 0.0f;
 	this->rainbowMode = rainbowMode;
-	this->motionSensorValue = motionSensorValue;
 }
 
 /**
@@ -117,43 +115,43 @@ void TL::RainbowAnimatorMotion::render(std::vector<CRGB> &pixels)
 float TL::RainbowAnimatorMotion::getMotionSpeed()
 {
 	float speed = this->speed / 15.0f;
-	if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ACC_X_G)
+	if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ACC_X_G)
 	{
 		speed *= this->motionSensorData.accXG;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ACC_Y_G)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ACC_Y_G)
 	{
 		speed *= this->motionSensorData.accYG;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ACC_Z_G)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ACC_Z_G)
 	{
 		speed *= this->motionSensorData.accZG;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::GY_X_DEG)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_GY_X_DEG)
 	{
 		speed *= this->motionSensorData.gyroXDeg / 20.0f;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::GY_Y_DEG)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_GY_Y_DEG)
 	{
 		speed *= this->motionSensorData.gyroYDeg / 20.0f;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::GY_Z_DEG)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_GY_Z_DEG)
 	{
 		speed *= this->motionSensorData.gyroZDeg / 20.0f;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::PITCH)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_PITCH)
 	{
 		speed *= this->motionSensorData.pitch / 20.0f;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ROLL)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ROLL)
 	{
 		speed *= this->motionSensorData.roll / 20.0f;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::PITCH_COMPENSATED_ACC_Y_G)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_PITCH_COMPENSATED_ACC_Y_G)
 	{
 		speed *= this->motionSensorData.pitchCompensatedAccYG;
 	}
-	else if (this->motionSensorValue == TL::MotionSensor::MotionSensorValue::ROLL_COMPENSATED_ACC_X_G)
+	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ROLL_COMPENSATED_ACC_X_G)
 	{
 		speed *= this->motionSensorData.rollCompensatedAccXG;
 	}

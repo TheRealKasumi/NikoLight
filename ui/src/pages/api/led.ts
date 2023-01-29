@@ -12,6 +12,7 @@ export type Led = {
   animationSettings: number[];
   brightness: number;
   channelCurrents: number[];
+  dataSource: number;
   fadeSpeed: number;
   ledCount: number;
   ledPin: number;

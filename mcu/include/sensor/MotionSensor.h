@@ -42,29 +42,6 @@ namespace TL
 			ERROR_TOO_WARM			  // The MPU6050 is too warm for a calibration
 		};
 
-		enum MotionSensorValue : uint8_t
-		{
-			ACC_X_RAW = 0,					// Raw x acceleration
-			ACC_Y_RAW = 1,					// Raw y acceleration
-			ACC_Z_RAW = 2,					// Raw z acceleration
-			GY_X_RAW = 3,					// Raw x rotation
-			GY_Y_RAW = 4,					// Raw y rotation
-			GY_Z_RAW = 5,					// Raw z rotation
-			ACC_X_G = 6,					// Acceleration on x axis in g
-			ACC_Y_G = 7,					// Acceleration on y axis in g
-			ACC_Z_G = 8,					// Acceleration on z axis in g
-			GY_X_DEG = 9,					// Rotation around the x axis in deg/s
-			GY_Y_DEG = 10,					// Rotation around the y axis in deg/s
-			GY_Z_DEG = 11,					// Rotation around the z axis in deg/s
-			PITCH = 12,						// Pitch angle of the unit
-			ROLL = 13,						// Roll angle of the unit
-			YAW = 14,						// Yaw angle of the unit
-			ROLL_COMPENSATED_ACC_X_G = 15,	// Roll angle compensated acceleration on x axis in g
-			PITCH_COMPENSATED_ACC_Y_G = 16, // Pitch angle compensated acceleration on y axis in g
-			TEMP_RAW = 17,					// Raw temperature value
-			TEMP_DEG = 18					// Temperature in degree celsius
-		};
-
 		struct MotionSensorData
 		{
 			int16_t accXRaw;

@@ -29,18 +29,19 @@
  * @param sparkFriction friction of the sparks which is slowing them down in the range 0.0 to 1.0
  * @param sparkFading fading speed of the sparks in the range 0.0 to 1.0
  * @param sparktail tail length of the sparks in the range 0.0 to 1.0
- * @param birthRate probability with which a new spark is born each cycle
+ * @param birthRate probability with which a new spark is born each cycle/number of particles per audio peak
  * @param spawnVariance variance in the spawn position in the range 0.0 to 1.0
  * @param speedVariance variance in speed in the range 0.0 to 1.0
  * @param brightnessVariance variance in brightness in the range 0.0 to 1.0
  * @param frictionVariance variance in friction in the range 0.0 to 1.0
  * @param fadingVariance variance in fading in the range 0.0 to 1.0
  * @param bounceAtCorner when set to true, the particles will bounce at the end of the LED strip
+ * @param frequencyBandMask bit mask to mask frequency bands in audio mode
  */
 TL::SparkleAnimator::SparkleAnimator(const TL::SparkleAnimator::SpawnPosition spawnPosition, const uint8_t sparkCount, const CRGB color,
 									 const float sparkFriction, const float sparkFading, const float sparkTail, const float birthRate,
 									 const float spawnVariance, const float speedVariance, const float brightnessVariance, const float frictionVariance,
-									 const float fadingVariance, const bool bounceAtCorner)
+									 const float fadingVariance, const bool bounceAtCorner, const uint8_t frequencyBandMask)
 {
 	this->spawnPosition = spawnPosition;
 	this->sparks.resize(sparkCount);
@@ -55,6 +56,9 @@ TL::SparkleAnimator::SparkleAnimator(const TL::SparkleAnimator::SpawnPosition sp
 	this->frictionVariance = frictionVariance;
 	this->fadingVariance = fadingVariance;
 	this->bounceAtCorner = bounceAtCorner;
+	this->frequencyBandMask = frequencyBandMask;
+	this->colorAngle = 0.0f;
+	this->audioSequence = 0;
 
 	this->limit((uint16_t)0, (uint16_t)255, this->offset);
 	this->limit(0.0f, 1.0f, this->sparkFriction);
@@ -85,11 +89,13 @@ void TL::SparkleAnimator::init(std::vector<CRGB> &pixels)
 	this->pixelMask.assign(pixels.size(), false);
 	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
 	this->colorAngle = 0.0f;
+	this->audioSequence = 0;
 	for (size_t i = 0; i < this->sparks.size(); i++)
 	{
 		TL::SparkleAnimator::Spark spark = this->sparks.at(i);
 		spark.visible = false;
 		spark.position = 0.0f;
+		spark.lastPosition = 0.0f;
 		spark.speed = 0.0f;
 		spark.friction = 0.0f;
 		spark.color = CRGB::Black;
@@ -105,7 +111,31 @@ void TL::SparkleAnimator::init(std::vector<CRGB> &pixels)
  */
 void TL::SparkleAnimator::render(std::vector<CRGB> &pixels)
 {
-	this->spawnSparks(pixels);
+	// Check if new sparks should be spawned depending on the data source
+	if (this->getDataSource() == TL::LedAnimator::DataSource::DS_AUDIO_FREQUENCY_TRIGGER)
+	{
+		// Get the audio frequency analysis
+		const TL::AudioUnit::AudioAnalysis audioAnalysis = this->getAudioAnalysis();
+		if (audioAnalysis.frequencyBandTriggers.size() == AUDIO_UNIT_NUM_BANDS && audioAnalysis.seq != this->audioSequence)
+		{
+			// Check the sequency number
+			this->audioSequence = audioAnalysis.seq;
+			for (size_t i = 0; i < AUDIO_UNIT_NUM_BANDS; i++)
+			{
+				// Spawn new sparks depending on the band mask and the tigger status
+				if (this->frequencyBandMask & (0B10000000 >> i) && audioAnalysis.frequencyBandTriggers.at(i).trigger == TL::AudioUnit::Trigger::TRIGGER_RISING)
+				{
+					this->spawnSparks(pixels);
+				}
+			}
+		}
+	}
+	else
+	{
+		this->spawnSparks(pixels);
+	}
+
+	// Run the sparks
 	this->runSparks(pixels);
 
 	// Clear the mask to store for which pixels a spark was rendere
@@ -117,23 +147,38 @@ void TL::SparkleAnimator::render(std::vector<CRGB> &pixels)
 		const TL::SparkleAnimator::Spark spark = this->sparks.at(i);
 		if (spark.visible)
 		{
-			const CRGB pixel = this->pixelBuffer.at(spark.position);
-			int16_t red = pixel.r;
-			int16_t green = pixel.g;
-			int16_t blue = pixel.b;
-
 			float exposure = abs(spark.speed);
 			exposure = exposure <= 1.0f ? exposure : 1.0f;
 
-			red += spark.color.r * spark.brightness * exposure;
-			green += spark.color.g * spark.brightness * exposure;
-			blue += spark.color.b * spark.brightness * exposure;
+			const float dist = spark.position - spark.lastPosition;
+			const bool isPositive = dist >= 0;
+			const float absDist = abs(dist);
+			for (size_t j = 0; j < absDist; j++)
+			{
+				if (isPositive && spark.position - j < 0)
+				{
+					break;
+				}
+				else if (!isPositive && spark.position + j > pixels.size())
+				{
+					break;
+				}
 
-			red = red <= 255 ? red : 255;
-			green = green <= 255 ? green : 255;
-			blue = blue <= 255 ? blue : 255;
+				const CRGB pixel = this->pixelBuffer.at(isPositive ? spark.position - j : spark.position + j);
+				int16_t red = pixel.r;
+				int16_t green = pixel.g;
+				int16_t blue = pixel.b;
 
-			this->pixelBuffer.at(spark.position).setRGB(red, green, blue);
+				red += spark.color.r * spark.brightness * exposure;
+				green += spark.color.g * spark.brightness * exposure;
+				blue += spark.color.b * spark.brightness * exposure;
+
+				red = red <= 255 ? red : 255;
+				green = green <= 255 ? green : 255;
+				blue = blue <= 255 ? blue : 255;
+
+				this->pixelBuffer.at(isPositive ? spark.position - j : spark.position + j).setRGB(red, green, blue);
+			}
 			this->pixelMask.at(spark.position) = true;
 		}
 	}
@@ -162,57 +207,70 @@ void TL::SparkleAnimator::render(std::vector<CRGB> &pixels)
 	}
 
 	pixels = this->pixelBuffer;
+	if (this->reverse)
+	{
+		this->reversePixels(pixels);
+	}
 	this->applyBrightness(pixels);
 }
 
 /**
  * @brief Spawn new sparks from the set of currently invisible ones.
- * @note AT THE TIME OF WRITING THIS FUNCTION I WAS HITTING AN ICE
- * WHEN COMPILING WITH THE O3 FLAG. THERE WAS ABSOLUTELY NO WAY AROUND IT.
- * DUE TO THIS, THE O3 FLAG WAS REMOVED.IN CASE THIS PROBLEM GETS SOLVED
- * IN THE FUTURE, THE O3 FLAG COULD BE ENABLED AGAIN.
  */
 void TL::SparkleAnimator::spawnSparks(std::vector<CRGB> &pixels)
 {
+	size_t spawnCounter = 0;
 	for (size_t i = 0; i < this->sparks.size(); i++)
 	{
+		if (this->getDataSource() == TL::LedAnimator::DataSource::DS_AUDIO_FREQUENCY_TRIGGER)
+		{
+			if (spawnCounter >= this->birthRate * this->sparks.size())
+			{
+				break;
+			}
+		}
+		else
+		{
+			if (this->random(0, 1000) < (1000.0f - this->birthRate * 1000.0f))
+			{
+				continue;
+			}
+		}
+
 		TL::SparkleAnimator::Spark spark = this->sparks.at(i);
-		if (!spark.visible && this->random(0, 1000) > (1000.0f - this->birthRate * 1000.0f))
+		if (!spark.visible)
 		{
 			spark.visible = true;
 
 			switch (this->spawnPosition)
 			{
-			case TL::SparkleAnimator::SpawnPosition::SPAWN_LEFT:
+			case TL::SparkleAnimator::SpawnPosition::SPAWN_SIDE:
 				spark.position = (this->offset / 255.0f) * (pixels.size() - 1.0f);
 				spark.position += this->random(0, pixels.size() - 1.0f) * this->spawnVariance;
 				spark.position = spark.position >= 0 ? spark.position : 0;
 				spark.position = spark.position < pixels.size() ? spark.position : pixels.size() - 1;
-				break;
-			case TL::SparkleAnimator::SpawnPosition::SPAWN_RIGHT:
-				spark.position = (pixels.size() - 1.0f) - (this->offset / 255.0f) * (pixels.size() - 1);
-				spark.position -= this->random(0, pixels.size() - 1.0f) * this->spawnVariance;
-				spark.position = spark.position >= 0 ? spark.position : 0;
-				spark.position = spark.position < pixels.size() ? spark.position : pixels.size() - 1;
+				spark.lastPosition = spark.position;
 				break;
 			case TL::SparkleAnimator::SpawnPosition::SPAWN_CENTER:
 				spark.position = pixels.size() / 2.0f;
 				spark.position += this->random(-spark.position, spark.position) * this->spawnVariance;
 				spark.position = spark.position >= 0 ? spark.position : 0;
 				spark.position = spark.position < pixels.size() ? spark.position : pixels.size() - 1;
+				spark.lastPosition = spark.position;
 				break;
 			case TL::SparkleAnimator::SpawnPosition::SPAWN_RANDOM:
 				spark.position = this->random(0, pixels.size() - 1);
+				spark.lastPosition = spark.position;
 				break;
 			}
 
-			spark.speed = this->speed / 255.0f;
-			spark.speed += (this->random(-255, 255) / 255.0f) * this->speedVariance;
+			spark.speed = this->speed / 64.0f;
+			spark.speed += (this->random(-255, 255) / 64.0f) * this->speedVariance;
 			spark.speed = this->random(0, 255) < 127 ? -spark.speed : spark.speed;
 			spark.speed = spark.speed < 0.05f && spark.speed > 0.0f ? 0.05f : spark.speed;
 			spark.speed = spark.speed > -0.05f && spark.speed < 0.0f ? -0.05f : spark.speed;
-			spark.speed = spark.speed > 1.0f ? 1.0f : spark.speed;
-			spark.speed = spark.speed < -1.0f ? -1.0f : spark.speed;
+			spark.speed = spark.speed > 3.0f ? 3.0f : spark.speed;
+			spark.speed = spark.speed < -3.0f ? -3.0f : spark.speed;
 
 			spark.friction = this->sparkFriction;
 			spark.friction += (this->random(-255, 255) / 255.0f) * this->frictionVariance;
@@ -243,6 +301,7 @@ void TL::SparkleAnimator::spawnSparks(std::vector<CRGB> &pixels)
 			spark.fading = spark.fading > 1.0f ? 1.0f : spark.fading;
 
 			this->sparks.at(i) = spark;
+			spawnCounter++;
 		}
 	}
 }
@@ -257,6 +316,7 @@ void TL::SparkleAnimator::runSparks(std::vector<CRGB> &pixels)
 		TL::SparkleAnimator::Spark spark = this->sparks.at(i);
 		if (spark.visible)
 		{
+			spark.lastPosition = spark.position;
 			spark.position += spark.speed;
 			spark.speed -= spark.speed * spark.friction;
 			spark.brightness -= spark.brightness * spark.fading;
@@ -266,6 +326,7 @@ void TL::SparkleAnimator::runSparks(std::vector<CRGB> &pixels)
 				if (this->bounceAtCorner)
 				{
 					spark.position = spark.position < 0.0f ? 0.0f : pixels.size() - 1;
+					spark.lastPosition = spark.position;
 					spark.speed = -spark.speed;
 				}
 				else
