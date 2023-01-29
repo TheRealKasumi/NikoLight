@@ -101,7 +101,7 @@ jobs:
         shell: bash
         working-directory: update-package-tool
         run: |
-          tupt_for_linux.exe update.tup <folder>
+          tupt_for_linux.exe update.tup .pio/build/az-delivery-devkit-v4/firmware.bin
 
       - name: publish TesLight Update Package File
         uses: actions/upload-artifact@v3
