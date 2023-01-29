@@ -72,11 +72,9 @@ jobs:
           path: update-package-tool/build/tupt_for_linux.exe
 
   PlatformIO_build:
-    - name: PlatformIO build
       uses: .github/workflows/PlatformIO-Build.yml@main
 
   UI_build:
-    - name: UI build
       uses: .github/workflows/ui.yml@main
 
   generate_tup_file:
