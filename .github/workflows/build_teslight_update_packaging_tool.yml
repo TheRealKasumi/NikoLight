@@ -93,9 +93,9 @@ jobs:
           name: TesLight_Update_Packaging_Tool_for_Linux
           path: update-package-tool/build
 
-      - name: print directory
+      - name: print directory and content
         shell: bash
-        run: ls -la
+        run: ls -R
 
       - name: tup build
         shell: bash
