@@ -82,15 +82,19 @@ jobs:
           # Full checkout is needed not just the commited code
           fetch-depth: 0
 
-      - name: Set up GCC
-        uses: egor-tensin/setup-gcc@v1
-        with:
-          version: latest
-          platform: x64
+      # - name: Set up GCC
+      #   shell: bash
+      #   run: |
+      #   export HOMEBREW_NO_ANALYTICS=1
+      #   brew update
+      #   brew upgrade
+      #   brew info gcc
+      #   brew install gcc
+      #   brew cleanup
 
       # - name: print g++ version
       #   shell: bash
-      #   run: gcc --version
+      #   run: brew info gcc
 
       - name: g++ build
         shell: bash
