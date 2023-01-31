@@ -150,8 +150,7 @@
     "brightnessVariance": "Helligkeitsabweichung",
     "bounceAtCorner": "Partikel abprallen",
     "channelCurrents": "LED-Strom pro Kanal (MA)",
-    "color1": "Farbe 1",
-    "color2": "Farbe 2",
+    "color": "Farbe",
     "dataSource": "Wert",
     "direction": {
       "desc": "Die Richtung der Animation umkehren",

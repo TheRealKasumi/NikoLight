@@ -437,27 +437,38 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             AnimationType.Static,
           ].includes(Number(values.type)) && (
             <label className="mb-6 flex flex-col">
-              <span className="mb-2">{t('zone.color1')}</span>
-              <ColorPicker<FormData>
-                className="h-10 w-full"
-                control={control}
-                name="color1"
-              />
-            </label>
-          )}
-
-          {[
-            AnimationType.ColorBar,
-            AnimationType.Gradient,
-            AnimationType.GradientMotion,
-          ].includes(Number(values.type)) && (
-            <label className="mb-6 flex flex-col">
-              <span className="mb-2">{t('zone.color2')}</span>
-              <ColorPicker<FormData>
-                className="h-10 w-full"
-                control={control}
-                name="color2"
-              />
+              <span className="mb-2">{t('zone.color')}</span>
+              <div className="flex">
+                <ColorPicker<FormData>
+                  className="h-10 grow"
+                  control={control}
+                  name="color1"
+                />
+                {[
+                  AnimationType.ColorBar,
+                  AnimationType.Gradient,
+                  AnimationType.GradientMotion,
+                ].includes(Number(values.type)) && (
+                  <>
+                    <button
+                      type="button"
+                      className="grow-0 px-4 focus:outline-none focus-visible:ring focus-visible:ring-sky focus-visible:ring-opacity-75"
+                      onClick={() => {
+                        const { color1, color2 } = values;
+                        setValue('color1', color2);
+                        setValue('color2', color1);
+                      }}
+                    >
+                      <ArrowsRightLeftIcon className="h-5 w-5 text-zinc" />
+                    </button>
+                    <ColorPicker<FormData>
+                      className="h-10 grow"
+                      control={control}
+                      name="color2"
+                    />
+                  </>
+                )}
+              </div>
             </label>
           )}
 
