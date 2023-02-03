@@ -24,7 +24,6 @@
 unsigned long TesLight::lightSensorInterval = LIGHT_SENSOR_INTERVAL;
 unsigned long TesLight::motionSensorInterval = MOTION_SENSOR_INTERVAL;
 unsigned long TesLight::audioUnitInterval = AUDIO_UNIT_INTERVAL;
-unsigned long TesLight::renderTimer = 0;
 unsigned long TesLight::frameTimer = 0;
 unsigned long TesLight::lightSensorTimer = 0;
 unsigned long TesLight::motionSensorTimer = 0;
@@ -34,7 +33,6 @@ unsigned long TesLight::statusTimer = 0;
 unsigned long TesLight::statusPrintTimer = 0;
 unsigned long TesLight::webServerTimer = 0;
 
-uint16_t TesLight::renderCounter = 0;
 uint16_t TesLight::frameCounter = 0;
 float TesLight::ledPowerCounter = 0.0f;
 
@@ -302,13 +300,9 @@ void TesLight::initializeLedManager()
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("LED manager initialized. Loading animations."));
 
 	const TL::LedManager::Error ledManagerLoadError = TL::LedManager::reloadAnimations();
-	if (ledManagerLoadError == TL::LedManager::Error::ERROR_CONFIG_UNAVAILABLE)
+	if (ledManagerLoadError == TL::LedManager::Error::ERROR_INIT_LED_DRIVER)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to load LED configuration. The TesLight configuration is not available. Continuing without LEDs."));
-	}
-	else if (ledManagerLoadError == TL::LedManager::Error::ERROR_CREATE_LED_DATA)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to load LED configuration. The pixel data could not be created. Continuing without LEDs."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to load LED configuration. The LED driver could not be initialized for the LED configuration."));
 	}
 	else if (ledManagerLoadError == TL::LedManager::Error::ERROR_UNKNOWN_ANIMATOR_TYPE)
 	{
@@ -511,7 +505,6 @@ void TesLight::initializeTimers()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize/reset timers."));
 	unsigned long mic = micros();
-	TesLight::renderTimer = mic;
 	TesLight::frameTimer = mic;
 	TesLight::lightSensorTimer = mic;
 	TesLight::motionSensorTimer = mic;
@@ -520,7 +513,6 @@ void TesLight::initializeTimers()
 	TesLight::statusTimer = mic;
 	TesLight::statusPrintTimer = mic;
 	TesLight::webServerTimer = mic;
-	TesLight::renderCounter = 0;
 	TesLight::frameCounter = 0;
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Timers initialized to ") + mic + F("."));
 }
@@ -673,17 +665,15 @@ bool TesLight::checkTimer(unsigned long &timer, unsigned long cycleTime)
  */
 void TesLight::run()
 {
-	// Handle the pixel rendering
-	if (TesLight::checkTimer(TesLight::renderTimer, TL::LedManager::getRenderInterval()))
-	{
-		TL::LedManager::render();
-		TesLight::renderCounter++;
-	}
-
-	// Handle the LEDs
+	// Handle the pixel rendering and LED output
 	if (TesLight::checkTimer(TesLight::frameTimer, TL::LedManager::getFrameInterval()))
 	{
-		TL::LedManager::show();
+		TL::LedManager::render();
+		TL::LedManager::Error showError = TL::LedManager::show(portMAX_DELAY);
+		if (showError != TL::LedManager::Error::OK)
+		{
+			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to send LED data. Skipping frame."));
+		}
 		TesLight::frameCounter++;
 		TesLight::ledPowerCounter += TL::LedManager::getLedPowerDraw();
 	}
@@ -745,7 +735,7 @@ void TesLight::run()
 		const TL::Fan::Error fanError = TL::Fan::run(static_cast<TL::Fan::FanMode>(TL::Configuration::getSystemConfig().fanMode));
 		if (fanError == TL::Fan::Error::ERROR_TEMP_UNAVAILABLE)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to update cooling fan because the temperature could not be read. Using fallback."));
+			TL::Logger::log(TL::Logger::LogLevel::DEBUG, SOURCE_LOCATION, F("Failed to update cooling fan because the temperature could not be read. Using fallback."));
 		}
 		else if (fanError != TL::Fan::Error::OK)
 		{
@@ -765,7 +755,6 @@ void TesLight::run()
 
 		// Update LED related information
 		TL::SystemInformation::TLInformation tlInfo = TL::SystemInformation::getTesLightInfo();
-		tlInfo.rps = renderCounter / (STATUS_INTERVAL / 1000000.0f);
 		tlInfo.fps = frameCounter / (STATUS_INTERVAL / 1000000.0f);
 		tlInfo.ledCount = TL::LedManager::getLedCount();
 		TL::SystemInformation::setTesLightInfo(tlInfo);
@@ -787,7 +776,6 @@ void TesLight::run()
 		}
 		TL::SystemInformation::setHardwareInfo(hwInfo);
 
-		TesLight::renderCounter = 0;
 		TesLight::frameCounter = 0;
 		TesLight::ledPowerCounter = 0.0f;
 	}
@@ -801,8 +789,7 @@ void TesLight::run()
 		TL::Logger::log(
 			TL::Logger::LogLevel::INFO,
 			SOURCE_LOCATION,
-			(String)F("Renderer: ") + tlInfo.rps + F("RPS   ") +
-				F("LED: ") + tlInfo.fps + F("FPS   ") +
+			(String)F("LED Driver: ") + tlInfo.fps + F("FPS   ") +
 				F("Average Power: ") + hwInfo.regulatorPowerDraw + F("W   ") +
 				F("Average Current: ") + hwInfo.regulatorCurrentDraw + F("A   ") +
 				F("Temperature: ") + hwInfo.regulatorTemperature + F("°C   ") +

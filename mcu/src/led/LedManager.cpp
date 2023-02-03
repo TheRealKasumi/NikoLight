@@ -23,10 +23,9 @@
 #include "led/LedManager.h"
 
 bool TL::LedManager::initialized = false;
-std::vector<std::vector<CRGB>> TL::LedManager::ledData;
+std::unique_ptr<TL::LedBuffer> TL::LedManager::ledBuffer;
 std::vector<std::unique_ptr<TL::LedAnimator>> TL::LedManager::ledAnimator;
 std::unique_ptr<TL::FseqLoader> TL::LedManager::fseqLoader;
-uint32_t TL::LedManager::renderInterval;
 uint32_t TL::LedManager::frameInterval;
 float TL::LedManager::regulatorTemperature;
 
@@ -38,7 +37,6 @@ float TL::LedManager::regulatorTemperature;
 TL::LedManager::Error TL::LedManager::begin()
 {
 	TL::LedManager::initialized = false;
-	TL::LedManager::renderInterval = RENDER_INTERVAL;
 	TL::LedManager::frameInterval = FRAME_INTERVAL;
 	TL::LedManager::regulatorTemperature = 0.0f;
 
@@ -72,8 +70,7 @@ bool TL::LedManager::isInitialized()
 /**
  * @brief Clear and create new LED data and animators from the configuration.
  * @return OK when the animation were reloaded
- * @return ERROR_CONFIG_UNAVAILABLE when the configuration was not initialized
- * @return ERROR_CREATE_LED_DATA when the LED data could not be created
+ * @return ERROR_INIT_LED_DRIVER when the LED data could not be created
  * @return ERROR_UNKNOWN_ANIMATOR_TYPE when one of the animator types is unknown
  * @return ERROR_INVALID_FSEQ when a custom animation was set but the fseq file is invalid
  * @return ERROR_FILE_NOT_FOUND when the animation file was not found
@@ -81,14 +78,9 @@ bool TL::LedManager::isInitialized()
  */
 TL::LedManager::Error TL::LedManager::reloadAnimations()
 {
-	if (!TL::Configuration::isInitialized())
-	{
-		return TL::LedManager::Error::ERROR_CONFIG_UNAVAILABLE;
-	}
-
 	TL::LedManager::clearAnimations();
 
-	const TL::LedManager::Error ledDataError = TL::LedManager::createLedData();
+	const TL::LedManager::Error ledDataError = TL::LedManager::initLedDriver();
 	if (ledDataError != TL::LedManager::Error::OK)
 	{
 		return ledDataError;
@@ -108,8 +100,8 @@ TL::LedManager::Error TL::LedManager::reloadAnimations()
  */
 void TL::LedManager::clearAnimations()
 {
-	FastLED.clear();
-	TL::LedManager::ledData.clear();
+	TL::LedDriver::end();
+	TL::LedManager::ledBuffer.reset();
 	TL::LedManager::ledAnimator.clear();
 	TL::LedManager::fseqLoader.reset();
 }
@@ -124,25 +116,6 @@ void TL::LedManager::setAmbientBrightness(const float ambientBrightness)
 	{
 		TL::LedManager::ledAnimator.at(i)->setAmbientBrightness(ambientBrightness);
 	}
-}
-
-/**
- * @brief Set the interval for rendering the pixels in µs.
- * The minimum frame time is currently limited to 10000µs.
- * @param renderInterval target frame time in µs
- */
-void TL::LedManager::setRenderInterval(const uint32_t renderInterval)
-{
-	TL::LedManager::renderInterval = renderInterval >= 10000 ? renderInterval : 10000;
-}
-
-/**
- * @brief Get the interval for rendering the pixels.
- * @return interval in microseconds
- */
-uint32_t TL::LedManager::getRenderInterval()
-{
-	return TL::LedManager::renderInterval;
 }
 
 /**
@@ -220,12 +193,11 @@ float TL::LedManager::getLedPowerDraw()
  */
 size_t TL::LedManager::getLedCount()
 {
-	size_t count = 0;
-	for (size_t i = 0; i < TL::LedManager::ledData.size(); i++)
+	if (TL::LedManager::ledBuffer != nullptr)
 	{
-		count += TL::LedManager::ledData.at(i).size();
+		return TL::LedManager::ledBuffer->getTotalLedCount();
 	}
-	return count;
+	return 0;
 }
 
 /**
@@ -233,65 +205,63 @@ size_t TL::LedManager::getLedCount()
  */
 void TL::LedManager::render()
 {
-	for (size_t i = 0; i < TL::LedManager::ledAnimator.size() && i < TL::LedManager::ledData.size(); i++)
+	if (TL::LedManager::ledBuffer == nullptr || !TL::LedDriver::isInitialized())
 	{
-		TL::LedManager::ledAnimator.at(i)->render(TL::LedManager::ledData.at(i));
+		return;
 	}
+
+	for (size_t i = 0; i < TL::LedManager::ledBuffer->getLedStripCount(); i++)
+	{
+		TL::LedManager::ledAnimator.at(i)->render(TL::LedManager::ledBuffer->getLedStrip(i));
+	}
+
 	TL::LedManager::limitPowerConsumption();
 	TL::LedManager::limitRegulatorTemperature();
 }
 
 /**
- * @brief Show the current LED data.
+ * @brief Async send out the current LED data via the LED driver.
+ * @param timeout cpy cycles until a timeout will happen when data is still being send
+ * @return OK when the data is being sent
+ * @return ERROR_DRIVER_NOT_READY when the driver is not ready to send new data
  */
-void TL::LedManager::show()
+TL::LedManager::Error TL::LedManager::show(const TickType_t timeout)
 {
-	FastLED.show();
+	if (TL::LedManager::ledBuffer == nullptr || !TL::LedDriver::isInitialized())
+	{
+		return TL::LedManager::Error::ERROR_DRIVER_NOT_READY;
+	}
+
+	const TL::LedDriver::Error driverError = TL::LedDriver::showPixels(timeout);
+	if (driverError != TL::LedDriver::Error::OK)
+	{
+		return TL::LedManager::Error::ERROR_DRIVER_NOT_READY;
+	}
+
+	return TL::LedManager::Error::OK;
 }
 
 /**
- * @brief Create the LED data and assign it to the FastLED library.
+ * @brief Initialize the LED driver, buffer and output channels.
  * @return OK when the LED data was created
- * @return ERROR_CREATE_LED_DATA when the LED data could not be created because the data could not be linked to a pin
+ * @return ERROR_INIT_LED_DRIVER when the LED data could not be created
  */
-TL::LedManager::Error TL::LedManager::createLedData()
+TL::LedManager::Error TL::LedManager::initLedDriver()
 {
-	TL::LedManager::ledData.assign(LED_NUM_ZONES, std::vector<CRGB>());
+	std::vector<TL::LedStrip> ledStrips;
 	for (size_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		const TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
-		TL::LedManager::ledData.at(i).assign(ledConfig.ledCount, CRGB::Black);
-
-		switch (ledConfig.ledPin)
-		{
-		case 13:
-			FastLED.addLeds<NEOPIXEL, 13>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
-			break;
-		case 14:
-			FastLED.addLeds<NEOPIXEL, 14>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
-			break;
-		case 15:
-			FastLED.addLeds<NEOPIXEL, 15>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
-			break;
-		case 16:
-			FastLED.addLeds<NEOPIXEL, 16>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
-			break;
-		case 17:
-			FastLED.addLeds<NEOPIXEL, 17>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
-			break;
-		case 21:
-			FastLED.addLeds<NEOPIXEL, 21>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
-			break;
-		case 22:
-			FastLED.addLeds<NEOPIXEL, 22>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
-			break;
-		case 25:
-			FastLED.addLeds<NEOPIXEL, 25>(&TL::LedManager::ledData.at(i).front(), ledConfig.ledCount);
-			break;
-		default:
-			return TL::LedManager::Error::ERROR_CREATE_LED_DATA;
-		}
+		ledStrips.push_back(TL::LedStrip(ledConfig.ledPin, ledConfig.ledCount));
 	}
+
+	TL::LedManager::ledBuffer.reset(new TL::LedBuffer(ledStrips));
+	TL::LedDriver::Error driverError = TL::LedDriver::begin(*TL::LedManager::ledBuffer);
+	if (driverError != TL::LedDriver::Error::OK)
+	{
+		return TL::LedManager::Error::ERROR_INIT_LED_DRIVER;
+	}
+
 	return TL::LedManager::Error::OK;
 }
 
@@ -336,26 +306,7 @@ TL::LedManager::Error TL::LedManager::createAnimators()
  */
 TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 {
-	const size_t ledCount = TL::LedManager::getLedCount();
-	if (ledCount <= 850)
-	{
-		// 60 FPS
-		TL::LedManager::setRenderInterval(RENDER_INTERVAL);
-		TL::LedManager::setFrameInterval(FRAME_INTERVAL);
-	}
-	else if (ledCount > 850 && ledCount <= 1000)
-	{
-		// 40 FPS
-		TL::LedManager::setRenderInterval(RENDER_INTERVAL);
-		TL::LedManager::setFrameInterval(FRAME_INTERVAL * 1.5f);
-	}
-	else
-	{
-		// 30 FPS
-		TL::LedManager::setRenderInterval(RENDER_INTERVAL);
-		TL::LedManager::setFrameInterval(FRAME_INTERVAL * 2.0f);
-	}
-
+	TL::LedManager::setFrameInterval(FRAME_INTERVAL);
 	TL::LedManager::ledAnimator.resize(LED_NUM_ZONES);
 	for (size_t i = 0; i < TL::LedManager::ledAnimator.size(); i++)
 	{
@@ -373,7 +324,7 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 			TL::LedManager::ledAnimator.at(i).reset(new TL::SparkleAnimator(
 				static_cast<TL::SparkleAnimator::SpawnPosition>(ledConfig.animationSettings[0]),
 				ledConfig.animationSettings[7] / 2 + 1,
-				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
+				TL::Pixel(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
 				ledConfig.animationSettings[8] / 5120.0f,
 				ledConfig.animationSettings[9] / 2560.0f,
 				ledConfig.animationSettings[10] / 255.0f,
@@ -392,14 +343,14 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 		{
 			TL::LedManager::ledAnimator.at(i).reset(new TL::GradientAnimator(
 				static_cast<TL::GradientAnimator::GradientMode>(ledConfig.animationSettings[0]),
-				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
-				CRGB(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
+				TL::Pixel(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
+				TL::Pixel(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
 		}
 
 		// Static color type
 		else if (ledConfig.type == 3)
 		{
-			TL::LedManager::ledAnimator.at(i).reset(new TL::StaticColorAnimator(CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3])));
+			TL::LedManager::ledAnimator.at(i).reset(new TL::StaticColorAnimator(TL::Pixel(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3])));
 		}
 
 		// Color bar type
@@ -407,8 +358,8 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 		{
 			TL::LedManager::ledAnimator.at(i).reset(new TL::ColorBarAnimator(
 				static_cast<TL::ColorBarAnimator::ColorBarMode>(ledConfig.animationSettings[0]),
-				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
-				CRGB(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
+				TL::Pixel(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
+				TL::Pixel(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
 		}
 
 		// Rainbow motion type
@@ -422,8 +373,8 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 		{
 			TL::LedManager::ledAnimator.at(i).reset(new TL::GradientAnimatorMotion(
 				static_cast<TL::GradientAnimatorMotion::GradientMode>(ledConfig.animationSettings[0]),
-				CRGB(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
-				CRGB(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
+				TL::Pixel(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
+				TL::Pixel(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
 		}
 
 		// Unknown type
@@ -438,7 +389,7 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 		TL::LedManager::ledAnimator.at(i)->setAnimationBrightness(ledConfig.brightness / 255.0f);
 		TL::LedManager::ledAnimator.at(i)->setFadeSpeed(ledConfig.fadeSpeed / 4096.0f);
 		TL::LedManager::ledAnimator.at(i)->setReverse(ledConfig.reverse);
-		TL::LedManager::ledAnimator.at(i)->init(TL::LedManager::ledData.at(i));
+		TL::LedManager::ledAnimator.at(i)->init(TL::LedManager::ledBuffer->getLedStrip(i));
 	}
 	return TL::LedManager::Error::OK;
 }
@@ -470,7 +421,6 @@ TL::LedManager::Error TL::LedManager::loadCustomAnimation(const String &fileName
 	TL::LedManager::fseqLoader->setFillerBytes(fillerBytes);
 	TL::LedManager::fseqLoader->setZoneCount(LED_NUM_ZONES);
 
-	TL::LedManager::setRenderInterval(static_cast<uint32_t>(TL::LedManager::fseqLoader->getHeader().stepTime) * 1000);
 	TL::LedManager::setFrameInterval(static_cast<uint32_t>(TL::LedManager::fseqLoader->getHeader().stepTime) * 1000);
 
 	TL::LedManager::ledAnimator.resize(LED_NUM_ZONES);
@@ -484,7 +434,7 @@ TL::LedManager::Error TL::LedManager::loadCustomAnimation(const String &fileName
 		TL::LedManager::ledAnimator.at(i)->setAnimationBrightness(ledConfig.brightness / 255.0f);
 		TL::LedManager::ledAnimator.at(i)->setFadeSpeed(ledConfig.fadeSpeed / 4096.0f);
 		TL::LedManager::ledAnimator.at(i)->setReverse(ledConfig.reverse);
-		TL::LedManager::ledAnimator.at(i)->init(TL::LedManager::ledData.at(i));
+		TL::LedManager::ledAnimator.at(i)->init(TL::LedManager::ledBuffer->getLedStrip(i));
 	}
 	return TL::LedManager::Error::OK;
 }
@@ -500,15 +450,17 @@ void TL::LedManager::calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_
 		regulatorPower[i] = 0.0f;
 	}
 
-	for (size_t i = 0; i < TL::LedManager::ledData.size(); i++)
+	for (size_t i = 0; i < TL::LedManager::ledBuffer->getLedStripCount(); i++)
 	{
-		TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
+		TL::LedStrip ledStrip = TL::LedManager::ledBuffer->getLedStrip(i);
+		const TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
+
 		float zoneCurrent = 0.0f;
-		for (size_t j = 0; j < TL::LedManager::ledData.at(i).size(); j++)
+		for (size_t j = 0; j < ledStrip.getLedCount(); j++)
 		{
-			zoneCurrent += ledConfig.ledChannelCurrent[0] * TL::LedManager::ledData.at(i).at(j).r / 255.0f;
-			zoneCurrent += ledConfig.ledChannelCurrent[1] * TL::LedManager::ledData.at(i).at(j).g / 255.0f;
-			zoneCurrent += ledConfig.ledChannelCurrent[2] * TL::LedManager::ledData.at(i).at(j).b / 255.0f;
+			zoneCurrent += ledConfig.ledChannelCurrent[0] * ledStrip.getPixel(j).red / 255.0f;
+			zoneCurrent += ledConfig.ledChannelCurrent[1] * ledStrip.getPixel(j).green / 255.0f;
+			zoneCurrent += ledConfig.ledChannelCurrent[2] * ledStrip.getPixel(j).blue / 255.0f;
 		}
 
 		const uint8_t regulatorIndex = TL::LedManager::getRegulatorIndexFromPin(ledConfig.ledPin);
@@ -524,10 +476,12 @@ void TL::LedManager::limitPowerConsumption()
 	float regulatorPower[REGULATOR_COUNT];
 	TL::LedManager::calculateRegulatorPowerDraw(regulatorPower);
 
-	TL::Configuration::SystemConfig systemConfig = TL::Configuration::getSystemConfig();
-	for (size_t i = 0; i < TL::LedManager::ledData.size(); i++)
+	const TL::Configuration::SystemConfig systemConfig = TL::Configuration::getSystemConfig();
+	for (size_t i = 0; i < TL::LedManager::ledBuffer->getLedStripCount(); i++)
 	{
-		TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
+		TL::LedStrip ledStrip = TL::LedManager::ledBuffer->getLedStrip(i);
+		const TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
+
 		const uint8_t regulatorIndex = TL::LedManager::getRegulatorIndexFromPin(ledConfig.ledPin);
 		float multiplicator = ((float)systemConfig.regulatorPowerLimit / REGULATOR_COUNT) / regulatorPower[regulatorIndex];
 		if (multiplicator < 0.0f)
@@ -539,11 +493,13 @@ void TL::LedManager::limitPowerConsumption()
 			multiplicator = 1.0f;
 		}
 
-		for (size_t j = 0; j < TL::LedManager::ledData.at(i).size(); j++)
+		for (size_t j = 0; j < ledStrip.getLedCount(); j++)
 		{
-			TL::LedManager::ledData.at(i).at(j).r *= multiplicator;
-			TL::LedManager::ledData.at(i).at(j).g *= multiplicator;
-			TL::LedManager::ledData.at(i).at(j).b *= multiplicator;
+			TL::Pixel pixel = ledStrip.getPixel(j);
+			pixel.red *= multiplicator;
+			pixel.green *= multiplicator;
+			pixel.blue *= multiplicator;
+			ledStrip.setPixel(pixel, j);
 		}
 	}
 }
@@ -563,13 +519,16 @@ void TL::LedManager::limitRegulatorTemperature()
 		multiplicator = 1.0f;
 	}
 
-	for (size_t i = 0; i < TL::LedManager::ledData.size(); i++)
+	for (size_t i = 0; i < TL::LedManager::ledBuffer->getLedStripCount(); i++)
 	{
-		for (size_t j = 0; j < TL::LedManager::ledData.at(i).size(); j++)
+		TL::LedStrip ledStrip = TL::LedManager::ledBuffer->getLedStrip(i);
+		for (size_t j = 0; j < ledStrip.getLedCount(); j++)
 		{
-			TL::LedManager::ledData.at(i).at(j).r *= multiplicator;
-			TL::LedManager::ledData.at(i).at(j).g *= multiplicator;
-			TL::LedManager::ledData.at(i).at(j).b *= multiplicator;
+			TL::Pixel pixel = ledStrip.getPixel(j);
+			pixel.red *= multiplicator;
+			pixel.green *= multiplicator;
+			pixel.blue *= multiplicator;
+			ledStrip.setPixel(pixel, j);
 		}
 	}
 }

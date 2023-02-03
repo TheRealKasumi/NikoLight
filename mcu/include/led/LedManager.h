@@ -29,9 +29,7 @@
 #include "configuration/SystemConfiguration.h"
 #include "configuration/Configuration.h"
 
-#include "util/FileUtil.h"
-#include "FastLED.h"
-
+#include "led/driver/LedDriver.h"
 #include "led/animator/RainbowAnimator.h"
 #include "led/animator/GradientAnimator.h"
 #include "led/animator/StaticColorAnimator.h"
@@ -41,6 +39,7 @@
 #include "led/animator/GradientAnimatorMotion.h"
 #include "led/animator/SparkleAnimator.h"
 
+#include "util/FileUtil.h"
 #include "sensor/MotionSensor.h"
 #include "hardware/AudioUnit.h"
 
@@ -53,10 +52,11 @@ namespace TL
 		{
 			OK,								// No error
 			ERROR_CONFIG_UNAVAILABLE,		// The configuration is not available
-			ERROR_CREATE_LED_DATA,			// Failed to create LED pixel data
+			ERROR_INIT_LED_DRIVER,			// Failed to initialize the LED driver
+			ERROR_DRIVER_NOT_READY,			// The LED driver is not ready to send new LED data
 			ERROR_UNKNOWN_ANIMATOR_TYPE,	// The animator type is unknown
-			ERROR_INVALID_FSEQ,				// When a custom animation was set but the fseq file is invalid
 			ERROR_FILE_NOT_FOUND,			// The animation file was not found
+			ERROR_INVALID_FSEQ,				// When a custom animation was set but the fseq file is invalid
 			ERROR_INVALID_LED_CONFIGURATION // The current LED configuration does not match the custom animation
 		};
 
@@ -68,9 +68,6 @@ namespace TL
 		static void clearAnimations();
 
 		static void setAmbientBrightness(const float ambientBrightness);
-
-		static void setRenderInterval(const uint32_t renderInterval);
-		static uint32_t getRenderInterval();
 
 		static void setFrameInterval(const uint32_t frameInterval);
 		static uint32_t getFrameInterval();
@@ -84,21 +81,20 @@ namespace TL
 		static size_t getLedCount();
 
 		static void render();
-		static void show();
+		static TL::LedManager::Error show(const TickType_t timeout);
 
 	private:
 		LedManager();
 
 		static bool initialized;
-		static std::vector<std::vector<CRGB>> ledData;
+		static std::unique_ptr<TL::LedBuffer> ledBuffer;
 		static std::vector<std::unique_ptr<TL::LedAnimator>> ledAnimator;
 		static std::unique_ptr<TL::FseqLoader> fseqLoader;
 
-		static uint32_t renderInterval;
 		static uint32_t frameInterval;
 		static float regulatorTemperature;
 
-		static TL::LedManager::Error createLedData();
+		static TL::LedManager::Error initLedDriver();
 		static TL::LedManager::Error createAnimators();
 		static TL::LedManager::Error loadCalculatedAnimations();
 		static TL::LedManager::Error loadCustomAnimation(const String &fileName);
@@ -106,7 +102,6 @@ namespace TL
 		static void calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_COUNT]);
 		static void limitPowerConsumption();
 		static void limitRegulatorTemperature();
-
 		static uint8_t getRegulatorIndexFromPin(const uint8_t pin);
 	};
 }

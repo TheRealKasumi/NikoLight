@@ -40,22 +40,25 @@ TL::RainbowAnimatorMotion::~RainbowAnimatorMotion()
 
 /**
  * @brief Initialize the {@link TL::RainbowAnimatorMotion}.
- * @param pixels reference to the vector holding the LED pixel data
+ * @param ledStrip LED strip with the pixel data
  */
-void TL::RainbowAnimatorMotion::init(std::vector<CRGB> &pixels)
+void TL::RainbowAnimatorMotion::init(TL::LedStrip &ledStrip)
 {
 	this->angle = 0.0f;
-	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
+	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
+	{
+		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+	}
 }
 
 /**
  * @brief Render a rainbow to the vector holding the LED pixel data
- * @param pixels reference to the vector holding the LED pixel data
+ * @param ledStrip LED strip with the pixel data
  */
-void TL::RainbowAnimatorMotion::render(std::vector<CRGB> &pixels)
+void TL::RainbowAnimatorMotion::render(TL::LedStrip &ledStrip)
 {
-	const float middle = pixels.size() / 2;
-	for (uint16_t i = 0; i < pixels.size(); i++)
+	const float middle = ledStrip.getLedCount() / 2;
+	for (uint16_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
 		float redAngle = 0.0f;
 		float greenAngle = 0.0f;
@@ -78,15 +81,15 @@ void TL::RainbowAnimatorMotion::render(std::vector<CRGB> &pixels)
 
 		else if (this->rainbowMode == TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_CENTER)
 		{
-			redAngle = i < middle ? (this->angle + 0.0f) + i * offset : (this->angle + 0.0f) + (pixels.size() - i) * offset;
-			greenAngle = i < middle ? (this->angle + 120.0f) + i * offset : (this->angle + 120.0f) + (pixels.size() - i) * offset;
-			blueAngle = i < middle ? (this->angle + 240.0f) + i * offset : (this->angle + 240.0f) + (pixels.size() - i) * offset;
+			redAngle = i < middle ? (this->angle + 0.0f) + i * offset : (this->angle + 0.0f) + (ledStrip.getLedCount() - i) * offset;
+			greenAngle = i < middle ? (this->angle + 120.0f) + i * offset : (this->angle + 120.0f) + (ledStrip.getLedCount() - i) * offset;
+			blueAngle = i < middle ? (this->angle + 240.0f) + i * offset : (this->angle + 240.0f) + (ledStrip.getLedCount() - i) * offset;
 		}
 
-		pixels.at(i).setRGB(this->trapezoid(redAngle) * 255.0f, this->trapezoid(greenAngle) * 255.0f, this->trapezoid(blueAngle) * 255.0f);
+		ledStrip.setPixel(TL::Pixel(this->trapezoid(redAngle) * 255.0f, this->trapezoid(greenAngle) * 255.0f, this->trapezoid(blueAngle) * 255.0f), i);
 	}
 
-	this->applyBrightness(pixels);
+	this->applyBrightness(ledStrip);
 
 	const float speed = this->getMotionSpeed();
 	if (this->reverse)

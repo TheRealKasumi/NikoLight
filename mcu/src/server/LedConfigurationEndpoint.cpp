@@ -194,16 +194,10 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 	}
 
 	const TL::LedManager::Error ledManagerError = TL::LedManager::reloadAnimations();
-	if (ledManagerError == TL::LedManager::Error::ERROR_CONFIG_UNAVAILABLE)
+	if (ledManagerError == TL::LedManager::Error::ERROR_INIT_LED_DRIVER)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to apply LED configuration. The TesLight configuration is not available."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(500, F("Failed to apply LED configuration. The TesLight configuration is not available."));
-		return;
-	}
-	else if (ledManagerError == TL::LedManager::Error::ERROR_CREATE_LED_DATA)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to apply LED configuration. The pixel data could not be created."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(500, F("Failed to apply LED configuration. The pixel data could not be created."));
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialized LED driver for the current configuration."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(500, F("Failed to initialized LED driver for the current configuration."));
 		return;
 	}
 	else if (ledManagerError == TL::LedManager::Error::ERROR_UNKNOWN_ANIMATOR_TYPE)
@@ -271,10 +265,10 @@ bool TL::LedConfigurationEndpoint::validateLedZone(const JsonObject &jsonObject,
 		return false;
 	}
 
-	if (!TL::LedConfigurationEndpoint::isInRange(jsonObject[F("ledCount")].as<uint16_t>(), 2L, 250L))
+	if (!TL::LedConfigurationEndpoint::isInRange(jsonObject[F("ledCount")].as<uint16_t>(), 1L, 250L))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledCount\" field at index ") + index + F(" must be between 2 and 250."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"ledCount\" field at index ") + index + F(" must be between 2 and 250."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledCount\" field at index ") + index + F(" must be between 1 and 250."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"ledCount\" field at index ") + index + F(" must be between 1 and 250."));
 		return false;
 	}
 

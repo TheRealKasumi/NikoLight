@@ -72,7 +72,6 @@ void TL::SystemInformationEndpoint::getSystemInformation()
 	hardwareInfo[F("audioUnit")] = TL::SystemInformation::getHardwareInfo().audioUnit;
 
 	const JsonObject tlSystemInfo = jsonDoc.createNestedObject(F("tlSystemInfo"));
-	tlSystemInfo[F("rps")] = TL::SystemInformation::getTesLightInfo().rps;
 	tlSystemInfo[F("fps")] = TL::SystemInformation::getTesLightInfo().fps;
 	tlSystemInfo[F("ledCount")] = TL::SystemInformation::getTesLightInfo().ledCount;
 
