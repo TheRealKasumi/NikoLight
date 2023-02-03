@@ -150,7 +150,7 @@ TL::LedDriver::Error TL::LedDriver::showPixels(const TickType_t timeout)
     TL::LedDriver::dmaBuffer[1]->descriptor.qe.stqe_next = &(dmaBuffer[0]->descriptor);
     TL::LedDriver::dmaBuffer[2]->descriptor.qe.stqe_next = &(dmaBuffer[0]->descriptor);
     TL::LedDriver::dmaBuffer[3]->descriptor.qe.stqe_next = 0;
-    TL::LedDriver::loadDMABuffer(TL::LedDriver::ledBuffer, TL::LedDriver::ledStripLength, TL::LedDriver::ledStripCount, reinterpret_cast<uint16_t *>(TL::LedDriver::dmaBuffer[0]->buffer), TL::LedDriver::ledIndex);
+    TL::LedDriver::loadDMABuffer(TL::LedDriver::ledBuffer, reinterpret_cast<uint16_t *>(TL::LedDriver::dmaBuffer[0]->buffer), TL::LedDriver::ledStripLength, TL::LedDriver::ledStripCount, TL::LedDriver::ledIndex);
 
     TL::LedDriver::Error startError = TL::LedDriver::startI2S(dmaBuffer[2]);
     if (startError != TL::LedDriver::Error::OK)
@@ -378,7 +378,7 @@ void IRAM_ATTR TL::LedDriver::interruptHandler(void *args)
         TL::LedDriver::ledIndex++;
         if (TL::LedDriver::ledIndex < TL::LedDriver::ledStripMaxLength)
         {
-            loadDMABuffer(TL::LedDriver::ledBuffer, TL::LedDriver::ledStripLength, TL::LedDriver::ledStripCount, reinterpret_cast<uint16_t *>(TL::LedDriver::dmaBuffer[TL::LedDriver::dmaBufferIndex]->buffer), TL::LedDriver::ledIndex);
+            loadDMABuffer(TL::LedDriver::ledBuffer, reinterpret_cast<uint16_t *>(TL::LedDriver::dmaBuffer[TL::LedDriver::dmaBufferIndex]->buffer), TL::LedDriver::ledStripLength, TL::LedDriver::ledStripCount, TL::LedDriver::ledIndex);
 
             if (TL::LedDriver::ledIndex == TL::LedDriver::ledStripMaxLength - 3)
             {
@@ -404,12 +404,12 @@ void IRAM_ATTR TL::LedDriver::interruptHandler(void *args)
 /**
  * @brief Preload a DMA buffer from the LED pixel data.
  * @param ledBuffer led buffer with the pixel data
+ * @param dmaBuffer DMA buffer to fill
  * @param ledStripLength length of the individual LED strips
  * @param ledStripCount number of LED strips
- * @param dmaBuffer DMA buffer to fill
  * @param ledIndex the current LED index
  */
-void IRAM_ATTR TL::LedDriver::loadDMABuffer(uint8_t *ledBuffer, const uint16_t *ledStripLength, const uint16_t ledStripCount, const uint16_t *dmaBuffer, const uint16_t ledIndex)
+void IRAM_ATTR TL::LedDriver::loadDMABuffer(uint8_t *ledBuffer, uint16_t *dmaBuffer, const uint16_t *ledStripLength, const uint16_t ledStripCount, const uint16_t ledIndex)
 {
     uint8_t bytes[3][16] = {{0}};
     uint8_t *poli = ledBuffer + ledIndex * 3;
@@ -425,20 +425,20 @@ void IRAM_ATTR TL::LedDriver::loadDMABuffer(uint8_t *ledBuffer, const uint16_t *
         poli += ledStripLength[i] * 3;
     }
 
-    transpose(bytes[0], (uint16_t *)dmaBuffer);
-    transpose(bytes[1], (uint16_t *)dmaBuffer + 3 * 8);
-    transpose(bytes[2], (uint16_t *)dmaBuffer + 2 * 3 * 8);
+    transpose(bytes[0], reinterpret_cast<uint16_t *>(dmaBuffer));
+    transpose(bytes[1], reinterpret_cast<uint16_t *>(dmaBuffer + 3 * 8));
+    transpose(bytes[2], reinterpret_cast<uint16_t *>(dmaBuffer + 2 * 3 * 8));
 }
 
 /**
  * @brief Transpose the LED data into the DMA buffers.
  * Todo: clean and document this mess
  */
-void IRAM_ATTR TL::LedDriver::transpose(unsigned char *A, uint16_t *B)
+void IRAM_ATTR TL::LedDriver::transpose(uint8_t *pixelBuffer, uint16_t *dmaBuffer)
 {
     uint32_t x, y, x1, y1, t;
-    y = *(unsigned int *)(A);
-    x = *(unsigned int *)(A + 4);
+    y = *reinterpret_cast<unsigned int *>(pixelBuffer);
+    x = *reinterpret_cast<unsigned int *>(pixelBuffer + 4);
     t = (x ^ (x >> 7)) & 0x00AA00AAL;
     x = x ^ t ^ (t << 7);
     t = (x ^ (x >> 14)) & 0x0000CCCCL;
@@ -453,12 +453,12 @@ void IRAM_ATTR TL::LedDriver::transpose(unsigned char *A, uint16_t *B)
     t = (x1 & 0xF0F0F0F0L) | ((y1 >> 4) & 0x0F0F0F0FL);
     y1 = ((x1 << 4) & 0xF0F0F0F0L) | (y1 & 0x0F0F0F0FL);
     x1 = t;
-    *((uint16_t *)(B)) = (uint16_t)(((x & 0xff000000) >> 8 | ((x1 & 0xff000000))) >> 16);
-    *((uint16_t *)(B + 5)) = (uint16_t)(((x & 0xff0000) >> 16 | ((x1 & 0xff0000) >> 8)));
-    *((uint16_t *)(B + 6)) = (uint16_t)(((x & 0xff00) | ((x1 & 0xff00) << 8)) >> 8);
-    *((uint16_t *)(B + 11)) = (uint16_t)((x & 0xff) | ((x1 & 0xff) << 8));
-    *((uint16_t *)(B + 12)) = (uint16_t)(((y & 0xff000000) >> 8 | ((y1 & 0xff000000))) >> 16);
-    *((uint16_t *)(B + 17)) = (uint16_t)(((y & 0xff0000) | ((y1 & 0xff0000) << 8)) >> 16);
-    *((uint16_t *)(B + 18)) = (uint16_t)(((y & 0xff00) | ((y1 & 0xff00) << 8)) >> 8);
-    *((uint16_t *)(B + 23)) = (uint16_t)((y & 0xff) | ((y1 & 0xff) << 8));
+    *(reinterpret_cast<uint16_t *>(dmaBuffer)) = static_cast<uint16_t>(((x & 0xff000000) >> 8 | ((x1 & 0xff000000))) >> 16);
+    *(reinterpret_cast<uint16_t *>(dmaBuffer + 5)) = static_cast<uint16_t>(((x & 0xff0000) >> 16 | ((x1 & 0xff0000) >> 8)));
+    *(reinterpret_cast<uint16_t *>(dmaBuffer + 6)) = static_cast<uint16_t>(((x & 0xff00) | ((x1 & 0xff00) << 8)) >> 8);
+    *(reinterpret_cast<uint16_t *>(dmaBuffer + 11)) = static_cast<uint16_t>((x & 0xff) | ((x1 & 0xff) << 8));
+    *(reinterpret_cast<uint16_t *>(dmaBuffer + 12)) = static_cast<uint16_t>(((y & 0xff000000) >> 8 | ((y1 & 0xff000000))) >> 16);
+    *(reinterpret_cast<uint16_t *>(dmaBuffer + 17)) = static_cast<uint16_t>(((y & 0xff0000) | ((y1 & 0xff0000) << 8)) >> 16);
+    *(reinterpret_cast<uint16_t *>(dmaBuffer + 18)) = static_cast<uint16_t>(((y & 0xff00) | ((y1 & 0xff00) << 8)) >> 8);
+    *(reinterpret_cast<uint16_t *>(dmaBuffer + 23)) = static_cast<uint16_t>((y & 0xff) | ((y1 & 0xff) << 8));
 }

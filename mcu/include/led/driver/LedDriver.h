@@ -105,8 +105,8 @@ namespace TL
         static void initDMABuffers();
 
         static void IRAM_ATTR interruptHandler(void *args);
-        static void IRAM_ATTR loadDMABuffer(uint8_t *ledBuffer, const uint16_t *ledStripLength, const uint16_t ledStripCount, const uint16_t *dmaBuffer, const uint16_t ledIndex);
-        static void IRAM_ATTR transpose(uint8_t *a, uint16_t *b);
+        static void IRAM_ATTR loadDMABuffer(uint8_t *ledBuffer, uint16_t *dmaBuffer, const uint16_t *ledStripLength, const uint16_t ledStripCount, const uint16_t ledIndex);
+        static void IRAM_ATTR transpose(uint8_t *pixelBuffer, uint16_t *dmaBuffer);
     };
 };
 
