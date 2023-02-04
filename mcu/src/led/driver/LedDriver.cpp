@@ -72,7 +72,7 @@ TL::LedDriver::Error TL::LedDriver::begin(TL::LedBuffer &ledBuffer, const TL::Le
 }
 
 /**
- * @brief Return if the LED driver was initialized.
+ * @brief Check if the LED driver was initialized.
  * @return true when initialized
  * @return false when not initialized
  */
