@@ -24,14 +24,25 @@
 /**
  * @brief Create a new instance of {@link TL::LedStrip}.
  * @param ledPin physical pin number for the data output
- * @param ledCount number of LEDs
+ * @param ledCount number of visible LEDs
+ * @param hiddenLedCount total number of LEDs including invisible ones
  */
-TL::LedStrip::LedStrip(const uint8_t ledPin, const size_t ledCount)
+TL::LedStrip::LedStrip(const uint8_t ledPin, const size_t ledCount, const size_t hiddenLedCount)
 {
 	this->ledPin = ledPin;
 	this->ledCount = ledCount;
+	this->hiddenLedCount = hiddenLedCount;
 	this->buffer = nullptr;
-	this->isInitialized = false;
+	this->initialized = false;
+
+	if (this->hiddenLedCount < this->ledCount)
+	{
+		this->hiddenLedCount = ledCount;
+	}
+	else if (this->hiddenLedCount < 8)
+	{
+		this->hiddenLedCount = 8;
+	}
 }
 
 /**
@@ -60,17 +71,25 @@ size_t TL::LedStrip::getLedCount()
 }
 
 /**
+ * @brief Get the number of hidden LEDs. This is the number of visible LEDs + the number of invisible LEDs.
+ * @return number of hidden LEDs
+ */
+size_t TL::LedStrip::getHiddenLedCount()
+{
+	return this->hiddenLedCount;
+}
+
+/**
  * @brief Get a single pixel from the buffer.
  * @param index index of the pixel
  * @return OK when the
  */
 TL::Pixel TL::LedStrip::getPixel(const size_t index)
 {
-	if (!this->isInitialized || index >= this->ledCount)
+	if (!this->initialized || index >= this->ledCount)
 	{
 		std::abort();
 	}
-
 	const size_t ind = index * 3;
 	return TL::Pixel(this->buffer[ind], this->buffer[ind + 1], this->buffer[ind + 2]);
 }
@@ -82,11 +101,10 @@ TL::Pixel TL::LedStrip::getPixel(const size_t index)
  */
 void TL::LedStrip::setPixel(const TL::Pixel &pixel, const size_t index)
 {
-	if (!this->isInitialized || index >= this->ledCount)
+	if (!this->initialized || index >= this->ledCount)
 	{
-		//std::abort();
+		std::abort();
 	}
-
 	const size_t ind = index * 3;
 	this->buffer[ind] = pixel.red;
 	this->buffer[ind + 1] = pixel.green;
@@ -99,6 +117,10 @@ void TL::LedStrip::setPixel(const TL::Pixel &pixel, const size_t index)
  */
 uint8_t *TL::LedStrip::getBuffer()
 {
+	if (!this->initialized)
+	{
+		std::abort();
+	}
 	return this->buffer;
 }
 
@@ -108,6 +130,6 @@ uint8_t *TL::LedStrip::getBuffer()
  */
 void TL::LedStrip::setBuffer(uint8_t *buffer)
 {
-	this->isInitialized = true;
+	this->initialized = true;
 	this->buffer = buffer;
 }

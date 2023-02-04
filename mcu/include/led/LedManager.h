@@ -79,8 +79,10 @@ namespace TL
 
 		static float getLedPowerDraw();
 		static size_t getLedCount();
+		static size_t getHiddenLedCount();
 
 		static void render();
+		static TL::LedManager::Error waitShow(const TickType_t timeout);
 		static TL::LedManager::Error show(const TickType_t timeout);
 
 	private:

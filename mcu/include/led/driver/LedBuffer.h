@@ -42,6 +42,9 @@ namespace TL
 		size_t getTotalLedCount();
 		size_t getMaxLedCount();
 
+		size_t getTotalHiddenLedCount();
+		size_t getMaxHiddenLedCount();
+
 		size_t getLedStripCount();
 		TL::LedStrip &getLedStrip(const size_t index);
 
@@ -49,6 +52,8 @@ namespace TL
 		std::vector<TL::LedStrip> ledStrips;
 		size_t totalLedCount;
 		size_t maxLedCount;
+		size_t totalHiddenLedCount;
+		size_t maxHiddenLedCount;
 		uint8_t *buffer;
 	};
 }

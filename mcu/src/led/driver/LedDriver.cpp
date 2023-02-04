@@ -24,7 +24,7 @@ volatile xSemaphoreHandle TL::LedDriver::semaphore;
  */
 TL::LedDriver::Error TL::LedDriver::begin(TL::LedBuffer &ledBuffer, const TL::LedDriver::I2SDevice i2sDeviceIdentifier)
 {
-    if (ledBuffer.getLedStripCount() == 0 || ledBuffer.getMaxLedCount() == 0)
+    if (ledBuffer.getLedStripCount() == 0 || ledBuffer.getMaxHiddenLedCount() < 8)
     {
         return TL::LedDriver::Error::ERROR_NO_LED_STRIPS;
     }
@@ -49,12 +49,12 @@ TL::LedDriver::Error TL::LedDriver::begin(TL::LedBuffer &ledBuffer, const TL::Le
         {
             return pinError;
         }
-        TL::LedDriver::ledStripLength[i] = ledBuffer.getLedStrip(i).getLedCount();
+        TL::LedDriver::ledStripLength[i] = ledBuffer.getLedStrip(i).getHiddenLedCount();
     }
 
     TL::LedDriver::ledBuffer = ledBuffer.getBuffer();
     TL::LedDriver::ledStripCount = ledBuffer.getLedStripCount();
-    TL::LedDriver::ledStripMaxLength = ledBuffer.getMaxLedCount();
+    TL::LedDriver::ledStripMaxLength = ledBuffer.getMaxHiddenLedCount();
     TL::LedDriver::i2sDeviceIdentifier = i2sDeviceIdentifier;
     TL::LedDriver::i2sDeviceIdentifier = i2sDeviceIdentifier;
     TL::LedDriver::semaphore = xSemaphoreCreateBinary();
@@ -323,7 +323,7 @@ TL::LedDriver::DMABuffer *TL::LedDriver::allocateDMABuffer(const uint32_t size)
     DMABuffer *dmaBuffer = reinterpret_cast<DMABuffer *>(heap_caps_malloc(sizeof(DMABuffer), MALLOC_CAP_DMA));
     dmaBuffer->buffer = reinterpret_cast<uint8_t *>(heap_caps_malloc(size, MALLOC_CAP_DMA));
 
-    memset(dmaBuffer->buffer, 0, size);
+    std::memset(dmaBuffer->buffer, 0, size);
     dmaBuffer->descriptor.length = size;
     dmaBuffer->descriptor.size = size;
     dmaBuffer->descriptor.owner = 1;

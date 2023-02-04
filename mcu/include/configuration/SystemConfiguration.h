@@ -62,6 +62,7 @@
 #endif
 #define LED_DEFAULT_COUNTS {2, 2, 2, 2, 2, 2, 2, 2}					  // Default number of LEDs for each channel
 #define LED_DEFAULT_CHANNEL_CURRENT 16 								  // Default current per LED channel in mA
+#define LED_MAX_COUNT_PER_ZONE 250									  // Maximum number of LEDs per channel
 #define ANIMATOR_NUM_ANIMATION_SETTINGS 25  						  // Number of custom fields in the LED configuration
 #define ANIMATOR_DEFAULT_TYPE 0		   								  // Default animation type
 #define ANIMATOR_DEFAULT_DATA_SOURCE 0								  // Default data source of the animation

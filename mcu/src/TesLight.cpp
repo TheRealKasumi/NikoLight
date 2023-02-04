@@ -668,14 +668,14 @@ void TesLight::run()
 	// Handle the pixel rendering and LED output
 	if (TesLight::checkTimer(TesLight::frameTimer, TL::LedManager::getFrameInterval()))
 	{
-		TL::LedManager::render();
-		TL::LedManager::Error showError = TL::LedManager::show(portMAX_DELAY);
-		if (showError != TL::LedManager::Error::OK)
+		const TL::LedManager::Error waitError = TL::LedManager::waitShow(portMAX_DELAY);
+		if (waitError == TL::LedManager::Error::OK)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to send LED data. Skipping frame."));
+			TL::LedManager::render();
+			TL::LedManager::show(0);
+			TesLight::frameCounter++;
+			TesLight::ledPowerCounter += TL::LedManager::getLedPowerDraw();
 		}
-		TesLight::frameCounter++;
-		TesLight::ledPowerCounter += TL::LedManager::getLedPowerDraw();
 	}
 
 	// Handle the light sensor
@@ -757,6 +757,7 @@ void TesLight::run()
 		TL::SystemInformation::TLInformation tlInfo = TL::SystemInformation::getTesLightInfo();
 		tlInfo.fps = frameCounter / (STATUS_INTERVAL / 1000000.0f);
 		tlInfo.ledCount = TL::LedManager::getLedCount();
+		tlInfo.hiddenLedCount = TL::LedManager::getHiddenLedCount();
 		TL::SystemInformation::setTesLightInfo(tlInfo);
 
 		// Update regulator related information

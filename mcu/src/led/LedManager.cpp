@@ -188,7 +188,7 @@ float TL::LedManager::getLedPowerDraw()
 }
 
 /**
- * @brief Get the total number of LEDs.
+ * @brief Get the total number of visible LEDs.
  * @return total number of LEDs
  */
 size_t TL::LedManager::getLedCount()
@@ -196,6 +196,19 @@ size_t TL::LedManager::getLedCount()
 	if (TL::LedManager::ledBuffer != nullptr)
 	{
 		return TL::LedManager::ledBuffer->getTotalLedCount();
+	}
+	return 0;
+}
+
+/**
+ * @brief Get the total number of LEDs.
+ * @return total number of LEDs
+ */
+size_t TL::LedManager::getHiddenLedCount()
+{
+	if (TL::LedManager::ledBuffer != nullptr)
+	{
+		return TL::LedManager::ledBuffer->getTotalHiddenLedCount();
 	}
 	return 0;
 }
@@ -220,8 +233,30 @@ void TL::LedManager::render()
 }
 
 /**
+ * @brief Wait for the LED driver until all data was sent out to the LEDs.
+ * @param timeout cpu cycles until a timeout will happen when data is still being send
+ * @return OK when the driver is done sending data
+ * @return ERROR_DRIVER_NOT_READY when the driver is not ready sending all the data
+ */
+TL::LedManager::Error TL::LedManager::waitShow(const TickType_t timeout)
+{
+	if (!TL::LedDriver::isInitialized())
+	{
+		return TL::LedManager::Error::ERROR_DRIVER_NOT_READY;
+	}
+
+	const TL::LedDriver::Error driverError = TL::LedDriver::isReady(timeout);
+	if (driverError != TL::LedDriver::Error::OK)
+	{
+		return TL::LedManager::Error::ERROR_DRIVER_NOT_READY;
+	}
+
+	return TL::LedManager::Error::OK;
+}
+
+/**
  * @brief Async send out the current LED data via the LED driver.
- * @param timeout cpy cycles until a timeout will happen when data is still being send
+ * @param timeout cpu cycles until a timeout will happen when data is still being send
  * @return OK when the data is being sent
  * @return ERROR_DRIVER_NOT_READY when the driver is not ready to send new data
  */
@@ -252,7 +287,7 @@ TL::LedManager::Error TL::LedManager::initLedDriver()
 	for (size_t i = 0; i < LED_NUM_ZONES; i++)
 	{
 		const TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
-		ledStrips.push_back(TL::LedStrip(ledConfig.ledPin, ledConfig.ledCount));
+		ledStrips.push_back(TL::LedStrip(ledConfig.ledPin, ledConfig.ledCount, LED_MAX_COUNT_PER_ZONE));
 	}
 
 	TL::LedManager::ledBuffer.reset(new TL::LedBuffer(ledStrips));
@@ -280,7 +315,7 @@ TL::LedManager::Error TL::LedManager::createAnimators()
 	// Field 14 is reserved to store the previous, calculated animation type
 	const bool customAnimation = TL::Configuration::getLedConfig(0).type == 255;
 	uint32_t identifier = 0;
-	memcpy(&identifier, &TL::Configuration::getLedConfig(0).animationSettings[20], sizeof(identifier));
+	std::memcpy(&identifier, &TL::Configuration::getLedConfig(0).animationSettings[20], sizeof(identifier));
 	if (!customAnimation)
 	{
 		return TL::LedManager::loadCalculatedAnimations();

@@ -265,10 +265,10 @@ bool TL::LedConfigurationEndpoint::validateLedZone(const JsonObject &jsonObject,
 		return false;
 	}
 
-	if (!TL::LedConfigurationEndpoint::isInRange(jsonObject[F("ledCount")].as<uint16_t>(), 1L, 250L))
+	if (!TL::LedConfigurationEndpoint::isInRange(jsonObject[F("ledCount")].as<uint16_t>(), 1L, LED_MAX_COUNT_PER_ZONE))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledCount\" field at index ") + index + F(" must be between 1 and 250."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"ledCount\" field at index ") + index + F(" must be between 1 and 250."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"ledCount\" field at index ") + index + F(" must be between 1 and ") + LED_MAX_COUNT_PER_ZONE + F("."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"ledCount\" field at index ") + index + F(" must be between 1 and ") + LED_MAX_COUNT_PER_ZONE + F("."));
 		return false;
 	}
 

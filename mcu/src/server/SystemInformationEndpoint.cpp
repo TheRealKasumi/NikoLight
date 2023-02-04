@@ -74,6 +74,7 @@ void TL::SystemInformationEndpoint::getSystemInformation()
 	const JsonObject tlSystemInfo = jsonDoc.createNestedObject(F("tlSystemInfo"));
 	tlSystemInfo[F("fps")] = TL::SystemInformation::getTesLightInfo().fps;
 	tlSystemInfo[F("ledCount")] = TL::SystemInformation::getTesLightInfo().ledCount;
+	tlSystemInfo[F("hiddenLedCount")] = TL::SystemInformation::getTesLightInfo().hiddenLedCount;
 
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
 	TL::SystemInformationEndpoint::sendJsonDocument(200, F("Here is my current status."), jsonDoc);

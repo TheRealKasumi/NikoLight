@@ -33,11 +33,12 @@ namespace TL
 	class LedStrip
 	{
 	public:
-		LedStrip(const uint8_t ledPin, const size_t ledCount);
+		LedStrip(const uint8_t ledPin, const size_t ledCount, const size_t hiddenLedCount = 8);
 		~LedStrip();
 
 		uint8_t getLedPin();
 		size_t getLedCount();
+		size_t getHiddenLedCount();
 
 		TL::Pixel getPixel(const size_t index);
 		void setPixel(const TL::Pixel &pixel, const size_t index);
@@ -48,8 +49,9 @@ namespace TL
 	private:
 		uint8_t ledPin;
 		size_t ledCount;
+		size_t hiddenLedCount;
 		uint8_t *buffer;
-		bool isInitialized;
+		bool initialized;
 	};
 }
 
