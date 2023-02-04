@@ -150,8 +150,7 @@
     "brightnessVariance": "Brightness Variance",
     "bounceAtCorner": "Bounce Particles",
     "channelCurrents": "LED Current per Channel (MA)",
-    "color1": "Color 1",
-    "color2": "Color 2",
+    "color": "Color",
     "dataSource": "Source",
     "direction": {
       "desc": "Reverse the animation direction",
