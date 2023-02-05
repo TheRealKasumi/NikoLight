@@ -41,21 +41,24 @@ TL::FseqAnimator::~FseqAnimator()
 
 /**
  * @brief Initialize the {@link FseqAnimator}.
- * @param pixels reference to the vector holding the LED pixel data
+ * @param ledStrip LED strip with the pixel data
  */
-void TL::FseqAnimator::init(std::vector<CRGB> &pixels)
+void TL::FseqAnimator::init(TL::LedStrip &ledStrip)
 {
 	this->fseqLoader->moveToStart();
-	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
+	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
+	{
+		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+	}
 }
 
 /**
  * @brief Render the values from the fseq file to the vector holding the LED pixel data
- * @param pixels reference to the vector holding the LED pixel data
+ * @param ledStrip LED strip with the pixel data
  */
-void TL::FseqAnimator::render(std::vector<CRGB> &pixels)
+void TL::FseqAnimator::render(TL::LedStrip &ledStrip)
 {
-	if (this->fseqLoader->available() < pixels.size())
+	if (this->fseqLoader->available() < ledStrip.getLedCount())
 	{
 		if (this->loop)
 		{
@@ -67,18 +70,18 @@ void TL::FseqAnimator::render(std::vector<CRGB> &pixels)
 		}
 	}
 
-	const TL::FseqLoader::Error fseqError = this->fseqLoader->readPixelBuffer(pixels);
+	const TL::FseqLoader::Error fseqError = this->fseqLoader->readLedStrip(ledStrip);
 	if (fseqError != TL::FseqLoader::Error::OK)
 	{
-		for (size_t i = 0; i < pixels.size(); i++)
+		for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 		{
-			pixels.at(i) = CRGB::Black;
+			ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
 		}
 	}
 
 	if (this->reverse)
 	{
-		this->reversePixels(pixels);
+		this->reversePixels(ledStrip);
 	}
-	this->applyBrightness(pixels);
+	this->applyBrightness(ledStrip);
 }

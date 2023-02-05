@@ -65,9 +65,9 @@ namespace TL
 
 		struct TLInformation
 		{
-			float rps;
 			float fps;
 			uint16_t ledCount;
+			uint16_t hiddenLedCount;
 		};
 
 		static void begin();

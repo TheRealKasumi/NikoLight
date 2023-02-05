@@ -1,7 +1,7 @@
 /**
- * @file RainbowAnimator.h
+ * @file LedStrip.h
  * @author TheRealKasumi
- * @brief Contains a class to render a rainbow.
+ * @brief Contains a class that represents a single LED strip inside the {@link TL::LedBuffer}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -19,33 +19,39 @@
  * from the owner.
  *
  */
-#ifndef RAINBOW_ANIMATOR_H
-#define RAINBOW_ANIMATOR_H
+#ifndef LED_STRIP_H
+#define LED_STRIP_H
 
-#include <vector>
-#include "led/animator/LedAnimator.h"
+#include <stdint.h>
+#include <stddef.h>
+#include <cstdlib>
+
+#include "Pixel.h"
 
 namespace TL
 {
-	class RainbowAnimator : public LedAnimator
+	class LedStrip
 	{
 	public:
-		enum class RainbowMode
-		{
-			RAINBOW_SOLID = 0,
-			RAINBOW_LINEAR = 1,
-			RAINBOW_CENTER = 2
-		};
+		LedStrip(const uint8_t ledPin, const size_t ledCount, const size_t hiddenLedCount = 8);
+		~LedStrip();
 
-		RainbowAnimator(const TL::RainbowAnimator::RainbowMode rainbowMode);
-		~RainbowAnimator();
+		uint8_t getLedPin();
+		size_t getLedCount();
+		size_t getHiddenLedCount();
 
-		void init(TL::LedStrip &ledStrip);
-		void render(TL::LedStrip &ledStrip);
+		TL::Pixel getPixel(const size_t index);
+		void setPixel(const TL::Pixel &pixel, const size_t index);
+
+		uint8_t *getBuffer();
+		void setBuffer(uint8_t *buffer);
 
 	private:
-		float angle;
-		TL::RainbowAnimator::RainbowMode rainbowMode;
+		uint8_t ledPin;
+		size_t ledCount;
+		size_t hiddenLedCount;
+		uint8_t *buffer;
+		bool initialized;
 	};
 }
 

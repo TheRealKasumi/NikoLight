@@ -148,14 +148,14 @@ TL::FseqLoader::FseqHeader TL::FseqLoader::getHeader()
 }
 
 /**
- * @brief Read a buffer of pixels from the stream.
- * @param pixels reference to the vector holding the LED pixel data
+ * @brief Read a LED strip from the stream.
+ * @param ledStrip LED strip with the pixel data
  * @return OK when the pixel buffer was read
  * @return ERROR_END_OF_FILE when there is no more data to read
  */
-TL::FseqLoader::Error TL::FseqLoader::readPixelBuffer(std::vector<CRGB> &pixels)
+TL::FseqLoader::Error TL::FseqLoader::readLedStrip(TL::LedStrip &ledStrip)
 {
-	if (this->file && this->available() >= pixels.size())
+	if (this->file && this->available() >= ledStrip.getLedCount())
 	{
 		this->zoneCounter++;
 		if (this->zoneCounter >= this->zoneCount)
@@ -167,7 +167,7 @@ TL::FseqLoader::Error TL::FseqLoader::readPixelBuffer(std::vector<CRGB> &pixels)
 			}
 		}
 
-		if (this->file.read((uint8_t *)&pixels.front(), pixels.size() * 3) == pixels.size() * 3)
+		if (this->file.read(ledStrip.getBuffer(), ledStrip.getLedCount() * 3) == ledStrip.getLedCount() * 3)
 		{
 			return TL::FseqLoader::Error::OK;
 		}

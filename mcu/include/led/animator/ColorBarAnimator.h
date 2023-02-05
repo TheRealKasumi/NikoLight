@@ -39,19 +39,19 @@ namespace TL
 		};
 
 		ColorBarAnimator();
-		ColorBarAnimator(const TL::ColorBarAnimator::ColorBarMode colorBarMode, const CRGB color1, const CRGB color2);
+		ColorBarAnimator(const TL::ColorBarAnimator::ColorBarMode colorBarMode, const TL::Pixel color1, const TL::Pixel color2);
 		~ColorBarAnimator();
 
-		void init(std::vector<CRGB> &pixels);
-		void render(std::vector<CRGB> &pixels);
+		void init(TL::LedStrip &ledStrip);
+		void render(TL::LedStrip &ledStrip);
 
 		void setColorBarMode(const TL::ColorBarAnimator::ColorBarMode colorBarMode);
-		void setColor(const CRGB color1, const CRGB color2);
+		void setColor(const TL::Pixel color1, const TL::Pixel color2);
 
 	private:
 		float angle;
 		TL::ColorBarAnimator::ColorBarMode colorBarMode;
-		CRGB color[2];
+		TL::Pixel color[2];
 	};
 }
 
