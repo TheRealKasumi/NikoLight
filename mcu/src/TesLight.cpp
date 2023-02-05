@@ -61,6 +61,7 @@ void TesLight::begin()
 	TesLight::initializeRestApi();			 // Iniaialize the rest api
 	TesLight::createtWiFiNetwork();			 // Create the WiFi network for clients to connect to
 	TesLight::initializeTimers();			 // Initialize the timers
+	TL::WatchDog::initializeTaskWatchdog();	 // Initialize the watchdog timer
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("TesLight initialized successfully, going into work mode."));
 }
 
