@@ -150,7 +150,7 @@ TL::BH1750::Error TL::BH1750::read(uint16_t &value)
 	{
 		return TL::BH1750::Error::ERROR_IIC_COMM;
 	}
-	bytes[0] = Wire.read();
 	bytes[1] = Wire.read();
+	bytes[0] = Wire.read();
 	return TL::BH1750::Error::OK;
 }
