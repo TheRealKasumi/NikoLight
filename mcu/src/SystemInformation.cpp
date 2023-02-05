@@ -58,7 +58,6 @@ void TL::SystemInformation::begin()
 	TL::SystemInformation::hardwareInfo.audioUnit = 0;
 
 	TL::SystemInformation::systemInfo.fps = 0;
-	TL::SystemInformation::systemInfo.rps = 0;
 	TL::SystemInformation::systemInfo.ledCount = 0;
 
 	TL::SystemInformation::updateSocInfo(false);

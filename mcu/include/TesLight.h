@@ -70,7 +70,6 @@ private:
 	static unsigned long lightSensorInterval;
 	static unsigned long motionSensorInterval;
 	static unsigned long audioUnitInterval;
-	static unsigned long renderTimer;
 	static unsigned long frameTimer;
 	static unsigned long lightSensorTimer;
 	static unsigned long motionSensorTimer;
@@ -81,7 +80,6 @@ private:
 	static unsigned long webServerTimer;
 
 	// Counter
-	static uint16_t renderCounter;
 	static uint16_t frameCounter;
 	static float ledPowerCounter;
 

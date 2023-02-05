@@ -62,6 +62,7 @@
 #endif
 #define LED_DEFAULT_COUNTS {2, 2, 2, 2, 2, 2, 2, 2}					  // Default number of LEDs for each channel
 #define LED_DEFAULT_CHANNEL_CURRENT 16 								  // Default current per LED channel in mA
+#define LED_MAX_COUNT_PER_ZONE 250									  // Maximum number of LEDs per channel
 #define ANIMATOR_NUM_ANIMATION_SETTINGS 25  						  // Number of custom fields in the LED configuration
 #define ANIMATOR_DEFAULT_TYPE 0		   								  // Default animation type
 #define ANIMATOR_DEFAULT_DATA_SOURCE 0								  // Default data source of the animation
@@ -158,7 +159,6 @@
 #define WEB_SERVER_STATIC_CONTENT "/ui/"  // Static content location for the UI
 
 // Timer configuration
-#define RENDER_INTERVAL 16666			// Interval for rendering the pixels in µs
 #define FRAME_INTERVAL 16666			// Interval for outputting to the LEDs in µs
 #define FAN_INTERVAL 500000				// Interval for running the fan controll in µs
 #define LIGHT_SENSOR_INTERVAL 40000		// Interval for the light sensor in µs

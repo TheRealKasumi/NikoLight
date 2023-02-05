@@ -26,7 +26,7 @@
 #include <math.h>
 #include <vector>
 
-#include "FastLED.h"
+#include "led/driver/LedStrip.h"
 #include "sensor/MotionSensor.h"
 #include "hardware/AudioUnit.h"
 
@@ -91,8 +91,8 @@ namespace TL
 		void setAudioAnalysis(const TL::AudioUnit::AudioAnalysis &audioAnalysis);
 		TL::AudioUnit::AudioAnalysis &getAudioAnalysis();
 
-		virtual void init(std::vector<CRGB> &pixels) = 0;
-		virtual void render(std::vector<CRGB> &pixels) = 0;
+		virtual void init(TL::LedStrip &ledStrip) = 0;
+		virtual void render(TL::LedStrip &ledStrip) = 0;
 
 	protected:
 		TL::LedAnimator::DataSource dataSource;
@@ -107,8 +107,8 @@ namespace TL
 		TL::MotionSensor::MotionSensorData motionSensorData;
 		TL::AudioUnit::AudioAnalysis audioAnalysis;
 
-		void reversePixels(std::vector<CRGB> &pixels);
-		void applyBrightness(std::vector<CRGB> &pixels);
+		void reversePixels(TL::LedStrip &ledStrip);
+		void applyBrightness(TL::LedStrip &ledStrip);
 		static int32_t random(const int32_t min, const int32_t max);
 		static float trapezoid(float angle);
 		static float trapezoid2(float angle);
