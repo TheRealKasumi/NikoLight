@@ -4,7 +4,7 @@
  * @brief Implementation of the {@TL::ColorBarAnimator}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -103,8 +103,6 @@ void TL::ColorBarAnimator::render(std::vector<CRGB> &pixels)
 			trapezoidValue1 * this->color[0].b + trapezoidValue2 * this->color[1].b);
 	}
 
-	this->applyBrightness(pixels);
-
 	if (this->reverse)
 	{
 		this->angle += this->speed / 50.0f;
@@ -122,6 +120,8 @@ void TL::ColorBarAnimator::render(std::vector<CRGB> &pixels)
 	{
 		this->angle += 360.0f;
 	}
+
+	this->applyBrightness(pixels);
 }
 
 /**

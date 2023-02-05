@@ -24,35 +24,36 @@
 
 #include <vector>
 #include "led/animator/LedAnimator.h"
+#include "configuration/SystemConfiguration.h"
 
 namespace TL
 {
 	class SparkleAnimator : public LedAnimator
 	{
 	public:
-		enum SpawnPosition
+		enum class SpawnPosition : uint8_t
 		{
-			SPAWN_LEFT = 0,
-			SPAWN_RIGHT = 1,
-			SPAWN_CENTER = 2,
-			SPAWN_RANDOM = 3
+			SPAWN_SIDE = 0,	  // Spawn new sparks at the side
+			SPAWN_CENTER = 1, // Spawm new sparks at the middle
+			SPAWN_RANDOM = 2  // Spawn new sparks at a random position
 		};
 
 		struct Spark
 		{
-			bool visible;
-			float position;
-			float speed;
-			float friction;
-			CRGB color;
-			float brightness;
-			float fading;
+			bool visible;		// Visibility of a spark
+			float position;		// Position of a spark
+			float lastPosition; // Previous position of a spark
+			float speed;		// Speed of a spark
+			float friction;		// Friction of a spark
+			CRGB color;			// Color of a spark
+			float brightness;	// Brightness of a spark
+			float fading;		// Fafing speed of a spark
 		};
 
 		SparkleAnimator(const TL::SparkleAnimator::SpawnPosition spawnPosition, const uint8_t sparkCount, const CRGB color,
 						const float sparkFriction, const float sparkFading, const float sparkTail, const float birthRate,
 						const float spawnVariance, const float speedVariance, const float brightnessVariance, const float frictionVariance,
-						const float fadingVariance, const bool bounceAtCorner);
+						const float fadingVariance, const bool bounceAtCorner, const uint8_t frequencyBandMask);
 		~SparkleAnimator();
 
 		void init(std::vector<CRGB> &pixels);
@@ -75,8 +76,10 @@ namespace TL
 		float frictionVariance;
 		float fadingVariance;
 		bool bounceAtCorner;
+		uint8_t frequencyBandMask;
 
 		float colorAngle;
+		uint8_t audioSequence;
 
 		void spawnSparks(std::vector<CRGB> &pixels);
 		void runSparks(std::vector<CRGB> &pixels);

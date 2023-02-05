@@ -48,7 +48,7 @@
 #define LOG_DEFAULT_LEVEL 1 			// Default log level
 
 // Configuration of the runtime configuration
-#define CONFIGURATION_FILE_VERSION 12		  // Version of the configuration file
+#define CONFIGURATION_FILE_VERSION 13		  // Version of the configuration file
 #define CONFIGURATION_FILE_NAME "/config.tli" // File name of the configuration file
 
 // LED and effect configuration
@@ -64,6 +64,7 @@
 #define LED_DEFAULT_CHANNEL_CURRENT 16 								  // Default current per LED channel in mA
 #define ANIMATOR_NUM_ANIMATION_SETTINGS 25  						  // Number of custom fields in the LED configuration
 #define ANIMATOR_DEFAULT_TYPE 0		   								  // Default animation type
+#define ANIMATOR_DEFAULT_DATA_SOURCE 0								  // Default data source of the animation
 #define ANIMATOR_DEFAULT_SPEED 50	   								  // Default animation speed
 #define ANIMATOR_DEFAULT_OFFSET 10	   								  // Default animation offset
 #define ANIMATOR_DEFAULT_BRIGHTNESS 50 								  // Default zone brightness

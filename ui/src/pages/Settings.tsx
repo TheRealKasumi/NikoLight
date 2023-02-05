@@ -252,6 +252,8 @@ const Form = (): JSX.Element => {
 
   const hasTemperatureSensors = (systemInfo?.hardwareInfo.ds18b20 ?? 0) > 0;
 
+  const values = watch();
+
   return (
     <>
       {isSystemSuccess &&
@@ -270,7 +272,7 @@ const Form = (): JSX.Element => {
 
       {isUiError && <Notification state="error" message={uiError.message} />}
 
-      {Number(watch('system.fanMode')) === FanMode.Automatic &&
+      {Number(values.system.fanMode) === FanMode.Automatic &&
         !hasTemperatureSensors && (
           <Notification
             message={t('settings.fanModeAutomaticWithoutTemperatureSensors')}
@@ -284,10 +286,10 @@ const Form = (): JSX.Element => {
             {t('settings.power')}
           </legend>
           <label className="mb-6 flex flex-row justify-between">
-            <span className="basis-1/2 self-center">
+            <span className="basis-1/3 self-center">
               {t('settings.lightSensorMode')}
             </span>
-            <div className="basis-1/2 text-right">
+            <div className="basis-2/2 text-right">
               <Select<FormData> control={control} name="system.lightSensorMode">
                 {getAvailablePowerModes().map(([key, value]) => (
                   <SelectItem key={key} value={value.toString()}>
@@ -298,12 +300,12 @@ const Form = (): JSX.Element => {
             </div>
           </label>
           {![LightSensorMode.AlwaysOff, LightSensorMode.AlwaysOn].includes(
-            Number(watch('system.lightSensorMode')),
+            Number(values.system.lightSensorMode),
           ) && (
             <label className="mb-6 flex flex-col">
               <span className="mb-2">
                 {t('settings.lightSensorThreshold')}:{' '}
-                {toPercentage(watch('system.lightSensorThreshold'))}%
+                {toPercentage(values.system.lightSensorThreshold)}%
               </span>
               <Slider<FormData>
                 className="w-full"
@@ -318,15 +320,12 @@ const Form = (): JSX.Element => {
           {[
             LightSensorMode.AutomaticBrightnessADC,
             LightSensorMode.AutomaticBrightnessBH1750,
-          ].includes(Number(watch('system.lightSensorMode'))) && (
+          ].includes(Number(values.system.lightSensorMode)) && (
             <>
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
                   {t('settings.lightSensorMinAmbientBrightness')}:{' '}
-                  {toPercentage(
-                    watch('system.lightSensorMinAmbientBrightness'),
-                  )}
-                  %
+                  {toPercentage(values.system.lightSensorMinAmbientBrightness)}%
                 </span>
                 <Slider<FormData>
                   className="w-full"
@@ -340,10 +339,7 @@ const Form = (): JSX.Element => {
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
                   {t('settings.lightSensorMaxAmbientBrightness')}:{' '}
-                  {toPercentage(
-                    watch('system.lightSensorMaxAmbientBrightness'),
-                  )}
-                  %
+                  {toPercentage(values.system.lightSensorMaxAmbientBrightness)}%
                 </span>
                 <Slider<FormData>
                   className="w-full"
@@ -357,7 +353,7 @@ const Form = (): JSX.Element => {
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
                   {t('settings.lightSensorMinLedBrightness')}:{' '}
-                  {toPercentage(watch('system.lightSensorMinLedBrightness'))}%
+                  {toPercentage(values.system.lightSensorMinLedBrightness)}%
                 </span>
                 <Slider<FormData>
                   className="w-full"
@@ -371,7 +367,7 @@ const Form = (): JSX.Element => {
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
                   {t('settings.lightSensorMaxLedBrightness')}:{' '}
-                  {toPercentage(watch('system.lightSensorMaxLedBrightness'))}%
+                  {toPercentage(values.system.lightSensorMaxLedBrightness)}%
                 </span>
                 <Slider<FormData>
                   className="w-full"
@@ -385,11 +381,11 @@ const Form = (): JSX.Element => {
             </>
           )}
           {LightSensorMode.AutomaticOnOffMPU6050 ===
-            Number(watch('system.lightSensorMode')) && (
+            Number(values.system.lightSensorMode) && (
             <label className="mb-6 flex flex-col">
               <span className="mb-2">
                 {t('settings.lightSensorDuration')}:{' '}
-                {watch('system.lightSensorDuration') * 5}s
+                {values.system.lightSensorDuration * 5}s
               </span>
               <Slider<FormData>
                 className="w-full"
@@ -446,7 +442,7 @@ const Form = (): JSX.Element => {
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
               {t('settings.regulatorPowerLimit')}:{' '}
-              {watch('system.regulatorPowerLimit')}
+              {values.system.regulatorPowerLimit}
             </span>
             <Slider<FormData>
               className="w-full"
@@ -460,7 +456,7 @@ const Form = (): JSX.Element => {
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
               {t('settings.regulatorHighTemperature')}:{' '}
-              {watch('system.regulatorHighTemperature')}
+              {values.system.regulatorHighTemperature}
             </span>
             <Slider<FormData>
               className="w-full"
@@ -474,7 +470,7 @@ const Form = (): JSX.Element => {
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
               {t('settings.regulatorCutoffTemperature')}:{' '}
-              {watch('system.regulatorCutoffTemperature')}
+              {values.system.regulatorCutoffTemperature}
             </span>
             <Slider<FormData>
               className="w-full"
@@ -501,13 +497,13 @@ const Form = (): JSX.Element => {
               </Select>
             </div>
           </label>
-          {FanMode.Automatic === Number(watch('system.fanMode')) &&
+          {FanMode.Automatic === Number(values.system.fanMode) &&
             hasTemperatureSensors && (
               <>
                 <label className="mb-6 flex flex-col">
                   <span className="mb-2">
                     {t('settings.fanMinTemperature')}:{' '}
-                    {watch('system.fanMinTemperature')}
+                    {values.system.fanMinTemperature}
                   </span>
                   <Slider<FormData>
                     className="w-full"
@@ -521,7 +517,7 @@ const Form = (): JSX.Element => {
                 <label className="mb-6 flex flex-col">
                   <span className="mb-2">
                     {t('settings.fanMaxTemperature')}:{' '}
-                    {watch('system.fanMaxTemperature')}
+                    {values.system.fanMaxTemperature}
                   </span>
                   <Slider<FormData>
                     className="w-full"
@@ -535,7 +531,7 @@ const Form = (): JSX.Element => {
                 <label className="mb-6 flex flex-col">
                   <span className="mb-2">
                     {t('settings.fanMinPwmValue')}:{' '}
-                    {watch('system.fanMinPwmValue')}
+                    {values.system.fanMinPwmValue}
                   </span>
                   <Slider<FormData>
                     className="w-full"
@@ -549,7 +545,7 @@ const Form = (): JSX.Element => {
                 <label className="mb-6 flex flex-col">
                   <span className="mb-2">
                     {t('settings.fanMaxPwmValue')}:{' '}
-                    {watch('system.fanMaxPwmValue')}
+                    {values.system.fanMaxPwmValue}
                   </span>
                   <Slider<FormData>
                     className="w-full"

@@ -2,62 +2,43 @@ import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { useMatch } from '@tanstack/react-router';
 import hexRgb from 'hex-rgb';
-import { Suspense } from 'react';
+import { Suspense, useCallback, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import rgbHex from 'rgb-hex';
 import {
+  AnimationDataSource,
   AnimationMode,
   AnimationType,
   Button,
   Collapsible,
   ColorPicker,
   Error,
+  getAnimationTypesForAvailableHardware,
+  getDataSourceForType,
   Loading,
-  MotionSensorValue,
   Notification,
   Select,
   SelectItem,
   Slider,
   Switch,
   Toast,
+  ToggleGroup,
+  ToggleGroupItem,
 } from '../components';
 import { toPercentage } from '../libs';
 import { useLed, useSystemInfo, useUpdateLed } from '../pages/api';
 
 type FormData = {
-  animationSettings: [
-    string,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    string,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-  ];
+  animationMode: string;
+  animationSettings: number[];
   brightness: number;
   channelCurrents: number;
   color1: string;
   color2: string;
+  frequencyBands: string[];
+  dataSource: string;
   fadeSpeed: number;
   ledCount: number;
   ledVoltage: number;
@@ -68,14 +49,15 @@ type FormData = {
 };
 
 const DEFAULT_VALUES: FormData = {
-  animationSettings: [...Array(25)].map((_, index) =>
-    index === 0 || index === 7 ? '0' : 0,
-  ) as FormData['animationSettings'],
+  animationMode: '0',
+  animationSettings: [...Array(25)].fill(0),
   brightness: 50,
   channelCurrents: 16,
   color1: '#000000',
   color2: '#000000',
+  dataSource: AnimationDataSource.NONE.toString(),
   fadeSpeed: 30,
+  frequencyBands: [],
   ledCount: 2,
   ledVoltage: 5,
   offset: 10,
@@ -100,6 +82,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
     reset,
     formState: { isSubmitting, defaultValues },
     setValue,
+    resetField,
   } = useForm<FormData>({
     defaultValues: {
       brightness: zone?.brightness,
@@ -113,7 +96,14 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
         zone?.animationSettings[5] ?? 0,
         zone?.animationSettings[6] ?? 0,
       )}`,
+      dataSource: zone?.dataSource.toString(),
       fadeSpeed: zone?.fadeSpeed,
+      frequencyBands: [...Array(8).keys()]
+        .map((item) => (++item).toString())
+        .reverse()
+        .filter(
+          (_, i) => (zone?.animationSettings[18] ?? 0b00000000) & (1 << i),
+        ),
       reverse: zone?.reverse,
       channelCurrents: zone?.channelCurrents[0],
       ledCount: zone?.ledCount,
@@ -121,21 +111,21 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
       offset: zone?.offset,
       speed: zone?.speed,
       type: zone?.type.toString(),
-      animationSettings: [...Array(25)].map((_, index) =>
-        index === 0 || index === 7
-          ? zone?.animationSettings[index].toString()
-          : zone?.animationSettings[index],
-      ) as FormData['animationSettings'],
+      animationMode: zone?.animationSettings[0].toString(),
+      animationSettings: zone?.animationSettings,
     },
     mode: 'onChange',
   });
 
   const onSubmit = handleSubmit(
     async ({
+      animationMode,
       animationSettings,
       channelCurrents,
       color1,
       color2,
+      frequencyBands,
+      dataSource,
       type,
       ...rest
     }) => {
@@ -143,25 +133,40 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
 
       // Set animation settings
       led[zoneId].animationSettings = animationSettings.map(
-        (animationSetting) => Number(animationSetting),
+        (animationSetting, index) => {
+          const rgbColor1 = hexRgb(color1);
+          const rgbColor2 = hexRgb(color2);
+
+          switch (index) {
+            case 0:
+              return Number(animationMode);
+            case 1:
+              return rgbColor1.red;
+            case 2:
+              return rgbColor1.green;
+            case 3:
+              return rgbColor1.blue;
+            case 4:
+              return rgbColor2.red;
+            case 5:
+              return rgbColor2.green;
+            case 6:
+              return rgbColor2.blue;
+            case 18:
+              return frequencyBands
+                .map((item) => 128 / Math.pow(2, Number(item) - 1))
+                .reduce((prev, curr) => prev + curr, 0);
+            default:
+              return Number(animationSetting);
+          }
+        },
       );
-
-      // Set color1
-      const rgbColor1 = hexRgb(color1);
-      led[zoneId].animationSettings[1] = rgbColor1.red;
-      led[zoneId].animationSettings[2] = rgbColor1.green;
-      led[zoneId].animationSettings[3] = rgbColor1.blue;
-
-      // Set color2
-      const rgbColor2 = hexRgb(color2);
-      led[zoneId].animationSettings[4] = rgbColor2.red;
-      led[zoneId].animationSettings[5] = rgbColor2.green;
-      led[zoneId].animationSettings[6] = rgbColor2.blue;
 
       led[zoneId] = {
         ...led[zoneId],
         ...rest,
         channelCurrents: [...Array(3)].fill(channelCurrents),
+        dataSource: Number(dataSource),
         type: Number(type),
       };
 
@@ -177,82 +182,104 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
     return await onSubmit();
   };
 
-  const onTypeChange = (type: string) => {
-    // Reset all animation settings
-    setValue('animationSettings', DEFAULT_VALUES.animationSettings);
-    setValue('color1', `#${rgbHex(0, 0, 0)}`);
-    setValue('color2', `#${rgbHex(0, 0, 0)}`);
+  const onTypeChange = useCallback(
+    (type: AnimationType) => {
+      // Reset all animation settings
+      resetField('animationMode', {
+        defaultValue: DEFAULT_VALUES.animationMode,
+      });
+      resetField('animationSettings', {
+        defaultValue: DEFAULT_VALUES.animationSettings,
+      });
+      resetField('color1', {
+        defaultValue: DEFAULT_VALUES.color1,
+      });
+      resetField('color2', {
+        defaultValue: DEFAULT_VALUES.color2,
+      });
+      resetField('dataSource', {
+        defaultValue: DEFAULT_VALUES.dataSource,
+      });
+      resetField('frequencyBands', {
+        defaultValue: DEFAULT_VALUES.frequencyBands,
+      });
 
-    switch (Number(type)) {
-      case AnimationType.Rainbow:
-        setValue(
-          'animationSettings.0',
-          AnimationMode[AnimationType.Rainbow].Solid.toString(),
-        );
-        break;
+      switch (Number(type)) {
+        case AnimationType.Rainbow:
+          setValue(
+            'animationMode',
+            AnimationMode[AnimationType.Rainbow].Solid.toString(),
+          );
+          break;
 
-      case AnimationType.Sparkle:
-        setValue(
-          'animationSettings.0',
-          AnimationMode[AnimationType.Sparkle].Center.toString(),
-        );
-        setValue('color1', `#${rgbHex(0, 0, 0)}`);
-        setValue('animationSettings.8', 5);
-        setValue('animationSettings.11', 229);
-        setValue('animationSettings.12', 127);
-        break;
+        case AnimationType.Sparkle:
+          setValue(
+            'animationMode',
+            AnimationMode[AnimationType.Sparkle].Center.toString(),
+          );
+          setValue('color1', `#${rgbHex(0, 0, 0)}`);
+          setValue('dataSource', AnimationDataSource.RANDOM.toString());
+          setValue('animationSettings.7', 5);
+          setValue('animationSettings.10', 229);
+          setValue('animationSettings.11', 127);
+          break;
 
-      case AnimationType.Gradient:
-        setValue(
-          'animationSettings.0',
-          AnimationMode[AnimationType.Gradient].Linear.toString(),
-        );
-        setValue('color1', `#${rgbHex(255, 0, 0)}`);
-        setValue('color2', `#${rgbHex(0, 0, 255)}`);
-        break;
+        case AnimationType.Gradient:
+          setValue(
+            'animationMode',
+            AnimationMode[AnimationType.Gradient].Linear.toString(),
+          );
+          setValue('color1', `#${rgbHex(255, 0, 0)}`);
+          setValue('color2', `#${rgbHex(0, 0, 255)}`);
+          break;
 
-      case AnimationType.Static:
-        setValue('color1', `#${rgbHex(255, 0, 0)}`);
-        break;
+        case AnimationType.Static:
+          setValue('color1', `#${rgbHex(255, 0, 0)}`);
+          break;
 
-      case AnimationType.ColorBar:
-        setValue(
-          'animationSettings.0',
-          AnimationMode[AnimationType.ColorBar].LinearSmoothBorder.toString(),
-        );
-        setValue('color1', `#${rgbHex(255, 0, 0)}`);
-        setValue('color2', `#${rgbHex(0, 0, 255)}`);
-        break;
+        case AnimationType.ColorBar:
+          setValue(
+            'animationMode',
+            AnimationMode[AnimationType.ColorBar].LinearSmoothBorder.toString(),
+          );
+          setValue('color1', `#${rgbHex(255, 0, 0)}`);
+          setValue('color2', `#${rgbHex(0, 0, 255)}`);
+          break;
 
-      case AnimationType.RainbowMotion:
-        setValue('animationSettings.7', MotionSensorValue.ACC_X_G.toString());
-        break;
+        case AnimationType.RainbowMotion:
+          setValue(
+            'animationMode',
+            AnimationMode[AnimationType.RainbowMotion].Linear.toString(),
+          );
+          setValue('dataSource', AnimationDataSource.ACC_X_G.toString());
+          break;
 
-      case AnimationType.GradientMotion:
-        setValue('color1', `#${rgbHex(255, 0, 0)}`);
-        setValue('color2', `#${rgbHex(0, 0, 255)}`);
-        setValue('animationSettings.7', MotionSensorValue.ACC_X_G.toString());
-        break;
-    }
-  };
+        case AnimationType.GradientMotion:
+          setValue(
+            'animationMode',
+            AnimationMode[AnimationType.GradientMotion].Linear.toString(),
+          );
+          setValue('color1', `#${rgbHex(255, 0, 0)}`);
+          setValue('color2', `#${rgbHex(0, 0, 255)}`);
+          setValue('dataSource', AnimationDataSource.ACC_X_G.toString());
+          break;
+      }
+    },
+    [resetField, setValue],
+  );
 
-  const getAvailableAnimationTypes = () => {
-    const hasMPU6050 = (systemInfo?.hardwareInfo.mpu6050 ?? 0) > 0;
+  useEffect(() => {
+    const subscription = watch((value, { name, type }) => {
+      if (name === 'type' && type === 'change') {
+        setTimeout(() => {
+          onTypeChange(Number(value.type));
+        });
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [onTypeChange, watch]);
 
-    return Object.entries(AnimationType)
-      .filter(([key]) => isNaN(Number(key)))
-      .filter(([, value]) => value !== AnimationType.FSEQ)
-      .filter(
-        ([, value]) =>
-          value !== AnimationType.RainbowMotion ||
-          (value === AnimationType.RainbowMotion && hasMPU6050),
-      )
-      .filter(
-        ([, value]) =>
-          value !== AnimationType.GradientMotion ||
-          (value === AnimationType.GradientMotion && hasMPU6050),
-      );
-  };
+  const values = watch();
 
   return (
     <>
@@ -271,12 +298,10 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
               {t('zone.animationType')}
             </span>
             <div className="basis-1/2 text-right">
-              <Select<FormData>
-                control={control}
-                name="type"
-                onValueChange={onTypeChange}
-              >
-                {getAvailableAnimationTypes().map(([key, value]) => (
+              <Select<FormData> control={control} name="type">
+                {getAnimationTypesForAvailableHardware({
+                  hasMPU6050: (systemInfo?.hardwareInfo.mpu6050 ?? 0) > 0,
+                }).map(([key, value]) => (
                   <SelectItem key={key} value={value.toString()}>
                     {t(`zone.animationTypes.${key}`)}
                   </SelectItem>
@@ -285,16 +310,16 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             </div>
           </label>
 
-          {AnimationType.Static !== Number(watch('type')) && (
+          {AnimationType.Static !== Number(values.type) && (
             <label className="mb-6 flex flex-row justify-between">
               <span className="basis-1/2 self-center">
                 {t('zone.animationMode')}
               </span>
               <div className="basis-1/2 text-right">
-                <Select<FormData> control={control} name="animationSettings.0">
+                <Select<FormData> control={control} name="animationMode">
                   {Object.entries(
                     AnimationMode[
-                      Number(watch('type')) as keyof typeof AnimationMode
+                      Number(values.type) as keyof typeof AnimationMode
                     ],
                   )
                     .filter(([key]) => isNaN(Number(key)))
@@ -308,30 +333,57 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             </label>
           )}
 
-          {[AnimationType.RainbowMotion, AnimationType.GradientMotion].includes(
-            Number(watch('type')),
-          ) && (
+          {[
+            AnimationType.RainbowMotion,
+            AnimationType.GradientMotion,
+            AnimationType.Sparkle,
+          ].includes(Number(values.type)) && (
             <label className="mb-6 flex flex-row justify-between">
-              <span className="basis-1/2 self-center">
-                {t('zone.sensorValue')}
+              <span className="basis-1/3 self-center">
+                {t('zone.dataSource')}
               </span>
-              <div className="basis-1/2 text-right">
-                <Select<FormData> control={control} name="animationSettings.7">
-                  {Object.entries(MotionSensorValue)
-                    .filter(([key]) => isNaN(Number(key)))
-                    .map(([key, value]) => (
-                      <SelectItem key={key} value={value.toString()}>
-                        {t(`zone.motionSensorValues.${key}`)}
-                      </SelectItem>
-                    ))}
+              <div className="basis-2/3 text-right">
+                <Select<FormData> control={control} name="dataSource">
+                  {getDataSourceForType(Number(values.type)).map((value) => (
+                    <SelectItem
+                      key={AnimationDataSource[value]}
+                      value={value.toString()}
+                    >
+                      {t(
+                        `zone.animationDataSources.${AnimationDataSource[value]}`,
+                      )}
+                    </SelectItem>
+                  ))}
                 </Select>
               </div>
             </label>
           )}
 
+          {AnimationType.Sparkle === Number(values.type) &&
+            AnimationDataSource.AUDIO_FREQUENCY_TRIGGER ===
+              Number(values.dataSource) && (
+              <label className="mb-6 flex flex-col">
+                <span className="mb-2">{t('zone.frequencyBands')}</span>
+                <ToggleGroup<FormData>
+                  control={control}
+                  name="frequencyBands"
+                  type="multiple"
+                >
+                  <ToggleGroupItem value="1">1</ToggleGroupItem>
+                  <ToggleGroupItem value="2">2</ToggleGroupItem>
+                  <ToggleGroupItem value="3">3</ToggleGroupItem>
+                  <ToggleGroupItem value="4">4</ToggleGroupItem>
+                  <ToggleGroupItem value="5">5</ToggleGroupItem>
+                  <ToggleGroupItem value="6">6</ToggleGroupItem>
+                  <ToggleGroupItem value="7">7</ToggleGroupItem>
+                  <ToggleGroupItem value="8">8</ToggleGroupItem>
+                </ToggleGroup>
+              </label>
+            )}
+
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              {t('zone.brightness')} : {toPercentage(watch('brightness'))}%
+              {t('zone.brightness')}: {toPercentage(values.brightness)}%
             </span>
             <Slider<FormData>
               className="w-full"
@@ -344,11 +396,11 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
           </label>
 
           {![AnimationType.Gradient, AnimationType.Static].includes(
-            Number(watch('type')),
+            Number(values.type),
           ) && (
             <label className="mb-6 flex flex-col">
               <span className="mb-2">
-                {t('zone.speed')}: {toPercentage(watch('speed'))}%
+                {t('zone.speed')}: {toPercentage(values.speed)}%
               </span>
               <Slider<FormData>
                 className="w-full"
@@ -361,10 +413,10 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             </label>
           )}
 
-          {AnimationType.Static !== Number(watch('type')) && (
+          {AnimationType.Static !== Number(values.type) && (
             <label className="mb-6 flex flex-col">
               <span className="mb-2">
-                {t('zone.offset')}: {toPercentage(watch('offset'))}%
+                {t('zone.offset')}: {toPercentage(values.offset)}%
               </span>
               <Slider<FormData>
                 className="w-full"
@@ -383,35 +435,46 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             AnimationType.GradientMotion,
             AnimationType.Sparkle,
             AnimationType.Static,
-          ].includes(Number(watch('type'))) && (
+          ].includes(Number(values.type)) && (
             <label className="mb-6 flex flex-col">
-              <span className="mb-2">{t('zone.color1')}</span>
-              <ColorPicker<FormData>
-                className="h-10 w-full"
-                control={control}
-                name="color1"
-              />
-            </label>
-          )}
-
-          {[
-            AnimationType.ColorBar,
-            AnimationType.Gradient,
-            AnimationType.GradientMotion,
-          ].includes(Number(watch('type'))) && (
-            <label className="mb-6 flex flex-col">
-              <span className="mb-2">{t('zone.color2')}</span>
-              <ColorPicker<FormData>
-                className="h-10 w-full"
-                control={control}
-                name="color2"
-              />
+              <span className="mb-2">{t('zone.color')}</span>
+              <div className="flex">
+                <ColorPicker<FormData>
+                  className="h-10 grow"
+                  control={control}
+                  name="color1"
+                />
+                {[
+                  AnimationType.ColorBar,
+                  AnimationType.Gradient,
+                  AnimationType.GradientMotion,
+                ].includes(Number(values.type)) && (
+                  <>
+                    <button
+                      type="button"
+                      className="grow-0 px-4 focus:outline-none focus-visible:ring focus-visible:ring-sky focus-visible:ring-opacity-75"
+                      onClick={() => {
+                        const { color1, color2 } = values;
+                        setValue('color1', color2);
+                        setValue('color2', color1);
+                      }}
+                    >
+                      <ArrowsRightLeftIcon className="h-5 w-5 text-zinc" />
+                    </button>
+                    <ColorPicker<FormData>
+                      className="h-10 grow"
+                      control={control}
+                      name="color2"
+                    />
+                  </>
+                )}
+              </div>
             </label>
           )}
 
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              {t('zone.fadeSpeed')}: {toPercentage(watch('fadeSpeed'))}%
+              {t('zone.fadeSpeed')}: {toPercentage(values.fadeSpeed)}%
             </span>
             <Slider<FormData>
               className="w-full"
@@ -423,12 +486,27 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             />
           </label>
 
-          {AnimationType.Sparkle === Number(watch('type')) && (
+          {AnimationType.Sparkle === Number(values.type) && (
             <>
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
                   {t('zone.sparkCount')}:{' '}
-                  {toPercentage(watch('animationSettings.8'))}%
+                  {toPercentage(values.animationSettings[7])}%
+                </span>
+                <Slider<FormData>
+                  className="w-full"
+                  control={control}
+                  name="animationSettings.7"
+                  min={0}
+                  max={255}
+                  step={1}
+                />
+              </label>
+
+              <label className="mb-6 flex flex-col">
+                <span className="mb-2">
+                  {t('zone.sparkFriction')}:{' '}
+                  {toPercentage(values.animationSettings[8])}%
                 </span>
                 <Slider<FormData>
                   className="w-full"
@@ -442,8 +520,8 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
 
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
-                  {t('zone.sparkFriction')}:{' '}
-                  {toPercentage(watch('animationSettings.9'))}%
+                  {t('zone.sparkFading')}:{' '}
+                  {toPercentage(values.animationSettings[9])}%
                 </span>
                 <Slider<FormData>
                   className="w-full"
@@ -457,8 +535,8 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
 
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
-                  {t('zone.sparkFading')}:{' '}
-                  {toPercentage(watch('animationSettings.10'))}%
+                  {t('zone.sparkTail')}:{' '}
+                  {toPercentage(values.animationSettings[10])}%
                 </span>
                 <Slider<FormData>
                   className="w-full"
@@ -472,28 +550,13 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
 
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">
-                  {t('zone.sparkTail')}:{' '}
-                  {toPercentage(watch('animationSettings.11'))}%
+                  {t('zone.birthRate')}:{' '}
+                  {toPercentage(values.animationSettings[11])}%
                 </span>
                 <Slider<FormData>
                   className="w-full"
                   control={control}
                   name="animationSettings.11"
-                  min={0}
-                  max={255}
-                  step={1}
-                />
-              </label>
-
-              <label className="mb-6 flex flex-col">
-                <span className="mb-2">
-                  {t('zone.birthRate')}:{' '}
-                  {toPercentage(watch('animationSettings.12'))}%
-                </span>
-                <Slider<FormData>
-                  className="w-full"
-                  control={control}
-                  name="animationSettings.12"
                   min={0}
                   max={255}
                   step={1}
@@ -507,7 +570,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
                 <div className="basis-1/2 text-right">
                   <Switch<FormData>
                     control={control}
-                    name="animationSettings.18"
+                    name="animationSettings.17"
                   />
                 </div>
               </label>
@@ -523,12 +586,12 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
                 <label className="mb-6 flex flex-col">
                   <span className="mb-2">
                     {t('zone.spawnVariance')}:{' '}
-                    {toPercentage(watch('animationSettings.13'))}%
+                    {toPercentage(values.animationSettings[12])}%
                   </span>
                   <Slider<FormData>
                     className="w-full"
                     control={control}
-                    name="animationSettings.13"
+                    name="animationSettings.12"
                     min={0}
                     max={255}
                     step={1}
@@ -538,12 +601,12 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
                 <label className="mb-6 flex flex-col">
                   <span className="mb-2">
                     {t('zone.speedVariance')}:{' '}
-                    {toPercentage(watch('animationSettings.14'))}%
+                    {toPercentage(values.animationSettings[13])}%
                   </span>
                   <Slider<FormData>
                     className="w-full"
                     control={control}
-                    name="animationSettings.14"
+                    name="animationSettings.13"
                     min={1}
                     max={255}
                     step={1}
@@ -553,7 +616,22 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
                 <label className="mb-6 flex flex-col">
                   <span className="mb-2">
                     {t('zone.brightnessVariance')}:{' '}
-                    {toPercentage(watch('animationSettings.15'))}%
+                    {toPercentage(values.animationSettings[14])}%
+                  </span>
+                  <Slider<FormData>
+                    className="w-full"
+                    control={control}
+                    name="animationSettings.14"
+                    min={0}
+                    max={255}
+                    step={1}
+                  />
+                </label>
+
+                <label className="mb-6 flex flex-col">
+                  <span className="mb-2">
+                    {t('zone.frictionVariance')}:{' '}
+                    {toPercentage(values.animationSettings[15])}%
                   </span>
                   <Slider<FormData>
                     className="w-full"
@@ -565,30 +643,15 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
                   />
                 </label>
 
-                <label className="mb-6 flex flex-col">
+                <label className="flex flex-col">
                   <span className="mb-2">
-                    {t('zone.frictionVariance')}:{' '}
-                    {toPercentage(watch('animationSettings.16'))}%
+                    {t('zone.fadingVariance')}:{' '}
+                    {toPercentage(values.animationSettings[16])}%
                   </span>
                   <Slider<FormData>
                     className="w-full"
                     control={control}
                     name="animationSettings.16"
-                    min={0}
-                    max={255}
-                    step={1}
-                  />
-                </label>
-
-                <label className="flex flex-col">
-                  <span className="mb-2">
-                    {t('zone.fadingVariance')}:{' '}
-                    {toPercentage(watch('animationSettings.17'))}%
-                  </span>
-                  <Slider<FormData>
-                    className="w-full"
-                    control={control}
-                    name="animationSettings.17"
                     min={0}
                     max={255}
                     step={1}
@@ -606,7 +669,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
 
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              {t('zone.ledCount')}: {watch('ledCount')}
+              {t('zone.ledCount')}: {values.ledCount}
             </span>
             <Slider<FormData>
               className="w-full"
@@ -620,7 +683,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
 
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              {t('zone.ledVoltage')}: {watch('ledVoltage')}
+              {t('zone.ledVoltage')}: {values.ledVoltage}
             </span>
             <Slider<FormData>
               className="w-full"
@@ -633,7 +696,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
           </label>
           <label className="mb-6 flex flex-col">
             <span className="mb-2">
-              {t('zone.channelCurrents')}: {watch('channelCurrents')}
+              {t('zone.channelCurrents')}: {values.channelCurrents}
             </span>
             <Slider<FormData>
               className="w-full"
@@ -645,7 +708,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             />
           </label>
 
-          {AnimationType.Static !== Number(watch('type')) && (
+          {AnimationType.Static !== Number(values.type) && (
             <label className="mb-6 flex flex-row">
               <div className="mr-4 self-center">
                 <ArrowsRightLeftIcon className="h-4 w-4 text-zinc" />
