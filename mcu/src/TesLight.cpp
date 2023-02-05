@@ -668,14 +668,11 @@ void TesLight::run()
 	// Handle the pixel rendering and LED output
 	if (TesLight::checkTimer(TesLight::frameTimer, TL::LedManager::getFrameInterval()))
 	{
-		const TL::LedManager::Error waitError = TL::LedManager::waitShow(portMAX_DELAY);
-		if (waitError == TL::LedManager::Error::OK)
-		{
-			TL::LedManager::render();
-			TL::LedManager::show(0);
-			TesLight::frameCounter++;
-			TesLight::ledPowerCounter += TL::LedManager::getLedPowerDraw();
-		}
+		TL::LedManager::render();
+		TL::LedManager::show(portMAX_DELAY);
+		TL::LedManager::waitShow(portMAX_DELAY);
+		TesLight::frameCounter++;
+		TesLight::ledPowerCounter += TL::LedManager::getLedPowerDraw();
 	}
 
 	// Handle the light sensor
