@@ -141,18 +141,18 @@ jobs:
           name: TesLight_Update_Packaging_Tool_for_Linux
           path: update-package-tool/build
 
-      - name: print directory and content
-        shell: bash
-        run: ls -R
-
       - name: tup build
         shell: bash
         run: |
+          mkdir -p ./update-package-tool/build/tup/src
+          cp ./mcu/.pio/build/az-delivery-devkit-v4/firmware.bin ./update-package-tool/build/tup/src/firmware.bin
+          cp ./ui/dist/. ./update-package-tool/build/tup/src
+          mkdir -p ./update-package-tool/build/tup/build
           chmod +x ./update-package-tool/build/tupt_for_linux.exe
-          ./update-package-tool/build/tupt_for_linux.exe update.tup ./mcu/.pio/build/az-delivery-devkit-v4/firmware.bin
+          ./update-package-tool/build/tupt_for_linux.exe ./update-package-tool/build/tup/build/update.tup ./update-package-tool/build/tup/src
 
       - name: publish TesLight Update Package File
         uses: actions/upload-artifact@v3
         with:
           name: TesLight_Update_Package
-          path: update-package-tool/build/update.tup
+          path: ./update-package-tool/build/tup/build/update.tup
