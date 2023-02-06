@@ -9,6 +9,8 @@ on:
 jobs:
   build_update_tool_for_windows:
     runs-on: windows-latest
+    # prevent stuck jobs
+    timeout-minutes: 20
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -41,6 +43,8 @@ jobs:
 
   build_update_tool_for_linux:
     runs-on: ubuntu-latest
+    # prevent stuck jobs
+    timeout-minutes: 20
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -74,7 +78,7 @@ jobs:
   build_update_tool_for_mac_os:
     runs-on: macos-latest
     # prevent stuck jobs
-    timeout-minutes: 60
+    timeout-minutes: 20
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -111,15 +115,17 @@ jobs:
 
   PlatformIO_build:
       uses: TheRealKasumi/TesLight/.github/workflows/PlatformIO-Build.yml@feat/DevOps_Auto_build_for_Update_Packages
-      # TODO replace with: uses: ./.github/workflows/PlatformIO-Build.yml@feat/DevOps_Auto_build_for_Update_Packages
+      # TODO replace with: uses: ./.github/workflows/PlatformIO-Build.yml
 
   UI_build:
       uses: TheRealKasumi/TesLight/.github/workflows/ui.yml@feat/DevOps_Auto_build_for_Update_Packages
-      # TODO replace with: uses: ./.github/workflows/ui.yml@feat/DevOps_Auto_build_for_Update_Packages
+      # TODO replace with: uses: ./.github/workflows/ui.yml
 
   generate_tup_file:
     needs: [build_update_tool_for_linux, PlatformIO_build, UI_build]
     runs-on: ubuntu-latest
+    # prevent stuck jobs
+    timeout-minutes: 20
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -139,12 +145,11 @@ jobs:
 
       - name: tup build
         shell: bash
-        working-directory: update-package-tool
         run: |
-          tupt_for_linux.exe update.tup .pio/build/az-delivery-devkit-v4/firmware.bin
+          ./update-package-tool/build/tupt_for_linux.exe update.tup ./mcu/.pio/build/az-delivery-devkit-v4/firmware.bin
 
       - name: publish TesLight Update Package File
         uses: actions/upload-artifact@v3
         with:
           name: TesLight_Update_Package
-          path: update-package-tool/build/tup.
+          path: update-package-tool/build/update.tup
