@@ -68,6 +68,7 @@ jobs:
         run: |
           mkdir build
           g++ -std=c++17 -g ./src/*.cpp -o build/tupt_for_linux.exe
+          chmod +x build/tupt_for_linux.exe
 
       - name: publish TesLight Update Packaging Tool for Linux
         uses: actions/upload-artifact@v3
@@ -106,6 +107,7 @@ jobs:
         run: |
           mkdir build
           g++ -std=c++17 -g ./src/*.cpp -o build/tupt_for_mac_os.exe
+          chmod +x build/tupt_for_mac_os.exe
 
       - name: publish TesLight Update Packaging Tool for Mac OS
         uses: actions/upload-artifact@v3
@@ -146,7 +148,8 @@ jobs:
       - name: tup build
         shell: bash
         run: |
-          update-package-tool/build/tupt_for_linux.exe update.tup ./mcu/.pio/build/az-delivery-devkit-v4/firmware.bin
+          chmod +x ./update-package-tool/build/tupt_for_linux.exe
+          ./update-package-tool/build/tupt_for_linux.exe update.tup ./mcu/.pio/build/az-delivery-devkit-v4/firmware.bin
 
       - name: publish TesLight Update Package File
         uses: actions/upload-artifact@v3
