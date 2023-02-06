@@ -146,7 +146,7 @@ jobs:
       - name: tup build
         shell: bash
         run: |
-          ./update-package-tool/build/tupt_for_linux.exe update.tup ./mcu/.pio/build/az-delivery-devkit-v4/firmware.bin
+          update-package-tool/build/tupt_for_linux.exe update.tup ./mcu/.pio/build/az-delivery-devkit-v4/firmware.bin
 
       - name: publish TesLight Update Package File
         uses: actions/upload-artifact@v3
