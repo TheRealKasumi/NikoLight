@@ -225,7 +225,12 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 			brightness = 0.0f;
 			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
 		}
-		lux /= 54612.5f;
+
+		lux /= 54612.5f / 5.0f;
+		if (lux > 1.0f)
+		{
+			lux = 1.0f;
+		}
 
 		if (lux > threshold + antiFlickerThreshold)
 		{
@@ -254,7 +259,12 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 			brightness = 0.0f;
 			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
 		}
-		lux /= 54612.5f;
+
+		lux /= 54612.5f / 5.0f;
+		if (lux > 1.0f)
+		{
+			lux = 1.0f;
+		}
 
 		if (lux > threshold + antiFlickerThreshold)
 		{
@@ -263,7 +273,7 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 		}
 		else if (lux < threshold - antiFlickerThreshold)
 		{
-			lux = 1.0f - ((lux - minAmbientBrightness) / (maxAmbientBrightness - minAmbientBrightness));
+			lux = (lux - minAmbientBrightness) / (maxAmbientBrightness - minAmbientBrightness);
 			if (lux < 0.0f)
 			{
 				lux = 0.0f;

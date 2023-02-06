@@ -219,7 +219,7 @@ void TesLight::initializeHardwareModules()
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Search and initialize hardware modules."));
 	TL::MPU6050::begin(MPU6050_IIC_ADDRESS);
 	TL::DS18B20::begin(ONE_WIRE_PIN);
-	TL::BH1750::begin(BH1750_IIC_ADDRESS);
+	TL::BH1750::begin(BH1750_IIC_ADDRESS, TL::BH1750::BH1750Res::BH1750_LOW);
 	TL::AudioUnit::begin(AUDIO_UNIT_IIC_ADDRESS);
 
 	if (TL::AudioUnit::isInitialized())
