@@ -32,7 +32,7 @@ g++ -std=c++17 -g ./src/*.cpp -o build/tupt.exe
 ## Usage
 
 First of all you need to create a new folder.
-Here you need to copy all data for the update, including the firmware and the frotnend files.
+Here you need to copy all data for the update, including the firmware (from PlatformIO build) and the frontend files (from UI build in [dist](/ui/dist/) folder).
 All other data, except user settings, log and animation data is removed from the MicroSD card after the update.
 This can make the controller unusable without connecting it to your computer again, so be careful.
 By convention the firmware file for the controller is called `firmware.bin` and must be in the root of the created update folder.
