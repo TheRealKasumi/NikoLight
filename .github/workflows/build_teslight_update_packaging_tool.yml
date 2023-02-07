@@ -128,11 +128,11 @@ jobs:
           fetch-depth: 0
 
       - name: PlatformIO Build
-        uses: ./.github/actions/platformio-build@feat/DevOps_Auto_build_for_Update_Packages
+        uses: TheRealKasumi/TesLight/.github/actions/platformio-build@feat/DevOps_Auto_build_for_Update_Packages
         # TODO replace with: uses: ./.github/actions/platformio-build
 
       - name: UI Build
-        uses: ./.github/actions/ui-build@feat/DevOps_Auto_build_for_Update_Packages
+        uses: TheRealKasumi/TesLight/.github/actions/ui-build@feat/DevOps_Auto_build_for_Update_Packages
         # TODO replace with: uses: ./.github/actions/ui-build
 
       - name: Download a single artifact
