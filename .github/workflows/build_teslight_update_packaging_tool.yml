@@ -129,25 +129,13 @@ jobs:
 
       - name: PlatformIO Build
         uses: TheRealKasumi/TesLight/.github/actions/platformio-build@feat/DevOps_Auto_build_for_Update_Packages
-        # TODO replace with: uses: TheRealKasumi/TesLight/.github/actions/platformio-build
+        # TODO replace with: uses: ./.github/actions/platformio-build
 
       - name: UI Build
         uses: TheRealKasumi/TesLight/.github/actions/ui-build@feat/DevOps_Auto_build_for_Update_Packages
-        # TODO replace with: uses: TheRealKasumi/TesLight/.github/actions/ui-build
+        # TODO replace with: uses: ./.github/actions/ui-build
 
-      - name: Download artifact - PlatformIO Build
-        uses: actions/download-artifact@v3
-        with:
-          name: PlatformIO-build
-          path: ./update-package-tool/build/tup/src
-
-      - name: Download artifact - UI Build
-        uses: actions/download-artifact@v3
-        with:
-          name: UI-build
-          path: ./update-package-tool/build/tup/src
-
-      - name: Download artifact - TesLight_Update_Packaging_Tool_for_Linux
+      - name: Download a single artifact
         uses: actions/download-artifact@v3
         with:
           name: TesLight_Update_Packaging_Tool_for_Linux
@@ -156,6 +144,9 @@ jobs:
       - name: tup build
         shell: bash
         run: |
+          mkdir -p ./update-package-tool/build/tup/src
+          cp ./mcu/.pio/build/az-delivery-devkit-v4/firmware.bin ./update-package-tool/build/tup/src/firmware.bin
+          cp ./ui/dist/. ./update-package-tool/build/tup/src
           mkdir -p ./update-package-tool/build/tup/build
           chmod +x ./update-package-tool/build/tupt_for_linux.exe
           ./update-package-tool/build/tupt_for_linux.exe ./update-package-tool/build/tup/build/update.tup ./update-package-tool/build/tup/src
