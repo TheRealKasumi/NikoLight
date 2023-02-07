@@ -10,5 +10,38 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: PlatformIO Build
-        uses: TheRealKasumi/TesLight/.github/actions/platformio-build@feat/DevOps_Auto_build_for_Update_Packages
+      - uses: actions/checkout@v3
+
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v3
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install PlatformIO
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade platformio
+
+      - name: Run PlatformIO
+        working-directory: ./mcu
+        run: pio run
+
+      - name: publish as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: PlatformIO-build
+          path: ./mcu/.pio/build/az-delivery-devkit-v4/firmware.bin
+          retention-days: 1
