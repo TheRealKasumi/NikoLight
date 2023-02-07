@@ -115,16 +115,8 @@ jobs:
           name: TesLight_Update_Packaging_Tool_for_Mac_OS
           path: update-package-tool/build/tupt_for_mac_os.exe
 
-  PlatformIO_build:
-      uses: TheRealKasumi/TesLight/.github/workflows/PlatformIO-Build.yml@feat/DevOps_Auto_build_for_Update_Packages
-      # TODO replace with: uses: ./.github/workflows/PlatformIO-Build.yml
-
-  UI_build:
-      uses: TheRealKasumi/TesLight/.github/workflows/ui.yml@feat/DevOps_Auto_build_for_Update_Packages
-      # TODO replace with: uses: ./.github/workflows/ui.yml
-
   generate_tup_file:
-    needs: [build_update_tool_for_linux, PlatformIO_build, UI_build]
+    needs: [build_update_tool_for_linux]
     runs-on: ubuntu-latest
     # prevent stuck jobs
     timeout-minutes: 20
@@ -134,6 +126,14 @@ jobs:
         with:
           # Full checkout is needed not just the commited code
           fetch-depth: 0
+
+      - name: PlatformIO Build
+        uses: ./.github/actions/platformio-build@feat/DevOps_Auto_build_for_Update_Packages
+        # TODO replace with: uses: ./.github/actions/platformio-build
+
+      - name: UI Build
+        uses: ./.github/actions/ui-build@feat/DevOps_Auto_build_for_Update_Packages
+        # TODO replace with: uses: ./.github/actions/ui-build
 
       - name: Download a single artifact
         uses: actions/download-artifact@v3
