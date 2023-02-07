@@ -42,3 +42,10 @@ runs:
       working-directory: ./ui
       shell: bash
       run: pnpm build
+
+    - name: publish as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: UI-build
+        path: ./ui/dist/
+        retention-days: 1

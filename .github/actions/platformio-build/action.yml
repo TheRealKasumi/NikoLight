@@ -33,3 +33,10 @@ runs:
       working-directory: ./mcu
       shell: bash
       run: pio run
+
+    - name: publish as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: PlatformIO-build
+        path: ./mcu/.pio/build/az-delivery-devkit-v4/firmware.bin
+        retention-days: 1
