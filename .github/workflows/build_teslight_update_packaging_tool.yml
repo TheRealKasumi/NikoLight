@@ -65,13 +65,13 @@ jobs:
         shell: bash
         run: |
           mkdir -p ./update-package-tool/build/tup/build
-          if [ '$runner_os' == 'Linux' || '$matrix_os' == 'Linux' || '$runner_os' == 'macOS' || '$matrix_os' == 'macOS' ]; then
-            chmod +x ./update-package-tool/build/tupt_for_${{ runner.os }}.exe
+          if [ '$runner_os' == 'Linux' || '$runner_os' == 'macOS' ]; then
+            chmod +x ./update-package-tool/build/tupt_for_*.exe
           fi
-          ./update-package-tool/build/tupt_for_${{ runner.os }}.exe ./update-package-tool/build/tup/build/update.tup ./update-package-tool/build/tup/src
+          ./update-package-tool/build/tupt_for_${{ runner.os }}.exe ./update-package-tool/build/tup/build/update_${GITHUB_SHA::6}.tup ./update-package-tool/build/tup/src
 
       - name: publish TesLight Update Package File
         uses: actions/upload-artifact@v3
         with:
           name: TesLight_Update_Package
-          path: ./update-package-tool/build/tup/build/update.tup
+          path: ./update-package-tool/build/tup/build/update_${GITHUB_SHA::6}.tup
