@@ -55,18 +55,20 @@ jobs:
           name: UI-build
           path: ./update-package-tool/build/tup/src
 
-      - name: Download artifact - TesLight_Update_Packaging_Tool_for_Linux
+      - name: Download artifact - TesLight_Update_Packaging_Tool
         uses: actions/download-artifact@v3
         with:
-          name: TesLight_Update_Packaging_Tool_for_Linux
+          name: TesLight_Update_Packaging_Tool_for_${{ runner.os }}
           path: update-package-tool/build
 
       - name: tup build
         shell: bash
         run: |
           mkdir -p ./update-package-tool/build/tup/build
-          chmod +x ./update-package-tool/build/tupt_for_linux.exe
-          ./update-package-tool/build/tupt_for_linux.exe ./update-package-tool/build/tup/build/update.tup ./update-package-tool/build/tup/src
+          if [ '$runner_os' == 'Linux' || '$matrix_os' == 'Linux' || '$runner_os' == 'macOS' || '$matrix_os' == 'macOS' ]; then
+            chmod +x ./update-package-tool/build/tupt_for_${{ runner.os }}.exe
+          fi
+          ./update-package-tool/build/tupt_for_${{ runner.os }}.exe ./update-package-tool/build/tup/build/update.tup ./update-package-tool/build/tup/src
 
       - name: publish TesLight Update Package File
         uses: actions/upload-artifact@v3
