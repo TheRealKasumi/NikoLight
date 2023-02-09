@@ -62,7 +62,7 @@ jobs:
           path: update-package-tool/build
 
       - name: File permissions
-        if: startsWith(${{ runner.os }},'ubuntu') || startsWith(${{ runner.os }},'macOS')
+        if: ${{ startsWith(${{ runner.os }},'ubuntu') || startsWith(${{ runner.os }},'macOS') }}
         shell: bash
         run: chmod +x ./update-package-tool/build/tupt_for_*.exe
 
@@ -70,10 +70,11 @@ jobs:
         shell: bash
         run: |
           mkdir -p ./update-package-tool/build/tup/build
-          ./update-package-tool/build/tupt_for_${{ runner.os }}.exe ./update-package-tool/build/tup/build/update_${GITHUB_SHA::6}.tup ./update-package-tool/build/tup/src
+          ./update-package-tool/build/tupt_for_${{ runner.os }}.exe ./update-package-tool/build/tup/build/update_${{ GITHUB_SHA::6 }}.tup ./update-package-tool/build/tup/src
 
       - name: publish TesLight Update Package File
         uses: actions/upload-artifact@v3
         with:
-          name: TesLight_Update_Package
-          path: ./update-package-tool/build/tup/build/update_${GITHUB_SHA::6}.tup
+          name: TesLight_Update_Package_${{ GITHUB_SHA::6}}
+          path: ./update-package-tool/build/tup/build/update_${{ GITHUB_SHA::6 }}.tup
+          if-no-files-found: error

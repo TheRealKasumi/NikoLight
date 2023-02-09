@@ -27,13 +27,13 @@ runs:
         platform: x64
 
     # - name: Set up MinGW for Windows
-    #   if: startsWith(matrix.os,'Windows') || startsWith(runner.os,'Windows')
+    #   if: ${{ startsWith(${{ matrix.os }},'Windows') || startsWith(${{ runner.os }},'Windows') }}
     #   uses: egor-tensin/setup-mingw@v2
     #   with:
     #     platform: x64
 
     # - name: Set up GCC for MacOS
-    #   if: startsWith(matrix.os,'macOS') || startsWith(runner.os,'macOS')
+    #   if: ${{ startsWith(${{ matrix.os }},'macOS') || startsWith(${{ runner.os }},'macOS') }}
     #   shell: bash
     #   run: |
     #     export HOMEBREW_NO_ANALYTICS=1
@@ -55,3 +55,4 @@ runs:
       with:
         name: TesLight_Update_Packaging_Tool_for_${{ runner.os }}
         path: update-package-tool/build/tupt_for_${{ runner.os }}.exe
+        if-no-files-found: error

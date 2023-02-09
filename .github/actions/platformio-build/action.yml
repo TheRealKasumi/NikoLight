@@ -39,4 +39,5 @@ runs:
       with:
         name: PlatformIO-build
         path: ./mcu/.pio/build/az-delivery-devkit-v4/firmware.bin
+        if-no-files-found: error
         retention-days: 1

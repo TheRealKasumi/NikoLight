@@ -48,4 +48,5 @@ runs:
       with:
         name: UI-build
         path: ./ui/dist/
+        if-no-files-found: error
         retention-days: 1
