@@ -61,13 +61,15 @@ jobs:
           name: TesLight_Update_Packaging_Tool_for_${{ runner.os }}
           path: update-package-tool/build
 
+      - name: File permissions
+        if: startsWith(matrix.os,'ubuntu') || startsWith(runner.os,'ubuntu') || startsWith(matrix.os,'macOS') || startsWith(runner.os,'macOS')
+        shell: bash
+        run: chmod +x ./update-package-tool/build/tupt_for_*.exe
+
       - name: tup build
         shell: bash
         run: |
           mkdir -p ./update-package-tool/build/tup/build
-          if [ '$runner_os' == 'Linux' || '$runner_os' == 'macOS' ]; then
-            chmod +x ./update-package-tool/build/tupt_for_*.exe
-          fi
           ./update-package-tool/build/tupt_for_${{ runner.os }}.exe ./update-package-tool/build/tup/build/update_${GITHUB_SHA::6}.tup ./update-package-tool/build/tup/src
 
       - name: publish TesLight Update Package File
