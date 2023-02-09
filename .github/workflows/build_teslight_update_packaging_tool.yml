@@ -61,6 +61,15 @@ jobs:
           name: TesLight_Update_Packaging_Tool_for_${{ runner.os }}
           path: update-package-tool/build
 
+      - name: Set short git commit SHA
+        id: vars
+        run: |
+          calculatedSha=$(git rev-parse --short ${{ github.sha }})
+          echo "::set-output name=short_sha::$calculatedSha"
+
+      - name: Confirm git commit SHA output
+        run: echo ${{ steps.vars.outputs.short_sha }}
+
       - name: File permissions
         if: startsWith(${{ runner.os }},'ubuntu') || startsWith(${{ runner.os }},'macOS')
         shell: bash
@@ -70,11 +79,11 @@ jobs:
         shell: bash
         run: |
           mkdir -p ./update-package-tool/build/tup/build
-          ./update-package-tool/build/tupt_for_${{ runner.os }}.exe ./update-package-tool/build/tup/build/update_${{ GITHUB_SHA::6 }}.tup ./update-package-tool/build/tup/src
+          ./update-package-tool/build/tupt_for_${{ runner.os }}.exe ./update-package-tool/build/tup/build/update_${ steps.vars.outputs.short_sha }.tup ./update-package-tool/build/tup/src
 
       - name: publish TesLight Update Package File
         uses: actions/upload-artifact@v3
         with:
-          name: TesLight_Update_Package_${{ GITHUB_SHA::6}}
-          path: ./update-package-tool/build/tup/build/update_${{ GITHUB_SHA::6 }}.tup
+          name: TesLight_Update_Package_${{ steps.vars.outputs.short_sha }}
+          path: ./update-package-tool/build/tup/build/update_${{ steps.vars.outputs.short_sha }}.tup
           if-no-files-found: error
