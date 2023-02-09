@@ -1,0 +1,16 @@
+#
+name: 'Get correct short commit SHA'
+description: 'Get correct short commit SHA and make available as env.short_sha'
+runs:
+  using: "composite"
+  steps:
+    - name: Get correct short commit SHA
+      id: correct_commit_sha
+      shell: bash
+      run: |
+        calculatedSha=$(git rev-parse --short ${{ github.sha }})
+        echo "short_sha=$calculatedSha" >> $GITHUB_ENV
+
+    - name: Confirm git commit SHA output
+      shell: bash
+      run: echo ${{ env.short_sha }}

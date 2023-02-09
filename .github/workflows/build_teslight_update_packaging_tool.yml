@@ -61,14 +61,8 @@ jobs:
           name: TesLight_Update_Packaging_Tool_for_${{ runner.os }}
           path: update-package-tool/build
 
-      - name: Get correct commit SHA
-        id: correct_commit_sha
-        run: |
-          calculatedSha=$(git rev-parse --short ${{ github.sha }})
-          echo "short_sha=$calculatedSha" >> $GITHUB_ENV
-
-      - name: Confirm git commit SHA output
-        run: echo ${{ env.short_sha }}
+      - name: Get correct short commit SHA stored into env.short_sha
+        uses: ./.github/actions/get-correct-short-commit-sha
 
       - name: File permissions
         if: startsWith(${{ runner.os }},'ubuntu') || startsWith(${{ runner.os }},'macOS')
@@ -84,6 +78,7 @@ jobs:
       - name: publish TesLight Update Package File
         uses: actions/upload-artifact@v3
         with:
-          name: TesLight_Update_Package_${{ env.short_shaa }}
+          name: TesLight_Update_Package_${{ env.short_sha }}
           path: ./update-package-tool/build/tup/build/update_${{ env.short_sha }}.tup
           if-no-files-found: error
+          retention-days: 90

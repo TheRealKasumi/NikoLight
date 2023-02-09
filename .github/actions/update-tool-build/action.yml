@@ -56,3 +56,4 @@ runs:
         name: TesLight_Update_Packaging_Tool_for_${{ runner.os }}
         path: update-package-tool/build/tupt_for_${{ runner.os }}.exe
         if-no-files-found: error
+        retention-days: 90
