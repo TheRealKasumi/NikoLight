@@ -37,22 +37,45 @@ jobs:
           # Full checkout is needed not just the commited code
           fetch-depth: 0
 
-      - name: PlatformIO Build
+      - name: Get correct short commit SHA stored into env.short_sha
+        uses: ./.github/actions/get-correct-short-commit-sha
+
+      - name: Download artifact - PlatformIO Build if exists
+        id: download_platformio_build
+        uses: actions/download-artifact@v3
+        with:
+          name: PlatformIO-build_${{ env.short_sha }}
+          path: ./update-package-tool/build/tup/src
+        continue-on-error: true
+
+      - name: PlatformIO Build if no artifact found
+        if: steps.download_platformio_build.conclusion != 'success'
         uses: ./.github/actions/platformio-build
 
-      - name: UI Build
-        uses: ./.github/actions/ui-build
-
-      - name: Download artifact - PlatformIO Build
+      - name: Download artifact - PlatformIO Build if build needed
+        if: steps.download_platformio_build.conclusion != 'success'
         uses: actions/download-artifact@v3
         with:
-          name: PlatformIO-build
+          name: PlatformIO-build_${{ env.short_sha }}
           path: ./update-package-tool/build/tup/src
 
-      - name: Download artifact - UI Build
+      - name: Download artifact - UI Build if exists
+        id: download_ui_build
         uses: actions/download-artifact@v3
         with:
-          name: UI-build
+          name: UI-build_${{ env.short_sha }}
+          path: ./update-package-tool/build/tup/src
+        continue-on-error: true
+
+      - name: UI Build if no artifact found
+        if: steps.download_ui_build.conclusion != 'success'
+        uses: ./.github/actions/ui-build
+
+      - name: Download artifact - UI Build if build needed
+        if: steps.download_ui_build.conclusion != 'success'
+        uses: actions/download-artifact@v3
+        with:
+          name: UI-build_${{ env.short_sha }}
           path: ./update-package-tool/build/tup/src
 
       - name: Download artifact - TesLight_Update_Packaging_Tool
@@ -60,9 +83,6 @@ jobs:
         with:
           name: TesLight_Update_Packaging_Tool_for_${{ runner.os }}
           path: update-package-tool/build
-
-      - name: Get correct short commit SHA stored into env.short_sha
-        uses: ./.github/actions/get-correct-short-commit-sha
 
       - name: File permissions
         if: startsWith(${{ runner.os }},'ubuntu') || startsWith(${{ runner.os }},'macOS')

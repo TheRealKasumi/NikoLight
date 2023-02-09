@@ -34,10 +34,13 @@ runs:
       shell: bash
       run: pio run
 
+    - name: Get correct short commit SHA stored into env.short_sha
+      uses: ./.github/actions/get-correct-short-commit-sha
+
     - name: publish as artifact
       uses: actions/upload-artifact@v3
       with:
-        name: PlatformIO-build
+        name: PlatformIO-build_${{ env.short_sha }}
         path: ./mcu/.pio/build/az-delivery-devkit-v4/firmware.bin
         if-no-files-found: error
         retention-days: 1
