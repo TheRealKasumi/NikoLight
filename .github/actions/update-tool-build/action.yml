@@ -49,9 +49,6 @@ runs:
       run: |
         mkdir build
         g++ -std=c++17 -g ./src/*.cpp -o build/tupt_for_${{ runner.os }}.exe
-        if [ '$runner_os' == 'Linux' || '$matrix_os' == 'Linux' || '$runner_os' == 'macOS' || '$matrix_os' == 'macOS' ]; then
-          chmod +x build/tupt_for_*.exe
-        fi
 
     - name: publish TesLight Update Packaging Tool for ${{ runner.os }}
       uses: actions/upload-artifact@v3

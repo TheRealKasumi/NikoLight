@@ -62,7 +62,7 @@ jobs:
           path: update-package-tool/build
 
       - name: File permissions
-        if: startsWith(matrix.os,'ubuntu') || startsWith(runner.os,'ubuntu') || startsWith(matrix.os,'macOS') || startsWith(runner.os,'macOS')
+        if: startsWith(runner.os,'ubuntu') || startsWith(runner.os,'macOS')
         shell: bash
         run: chmod +x ./update-package-tool/build/tupt_for_*.exe
 
