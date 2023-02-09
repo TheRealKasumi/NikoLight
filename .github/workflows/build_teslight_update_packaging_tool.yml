@@ -40,39 +40,19 @@ jobs:
       - name: Get correct short commit SHA stored into env.short_sha
         uses: ./.github/actions/get-correct-short-commit-sha
 
-      - name: Download artifact - PlatformIO Build if exists
-        id: download_platformio_build
-        uses: actions/download-artifact@v3
-        with:
-          name: PlatformIO-build_${{ env.short_sha }}
-          path: ./update-package-tool/build/tup/src
-        continue-on-error: true
-
-      - name: PlatformIO Build if no artifact found
-        if: steps.download_platformio_build.conclusion != 'success'
+      - name: PlatformIO Build
         uses: ./.github/actions/platformio-build
 
-      - name: Download artifact - PlatformIO Build if build needed
-        if: steps.download_platformio_build.conclusion != 'success'
+      - name: UI Build
+        uses: ./.github/actions/ui-build
+
+      - name: Download artifact - PlatformIO Build
         uses: actions/download-artifact@v3
         with:
           name: PlatformIO-build_${{ env.short_sha }}
           path: ./update-package-tool/build/tup/src
 
-      - name: Download artifact - UI Build if exists
-        id: download_ui_build
-        uses: actions/download-artifact@v3
-        with:
-          name: UI-build_${{ env.short_sha }}
-          path: ./update-package-tool/build/tup/src
-        continue-on-error: true
-
-      - name: UI Build if no artifact found
-        if: steps.download_ui_build.conclusion != 'success'
-        uses: ./.github/actions/ui-build
-
-      - name: Download artifact - UI Build if build needed
-        if: steps.download_ui_build.conclusion != 'success'
+      - name: Download artifact - UI Build
         uses: actions/download-artifact@v3
         with:
           name: UI-build_${{ env.short_sha }}
