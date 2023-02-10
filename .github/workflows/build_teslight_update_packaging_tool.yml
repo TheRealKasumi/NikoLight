@@ -22,11 +22,6 @@ jobs:
       - name: Update Tool Build
         uses: ./.github/actions/update-tool-build
 
-      - name: echo Job_ID
-        shell: bash
-        run: |
-          echo ${{ job.build_update_tool_for_different_os.name }}
-
   generate_tup_file:
     needs: [build_update_tool_for_different_os]
     runs-on: ubuntu-latest
@@ -35,9 +30,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-        with:
-          # Full checkout is needed not just the commited code
-          fetch-depth: 0
 
       - name: Get correct short commit SHA stored into env.short_sha
         uses: ./.github/actions/get-correct-short-commit-sha
