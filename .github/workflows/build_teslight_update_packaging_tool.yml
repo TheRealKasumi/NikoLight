@@ -26,7 +26,7 @@ jobs:
       - name: echo Job_ID
         shell: bash
         run: |
-          echo ${{ jobs.build_update_tool_for_different_os.name }}
+          echo ${{ job.build_update_tool_for_different_os.name }}
 
   generate_tup_file:
     needs: [build_update_tool_for_different_os_ubuntu-latest]
