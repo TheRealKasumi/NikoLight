@@ -9,10 +9,10 @@ on:
   workflow_call:
 jobs:
   build_update_tool_for_different_os:
-    name: build_update_tool_for_different_os_${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+    name: build_update_tool_for_different_os_${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     # prevent stuck jobs
     timeout-minutes: 20
