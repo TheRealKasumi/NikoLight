@@ -2,7 +2,6 @@
 	"info": {
 		"name": "TesLight API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "12963851"
 	},
 	"item": [
 		{
@@ -645,6 +644,169 @@
 								"api",
 								"info",
 								"system"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "Get Active Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/profile/active",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"profile",
+								"active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Active Profile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"profile\": {\r\n        \"name\": \"Default Profile\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/profile/active",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"profile",
+								"active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/profile",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Profile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"profile\": {\r\n        \"name\": \"New Profile\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/profile",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Profile Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"profile\": {\r\n        \"source\": \"Default Profile\",\r\n        \"clone\": \"New Profile\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/profile",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Profile",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"profile\": {\r\n        \"name\": \"New Profile\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{TESLIGHTIP}}/api/config/profile",
+							"protocol": "http",
+							"host": [
+								"{{TESLIGHTIP}}"
+							],
+							"path": [
+								"api",
+								"config",
+								"profile"
 							]
 						}
 					},

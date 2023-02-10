@@ -22,8 +22,10 @@
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
 
+#include <stdint.h>
+#include <vector>
 #include <tuple>
-#include <Arduino.h>
+#include <WString.h>
 #include <FS.h>
 
 #include "configuration/SystemConfiguration.h"
@@ -37,12 +39,17 @@ namespace TL
 	public:
 		enum class Error
 		{
-			OK,					// No error
-			ERROR_FILE_OPEN,	// Failed to open file
-			ERROR_FILE_READ,	// Failed to read file
-			ERROR_FILE_WRITE,	// Failed to write file
-			ERROR_FILE_VERSION, // Unmatching file version
-			ERROR_FILE_HASH		// Unmatching file hash
+			OK,						   // No error
+			ERROR_PROFILE_NOT_FOUND,   // No profile with the given name was found
+			ERROR_PROFILE_NAME_EXISTS, // The profile name is already in use
+			ERROR_PROFILE_IS_ACTIVE,   // The profile is currently used and can not be deleted
+			ERROR_TOO_MANY_PROFILES,   // Too many profiles to load
+			ERROR_OUT_OF_BOUNDS,	   // The index is out of bounds
+			ERROR_FILE_OPEN,		   // Failed to open file
+			ERROR_FILE_READ,		   // Failed to read file
+			ERROR_FILE_WRITE,		   // Failed to write file
+			ERROR_FILE_VERSION,		   // Unmatching file version
+			ERROR_FILE_HASH			   // Unmatching file hash
 		};
 
 		struct SystemConfig
@@ -123,15 +130,34 @@ namespace TL
 			bool expertMode;
 		};
 
+		struct Profile
+		{
+			String name;										   // Name of the profile
+			TL::Configuration::SystemConfig systemConfig;		   // System configuration of the profile
+			TL::Configuration::LedConfig ledConfig[LED_NUM_ZONES]; // LED configuration of the profile
+			TL::Configuration::UIConfiguration uiConfiguration;	   // UI configuration of the profile
+		};
+
 		static void begin(FS *fileSystem, const String fileName);
 		static void end();
 		static bool isInitialized();
 
+		static size_t getProfileCount();
+		static TL::Configuration::Error getProfileNameByIndex(const size_t profileIndex, String &profileName);
+		static TL::Configuration::Error getProfile(const String &profileName, TL::Configuration::Profile &profile);
+		static TL::Configuration::Error createProfile(const String &profileName);
+		static TL::Configuration::Error cloneProfile(const String &sourceName, const String &destinationName);
+		static TL::Configuration::Error renameProfile(const String &profileName, const String &newProfileName);
+		static TL::Configuration::Error deleteProfile(const String &profileName);
+
+		static String getActiveProfile();
+		static TL::Configuration::Error setActiveProfile(const String &profileName);
+
 		static TL::Configuration::SystemConfig getSystemConfig();
 		static void setSystemConfig(TL::Configuration::SystemConfig &systemConfig);
 
-		static TL::Configuration::LedConfig getLedConfig(const uint8_t index);
-		static void setLedConfig(const TL::Configuration::LedConfig &ledConfig, const uint8_t index);
+		static TL::Configuration::Error getLedConfig(const uint8_t zoneIndex, TL::Configuration::LedConfig &ledConfig);
+		static TL::Configuration::Error setLedConfig(const uint8_t zoneIndex, const TL::Configuration::LedConfig &ledConfig);
 
 		static TL::Configuration::WiFiConfig getWiFiConfig();
 		static void setWiFiConfig(TL::Configuration::WiFiConfig &wifiConfig);
@@ -157,12 +183,14 @@ namespace TL
 		static String fileName;
 		static uint16_t configurationVersion;
 
-		static TL::Configuration::SystemConfig systemConfig;
-		static TL::Configuration::LedConfig ledConfig[LED_NUM_ZONES];
+		static size_t activeProfile;
+		static std::vector<TL::Configuration::Profile> profiles;
 		static TL::Configuration::WiFiConfig wifiConfig;
 		static TL::Configuration::MotionSensorCalibration motionSensorCalibration;
 		static TL::Configuration::AudioUnitConfig audioUnitConfig;
-		static TL::Configuration::UIConfiguration uiConfiguration;
+
+		static TL::Configuration::Error loadProfileDefaults(const size_t profileIndex);
+		static TL::Configuration::Error getProfileIndexByName(const String &profileName, size_t &profileIndex);
 
 		static uint16_t getSimpleHash();
 		static uint16_t getSimpleStringHash(const String input);
