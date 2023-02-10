@@ -9,6 +9,7 @@ on:
   workflow_call:
 jobs:
   build_update_tool_for_different_os:
+    name: build_update_tool_for_different_os_${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -28,7 +29,7 @@ jobs:
           echo ${{ jobs.build_update_tool_for_different_os.name }}
 
   generate_tup_file:
-    needs: [build_update_tool_for_different_os]
+    needs: [build_update_tool_for_different_os_ubuntu-latest]
     runs-on: ubuntu-latest
     # prevent stuck jobs
     timeout-minutes: 20
