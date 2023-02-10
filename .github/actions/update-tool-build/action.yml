@@ -5,9 +5,6 @@ runs:
   steps:
     - name: Checkout Code
       uses: actions/checkout@v3
-      with:
-        # Full checkout is needed not just the commited code
-        fetch-depth: 0
 
     # - name: print g++ version
     #   shell: bash
