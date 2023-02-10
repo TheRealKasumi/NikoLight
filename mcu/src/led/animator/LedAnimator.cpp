@@ -245,18 +245,24 @@ TL::AudioUnit::AudioAnalysis &TL::LedAnimator::getAudioAnalysis()
 
 /**
  * @brief Reverse the order of all pixels to reverse the animation.
- * @param pixels reference to the vector holding the LED pixel data
+ * @param ledStrip LED strip with the pixel data
  */
-void TL::LedAnimator::reversePixels(std::vector<CRGB> &pixels)
+void TL::LedAnimator::reversePixels(TL::LedStrip &ledStrip)
 {
-	std::reverse(pixels.begin(), pixels.end());
+	for (size_t i = 0; i < ledStrip.getLedCount() / 2; i++)
+	{
+		const TL::Pixel copy = ledStrip.getPixel(i);
+		const size_t inverseIndex = (ledStrip.getLedCount() - 1) - i;
+		ledStrip.setPixel(ledStrip.getPixel(inverseIndex), i);
+		ledStrip.setPixel(copy, inverseIndex);
+	}
 }
 
 /**
  * @brief Apply the brightness settings to all pixels.
- * @param pixels reference to the vector holding the LED pixel data
+ * @param ledStrip LED strip with the pixel data
  */
-void TL::LedAnimator::applyBrightness(std::vector<CRGB> &pixels)
+void TL::LedAnimator::applyBrightness(TL::LedStrip &ledStrip)
 {
 	if (this->smoothedAmbBrightness < this->ambientBrightness)
 	{
@@ -276,9 +282,13 @@ void TL::LedAnimator::applyBrightness(std::vector<CRGB> &pixels)
 	}
 
 	const float totalBrightness = this->animationBrightness * this->smoothedAmbBrightness;
-	for (size_t i = 0; i < pixels.size(); i++)
+	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
-		pixels.at(i).setRGB(pixels.at(i).r * totalBrightness, pixels.at(i).g * totalBrightness, pixels.at(i).b * totalBrightness);
+		TL::Pixel pixel = ledStrip.getPixel(i);
+		pixel.red *= totalBrightness;
+		pixel.green *= totalBrightness;
+		pixel.blue *= totalBrightness;
+		ledStrip.setPixel(pixel, i);
 	}
 }
 

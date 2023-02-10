@@ -1,7 +1,7 @@
 /**
- * @file RainbowAnimator.h
+ * @file LedBuffer.h
  * @author TheRealKasumi
- * @brief Contains a class to render a rainbow.
+ * @brief Contains a class to manage the LED buffer for multiple LED strips.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -19,33 +19,42 @@
  * from the owner.
  *
  */
-#ifndef RAINBOW_ANIMATOR_H
-#define RAINBOW_ANIMATOR_H
+#ifndef LED_BUFFER_H
+#define LED_BUFFER_H
 
+#include <stdint.h>
+#include <stddef.h>
 #include <vector>
-#include "led/animator/LedAnimator.h"
+
+#include "LedStrip.h"
 
 namespace TL
 {
-	class RainbowAnimator : public LedAnimator
+	class LedBuffer
 	{
 	public:
-		enum class RainbowMode
-		{
-			RAINBOW_SOLID = 0,
-			RAINBOW_LINEAR = 1,
-			RAINBOW_CENTER = 2
-		};
+		LedBuffer(const std::vector<TL::LedStrip> &ledStrips);
+		~LedBuffer();
 
-		RainbowAnimator(const TL::RainbowAnimator::RainbowMode rainbowMode);
-		~RainbowAnimator();
+		size_t getBufferSize();
+		uint8_t *getBuffer();
 
-		void init(TL::LedStrip &ledStrip);
-		void render(TL::LedStrip &ledStrip);
+		size_t getTotalLedCount();
+		size_t getMaxLedCount();
+
+		size_t getTotalHiddenLedCount();
+		size_t getMaxHiddenLedCount();
+
+		size_t getLedStripCount();
+		TL::LedStrip &getLedStrip(const size_t index);
 
 	private:
-		float angle;
-		TL::RainbowAnimator::RainbowMode rainbowMode;
+		std::vector<TL::LedStrip> ledStrips;
+		size_t totalLedCount;
+		size_t maxLedCount;
+		size_t totalHiddenLedCount;
+		size_t maxHiddenLedCount;
+		uint8_t *buffer;
 	};
 }
 

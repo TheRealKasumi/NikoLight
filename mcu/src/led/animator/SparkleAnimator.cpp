@@ -38,7 +38,7 @@
  * @param bounceAtCorner when set to true, the particles will bounce at the end of the LED strip
  * @param frequencyBandMask bit mask to mask frequency bands in audio mode
  */
-TL::SparkleAnimator::SparkleAnimator(const TL::SparkleAnimator::SpawnPosition spawnPosition, const uint8_t sparkCount, const CRGB color,
+TL::SparkleAnimator::SparkleAnimator(const TL::SparkleAnimator::SpawnPosition spawnPosition, const uint8_t sparkCount, const TL::Pixel color,
 									 const float sparkFriction, const float sparkFading, const float sparkTail, const float birthRate,
 									 const float spawnVariance, const float speedVariance, const float brightnessVariance, const float frictionVariance,
 									 const float fadingVariance, const bool bounceAtCorner, const uint8_t frequencyBandMask)
@@ -81,13 +81,16 @@ TL::SparkleAnimator::~SparkleAnimator()
 
 /**
  * @brief Initialize the {@link TL::SparkleAnimator}.
- * @param pixels reference to the vector holding the LED pixel data
+ * @param ledStrip LED strip with the pixel data
  */
-void TL::SparkleAnimator::init(std::vector<CRGB> &pixels)
+void TL::SparkleAnimator::init(TL::LedStrip &ledStrip)
 {
-	this->pixelBuffer.assign(pixels.size(), CRGB::Black);
-	this->pixelMask.assign(pixels.size(), false);
-	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
+	this->pixelBuffer.assign(ledStrip.getLedCount(), TL::Pixel::ColorCode::Black);
+	this->pixelMask.assign(ledStrip.getLedCount(), false);
+	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
+	{
+		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+	}
 	this->colorAngle = 0.0f;
 	this->audioSequence = 0;
 	for (size_t i = 0; i < this->sparks.size(); i++)
@@ -98,7 +101,7 @@ void TL::SparkleAnimator::init(std::vector<CRGB> &pixels)
 		spark.lastPosition = 0.0f;
 		spark.speed = 0.0f;
 		spark.friction = 0.0f;
-		spark.color = CRGB::Black;
+		spark.color = TL::Pixel::ColorCode::Black;
 		spark.brightness = 0.0f;
 		spark.fading = 0.0f;
 		this->sparks.at(i) = spark;
@@ -107,9 +110,9 @@ void TL::SparkleAnimator::init(std::vector<CRGB> &pixels)
 
 /**
  * @brief Render the sparkle animator.
- * @param pixels reference to the vector holding the LED pixel data
+ * @param ledStrip LED strip with the pixel data
  */
-void TL::SparkleAnimator::render(std::vector<CRGB> &pixels)
+void TL::SparkleAnimator::render(TL::LedStrip &ledStrip)
 {
 	// Check if new sparks should be spawned depending on the data source
 	if (this->getDataSource() == TL::LedAnimator::DataSource::DS_AUDIO_FREQUENCY_TRIGGER)
@@ -125,18 +128,18 @@ void TL::SparkleAnimator::render(std::vector<CRGB> &pixels)
 				// Spawn new sparks depending on the band mask and the tigger status
 				if (this->frequencyBandMask & (0B10000000 >> i) && audioAnalysis.frequencyBandTriggers.at(i).trigger == TL::AudioUnit::Trigger::TRIGGER_RISING)
 				{
-					this->spawnSparks(pixels);
+					this->spawnSparks(ledStrip);
 				}
 			}
 		}
 	}
 	else
 	{
-		this->spawnSparks(pixels);
+		this->spawnSparks(ledStrip);
 	}
 
 	// Run the sparks
-	this->runSparks(pixels);
+	this->runSparks(ledStrip);
 
 	// Clear the mask to store for which pixels a spark was rendere
 	std::fill(this->pixelMask.begin(), this->pixelMask.end(), false);
@@ -159,25 +162,25 @@ void TL::SparkleAnimator::render(std::vector<CRGB> &pixels)
 				{
 					break;
 				}
-				else if (!isPositive && spark.position + j > pixels.size())
+				else if (!isPositive && spark.position + j > ledStrip.getLedCount())
 				{
 					break;
 				}
 
-				const CRGB pixel = this->pixelBuffer.at(isPositive ? spark.position - j : spark.position + j);
-				int16_t red = pixel.r;
-				int16_t green = pixel.g;
-				int16_t blue = pixel.b;
+				const TL::Pixel pixel = this->pixelBuffer.at(isPositive ? spark.position - j : spark.position + j);
+				int16_t red = pixel.red;
+				int16_t green = pixel.green;
+				int16_t blue = pixel.blue;
 
-				red += spark.color.r * spark.brightness * exposure;
-				green += spark.color.g * spark.brightness * exposure;
-				blue += spark.color.b * spark.brightness * exposure;
+				red += spark.color.red * spark.brightness * exposure;
+				green += spark.color.green * spark.brightness * exposure;
+				blue += spark.color.blue * spark.brightness * exposure;
 
 				red = red <= 255 ? red : 255;
 				green = green <= 255 ? green : 255;
 				blue = blue <= 255 ? blue : 255;
 
-				this->pixelBuffer.at(isPositive ? spark.position - j : spark.position + j).setRGB(red, green, blue);
+				this->pixelBuffer.at(isPositive ? spark.position - j : spark.position + j).setColor(red, green, blue);
 			}
 			this->pixelMask.at(spark.position) = true;
 		}
@@ -189,10 +192,10 @@ void TL::SparkleAnimator::render(std::vector<CRGB> &pixels)
 	{
 		if (!this->pixelMask.at(i))
 		{
-			const CRGB pixel = this->pixelBuffer.at(i);
-			int16_t red = pixel.r;
-			int16_t green = pixel.g;
-			int16_t blue = pixel.b;
+			const TL::Pixel pixel = this->pixelBuffer.at(i);
+			int16_t red = pixel.red;
+			int16_t green = pixel.green;
+			int16_t blue = pixel.blue;
 
 			red -= red * (1.0f - this->sparkTail);
 			green -= green * (1.0f - this->sparkTail);
@@ -202,22 +205,28 @@ void TL::SparkleAnimator::render(std::vector<CRGB> &pixels)
 			green = green >= 0 ? green : 0;
 			blue = blue >= 0 ? blue : 0;
 
-			this->pixelBuffer.at(i).setRGB(red, green, blue);
+			this->pixelBuffer.at(i).setColor(red, green, blue);
 		}
 	}
 
-	pixels = this->pixelBuffer;
+	// Copy the internal pixel buffer into the LED strip
+	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
+	{
+		ledStrip.setPixel(this->pixelBuffer.at(i), i);
+	}
+
 	if (this->reverse)
 	{
-		this->reversePixels(pixels);
+		this->reversePixels(ledStrip);
 	}
-	this->applyBrightness(pixels);
+	this->applyBrightness(ledStrip);
 }
 
 /**
  * @brief Spawn new sparks from the set of currently invisible ones.
+ * @param ledStrip reference to the LED strip
  */
-void TL::SparkleAnimator::spawnSparks(std::vector<CRGB> &pixels)
+void TL::SparkleAnimator::spawnSparks(TL::LedStrip &ledStrip)
 {
 	size_t spawnCounter = 0;
 	for (size_t i = 0; i < this->sparks.size(); i++)
@@ -245,21 +254,21 @@ void TL::SparkleAnimator::spawnSparks(std::vector<CRGB> &pixels)
 			switch (this->spawnPosition)
 			{
 			case TL::SparkleAnimator::SpawnPosition::SPAWN_SIDE:
-				spark.position = (this->offset / 255.0f) * (pixels.size() - 1.0f);
-				spark.position += this->random(0, pixels.size() - 1.0f) * this->spawnVariance;
+				spark.position = (this->offset / 255.0f) * (ledStrip.getLedCount() - 1.0f);
+				spark.position += this->random(0, ledStrip.getLedCount() - 1.0f) * this->spawnVariance;
 				spark.position = spark.position >= 0 ? spark.position : 0;
-				spark.position = spark.position < pixels.size() ? spark.position : pixels.size() - 1;
+				spark.position = spark.position < ledStrip.getLedCount() ? spark.position : ledStrip.getLedCount() - 1;
 				spark.lastPosition = spark.position;
 				break;
 			case TL::SparkleAnimator::SpawnPosition::SPAWN_CENTER:
-				spark.position = pixels.size() / 2.0f;
+				spark.position = ledStrip.getLedCount() / 2.0f;
 				spark.position += this->random(-spark.position, spark.position) * this->spawnVariance;
 				spark.position = spark.position >= 0 ? spark.position : 0;
-				spark.position = spark.position < pixels.size() ? spark.position : pixels.size() - 1;
+				spark.position = spark.position < ledStrip.getLedCount() ? spark.position : ledStrip.getLedCount() - 1;
 				spark.lastPosition = spark.position;
 				break;
 			case TL::SparkleAnimator::SpawnPosition::SPAWN_RANDOM:
-				spark.position = this->random(0, pixels.size() - 1);
+				spark.position = this->random(0, ledStrip.getLedCount() - 1);
 				spark.lastPosition = spark.position;
 				break;
 			}
@@ -277,11 +286,11 @@ void TL::SparkleAnimator::spawnSparks(std::vector<CRGB> &pixels)
 			spark.friction = spark.friction < 0.0f ? -spark.friction : spark.friction;
 			spark.friction = spark.friction > 1.0f ? 1.0f : spark.friction;
 
-			if (this->color.r == 0 && this->color.g == 0 && this->color.b == 0)
+			if (this->color.red == 0 && this->color.green == 0 && this->color.blue == 0)
 			{
-				spark.color.setRGB(this->trapezoid(this->colorAngle) * 255.0f,
-								   this->trapezoid(this->colorAngle + 120.0f) * 255.0f,
-								   this->trapezoid(this->colorAngle + 240.0f) * 255.0f);
+				spark.color.setColor(this->trapezoid(this->colorAngle) * 255.0f,
+									 this->trapezoid(this->colorAngle + 120.0f) * 255.0f,
+									 this->trapezoid(this->colorAngle + 240.0f) * 255.0f);
 				this->colorAngle += 7.5f;
 				if (this->colorAngle > 360.0f)
 				{
@@ -308,8 +317,9 @@ void TL::SparkleAnimator::spawnSparks(std::vector<CRGB> &pixels)
 
 /**
  * @brief Run the sparks :) . I know, thats a great explanation.
+ * @param ledStrip reference to the LED strip
  */
-void TL::SparkleAnimator::runSparks(std::vector<CRGB> &pixels)
+void TL::SparkleAnimator::runSparks(TL::LedStrip &ledStrip)
 {
 	for (size_t i = 0; i < this->sparks.size(); i++)
 	{
@@ -321,11 +331,11 @@ void TL::SparkleAnimator::runSparks(std::vector<CRGB> &pixels)
 			spark.speed -= spark.speed * spark.friction;
 			spark.brightness -= spark.brightness * spark.fading;
 
-			if (spark.position < 0.0f || spark.position >= pixels.size())
+			if (spark.position < 0.0f || spark.position >= ledStrip.getLedCount())
 			{
 				if (this->bounceAtCorner)
 				{
-					spark.position = spark.position < 0.0f ? 0.0f : pixels.size() - 1;
+					spark.position = spark.position < 0.0f ? 0.0f : ledStrip.getLedCount() - 1;
 					spark.lastPosition = spark.position;
 					spark.speed = -spark.speed;
 				}

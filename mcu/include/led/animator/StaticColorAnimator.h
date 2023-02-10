@@ -30,14 +30,14 @@ namespace TL
 	class StaticColorAnimator : public LedAnimator
 	{
 	public:
-		StaticColorAnimator(const CRGB color);
+		StaticColorAnimator(const TL::Pixel color);
 		~StaticColorAnimator();
 
-		void init(std::vector<CRGB> &pixels);
-		void render(std::vector<CRGB> &pixels);
+		void init(TL::LedStrip &ledStrip);
+		void render(TL::LedStrip &ledStrip);
 
 	private:
-		CRGB color;
+		TL::Pixel color;
 	};
 }
 

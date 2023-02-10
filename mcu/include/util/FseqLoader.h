@@ -25,7 +25,8 @@
 #include <stdint.h>
 #include <vector>
 #include <FS.h>
-#include "FastLED.h"
+
+#include "led/driver/LedStrip.h"
 
 namespace TL
 {
@@ -73,7 +74,7 @@ namespace TL
 		void close();
 
 		FseqHeader getHeader();
-		TL::FseqLoader::Error readPixelBuffer(std::vector<CRGB> &pixels);
+		TL::FseqLoader::Error readLedStrip(TL::LedStrip &ledStrip);
 
 		void setFillerBytes(const uint8_t fillerBytes);
 		uint8_t getFillerBytes();

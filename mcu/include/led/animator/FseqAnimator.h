@@ -34,8 +34,8 @@ namespace TL
 		FseqAnimator(TL::FseqLoader *fseqLoader, const bool loop = false);
 		~FseqAnimator();
 
-		void init(std::vector<CRGB> &pixels);
-		void render(std::vector<CRGB> &pixels);
+		void init(TL::LedStrip &ledStrip);
+		void render(TL::LedStrip &ledStrip);
 
 	private:
 		TL::FseqLoader *fseqLoader;

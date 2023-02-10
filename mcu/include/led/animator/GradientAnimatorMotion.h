@@ -37,15 +37,15 @@ namespace TL
 			GRADIENT_CENTER = 1
 		};
 
-		GradientAnimatorMotion(const TL::GradientAnimatorMotion::GradientMode gradientMode, const CRGB color1, const CRGB color2);
+		GradientAnimatorMotion(const TL::GradientAnimatorMotion::GradientMode gradientMode, const TL::Pixel color1, const TL::Pixel color2);
 		~GradientAnimatorMotion();
 
-		void init(std::vector<CRGB> &pixels);
-		void render(std::vector<CRGB> &pixels);
+		void init(TL::LedStrip &ledStrip);
+		void render(TL::LedStrip &ledStrip);
 
 	private:
 		TL::GradientAnimatorMotion::GradientMode gradientMode;
-		CRGB color[2];
+		TL::Pixel color[2];
 
 		float getMotionOffset();
 	};

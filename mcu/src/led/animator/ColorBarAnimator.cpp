@@ -28,8 +28,8 @@ TL::ColorBarAnimator::ColorBarAnimator()
 {
 	this->angle = 0.0f;
 	this->colorBarMode = TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_HARD;
-	this->color[0] = CRGB::Black;
-	this->color[1] = CRGB::Black;
+	this->color[0] = TL::Pixel::ColorCode::Black;
+	this->color[1] = TL::Pixel::ColorCode::Black;
 }
 
 /**
@@ -39,7 +39,7 @@ TL::ColorBarAnimator::ColorBarAnimator()
  * @param color1 first color of the bars
  * @param color2 second color of the bars
  */
-TL::ColorBarAnimator::ColorBarAnimator(const TL::ColorBarAnimator::ColorBarMode colorBarMode, const CRGB color1, const CRGB color2)
+TL::ColorBarAnimator::ColorBarAnimator(const TL::ColorBarAnimator::ColorBarMode colorBarMode, const TL::Pixel color1, const TL::Pixel color2)
 {
 	this->colorBarMode = colorBarMode;
 	this->color[0] = color1;
@@ -55,22 +55,25 @@ TL::ColorBarAnimator::~ColorBarAnimator()
 
 /**
  * @brief Initialize the {@link TL::ColorBarAnimator}.
- * @param pixels reference to the vector holding the LED pixel data
+ * @param ledStrip LED strip with the pixel data
  */
-void TL::ColorBarAnimator::init(std::vector<CRGB> &pixels)
+void TL::ColorBarAnimator::init(TL::LedStrip &ledStrip)
 {
 	this->angle = 0.0f;
-	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
+	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
+	{
+		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+	}
 }
 
 /**
  * @brief Render the color bars to the vector holding the LED pixel data
- * @param pixels reference to the vector holding the LED pixel data
+ * @param ledStrip LED strip with the pixel data
  */
-void TL::ColorBarAnimator::render(std::vector<CRGB> &pixels)
+void TL::ColorBarAnimator::render(TL::LedStrip &ledStrip)
 {
-	const float middle = pixels.size() / 2;
-	for (size_t i = 0; i < pixels.size(); i++)
+	const float middle = ledStrip.getLedCount() / 2;
+	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
 		float colorAngle1 = 0.0f;
 		float colorAngle2 = 0.0f;
@@ -84,8 +87,8 @@ void TL::ColorBarAnimator::render(std::vector<CRGB> &pixels)
 
 		else if (this->colorBarMode == TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_HARD || this->colorBarMode == TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_SMOOTH)
 		{
-			colorAngle1 = i < middle ? (this->angle + 0.0f) + i * offset : (this->angle + 0.0f) + (pixels.size() - i) * offset;
-			colorAngle2 = i < middle ? (this->angle + 180.0f) + i * offset : (this->angle + 180.0f) + (pixels.size() - i) * offset;
+			colorAngle1 = i < middle ? (this->angle + 0.0f) + i * offset : (this->angle + 0.0f) + (ledStrip.getLedCount() - i) * offset;
+			colorAngle2 = i < middle ? (this->angle + 180.0f) + i * offset : (this->angle + 180.0f) + (ledStrip.getLedCount() - i) * offset;
 		}
 
 		float trapezoidValue1 = this->trapezoid2(colorAngle1);
@@ -97,10 +100,12 @@ void TL::ColorBarAnimator::render(std::vector<CRGB> &pixels)
 			trapezoidValue2 = trapezoidValue2 < 0.5f ? 0.0f : 1.0f;
 		}
 
-		pixels.at(i).setRGB(
-			trapezoidValue1 * this->color[0].r + trapezoidValue2 * this->color[1].r,
-			trapezoidValue1 * this->color[0].g + trapezoidValue2 * this->color[1].g,
-			trapezoidValue1 * this->color[0].b + trapezoidValue2 * this->color[1].b);
+		ledStrip.setPixel(
+			TL::Pixel(
+				trapezoidValue1 * this->color[0].red + trapezoidValue2 * this->color[1].red,
+				trapezoidValue1 * this->color[0].green + trapezoidValue2 * this->color[1].green,
+				trapezoidValue1 * this->color[0].blue + trapezoidValue2 * this->color[1].blue),
+			i);
 	}
 
 	if (this->reverse)
@@ -121,7 +126,7 @@ void TL::ColorBarAnimator::render(std::vector<CRGB> &pixels)
 		this->angle += 360.0f;
 	}
 
-	this->applyBrightness(pixels);
+	this->applyBrightness(ledStrip);
 }
 
 /**
@@ -138,7 +143,7 @@ void TL::ColorBarAnimator::setColorBarMode(const TL::ColorBarAnimator::ColorBarM
  * @param color1 first color of the bars
  * @param color2 second color of the bars
  */
-void TL::ColorBarAnimator::setColor(const CRGB color1, const CRGB color2)
+void TL::ColorBarAnimator::setColor(const TL::Pixel color1, const TL::Pixel color2)
 {
 	this->color[0] = color1;
 	this->color[1] = color2;
