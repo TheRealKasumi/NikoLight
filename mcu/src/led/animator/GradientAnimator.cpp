@@ -27,7 +27,7 @@
  * @param color1 first color value
  * @param color2 second color value
  */
-TL::GradientAnimator::GradientAnimator(const TL::GradientAnimator::GradientMode gradientMode, const CRGB color1, const CRGB color2)
+TL::GradientAnimator::GradientAnimator(const TL::GradientAnimator::GradientMode gradientMode, const TL::Pixel color1, const TL::Pixel color2)
 {
 	this->gradientMode = gradientMode;
 	this->color[0] = color1;
@@ -43,52 +43,59 @@ TL::GradientAnimator::~GradientAnimator()
 
 /**
  * @brief Initialize the {@link TL::GradientAnimator}.
- * @param pixels reference to the vector holding the LED pixel data
+ * @param ledStrip LED strip with the pixel data
  */
-void TL::GradientAnimator::init(std::vector<CRGB> &pixels)
+void TL::GradientAnimator::init(TL::LedStrip &ledStrip)
 {
-	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
+	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
+	{
+		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+	}
 }
 
 /**
  * @brief Render the gradient to the vector holding the LED pixel data
- * @param pixels reference to the vector holding the LED pixel data
+ * @param ledStrip LED strip with the pixel data
  */
-void TL::GradientAnimator::render(std::vector<CRGB> &pixels)
+void TL::GradientAnimator::render(TL::LedStrip &ledStrip)
 {
-	if (pixels.size() == 2)
+	if (ledStrip.getLedCount() == 2)
 	{
 		const float middle = (this->offset / 255.0f - 0.5f) * 2.0f;
 		if (middle < 0.0f)
 		{
-			pixels.at(0).setRGB(this->color[1].r, this->color[1].g, this->color[1].b);
-			pixels.at(1).setRGB(
-				(-middle * this->color[1].r + (1 + middle) * this->color[0].r),
-				(-middle * this->color[1].g + (1 + middle) * this->color[0].g),
-				(-middle * this->color[1].b + (1 + middle) * this->color[0].b));
+			ledStrip.setPixel(TL::Pixel(this->color[1].red, this->color[1].green, this->color[1].blue), 0);
+			ledStrip.setPixel(
+				TL::Pixel(
+					(-middle * this->color[1].red + (1 + middle) * this->color[0].red),
+					(-middle * this->color[1].green + (1 + middle) * this->color[0].green),
+					(-middle * this->color[1].blue + (1 + middle) * this->color[0].blue)),
+				1);
 		}
 		else
 		{
-			pixels.at(0).setRGB(
-				(middle * this->color[0].r + (1 - middle) * this->color[1].r),
-				(middle * this->color[0].g + (1 - middle) * this->color[1].g),
-				(middle * this->color[0].b + (1 - middle) * this->color[1].b));
-			pixels.at(1).setRGB(this->color[0].r, this->color[0].g, this->color[0].b);
+			ledStrip.setPixel(
+				TL::Pixel(
+					(middle * this->color[0].red + (1 - middle) * this->color[1].red),
+					(middle * this->color[0].green + (1 - middle) * this->color[1].green),
+					(middle * this->color[0].blue + (1 - middle) * this->color[1].blue)),
+				0);
+			ledStrip.setPixel(TL::Pixel(this->color[0].red, this->color[0].green, this->color[0].blue), 1);
 		}
 	}
 	else
 	{
-		float middle = (pixels.size() - 1) * this->offset / 255.0f;
+		float middle = (ledStrip.getLedCount() - 1) * this->offset / 255.0f;
 		if (middle < 0.01f)
 		{
 			middle = 0.01f;
 		}
-		else if (middle > pixels.size() - 1.01f)
+		else if (middle > ledStrip.getLedCount() - 1.01f)
 		{
-			middle = pixels.size() - 1.01f;
+			middle = ledStrip.getLedCount() - 1.01f;
 		}
 
-		for (size_t i = 0; i < pixels.size(); i++)
+		for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 		{
 			float position = 0.0f;
 			if (this->gradientMode == TL::GradientAnimator::GradientMode::GRADIENT_LINEAR)
@@ -99,7 +106,7 @@ void TL::GradientAnimator::render(std::vector<CRGB> &pixels)
 				}
 				else
 				{
-					position = 0.5f + ((float)i - middle) / ((pixels.size() - 1) - middle) * 0.5f;
+					position = 0.5f + ((float)i - middle) / ((ledStrip.getLedCount() - 1) - middle) * 0.5f;
 				}
 			}
 			else if (this->gradientMode == TL::GradientAnimator::GradientMode::GRADIENT_CENTER)
@@ -110,19 +117,21 @@ void TL::GradientAnimator::render(std::vector<CRGB> &pixels)
 				}
 				else
 				{
-					position = 1.0f - ((float)i - middle) / ((pixels.size() - 1) - middle);
+					position = 1.0f - ((float)i - middle) / ((ledStrip.getLedCount() - 1) - middle);
 				}
 			}
-			pixels.at(i).setRGB(
-				(position * this->color[1].r + (1 - position) * this->color[0].r),
-				(position * this->color[1].g + (1 - position) * this->color[0].g),
-				(position * this->color[1].b + (1 - position) * this->color[0].b));
+			ledStrip.setPixel(
+				TL::Pixel(
+					(position * this->color[1].red + (1 - position) * this->color[0].red),
+					(position * this->color[1].green + (1 - position) * this->color[0].green),
+					(position * this->color[1].blue + (1 - position) * this->color[0].blue)),
+				i);
 		}
 	}
 
 	if (this->reverse)
 	{
-		this->reversePixels(pixels);
+		this->reversePixels(ledStrip);
 	}
-	this->applyBrightness(pixels);
+	this->applyBrightness(ledStrip);
 }

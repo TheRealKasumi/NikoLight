@@ -41,8 +41,8 @@ namespace TL
 		RainbowAnimatorMotion(const TL::RainbowAnimatorMotion::RainbowMode rainbowMode);
 		~RainbowAnimatorMotion();
 
-		void init(std::vector<CRGB> &pixels);
-		void render(std::vector<CRGB> &pixels);
+		void init(TL::LedStrip &ledStrip);
+		void render(TL::LedStrip &ledStrip);
 
 	private:
 		float angle;

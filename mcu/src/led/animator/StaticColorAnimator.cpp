@@ -4,7 +4,7 @@
  * @brief Implementation of the {@link StaticColorAnimator}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -25,7 +25,7 @@
  * @brief Create a new instance of {@link TL::StaticColorAnimator}.
  * @param color color to display
  */
-TL::StaticColorAnimator::StaticColorAnimator(const CRGB color)
+TL::StaticColorAnimator::StaticColorAnimator(const TL::Pixel color)
 {
 	this->color = color;
 }
@@ -39,23 +39,26 @@ TL::StaticColorAnimator::~StaticColorAnimator()
 
 /**
  * @brief Initialize the {@link StaticColorAnimator}.
- * @param pixels reference to the vector holding the LED pixel data
+ * @param ledStrip LED strip with the pixel data
  */
-void TL::StaticColorAnimator::init(std::vector<CRGB> &pixels)
+void TL::StaticColorAnimator::init(TL::LedStrip &ledStrip)
 {
-	std::fill(pixels.begin(), pixels.end(), CRGB::Black);
+	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
+	{
+		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+	}
 }
 
 /**
  * @brief Render the static color to the vector holding the LED pixel data
- * @param pixels reference to the vector holding the LED pixel data
+ * @param ledStrip LED strip with the pixel data
  */
-void TL::StaticColorAnimator::render(std::vector<CRGB> &pixels)
+void TL::StaticColorAnimator::render(TL::LedStrip &ledStrip)
 {
-	for (size_t i = 0; i < pixels.size(); i++)
+	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
-		pixels.at(i) = this->color;
+		ledStrip.setPixel(this->color, i);
 	}
 
-	this->applyBrightness(pixels);
+	this->applyBrightness(ledStrip);
 }
