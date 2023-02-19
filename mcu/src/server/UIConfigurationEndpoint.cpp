@@ -86,8 +86,8 @@ void TL::UIConfigurationEndpoint::postUIConfig()
 
 	if (!jsonDoc[F("uiConfig")].is<JsonObject>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain the \"uiConfig\" object."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain the \"uiConfig\" object."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"uiConfig\" object."));
+		TL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain a \"uiConfig\" object."));
 		return;
 	}
 

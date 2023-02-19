@@ -108,8 +108,8 @@ void TL::MotionSensorEndpoint::postCalibrationData()
 
 	if (!jsonDoc[F("motionSensorCalibration")].is<JsonObject>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain the \"motionSensorCalibration\" object."));
-		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The json must contain the \"motionSensorCalibration\" object."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"motionSensorCalibration\" object."));
+		TL::MotionSensorEndpoint::sendSimpleResponse(400, F("The json must contain a \"motionSensorCalibration\" object."));
 		return;
 	}
 

@@ -1,17 +1,15 @@
 openapi: 3.0.3
-
 info:
    title: TesLight API Documentation
-   description: |-
-      This is the interactive API documentation for TesLight. Below all REST endpoints are documented and ready to be tried out.
+   description: >-
+      This is the interactive API documentation for TesLight. Below all REST
+      endpoints are documented and ready to be tried out.
    contact:
       name: TesLight on GitHub
-      url: https://github.com/TheRealKasumi/TesLight
+      url: "https://github.com/TheRealKasumi/TesLight"
    version: 1.0.0
-
 servers:
-   - url: http://192.168.4.1/api
-
+   - url: "http://192.168.4.1/api"
 tags:
    - name: Connection Test
      description: Test the connection to the TesLight controller
@@ -24,29 +22,32 @@ tags:
    - name: WiFi Configuration
      description: Read and update the WiFi configuration
    - name: Motion Sensor Calibration Configuration
-     description: Read, update and run the motion sensor calibration
+     description: "Read, update and run the motion sensor calibration"
    - name: Audio Unit Configuration
      description: Read and update the audio unit configuration
    - name: UI Configuration
      description: Read and update the ui configuration
    - name: FSEQ Management
-     description: List, upload and delete FSEQ files for playback
+     description: "List, upload and delete FSEQ files for playback"
    - name: Update
      description: Upload update packages to update the controller
    - name: Log
      description: Get and clear the log
    - name: Reset
      description: Restart or \"factory reset\" the controller
-
+   - name: Profile Management
+     description: Manage user profiles
 paths:
-   "/connection_test":
+   /connection_test:
       get:
          tags:
             - Connection Test
          summary: Send a test request to check the connection to the controller.
-         description: |-
+         description: >-
             Send a test request to check the connection to the controller.
-            When the controller responds with status code 200, everything is up and running.
+
+            When the controller responds with status code 200, everything is up and
+            running.
          operationId: testConnection
          responses:
             "200":
@@ -55,8 +56,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
-
-   "/info/system":
+   /info/system:
       get:
          tags:
             - System Information
@@ -72,8 +72,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/SystemInformation"
-
-   "/config/system":
+   /config/system:
       get:
          tags:
             - System Configuration
@@ -114,8 +113,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
-
-   "/config/led":
+   /config/led:
       get:
          tags:
             - LED/Zone Configuration
@@ -156,8 +154,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
-
-   "/config/wifi":
+   /config/wifi:
       get:
          tags:
             - WiFi Configuration
@@ -198,8 +195,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
-
-   "/config/motion":
+   /config/motion:
       get:
          tags:
             - Motion Sensor Calibration Configuration
@@ -244,7 +240,9 @@ paths:
          tags:
             - Motion Sensor Calibration Configuration
          summary: Automatically run the motion sensor calibration.
-         description: Automatically run the current motion sensor calibration on the controller.
+         description: >-
+            Automatically run the current motion sensor calibration on the
+            controller.
          operationId: calibrateMotionSensor
          responses:
             "200":
@@ -265,8 +263,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
-
-   "/config/audio":
+   /config/audio:
       get:
          tags:
             - Audio Unit Configuration
@@ -307,8 +304,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
-
-   "/config/ui":
+   /config/ui:
       get:
          tags:
             - UI Configuration
@@ -349,13 +345,14 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
-
-   "/fseq":
+   /fseq:
       get:
          tags:
             - FSEQ Management
          summary: List all FSEQ files on the controller.
-         description: List all FSEQ files currently stored on the controller and get their file size.
+         description: >-
+            List all FSEQ files currently stored on the controller and get their
+            file size.
          operationId: getFSEQList
          responses:
             "200":
@@ -379,7 +376,9 @@ paths:
          parameters:
             - name: fileName
               in: query
-              description: File name of the FSEQ file under which it should be stored on the controller.
+              description: >-
+                 File name of the FSEQ file under which it should be stored on the
+                 controller.
               schema:
                  type: string
               required: true
@@ -420,7 +419,9 @@ paths:
          parameters:
             - name: fileName
               in: query
-              description: File name of the FSEQ file which should be deleted from the controller.
+              description: >-
+                 File name of the FSEQ file which should be deleted from the
+                 controller.
               schema:
                  type: string
               required: true
@@ -449,13 +450,14 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
-
-   "/update":
+   /update:
       post:
          tags:
             - Update
          summary: Update the TesLight controller with a new firmware.
-         description: Upload a TesLight update package and update the controller with a new firmware.
+         description: >-
+            Upload a TesLight update package and update the controller with a new
+            firmware.
          operationId: uploadTUP
          requestBody:
             content:
@@ -468,7 +470,9 @@ paths:
                            format: binary
          responses:
             "200":
-               description: The upload and validation was successful. Update will be installed after a reboot.
+               description: >-
+                  The upload and validation was successful. Update will be installed
+                  after a reboot.
                content:
                   application/json:
                      schema:
@@ -485,8 +489,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
-
-   "/log/size":
+   /log/size:
       get:
          tags:
             - Log
@@ -506,13 +509,14 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
-
-   "/log":
+   /log:
       get:
          tags:
             - Log
          summary: Get a part of the log file.
-         description: Get a part of the log file. Note that this can be slow when a hug part of the file is read.
+         description: >-
+            Get a part of the log file. Note that this can be slow when a hug part
+            of the file is read.
          operationId: getLog
          parameters:
             - name: start
@@ -560,8 +564,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
-
-   "/reset/soft":
+   /reset/soft:
       post:
          tags:
             - Reset
@@ -575,8 +578,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
-
-   "/reset/hard":
+   /reset/hard:
       post:
          tags:
             - Reset
@@ -590,7 +592,172 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
-
+   /config/profile/active:
+      get:
+         tags:
+            - Profile Management
+         summary: Get the currently active user profile.
+         description: Get the currently active user profile.
+         operationId: getActiveProfile
+         responses:
+            "200":
+               description: Response contains the name of the active user profile.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/Profile"
+      patch:
+         tags:
+            - Profile Management
+         summary: Update the active user profile.
+         description: Update the active user profile.
+         operationId: updateActiveUserProfile
+         requestBody:
+            $ref: "#/components/requestBodies/Profile"
+         responses:
+            "200":
+               description: The active profile was updated.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is invalid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "404":
+               description: The profile was not found.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+   /config/profile:
+      get:
+         tags:
+            - Profile Management
+         summary: Get a list of all user profile.
+         description: Get a list of all user profile.
+         operationId: getProfileList
+         responses:
+            "200":
+               description: Response contains the names of all user profiles.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ProfileList"
+      post:
+         tags:
+            - Profile Management
+         summary: Create a new user profile.
+         description: Create a new user profile.
+         operationId: createUserProfile
+         requestBody:
+            $ref: "#/components/requestBodies/Profile"
+         responses:
+            "200":
+               description: The profile was created.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is invalid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+      put:
+         tags:
+            - Profile Management
+         summary: Clone an existing user profile.
+         description: Clone an existing user profile.
+         operationId: cloneUserProfile
+         parameters:
+            - name: name
+              in: query
+              description: Name of the source profile.
+              schema:
+                 type: string
+              required: true
+         requestBody:
+            $ref: "#/components/requestBodies/Profile"
+         responses:
+            "200":
+               description: The profile was cloned.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is invalid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "404":
+               description: The source profile was not found.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+      delete:
+         tags:
+            - Profile Management
+         summary: Delete an existing user profile.
+         description: Delete an existing user profile.
+         operationId: deleteUserProfile
+         parameters:
+            - name: name
+              in: query
+              description: Name of the profile to delete.
+              schema:
+                 type: string
+              required: true
+         responses:
+            "200":
+               description: The profile was delete.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is invalid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "404":
+               description: The profile was not found.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
 components:
    schemas:
       ApiResponse:
@@ -618,7 +785,7 @@ components:
                properties:
                   chipModel:
                      type: string
-                     example: "ESP32"
+                     example: ESP32
                   chipRevision:
                      type: integer
                      format: uint32
@@ -657,11 +824,11 @@ components:
                   rps:
                      type: number
                      format: float32
-                     example: 60.0
+                     example: 60
                   fps:
                      type: number
                      format: float32
-                     example: 60.0
+                     example: 60
                   ledCount:
                      type: integer
                      format: uint16
@@ -676,11 +843,11 @@ components:
                   regulatorVoltage:
                      type: number
                      format: float32
-                     example: 5.0
+                     example: 5
                   regulatorCurrentLimit:
                      type: number
                      format: float32
-                     example: 6.0
+                     example: 6
                   regulatorCurrentDraw:
                      type: number
                      format: float32
@@ -688,15 +855,15 @@ components:
                   regulatorPowerLimit:
                      type: number
                      format: float32
-                     example: 30.0
+                     example: 30
                   regulatorPowerDraw:
                      type: number
                      format: float32
-                     example: 15.0
+                     example: 15
                   regulatorTemperature:
                      type: number
                      format: float32
-                     example: 50.0
+                     example: 50
                   fanSpeed:
                      type: integer
                      format: uint8
@@ -1079,7 +1246,39 @@ components:
                      type: integer
                      format: uint32
                      example: 954861
-
+      Profile:
+         properties:
+            status:
+               type: integer
+               format: int32
+               example: 200
+            message:
+               type: string
+               example: Message
+            profile:
+               type: object
+               properties:
+                  name:
+                     type: string
+                     example: New Profile
+      ProfileList:
+         type: object
+         properties:
+            status:
+               type: integer
+               format: int32
+               example: 200
+            message:
+               type: string
+               example: Message
+            profile:
+               type: object
+               properties:
+                  names:
+                     type: array
+                     items:
+                        type: string
+                        example: Profile
    requestBodies:
       SystemConfiguration:
          description: Update the current system configuration on the controller.
@@ -1386,3 +1585,16 @@ components:
                            expertMode:
                               type: boolean
                               example: false
+      Profile:
+         description: Contains the name of a profile.
+         content:
+            application/json:
+               schema:
+                  type: object
+                  properties:
+                     profile:
+                        type: object
+                        properties:
+                           name:
+                              type: string
+                              example: New Profile

@@ -22,6 +22,7 @@
 #ifndef FAN_CONTROLLER_H
 #define FAN_CONTROLLER_H
 
+#include <stdint.h>
 #include <Arduino.h>
 #include "configuration/Configuration.h"
 #include "sensor/TemperatureSensor.h"
