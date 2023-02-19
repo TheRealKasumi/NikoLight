@@ -800,7 +800,7 @@ void TesLight::run()
 				F("Average Current: ") + hwInfo.regulatorCurrentDraw + F("A   ") +
 				F("Temperature: ") + hwInfo.regulatorTemperature + F("°C   ") +
 				F("Fan: ") + hwInfo.fanSpeed / 2.55f + F("%   ") +
-				F("Heap (free): ") + socInfo.freeHeap + F("kB"));
+				F("Heap (free): ") + socInfo.freeHeap + F("Bytes"));
 	}
 
 	// Handle web server requests
