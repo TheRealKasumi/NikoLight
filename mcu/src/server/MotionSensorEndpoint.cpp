@@ -26,9 +26,9 @@
  */
 void TL::MotionSensorEndpoint::begin()
 {
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/motion")).c_str(), http_method::HTTP_GET, TL::MotionSensorEndpoint::getCalibrationData);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/motion")).c_str(), http_method::HTTP_POST, TL::MotionSensorEndpoint::postCalibrationData);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/motion")).c_str(), http_method::HTTP_PATCH, TL::MotionSensorEndpoint::runCalibration);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/motion/calibration")).c_str(), http_method::HTTP_GET, TL::MotionSensorEndpoint::getCalibrationData);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/motion/calibration")).c_str(), http_method::HTTP_PATCH, TL::MotionSensorEndpoint::patchCalibrationData);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/motion/calibration/auto")).c_str(), http_method::HTTP_PATCH, TL::MotionSensorEndpoint::runCalibration);
 }
 
 /**
@@ -64,9 +64,9 @@ void TL::MotionSensorEndpoint::getCalibrationData()
 }
 
 /**
- * @brief Receive the motion sensor calibration sent by the client.
+ * @brief Update the motion sensor calibration manually.
  */
-void TL::MotionSensorEndpoint::postCalibrationData()
+void TL::MotionSensorEndpoint::patchCalibrationData()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the motion sensor calibration data."));
 	if (!TL::Configuration::isInitialized())

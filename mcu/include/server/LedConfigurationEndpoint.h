@@ -41,7 +41,7 @@ namespace TL
 		LedConfigurationEndpoint();
 
 		static void getLedConfig();
-		static void postLedConfig();
+		static void patchLedConfig();
 
 		static bool validateLedZone(const JsonObject &jsonObject, const uint8_t index);
 		static bool validateAnimationSettings(const uint8_t type, const JsonArray &jsonArray);

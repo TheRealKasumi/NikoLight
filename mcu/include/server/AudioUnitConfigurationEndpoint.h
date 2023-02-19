@@ -39,7 +39,7 @@ namespace TL
 		AudioUnitConfigurationEndpoint();
 
 		static void getAudioUnitConfig();
-		static void postAudioUnitConfig();
+		static void patchAudioUnitConfig();
 
 		static bool validateConfiguration(const JsonObject &jsonObject);
 		static bool isInRange(const long value, const long min, const long max);

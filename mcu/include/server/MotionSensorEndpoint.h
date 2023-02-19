@@ -39,7 +39,7 @@ namespace TL
 		MotionSensorEndpoint();
 
 		static void getCalibrationData();
-		static void postCalibrationData();
+		static void patchCalibrationData();
 		static void runCalibration();
 
 		static bool validateConfiguration(const JsonObject &jsonObject);

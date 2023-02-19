@@ -27,7 +27,7 @@
 void TL::WiFiConfigurationEndpoint::begin()
 {
 	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_GET, TL::WiFiConfigurationEndpoint::getWiFiConfig);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_POST, TL::WiFiConfigurationEndpoint::postWiFiConfig);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/wifi")).c_str(), http_method::HTTP_PATCH, TL::WiFiConfigurationEndpoint::patchWiFiConfig);
 }
 
 /**
@@ -58,9 +58,9 @@ void TL::WiFiConfigurationEndpoint::getWiFiConfig()
 }
 
 /**
- * @brief Receive the WiFi configuration sent by the client.
+ * @brief Update the WiFi configuration.
  */
-void TL::WiFiConfigurationEndpoint::postWiFiConfig()
+void TL::WiFiConfigurationEndpoint::patchWiFiConfig()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the WiFi configuration."));
 	if (!TL::Configuration::isInitialized())

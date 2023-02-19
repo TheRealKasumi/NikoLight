@@ -86,7 +86,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/SystemConfiguration"
-      post:
+      patch:
          tags:
             - System Configuration
          summary: Update system configuration.
@@ -127,7 +127,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/LedConfiguration"
-      post:
+      patch:
          tags:
             - LED/Zone Configuration
          summary: Update LED/zone configuration.
@@ -168,7 +168,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/WiFiConfiguration"
-      post:
+      patch:
          tags:
             - WiFi Configuration
          summary: Update WiFi configuration.
@@ -195,7 +195,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
-   /config/motion:
+   /config/motion/calibration:
       get:
          tags:
             - Motion Sensor Calibration Configuration
@@ -209,7 +209,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/MotionSensorCalibration"
-      post:
+      patch:
          tags:
             - Motion Sensor Calibration Configuration
          summary: Update the motion sensor calibration.
@@ -236,6 +236,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
+   /config/motion/calibration/auto:
       patch:
          tags:
             - Motion Sensor Calibration Configuration
@@ -277,7 +278,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/AudioUnitConfiguration"
-      post:
+      patch:
          tags:
             - Audio Unit Configuration
          summary: Update the audio unit configuration.
@@ -318,7 +319,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/UIConfiguration"
-      post:
+      patch:
          tags:
             - UI Configuration
          summary: Update UI configuration.

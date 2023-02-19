@@ -24,7 +24,7 @@ namespace TL
 		UIConfigurationEndpoint();
 
 		static void getUIConfig();
-		static void postUIConfig();
+		static void patchUIConfig();
 
 		static bool validateUIConfig(const JsonObject &jsonObject);
 	};

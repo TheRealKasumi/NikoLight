@@ -1,7 +1,9 @@
 {
 	"info": {
+		"_postman_id": "7e57b9b5-edb4-4b23-91b3-e033376642b6",
 		"name": "TesLight API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12963851"
 	},
 	"item": [
 		{
@@ -57,7 +59,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "POST",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -114,7 +116,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "POST",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -168,7 +170,7 @@
 				{
 					"name": "Set WiFi Configuration",
 					"request": {
-						"method": "POST",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -229,7 +231,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": ""
+									"src": "/C:/Users/Kasumi/Desktop/xl/all_the_things_she_said.fseq"
 								}
 							]
 						},
@@ -441,7 +443,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/motion",
+							"raw": "http://{{TESLIGHTIP}}/api/config/motion/calibration",
 							"protocol": "http",
 							"host": [
 								"{{TESLIGHTIP}}"
@@ -449,7 +451,8 @@
 							"path": [
 								"api",
 								"config",
-								"motion"
+								"motion",
+								"calibration"
 							]
 						}
 					},
@@ -461,7 +464,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "POST",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -473,7 +476,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/motion",
+							"raw": "http://{{TESLIGHTIP}}/api/config/motion/calibration",
 							"protocol": "http",
 							"host": [
 								"{{TESLIGHTIP}}"
@@ -481,7 +484,8 @@
 							"path": [
 								"api",
 								"config",
-								"motion"
+								"motion",
+								"calibration"
 							]
 						}
 					},
@@ -496,7 +500,7 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/motion",
+							"raw": "http://{{TESLIGHTIP}}/api/config/motion/calibration/auto",
 							"protocol": "http",
 							"host": [
 								"{{TESLIGHTIP}}"
@@ -504,7 +508,9 @@
 							"path": [
 								"api",
 								"config",
-								"motion"
+								"motion",
+								"calibration",
+								"auto"
 							]
 						}
 					},
@@ -541,7 +547,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "POST",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -598,7 +604,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "POST",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
