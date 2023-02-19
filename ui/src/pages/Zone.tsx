@@ -742,7 +742,11 @@ type ZoneProps = { routeId: string };
 
 export const Zone = ({ routeId }: ZoneProps): JSX.Element => {
   const { reset } = useQueryErrorResetBoundary();
-  const { options } = useMatch(routeId);
+  const {
+    route: { options },
+  } = useMatch({
+    from: routeId,
+  });
   const zoneId = options.meta?.zoneId ?? 0;
 
   return (
