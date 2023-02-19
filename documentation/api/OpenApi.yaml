@@ -15,8 +15,6 @@ tags:
      description: Test the connection to the TesLight controller
    - name: System Information
      description: Read the system information from the TesLight controller
-   - name: Profile Management
-     description: Manage user profiles
    - name: System Configuration
      description: Read and update the system configuration
    - name: LED/Zone Configuration
@@ -37,6 +35,8 @@ tags:
      description: Get and clear the log
    - name: Reset
      description: Restart or \"factory reset\" the controller
+   - name: Profile Management
+     description: Manage user profiles
 paths:
    /connection_test:
       get:
@@ -72,172 +72,6 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/SystemInformation"
-   /config/profile/active:
-      get:
-         tags:
-            - Profile Management
-         summary: Get the currently active user profile.
-         description: Get the currently active user profile.
-         operationId: getActiveProfile
-         responses:
-            "200":
-               description: Response contains the name of the active user profile.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/Profile"
-      patch:
-         tags:
-            - Profile Management
-         summary: Update the active user profile.
-         description: Update the active user profile.
-         operationId: updateActiveUserProfile
-         requestBody:
-            $ref: "#/components/requestBodies/Profile"
-         responses:
-            "200":
-               description: The active profile was updated.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
-            "400":
-               description: The request is invalid.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
-            "404":
-               description: The profile was not found.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
-            "500":
-               description: Failed to process the request.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
-   /config/profile:
-      get:
-         tags:
-            - Profile Management
-         summary: Get a list of all user profile.
-         description: Get a list of all user profile.
-         operationId: getProfileList
-         responses:
-            "200":
-               description: Response contains the names of all user profiles.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ProfileList"
-      post:
-         tags:
-            - Profile Management
-         summary: Create a new user profile.
-         description: Create a new user profile.
-         operationId: createUserProfile
-         requestBody:
-            $ref: "#/components/requestBodies/Profile"
-         responses:
-            "200":
-               description: The profile was created.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
-            "400":
-               description: The request is invalid.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
-            "500":
-               description: Failed to process the request.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
-      put:
-         tags:
-            - Profile Management
-         summary: Clone an existing user profile.
-         description: Clone an existing user profile.
-         operationId: cloneUserProfile
-         parameters:
-            - name: name
-              in: query
-              description: Name of the source profile.
-              schema:
-                 type: string
-              required: true
-         requestBody:
-            $ref: "#/components/requestBodies/Profile"
-         responses:
-            "200":
-               description: The profile was cloned.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
-            "400":
-               description: The request is invalid.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
-            "404":
-               description: The source profile was not found.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
-            "500":
-               description: Failed to process the request.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
-      delete:
-         tags:
-            - Profile Management
-         summary: Delete an existing user profile.
-         description: Delete an existing user profile.
-         operationId: deleteUserProfile
-         parameters:
-            - name: name
-              in: query
-              description: Name of the profile to delete.
-              schema:
-                 type: string
-              required: true
-         responses:
-            "200":
-               description: The profile was delete.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
-            "400":
-               description: The request is invalid.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
-            "404":
-               description: The profile was not found.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
-            "500":
-               description: Failed to process the request.
-               content:
-                  application/json:
-                     schema:
-                        $ref: "#/components/schemas/ApiResponse"
    /config/system:
       get:
          tags:
@@ -758,6 +592,172 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
+   /config/profile/active:
+      get:
+         tags:
+            - Profile Management
+         summary: Get the currently active user profile.
+         description: Get the currently active user profile.
+         operationId: getActiveProfile
+         responses:
+            "200":
+               description: Response contains the name of the active user profile.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/Profile"
+      patch:
+         tags:
+            - Profile Management
+         summary: Update the active user profile.
+         description: Update the active user profile.
+         operationId: updateActiveUserProfile
+         requestBody:
+            $ref: "#/components/requestBodies/Profile"
+         responses:
+            "200":
+               description: The active profile was updated.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is invalid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "404":
+               description: The profile was not found.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+   /config/profile:
+      get:
+         tags:
+            - Profile Management
+         summary: Get a list of all user profile.
+         description: Get a list of all user profile.
+         operationId: getProfileList
+         responses:
+            "200":
+               description: Response contains the names of all user profiles.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ProfileList"
+      post:
+         tags:
+            - Profile Management
+         summary: Create a new user profile.
+         description: Create a new user profile.
+         operationId: createUserProfile
+         requestBody:
+            $ref: "#/components/requestBodies/Profile"
+         responses:
+            "200":
+               description: The profile was created.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is invalid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+      put:
+         tags:
+            - Profile Management
+         summary: Clone an existing user profile.
+         description: Clone an existing user profile.
+         operationId: cloneUserProfile
+         parameters:
+            - name: name
+              in: query
+              description: Name of the source profile.
+              schema:
+                 type: string
+              required: true
+         requestBody:
+            $ref: "#/components/requestBodies/Profile"
+         responses:
+            "200":
+               description: The profile was cloned.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is invalid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "404":
+               description: The source profile was not found.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+      delete:
+         tags:
+            - Profile Management
+         summary: Delete an existing user profile.
+         description: Delete an existing user profile.
+         operationId: deleteUserProfile
+         parameters:
+            - name: name
+              in: query
+              description: Name of the profile to delete.
+              schema:
+                 type: string
+              required: true
+         responses:
+            "200":
+               description: The profile was delete.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "400":
+               description: The request is invalid.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "404":
+               description: The profile was not found.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
+            "500":
+               description: Failed to process the request.
+               content:
+                  application/json:
+                     schema:
+                        $ref: "#/components/schemas/ApiResponse"
 components:
    schemas:
       ApiResponse:
@@ -884,32 +884,6 @@ components:
                      type: integer
                      format: uint8
                      example: 1
-      Profile:
-         properties:
-            profile:
-               type: object
-               properties:
-                  name:
-                     type: string
-                     example: New Profile
-      ProfileList:
-         type: object
-         properties:
-            status:
-               type: integer
-               format: int32
-               example: 200
-            message:
-               type: string
-               example: Message
-            profile:
-               type: object
-               properties:
-                  names:
-                     type: array
-                     items:
-                        type: string
-                        example: Profile
       SystemConfiguration:
          type: object
          properties:
@@ -1272,6 +1246,39 @@ components:
                      type: integer
                      format: uint32
                      example: 954861
+      Profile:
+         properties:
+            status:
+               type: integer
+               format: int32
+               example: 200
+            message:
+               type: string
+               example: Message
+            profile:
+               type: object
+               properties:
+                  name:
+                     type: string
+                     example: New Profile
+      ProfileList:
+         type: object
+         properties:
+            status:
+               type: integer
+               format: int32
+               example: 200
+            message:
+               type: string
+               example: Message
+            profile:
+               type: object
+               properties:
+                  names:
+                     type: array
+                     items:
+                        type: string
+                        example: Profile
    requestBodies:
       SystemConfiguration:
          description: Update the current system configuration on the controller.
@@ -1347,19 +1354,6 @@ components:
                               type: integer
                               format: uint8
                               example: 80
-      Profile:
-         description: Contains the name of a profile.
-         content:
-            application/json:
-               schema:
-                  type: object
-                  properties:
-                     profile:
-                        type: object
-                        properties:
-                           name:
-                              type: string
-                              example: New Profile
       LedConfiguration:
          description: Update the current LED/zone configuration on the controller.
          content:
@@ -1591,3 +1585,16 @@ components:
                            expertMode:
                               type: boolean
                               example: false
+      Profile:
+         description: Contains the name of a profile.
+         content:
+            application/json:
+               schema:
+                  type: object
+                  properties:
+                     profile:
+                        type: object
+                        properties:
+                           name:
+                              type: string
+                              example: New Profile
