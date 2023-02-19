@@ -8,9 +8,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import {
   createMemoryHistory,
-  createReactRouter,
-  createRouteConfig,
   Outlet,
+  ReactRouter,
+  RootRoute,
+  Route,
   RouterProvider,
 } from '@tanstack/react-router';
 import { lazy } from 'react';
@@ -41,7 +42,7 @@ const TanStackRouterDevtools = import.meta.env.PROD
       })),
     );
 
-const rootRoute = createRouteConfig({
+const rootRoute = new RootRoute({
   component: () => (
     <>
       <Outlet />
@@ -50,7 +51,8 @@ const rootRoute = createRouteConfig({
   ),
 });
 
-const homeRoute = rootRoute.createRoute({
+const homeRoute = new Route({
+  getParentRoute: () => rootRoute,
   path: '/',
   component: Home,
   meta: {
@@ -59,7 +61,8 @@ const homeRoute = rootRoute.createRoute({
   },
 });
 
-const zonesRoute = rootRoute.createRoute({
+const zonesRoute = new Route({
+  getParentRoute: () => rootRoute,
   path: 'zones',
   meta: {
     name: <Trans i18nKey="zones.title" />,
@@ -68,14 +71,14 @@ const zonesRoute = rootRoute.createRoute({
   component: () => {
     const currentRoute = router
       .matchRoutes(router.state.currentLocation.pathname)
-      .reverse()[0];
+      .reverse()[0].route;
 
     const meta = currentRoute.options.meta;
 
     return (
       <>
         <Header
-          name={meta?.name ?? currentRoute.routeId}
+          name={meta?.name ?? currentRoute.id}
           {...(meta?.icon && { icon: meta.icon })}
         />
         <Outlet />
@@ -84,7 +87,8 @@ const zonesRoute = rootRoute.createRoute({
   },
 });
 
-const dashboardRoute = zonesRoute.createRoute({
+const dashboardRoute = new Route({
+  getParentRoute: () => zonesRoute,
   path: 'dashboard',
   component: () => <Zone routeId={dashboardRoute.id} />,
   meta: {
@@ -94,7 +98,8 @@ const dashboardRoute = zonesRoute.createRoute({
   },
 });
 
-const centerConsoleRoute = zonesRoute.createRoute({
+const centerConsoleRoute = new Route({
+  getParentRoute: () => zonesRoute,
   path: 'center-console',
   component: () => <Zone routeId={centerConsoleRoute.id} />,
   meta: {
@@ -106,7 +111,8 @@ const centerConsoleRoute = zonesRoute.createRoute({
   },
 });
 
-const frontLeftDoorRoute = zonesRoute.createRoute({
+const frontLeftDoorRoute = new Route({
+  getParentRoute: () => zonesRoute,
   path: 'front-left-door',
   component: () => <Zone routeId={frontLeftDoorRoute.id} />,
   meta: {
@@ -118,7 +124,8 @@ const frontLeftDoorRoute = zonesRoute.createRoute({
   },
 });
 
-const frontRightDoorRoute = zonesRoute.createRoute({
+const frontRightDoorRoute = new Route({
+  getParentRoute: () => zonesRoute,
   path: 'front-right-door',
   component: () => <Zone routeId={frontRightDoorRoute.id} />,
   meta: {
@@ -128,7 +135,8 @@ const frontRightDoorRoute = zonesRoute.createRoute({
   },
 });
 
-const rearLeftDoorRoute = zonesRoute.createRoute({
+const rearLeftDoorRoute = new Route({
+  getParentRoute: () => zonesRoute,
   path: 'rear-left-door',
   component: () => <Zone routeId={rearLeftDoorRoute.id} />,
   meta: {
@@ -140,7 +148,8 @@ const rearLeftDoorRoute = zonesRoute.createRoute({
   },
 });
 
-const rearRightDoorRoute = zonesRoute.createRoute({
+const rearRightDoorRoute = new Route({
+  getParentRoute: () => zonesRoute,
   path: 'rear-right-door',
   component: () => <Zone routeId={rearRightDoorRoute.id} />,
   meta: {
@@ -150,7 +159,8 @@ const rearRightDoorRoute = zonesRoute.createRoute({
   },
 });
 
-const leftFootwellRoute = zonesRoute.createRoute({
+const leftFootwellRoute = new Route({
+  getParentRoute: () => zonesRoute,
   path: 'left-footwell',
   component: () => <Zone routeId={leftFootwellRoute.id} />,
   meta: {
@@ -162,7 +172,8 @@ const leftFootwellRoute = zonesRoute.createRoute({
   },
 });
 
-const rightFootwellRoute = zonesRoute.createRoute({
+const rightFootwellRoute = new Route({
+  getParentRoute: () => zonesRoute,
   path: 'right-footwell',
   component: () => <Zone routeId={rightFootwellRoute.id} />,
   meta: {
@@ -174,7 +185,8 @@ const rightFootwellRoute = zonesRoute.createRoute({
   },
 });
 
-const customAnimationsRoute = rootRoute.createRoute({
+const customAnimationsRoute = new Route({
+  getParentRoute: () => rootRoute,
   path: 'custom-animations',
   component: () => {
     const meta = customAnimationsRoute.options.meta;
@@ -191,7 +203,8 @@ const customAnimationsRoute = rootRoute.createRoute({
   },
 });
 
-const settingsRoute = rootRoute.createRoute({
+const settingsRoute = new Route({
+  getParentRoute: () => rootRoute,
   path: 'settings',
   component: () => {
     const meta = settingsRoute.options.meta;
@@ -210,7 +223,8 @@ const settingsRoute = rootRoute.createRoute({
   },
 });
 
-const updateRoute = rootRoute.createRoute({
+const updateRoute = new Route({
+  getParentRoute: () => rootRoute,
   path: 'update',
   component: () => {
     const meta = updateRoute.options.meta;
@@ -227,7 +241,8 @@ const updateRoute = rootRoute.createRoute({
   },
 });
 
-const logFilesRoute = rootRoute.createRoute({
+const logFilesRoute = new Route({
+  getParentRoute: () => rootRoute,
   path: 'log-files',
   component: () => {
     const meta = logFilesRoute.options.meta;
@@ -246,7 +261,7 @@ const logFilesRoute = rootRoute.createRoute({
   },
 });
 
-const routeConfig = rootRoute.addChildren([
+const routeTree = rootRoute.addChildren([
   homeRoute,
   zonesRoute.addChildren([
     dashboardRoute,
@@ -268,8 +283,8 @@ const memoryHistory = createMemoryHistory({
   initialEntries: [basePath.slice(0, -1)],
 });
 
-const router = createReactRouter({
-  routeConfig,
+const router = new ReactRouter({
+  routeTree,
   basepath: basePath,
   history: memoryHistory,
 });
