@@ -2,13 +2,7 @@ import {
   ArrowTopRightOnSquareIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
-import {
-  AllRouteInfo,
-  AnyRoute,
-  Route,
-  RouteInfo,
-  useRouter,
-} from '@tanstack/react-router';
+import { AnyRoute, Link, RootRoute, useRouter } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { version } from '../../package.json';
 import { ReactComponent as Logo } from '../assets/logo.svg';
@@ -18,10 +12,10 @@ import i18n from '../i18n';
 import { changeTheme, toPercentage } from '../libs';
 import { useLed, useUi } from './api';
 
-const flatRoutes = (route: Route<AllRouteInfo, RouteInfo>): AnyRoute[] =>
-  route.childRoutes
+const flatRoutes = (route: RootRoute): AnyRoute[] =>
+  (route.children as AnyRoute[] | undefined)
     ?.flatMap((route) => {
-      if (route.childRoutes) {
+      if (route.children) {
         return [...(flatRoutes(route) ?? [])];
       }
       if (route.options.meta?.isVisible ?? true) {
@@ -67,10 +61,10 @@ export const Home = (): JSX.Element => {
           ledData?.[0].type === AnimationType.FSEQ &&
           !!brightness &&
           !!animation;
-
         return (
-          <route.Link
-            key={route.routeId}
+          <Link
+            to={route.fullPath}
+            key={route.id}
             className="aria-disabled:cursor-not-allowed aria-disabled:text-zinc"
             disabled={isCustomAnimationActive}
           >
@@ -101,7 +95,7 @@ export const Home = (): JSX.Element => {
                 <ChevronRightIcon className="h-4 w-4" />
               </div>
             </div>
-          </route.Link>
+          </Link>
         );
       })}
 
