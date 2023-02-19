@@ -42,6 +42,7 @@
 #include "wifi/WiFiManager.h"
 #include "server/WebServerManager.h"
 #include "server/ConnectionTestEndpoint.h"
+#include "server/ProfileEndpoint.h"
 #include "server/SystemInformationEndpoint.h"
 #include "server/SystemConfigurationEndpoint.h"
 #include "server/LedConfigurationEndpoint.h"

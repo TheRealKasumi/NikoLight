@@ -111,8 +111,8 @@ void TL::SystemConfigurationEndpoint::postSystemConfig()
 
 	if (!jsonDoc[F("systemConfig")].is<JsonObject>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain the \"systemConfig\" object."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain the \"systemConfig\" object."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"systemConfig\" object."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain a \"systemConfig\" object."));
 		return;
 	}
 

@@ -286,7 +286,8 @@ TL::LedManager::Error TL::LedManager::initLedDriver()
 	std::vector<TL::LedStrip> ledStrips;
 	for (size_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		const TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
+		TL::Configuration::LedConfig ledConfig;
+		TL::Configuration::getLedConfig(i, ledConfig);
 		ledStrips.push_back(TL::LedStrip(ledConfig.ledPin, ledConfig.ledCount, LED_MAX_COUNT_PER_ZONE));
 	}
 
@@ -313,9 +314,12 @@ TL::LedManager::Error TL::LedManager::createAnimators()
 	// Custom animations will be used when the first animator type is set to 255
 	// The used file identifier is set by the custom fields [10-13]
 	// Field 14 is reserved to store the previous, calculated animation type
-	const bool customAnimation = TL::Configuration::getLedConfig(0).type == 255;
+	TL::Configuration::LedConfig ledConfig;
+	TL::Configuration::getLedConfig(0, ledConfig);
+
+	const bool customAnimation = ledConfig.type == 255;
 	uint32_t identifier = 0;
-	std::memcpy(&identifier, &TL::Configuration::getLedConfig(0).animationSettings[20], sizeof(identifier));
+	std::memcpy(&identifier, &ledConfig.animationSettings[20], sizeof(identifier));
 	if (!customAnimation)
 	{
 		return TL::LedManager::loadCalculatedAnimations();
@@ -345,7 +349,8 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 	TL::LedManager::ledAnimator.resize(LED_NUM_ZONES);
 	for (size_t i = 0; i < TL::LedManager::ledAnimator.size(); i++)
 	{
-		const TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
+		TL::Configuration::LedConfig ledConfig;
+		TL::Configuration::getLedConfig(i, ledConfig);
 
 		// Rainbow type
 		if (ledConfig.type == 0)
@@ -461,7 +466,9 @@ TL::LedManager::Error TL::LedManager::loadCustomAnimation(const String &fileName
 	TL::LedManager::ledAnimator.resize(LED_NUM_ZONES);
 	for (size_t i = 0; i < TL::LedManager::ledAnimator.size(); i++)
 	{
-		const TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
+		TL::Configuration::LedConfig ledConfig;
+		TL::Configuration::getLedConfig(i, ledConfig);
+
 		TL::LedManager::ledAnimator.at(i).reset(new TL::FseqAnimator(TL::LedManager::fseqLoader.get(), true));
 		TL::LedManager::ledAnimator.at(i)->setDataSource(static_cast<TL::LedAnimator::DataSource>(ledConfig.dataSource));
 		TL::LedManager::ledAnimator.at(i)->setSpeed(ledConfig.speed);
@@ -488,7 +495,8 @@ void TL::LedManager::calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_
 	for (size_t i = 0; i < TL::LedManager::ledBuffer->getLedStripCount(); i++)
 	{
 		TL::LedStrip ledStrip = TL::LedManager::ledBuffer->getLedStrip(i);
-		const TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
+		TL::Configuration::LedConfig ledConfig;
+		TL::Configuration::getLedConfig(i, ledConfig);
 
 		float zoneCurrent = 0.0f;
 		for (size_t j = 0; j < ledStrip.getLedCount(); j++)
@@ -515,7 +523,8 @@ void TL::LedManager::limitPowerConsumption()
 	for (size_t i = 0; i < TL::LedManager::ledBuffer->getLedStripCount(); i++)
 	{
 		TL::LedStrip ledStrip = TL::LedManager::ledBuffer->getLedStrip(i);
-		const TL::Configuration::LedConfig ledConfig = TL::Configuration::getLedConfig(i);
+		TL::Configuration::LedConfig ledConfig;
+		TL::Configuration::getLedConfig(i, ledConfig);
 
 		const uint8_t regulatorIndex = TL::LedManager::getRegulatorIndexFromPin(ledConfig.ledPin);
 		float multiplicator = ((float)systemConfig.regulatorPowerLimit / REGULATOR_COUNT) / regulatorPower[regulatorIndex];

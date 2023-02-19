@@ -32,9 +32,9 @@ TL::SystemInformation::TLInformation TL::SystemInformation::systemInfo = TL::Sys
 void TL::SystemInformation::begin()
 {
 	TL::SystemInformation::initialized = true;
-	strcpy(TL::SystemInformation::socInfo.chipModel, "");
+	TL::SystemInformation::socInfo.chipModel = String();
 	TL::SystemInformation::socInfo.chipRevision = 0;
-	strcpy(TL::SystemInformation::socInfo.fwVersion, FW_VERSION);
+	TL::SystemInformation::socInfo.fwVersion = FW_VERSION;
 	TL::SystemInformation::socInfo.cpuCores = 0;
 	TL::SystemInformation::socInfo.cpuClock = 0;
 	TL::SystemInformation::socInfo.freeHeap = 0;
@@ -43,7 +43,7 @@ void TL::SystemInformation::begin()
 	TL::SystemInformation::socInfo.sketchSize = 0;
 	TL::SystemInformation::socInfo.freeSketchSpace = 0;
 
-	strcpy(TL::SystemInformation::hardwareInfo.hwVersion, HW_VERSION);
+	TL::SystemInformation::hardwareInfo.hwVersion = HW_VERSION;
 	TL::SystemInformation::hardwareInfo.regulatorCount = REGULATOR_COUNT;
 	TL::SystemInformation::hardwareInfo.regulatorVoltage = REGULATOR_DEFAULT_VOLTAGE;
 	TL::SystemInformation::hardwareInfo.regulatorCurrentLimit = REGULATOR_CURRENT_LIMIT * REGULATOR_COUNT;
@@ -85,7 +85,7 @@ void TL::SystemInformation::updateSocInfo(const bool fast)
 	}
 	else
 	{
-		strcpy(TL::SystemInformation::socInfo.chipModel, ESP.getChipModel());
+		TL::SystemInformation::socInfo.chipModel = String(ESP.getChipModel());
 		TL::SystemInformation::socInfo.chipRevision = ESP.getChipRevision();
 		TL::SystemInformation::socInfo.cpuCores = ESP.getChipCores();
 		TL::SystemInformation::socInfo.cpuClock = ESP.getCpuFreqMHz() * 1000000;

@@ -215,7 +215,9 @@ void TL::FseqEndpoint::deleteFseq()
 		return;
 	}
 
-	if (TL::Configuration::getLedConfig(0).type == 255)
+	TL::Configuration::LedConfig ledConfig;
+	TL::Configuration::getLedConfig(0, ledConfig);
+	if (ledConfig.type == 255)
 	{
 		uint32_t idFile = 0;
 		uint32_t idConfig = 0;
@@ -225,7 +227,8 @@ void TL::FseqEndpoint::deleteFseq()
 			TL::FseqEndpoint::sendSimpleResponse(500, F("Failed to calculate file identifier."));
 			return;
 		}
-		memcpy(&idConfig, &TL::Configuration::getLedConfig(0).animationSettings[20], sizeof(idConfig));
+
+		memcpy(&idConfig, &ledConfig.animationSettings[20], sizeof(idConfig));
 		if (idFile == idConfig)
 		{
 			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Can not delete a fseq file that is currently used."));

@@ -39,7 +39,7 @@ bool TL::Logger::begin(const TL::Logger::LogLevel minLogLevel)
 	TL::Logger::logToSerial = false;
 	TL::Logger::logToFile = false;
 	TL::Logger::fileSystem = nullptr;
-	TL::Logger::fileName = F("");
+	TL::Logger::fileName = String();
 	TL::Logger::minLogLevel = minLogLevel;
 	return true;
 }
@@ -57,7 +57,7 @@ bool TL::Logger::begin(const uint32_t baudRate, const TL::Logger::LogLevel minLo
 	TL::Logger::logToSerial = true;
 	TL::Logger::logToFile = false;
 	TL::Logger::fileSystem = nullptr;
-	TL::Logger::fileName = F("");
+	TL::Logger::fileName = String();
 	TL::Logger::minLogLevel = minLogLevel;
 	return true;
 }
@@ -111,7 +111,7 @@ void TL::Logger::end()
 	TL::Logger::logToSerial = false;
 	TL::Logger::logToFile = false;
 	TL::Logger::fileSystem = nullptr;
-	TL::Logger::fileName = F("");
+	TL::Logger::fileName = String();
 	TL::Logger::minLogLevel = TL::Logger::LogLevel::INFO;
 }
 
@@ -310,7 +310,7 @@ String TL::Logger::getTimeString()
 	const unsigned long sec = milli / 1000;
 	milli = milli - 1000 * sec;
 
-	String timeString = F("");
+	String timeString = String();
 	if (hour < 10)
 	{
 		timeString = timeString + F("0") + hour + F(":");

@@ -121,8 +121,8 @@ void TL::AudioUnitConfigurationEndpoint::postAudioUnitConfig()
 
 	if (!jsonDoc[F("audioUnitConfig")].is<JsonObject>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain the \"audioUnitConfig\" object."));
-		TL::AudioUnitConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain the \"audioUnitConfig\" object."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"audioUnitConfig\" object."));
+		TL::AudioUnitConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain a \"audioUnitConfig\" object."));
 		return;
 	}
 
