@@ -23,8 +23,8 @@
 #define SYSTEM_INFORMATION_H
 
 #include <stdint.h>
-#include <cstring>
-#include "Esp.h"
+#include <WString.h>
+#include <Esp.h>
 #include "configuration/SystemConfiguration.h"
 
 namespace TL
@@ -34,9 +34,9 @@ namespace TL
 	public:
 		struct SocInfo
 		{
-			char chipModel[32];
+			String chipModel;
 			uint8_t chipRevision;
-			char fwVersion[8];
+			String fwVersion;
 			uint8_t cpuCores;
 			uint32_t cpuClock;
 			uint32_t freeHeap;
@@ -48,7 +48,7 @@ namespace TL
 
 		struct HardwareInformation
 		{
-			char hwVersion[8];
+			String hwVersion;
 			uint8_t regulatorCount;
 			float regulatorVoltage;
 			float regulatorCurrentLimit;

@@ -3,6 +3,7 @@ import {
   ArrowPathIcon,
   DocumentTextIcon,
   FilmIcon,
+  UsersIcon,
 } from '@heroicons/react/24/outline';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -26,6 +27,7 @@ import {
   CustomAnimations,
   Home,
   LogFiles,
+  Profiles,
   Settings,
   Update,
   Zone,
@@ -203,6 +205,24 @@ const customAnimationsRoute = new Route({
   },
 });
 
+const profilesRoute = new Route({
+  getParentRoute: () => rootRoute,
+  path: 'profiles',
+  component: () => {
+    const meta = profilesRoute.options.meta;
+    return (
+      <>
+        <Header name={meta?.name ?? profilesRoute.id} />
+        <Profiles />
+      </>
+    );
+  },
+  meta: {
+    name: <Trans i18nKey="profiles.title" />,
+    icon: <UsersIcon className="h-6 w-6 stroke-slate dark:stroke-white" />,
+  },
+});
+
 const settingsRoute = new Route({
   getParentRoute: () => rootRoute,
   path: 'settings',
@@ -274,6 +294,7 @@ const routeTree = rootRoute.addChildren([
     rightFootwellRoute,
   ]),
   customAnimationsRoute,
+  profilesRoute,
   settingsRoute,
   updateRoute,
   logFilesRoute,

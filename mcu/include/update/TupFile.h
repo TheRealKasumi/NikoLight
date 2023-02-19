@@ -22,7 +22,8 @@
 #ifndef TUP_FILE_H
 #define TUP_FILE_H
 
-#include <Arduino.h>
+#include <stdint.h>
+#include <WString.h>
 #include <FS.h>
 
 namespace TL

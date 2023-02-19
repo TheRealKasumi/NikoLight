@@ -1,10 +1,27 @@
 import { rest } from 'msw';
-import type { Fseq, Led, System, SystemInfo, Ui, Wifi } from '../pages/api';
+import type {
+  Fseq,
+  Led,
+  Profile,
+  Profiles,
+  System,
+  SystemInfo,
+  Ui,
+  Wifi,
+} from '../pages/api';
 import { throttledRes } from './throttledRes';
+
+const profiles: string[] = ['Elon', 'Andrej', 'Optimus'];
 
 const mock: {
   system: {
     systemConfig: System;
+  };
+  profile: {
+    profile: Profile;
+  };
+  profiles: {
+    profile: Profiles;
   };
   led: {
     ledConfig: Led[];
@@ -60,6 +77,16 @@ const mock: {
       fanMinTemperature: 60,
       fanMaxTemperature: 80,
       fanMode: 0,
+    },
+  },
+  profile: {
+    profile: {
+      name: profiles[0],
+    },
+  },
+  profiles: {
+    profile: {
+      names: profiles,
     },
   },
   led: {
@@ -198,6 +225,58 @@ export const handlers = [
   rest.post('/api/config/system', async (req, res, ctx) => {
     mock.system = await req.json();
     console.debug(`Post new system configuration: ${mock.system}`);
+    return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
+  }),
+
+  // ------------------
+  // Profile Management
+  // ------------------
+
+  rest.get('/api/config/profile/active', (_req, res, ctx) => {
+    console.debug(`Get active profile: ${mock.profile}`);
+    return res(
+      ctx.status(200),
+      ctx.json({ status: 200, message: 'ok', ...mock.profile }),
+    );
+  }),
+
+  rest.patch('/api/config/profile/active', async (req, res, ctx) => {
+    mock.profile = await req.json();
+    console.debug(`Update active profile: ${mock.profile}`);
+    return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
+  }),
+
+  rest.get('/api/config/profile', (_req, res, ctx) => {
+    console.debug(`Get profiles: ${mock.profiles}`);
+    return res(
+      ctx.status(200),
+      ctx.json({ status: 200, message: 'ok', ...mock.profiles }),
+    );
+  }),
+
+  rest.post('/api/config/profile', async (req, res, ctx) => {
+    const data = await req.json();
+    mock.profiles.profile.names.push(data.profile.name);
+    console.debug(`Post new profile: ${mock.profile}`);
+    return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
+  }),
+
+  rest.put('/api/config/profile', async (req, res, ctx) => {
+    const data = await req.json();
+    mock.profiles.profile.names = [
+      ...mock.profiles.profile.names,
+      data.profile.name,
+    ];
+    console.debug(`Clone profile: ${mock.profiles}`);
+    return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
+  }),
+
+  rest.delete('/api/config/profile', async (req, res, ctx) => {
+    const name = req.url.searchParams.get('name');
+    mock.profiles.profile.names = mock.profiles.profile.names.filter(
+      (profileName) => profileName !== name,
+    );
+    console.debug(`Delete profile: ${mock.profiles}`);
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 

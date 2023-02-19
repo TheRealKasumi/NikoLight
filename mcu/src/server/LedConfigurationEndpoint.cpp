@@ -44,31 +44,34 @@ void TL::LedConfigurationEndpoint::getLedConfig()
 	}
 
 	DynamicJsonDocument jsonDoc(5600);
-	const JsonArray ledConfig = jsonDoc.createNestedArray(F("ledConfig"));
+	const JsonArray ledConfigArray = jsonDoc.createNestedArray(F("ledConfig"));
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		const JsonObject ledZone = ledConfig.createNestedObject();
-		ledZone[F("ledPin")] = TL::Configuration::getLedConfig(i).ledPin;
-		ledZone[F("ledCount")] = TL::Configuration::getLedConfig(i).ledCount;
-		ledZone[F("type")] = TL::Configuration::getLedConfig(i).type;
-		ledZone[F("dataSource")] = TL::Configuration::getLedConfig(i).dataSource;
-		ledZone[F("speed")] = TL::Configuration::getLedConfig(i).speed;
-		ledZone[F("offset")] = TL::Configuration::getLedConfig(i).offset;
-		ledZone[F("brightness")] = TL::Configuration::getLedConfig(i).brightness;
-		ledZone[F("reverse")] = TL::Configuration::getLedConfig(i).reverse;
-		ledZone[F("fadeSpeed")] = TL::Configuration::getLedConfig(i).fadeSpeed;
-		ledZone[F("ledVoltage")] = TL::Configuration::getLedConfig(i).ledVoltage;
+		TL::Configuration::LedConfig ledConfig;
+		TL::Configuration::getLedConfig(i, ledConfig);
+
+		const JsonObject ledZone = ledConfigArray.createNestedObject();
+		ledZone[F("ledPin")] = ledConfig.ledPin;
+		ledZone[F("ledCount")] = ledConfig.ledCount;
+		ledZone[F("type")] = ledConfig.type;
+		ledZone[F("dataSource")] = ledConfig.dataSource;
+		ledZone[F("speed")] = ledConfig.speed;
+		ledZone[F("offset")] = ledConfig.offset;
+		ledZone[F("brightness")] = ledConfig.brightness;
+		ledZone[F("reverse")] = ledConfig.reverse;
+		ledZone[F("fadeSpeed")] = ledConfig.fadeSpeed;
+		ledZone[F("ledVoltage")] = ledConfig.ledVoltage;
 
 		const JsonArray animationSettings = ledZone.createNestedArray(F("animationSettings"));
 		for (uint8_t j = 0; j < ANIMATOR_NUM_ANIMATION_SETTINGS; j++)
 		{
-			animationSettings.add(TL::Configuration::getLedConfig(i).animationSettings[j]);
+			animationSettings.add(ledConfig.animationSettings[j]);
 		}
 
 		const JsonArray channelCurrents = ledZone.createNestedArray(F("channelCurrents"));
 		for (uint8_t j = 0; j < 3; j++)
 		{
-			channelCurrents.add(TL::Configuration::getLedConfig(i).ledChannelCurrent[j]);
+			channelCurrents.add(ledConfig.ledChannelCurrent[j]);
 		}
 	}
 
@@ -121,8 +124,8 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 
 	if (!jsonDoc[F("ledConfig")].is<JsonArray>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain the \"ledConfig\" array."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain the \"ledConfig\" array."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"ledConfig\" array."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain a \"ledConfig\" array."));
 		return;
 	}
 
@@ -170,7 +173,7 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 
 	for (uint8_t i = 0; i < LED_NUM_ZONES; i++)
 	{
-		TL::Configuration::setLedConfig(config[i], i);
+		TL::Configuration::setLedConfig(i, config[i]);
 	}
 
 	const TL::Configuration::Error configSaveError = TL::Configuration::save();

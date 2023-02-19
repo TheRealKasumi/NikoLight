@@ -1,7 +1,7 @@
 /**
- * @file Updater.h
+ * @file ProfileEndpoint.h
  * @author TheRealKasumi
- * @brief Class to install system updates from a TUP file.
+ * @brief Contains a REST endpoint to manage user profiles.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -19,46 +19,33 @@
  * from the owner.
  *
  */
-#ifndef UPDATER_H
-#define UPDATER_H
+#ifndef PROFILE_ENDPOINT_H
+#define PROFILE_ENDPOINT_H
 
-#include <stdint.h>
-#include <WString.h>
-#include <FS.h>
-#include <Update.h>
-
+#include "server/RestEndpoint.h"
+#include "configuration/Configuration.h"
+#include "led/LedManager.h"
 #include "logging/Logger.h"
-#include "update/TupFile.h"
-#include "util/FileUtil.h"
 
 namespace TL
 {
-	class Updater
+	class ProfileEndpoint : public RestEndpoint
 	{
 	public:
-		enum class Error
-		{
-			OK,							 // No error
-			ERROR_UPDATE_FILE_NOT_FOUND, // Update file was not found
-			ERROR_INVALID_FILE,			 // Update file is invalid
-			ERROR_CLEAN_FS,				 // Failed to clean FS for the update
-			ERROR_UPDATE_UNPACK,		 // Failed to unpack the update package
-			ERROR_FW_FILE_NOT_FOUND,	 // The firmware file was not found
-			ERROR_FW_FILE_EMPTY,		 // The firmware file is empty
-			ERROR_OUT_OF_FLASH_MEMORY,	 // Not enough flash memory to install the firmware
-			ERROR_WRITE_FW_DATA,		 // Not all firmware data was written
-			ERROR_FINISH_FW_UPDATE,		 // Failed to finish the firmware update
-
-		};
-
-		static TL::Updater::Error install(FS *fileSystem, const String packageFileName);
-		static void reboot(const String reason, const uint16_t delayMillis);
+		static void begin();
 
 	private:
-		Updater();
+		ProfileEndpoint();
 
-		static TL::Updater::Error installFirmware(FS *fileSystem, const String firmwareFileName);
-		static void rebootInt(void *params);
+		static void getActiveProfile();
+		static void patchActiveProfile();
+
+		static void getProfiles();
+		static void postProfile();
+		static void cloneProfile();
+		static void deleteProfile();
+
+		static bool validateProfileName(const String &profileName);
 	};
 }
 

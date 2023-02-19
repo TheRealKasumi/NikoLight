@@ -31,6 +31,19 @@
       "headline": "Achtung"
     }
   },
+  "profiles": {
+    "active": "Aktiv",
+    "clone": "Aktives Profil duplizieren",
+    "delete": "Löschen",
+    "deleteSuccessful": "Erfolgreich gelöscht!",
+    "name": "Name",
+    "new": "Neues Profil",
+    "saved": "Gespeicherte Profile",
+    "select": "Auswählen",
+    "submit": "Profil erstellen",
+    "submitSuccessful": "Erfolgreich erstellt!",
+    "title": "Profile"
+  },
   "settings": {
     "accessPointPassword": "Passwort",
     "accessPointSsid": "SSID",

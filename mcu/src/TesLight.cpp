@@ -185,6 +185,11 @@ void TesLight::initializeConfiguration()
 		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Configuration file is corrupted. Loading defaults."));
 		TL::Configuration::loadDefaults();
 	}
+	else if (configError == TL::Configuration::Error::ERROR_TOO_MANY_PROFILES)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The configuration file contains too many profiles. Loading defaults."));
+		TL::Configuration::loadDefaults();
+	}
 	else if (configError != TL::Configuration::Error::OK)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Unknown error loading configuration from MicroSD card. Loading defaults."));
@@ -470,6 +475,8 @@ void TesLight::initializeRestApi()
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize REST API."));
 	TL::ConnectionTestEndpoint::init(F("/api/"));
 	TL::ConnectionTestEndpoint::begin();
+	TL::ProfileEndpoint::init(F("/api/"));
+	TL::ProfileEndpoint::begin();
 	TL::SystemInformationEndpoint::init(F("/api/"));
 	TL::SystemInformationEndpoint::begin();
 	TL::SystemConfigurationEndpoint::init(F("/api/"));
@@ -793,7 +800,7 @@ void TesLight::run()
 				F("Average Current: ") + hwInfo.regulatorCurrentDraw + F("A   ") +
 				F("Temperature: ") + hwInfo.regulatorTemperature + F("°C   ") +
 				F("Fan: ") + hwInfo.fanSpeed / 2.55f + F("%   ") +
-				F("Heap (free): ") + socInfo.freeHeap + F("kB"));
+				F("Heap (free): ") + socInfo.freeHeap + F("Bytes"));
 	}
 
 	// Handle web server requests
