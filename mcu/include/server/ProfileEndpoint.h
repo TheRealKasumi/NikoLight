@@ -1,7 +1,7 @@
 /**
  * @file ProfileEndpoint.h
  * @author TheRealKasumi
- * @brief Contains a REST endpoint to manage configuration profiles.
+ * @brief Contains a REST endpoint to manage user profiles.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -38,7 +38,7 @@ namespace TL
 		ProfileEndpoint();
 
 		static void getActiveProfile();
-		static void postActiveProfile();
+		static void patchActiveProfile();
 
 		static void getProfiles();
 		static void postProfile();

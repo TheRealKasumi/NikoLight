@@ -1,7 +1,7 @@
 /**
  * @file ProfileEndpoint.cpp
  * @author TheRealKasumi
- * @brief Implementation of a REST endpoint to manage configuration profiles.
+ * @brief Implementation of a REST endpoint to manage user profiles.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -27,7 +27,7 @@
 void TL::ProfileEndpoint::begin()
 {
 	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile/active")).c_str(), http_method::HTTP_GET, TL::ProfileEndpoint::getActiveProfile);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile/active")).c_str(), http_method::HTTP_POST, TL::ProfileEndpoint::postActiveProfile);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile/active")).c_str(), http_method::HTTP_PATCH, TL::ProfileEndpoint::patchActiveProfile);
 	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile")).c_str(), http_method::HTTP_GET, TL::ProfileEndpoint::getProfiles);
 	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile")).c_str(), http_method::HTTP_POST, TL::ProfileEndpoint::postProfile);
 	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile")).c_str(), http_method::HTTP_PUT, TL::ProfileEndpoint::cloneProfile);
@@ -39,7 +39,7 @@ void TL::ProfileEndpoint::begin()
  */
 void TL::ProfileEndpoint::getActiveProfile()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the active configuration profile."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the active user profile."));
 	if (!TL::Configuration::isInitialized())
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
@@ -56,11 +56,11 @@ void TL::ProfileEndpoint::getActiveProfile()
 }
 
 /**
- * @brief Update the currently active profile.
+ * @brief Update the active user profile.
  */
-void TL::ProfileEndpoint::postActiveProfile()
+void TL::ProfileEndpoint::patchActiveProfile()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the active configuration profile."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the active user profile."));
 	if (!TL::Configuration::isInitialized())
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
@@ -100,8 +100,8 @@ void TL::ProfileEndpoint::postActiveProfile()
 
 	if (!jsonDoc[F("profile")].is<JsonObject>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain the \"profile\" object."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The json must contain the \"profile\" object."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"profile\" object."));
+		TL::ProfileEndpoint::sendSimpleResponse(400, F("The json must contain a \"profile\" object."));
 		return;
 	}
 
@@ -121,7 +121,20 @@ void TL::ProfileEndpoint::postActiveProfile()
 		return;
 	}
 
-	TL::Configuration::setActiveProfile(profileName);
+	const TL::Configuration::Error setProfileError = TL::Configuration::setActiveProfile(profileName);
+	if (setProfileError == TL::Configuration::Error::ERROR_PROFILE_NOT_FOUND)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The profile was not found."));
+		TL::ProfileEndpoint::sendSimpleResponse(404, F("The profile was not found."));
+		return;
+	}
+	else if (setProfileError != TL::Configuration::Error::OK)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set the active user profile"));
+		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to set the active user profile"));
+		return;
+	}
+
 	const TL::Configuration::Error configSaveError = TL::Configuration::save();
 	if (configSaveError == TL::Configuration::Error::ERROR_FILE_OPEN)
 	{
@@ -189,7 +202,7 @@ void TL::ProfileEndpoint::postActiveProfile()
  */
 void TL::ProfileEndpoint::getProfiles()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get a list of all known configuration profiles."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get a list of all known user profiles."));
 	if (!TL::Configuration::isInitialized())
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
@@ -217,7 +230,7 @@ void TL::ProfileEndpoint::getProfiles()
  */
 void TL::ProfileEndpoint::postProfile()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to create a new configuration profile."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to create a new user profile."));
 	if (!TL::Configuration::isInitialized())
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
@@ -257,8 +270,8 @@ void TL::ProfileEndpoint::postProfile()
 
 	if (!jsonDoc[F("profile")].is<JsonObject>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain the \"profile\" object."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The json must contain the \"profile\" object."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"profile\" object."));
+		TL::ProfileEndpoint::sendSimpleResponse(400, F("The json must contain a \"profile\" object."));
 		return;
 	}
 
@@ -327,7 +340,7 @@ void TL::ProfileEndpoint::postProfile()
  */
 void TL::ProfileEndpoint::cloneProfile()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to clone a configuration profile."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to clone a user profile."));
 	if (!TL::Configuration::isInitialized())
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
@@ -339,6 +352,21 @@ void TL::ProfileEndpoint::cloneProfile()
 	{
 		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/json\"."));
 		TL::ProfileEndpoint::sendSimpleResponse(400, F("The content type must be \"application/json\"."));
+		return;
+	}
+
+	if (!TL::ProfileEndpoint::webServer->hasArg(F("name")))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The name of the source profile must be provided via the \"name\" parameter."));
+		TL::ProfileEndpoint::sendSimpleResponse(400, F("The name of the source profile must be provided via the \"name\" parameter."));
+		return;
+	}
+
+	const String sourceName = TL::ProfileEndpoint::webServer->arg(F("name"));
+	if (!TL::ProfileEndpoint::validateProfileName(sourceName))
+	{
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" parameter contains invalid characters."));
+		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" parameter contains invalid characters."));
 		return;
 	}
 
@@ -367,44 +395,35 @@ void TL::ProfileEndpoint::cloneProfile()
 
 	if (!jsonDoc[F("profile")].is<JsonObject>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain the \"profile\" object."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The json must contain the \"profile\" object."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"profile\" object."));
+		TL::ProfileEndpoint::sendSimpleResponse(400, F("The json must contain a \"profile\" object."));
 		return;
 	}
 
 	const JsonObject profile = jsonDoc[F("profile")].as<JsonObject>();
-	if (!profile[F("source")].is<String>())
+	if (!profile[F("name")].is<String>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"source\" field must be of type \"string\"."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"source\" field must be of type \"string\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field must be of type \"string\"."));
+		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field must be of type \"string\"."));
 		return;
 	}
 
-	if (!profile[F("clone")].is<String>())
-	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"clone\" field must be of type \"string\"."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"clone\" field must be of type \"string\"."));
-		return;
-	}
-
-	const String sourceName = profile[F("source")];
-	if (!TL::ProfileEndpoint::validateProfileName(sourceName))
-	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"source\" field contains invalid characters."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"source\" field contains invalid characters."));
-		return;
-	}
-
-	const String cloneName = profile[F("clone")];
+	const String cloneName = profile[F("name")];
 	if (!TL::ProfileEndpoint::validateProfileName(cloneName))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"clone\" field contains invalid characters."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"clone\" field contains invalid characters."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field contains invalid characters."));
+		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field contains invalid characters."));
 		return;
 	}
 
 	const TL::Configuration::Error cloneError = TL::Configuration::cloneProfile(sourceName, cloneName);
-	if (cloneError == TL::Configuration::Error::ERROR_PROFILE_NAME_EXISTS)
+	if (cloneError == TL::Configuration::Error::ERROR_PROFILE_NOT_FOUND)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The source profile was not found."));
+		TL::ProfileEndpoint::sendSimpleResponse(404, F("The source profile was not found."));
+		return;
+	}
+	else if (cloneError == TL::Configuration::Error::ERROR_PROFILE_NAME_EXISTS)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The clone name already exists."));
 		TL::ProfileEndpoint::sendSimpleResponse(400, F("The clone name already exists."));
@@ -414,12 +433,6 @@ void TL::ProfileEndpoint::cloneProfile()
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The limit of 50 profiles is reached."));
 		TL::ProfileEndpoint::sendSimpleResponse(400, F("The limit of 50 profiles is reached."));
-		return;
-	}
-	else if (cloneError == TL::Configuration::Error::ERROR_PROFILE_NOT_FOUND)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The source profile was not found."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The source profile was not found."));
 		return;
 	}
 	else if (cloneError != TL::Configuration::Error::OK)
@@ -458,7 +471,7 @@ void TL::ProfileEndpoint::cloneProfile()
  */
 void TL::ProfileEndpoint::deleteProfile()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to delete a configuration profile."));
+	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to delete a user profile."));
 	if (!TL::Configuration::isInitialized())
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
@@ -466,56 +479,18 @@ void TL::ProfileEndpoint::deleteProfile()
 		return;
 	}
 
-	if (!TL::ProfileEndpoint::webServer->hasHeader(F("content-type")) || TL::ProfileEndpoint::webServer->header(F("content-type")) != F("application/json"))
+	if (!TL::ProfileEndpoint::webServer->hasArg(F("name")))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/json\"."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The content type must be \"application/json\"."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The name of the profile must be provided via the \"name\" parameter."));
+		TL::ProfileEndpoint::sendSimpleResponse(400, F("The name of the profile must be provided via the \"name\" parameter."));
 		return;
 	}
 
-	if (!TL::ProfileEndpoint::webServer->hasArg(F("plain")))
-	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("There must be a valid json body."));
-		return;
-	}
-
-	const String body = TL::ProfileEndpoint::webServer->arg(F("plain"));
-	if (body.length() == 0 || body.length() > 1024)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 1024 bytes."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 1024 bytes."));
-		return;
-	}
-
-	DynamicJsonDocument jsonDoc(1024);
-	if (!TL::ProfileEndpoint::parseJsonDocument(jsonDoc, body))
-	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The body could not be parsed. The json is invalid."));
-		return;
-	}
-
-	if (!jsonDoc[F("profile")].is<JsonObject>())
-	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain the \"profile\" object."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The json must contain the \"profile\" object."));
-		return;
-	}
-
-	const JsonObject profile = jsonDoc[F("profile")].as<JsonObject>();
-	if (!profile[F("name")].is<String>())
-	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field must be of type \"string\"."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field must be of type \"string\"."));
-		return;
-	}
-
-	const String profileName = profile[F("name")];
+	const String profileName = TL::ProfileEndpoint::webServer->arg(F("name"));
 	if (!TL::ProfileEndpoint::validateProfileName(profileName))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field contains invalid characters."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field contains invalid characters."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" parameter contains invalid characters."));
+		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" parameter contains invalid characters."));
 		return;
 	}
 
@@ -529,7 +504,7 @@ void TL::ProfileEndpoint::deleteProfile()
 	else if (deleteError == TL::Configuration::Error::ERROR_PROFILE_NOT_FOUND)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The profile was not found."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The profile was not found."));
+		TL::ProfileEndpoint::sendSimpleResponse(404, F("The profile was not found."));
 		return;
 	}
 	else if (deleteError != TL::Configuration::Error::OK)

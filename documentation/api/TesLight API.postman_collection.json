@@ -1,7 +1,7 @@
 {
 	"info": {
 		"name": "TesLight API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
@@ -678,11 +678,11 @@
 				{
 					"name": "Set Active Profile",
 					"request": {
-						"method": "POST",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"profile\": {\r\n        \"name\": \"Default Profile\"\r\n    }\r\n}",
+							"raw": "{\r\n    \"profile\": {\r\n        \"name\": \"New Profile\"\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -755,13 +755,13 @@
 					"response": []
 				},
 				{
-					"name": "Create Profile Copy",
+					"name": "Clone Profile",
 					"request": {
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"profile\": {\r\n        \"source\": \"Default Profile\",\r\n        \"clone\": \"New Profile\"\r\n    }\r\n}",
+							"raw": "{\r\n    \"profile\": {\r\n        \"name\": \"Clone Profile\"\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -769,7 +769,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/profile",
+							"raw": "http://{{TESLIGHTIP}}/api/config/profile?source=Default Profile",
 							"protocol": "http",
 							"host": [
 								"{{TESLIGHTIP}}"
@@ -778,6 +778,12 @@
 								"api",
 								"config",
 								"profile"
+							],
+							"query": [
+								{
+									"key": "source",
+									"value": "Default Profile"
+								}
 							]
 						}
 					},
@@ -788,17 +794,8 @@
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"profile\": {\r\n        \"name\": \"New Profile\"\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/profile",
+							"raw": "http://{{TESLIGHTIP}}/api/config/profile?name=Clone Profile",
 							"protocol": "http",
 							"host": [
 								"{{TESLIGHTIP}}"
@@ -807,6 +804,12 @@
 								"api",
 								"config",
 								"profile"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Clone Profile"
+								}
 							]
 						}
 					},

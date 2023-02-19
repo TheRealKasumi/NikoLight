@@ -279,9 +279,6 @@ void TL::Configuration::setSystemConfig(TL::Configuration::SystemConfig &systemC
 	TL::Configuration::profiles.at(TL::Configuration::activeProfile).systemConfig = systemConfig;
 }
 
-static TL::Configuration::Error getLedConfig(const uint8_t index, TL::Configuration::LedConfig &ledConfig);
-static TL::Configuration::Error setLedConfig(const uint8_t index, const TL::Configuration::LedConfig &ledConfig);
-
 /**
  * @brief Get the LED configuration for a zone by the zone index.
  * @param index index of the zone

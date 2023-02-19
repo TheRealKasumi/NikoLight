@@ -124,8 +124,8 @@ void TL::LedConfigurationEndpoint::postLedConfig()
 
 	if (!jsonDoc[F("ledConfig")].is<JsonArray>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain the \"ledConfig\" array."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain the \"ledConfig\" array."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"ledConfig\" array."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain a \"ledConfig\" array."));
 		return;
 	}
 
