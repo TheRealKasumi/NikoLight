@@ -1,6 +1,6 @@
 {
   "customAnimations": {
-    "deleteSuccessful": "Delete successfully!",
+    "deleteSuccessful": "Successfully deleted!",
     "file": "File",
     "fileName": "File Name",
     "name": "Name",
@@ -30,6 +30,19 @@
     "warning": {
       "headline": "Warning"
     }
+  },
+  "profiles": {
+    "active": "Active",
+    "clone": "Clone active profile",
+    "delete": "Delete",
+    "deleteSuccessful": "Successfully deleted!",
+    "name": "Name",
+    "new": "New Profile",
+    "saved": "Saved Profiles",
+    "select": "Select",
+    "submit": "Create Profile",
+    "submitSuccessful": "Successfully created!",
+    "title": "Profiles"
   },
   "settings": {
     "accessPointPassword": "Password",
@@ -172,7 +185,7 @@
     "speed": "Speed",
     "speedVariance": "Speed Variance",
     "submit": "Apply Settings",
-    "submitSuccessful": "Saved successfully!",
+    "submitSuccessful": "Successfully saved!",
     "variance": "Variance"
   },
   "zones": {
