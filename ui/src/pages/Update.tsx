@@ -12,7 +12,7 @@ export const Update = (): JSX.Element => {
   const {
     handleSubmit,
     control,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isValid },
     reset,
   } = useForm<FormData>({
     mode: 'onChange',
@@ -69,7 +69,7 @@ export const Update = (): JSX.Element => {
           }}
         />
 
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting || !isValid}>
           {t('update.submit')}
         </Button>
       </form>
