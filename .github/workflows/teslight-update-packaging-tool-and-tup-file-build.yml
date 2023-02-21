@@ -1,7 +1,7 @@
 name: TesLight Update Packaging Tool and TUP file Build
 on:
   push:
-    branches: ["main", "releases/**", "feat/DevOps_Auto_build_for_Update_Packages"]
+    branches: ["main", "releases/**"]
     tags: ["v*", "v**", "v.*", "v.**" ]
   pull_request:
     branches: ["main", "releases/**"]
