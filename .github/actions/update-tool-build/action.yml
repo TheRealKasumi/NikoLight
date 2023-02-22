@@ -1,0 +1,56 @@
+name: 'Update Tool build'
+description: 'Update Tool build'
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # - name: print g++ version
+    #   shell: bash
+    #   if: startsWith(matrix.os,'ubuntu') || startsWith(runner.os,'ubuntu') ||  startsWith(matrix.os,'Windows') || startsWith(runner.os,'Windows')
+    #   run: |
+    #     if [ '$runner_os' == 'Linux' || '$matrix_os' == 'Linux' || '$runner_os' == 'Windows' || '$matrix_os' == 'Windows' ]; then
+    #       gcc --version
+    #     elif [ '$runner_os' == 'macOS' || '$matrix_os' == 'macOS' ]; then
+    #       brew info gcc
+    #     fi
+
+    - name: Set up GCC for Linux
+      if: startsWith(matrix.os,'ubuntu') || startsWith(runner.os,'ubuntu')
+      uses: egor-tensin/setup-gcc@v1
+      with:
+        version: latest
+        platform: x64
+
+    # - name: Set up MinGW for Windows
+    #   if: startsWith(${{ matrix.os }},'Windows') || startsWith(${{ runner.os }},'Windows')
+    #   uses: egor-tensin/setup-mingw@v2
+    #   with:
+    #     platform: x64
+
+    # - name: Set up GCC for MacOS
+    #   if: startsWith(${{ matrix.os }},'macOS') || startsWith(${{ runner.os }},'macOS')
+    #   shell: bash
+    #   run: |
+    #     export HOMEBREW_NO_ANALYTICS=1
+    #     brew update
+    #     brew upgrade
+    #     brew info gcc
+    #     brew install gcc
+    #     brew cleanup
+
+    - name: g++ build
+      shell: bash
+      working-directory: update-package-tool
+      run: |
+        mkdir build
+        g++ -std=c++17 -g ./src/*.cpp -o build/tupt_for_${{ runner.os }}.exe
+
+    - name: publish TesLight Update Packaging Tool for ${{ runner.os }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: TesLight_Update_Packaging_Tool_for_${{ runner.os }}
+        path: update-package-tool/build/tupt_for_${{ runner.os }}.exe
+        if-no-files-found: error
+        retention-days: 90
