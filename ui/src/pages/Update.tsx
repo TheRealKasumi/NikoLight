@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, InputType, Loading, Notification, Toast } from '../components';
-import { useUpload } from './api';
+import { useUpdate } from './api';
 
 type FormData = {
   files: File[];
@@ -17,7 +17,7 @@ export const Update = (): JSX.Element => {
   } = useForm<FormData>({
     mode: 'onChange',
   });
-  const { mutateAsync, isSuccess, isError, isLoading, error } = useUpload();
+  const { mutateAsync, isSuccess, isError, isLoading, error } = useUpdate();
 
   const onSubmit = handleSubmit(async (data) => {
     await mutateAsync(

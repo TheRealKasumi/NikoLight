@@ -1,7 +1,7 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import ky from 'ky';
 
-const API_URL = '/api/info/system';
+export const SYSTEM_INFO_API_URL = '/api/info/system';
 
 export type SystemInfo = {
   socInfo: {
@@ -47,8 +47,8 @@ export const useSystemInfo = (
   options?: UseQueryOptions<DataResponse, Error, SystemInfo>,
 ) =>
   useQuery<DataResponse, Error, SystemInfo>({
-    queryKey: [API_URL],
-    queryFn: async () => await ky.get(API_URL).json(),
+    queryKey: [SYSTEM_INFO_API_URL],
+    queryFn: async () => await ky.get(SYSTEM_INFO_API_URL).json(),
     select: (data) => ({
       hardwareInfo: data.hardwareInfo,
       socInfo: data.socInfo,
