@@ -1,0 +1,78 @@
+name: TesLight Update Packaging Tool and TUP file Build
+on:
+  push:
+    branches: ["main", "releases/**"]
+    tags: ["v*", "v**", "v.*", "v.**" ]
+  pull_request:
+    branches: ["main", "releases/**"]
+  workflow_dispatch:
+  workflow_call:
+jobs:
+  build_update_tool_for_different_os:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    # prevent stuck jobs
+    timeout-minutes: 20
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Update Tool Build
+        uses: ./.github/actions/update-tool-build
+
+  generate_tup_file:
+    needs: [build_update_tool_for_different_os]
+    runs-on: ubuntu-latest
+    # prevent stuck jobs
+    timeout-minutes: 20
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Get correct short commit SHA stored into env.short_sha
+        uses: ./.github/actions/get-correct-short-commit-sha
+
+      - name: PlatformIO Build
+        uses: ./.github/actions/platformio-build
+
+      - name: UI Build
+        uses: ./.github/actions/ui-build
+
+      - name: Download artifact - PlatformIO Build
+        uses: actions/download-artifact@v3
+        with:
+          name: PlatformIO-build_${{ env.short_sha }}
+          path: ./update-package-tool/build/tup/src
+
+      - name: Download artifact - UI Build
+        uses: actions/download-artifact@v3
+        with:
+          name: UI-build_${{ env.short_sha }}
+          path: ./update-package-tool/build/tup/src
+
+      - name: Download artifact - TesLight_Update_Packaging_Tool
+        uses: actions/download-artifact@v3
+        with:
+          name: TesLight_Update_Packaging_Tool_for_${{ runner.os }}
+          path: update-package-tool/build
+
+      - name: File permissions
+        if: startsWith(${{ runner.os }},'ubuntu') || startsWith(${{ runner.os }},'macOS')
+        shell: bash
+        run: chmod +x ./update-package-tool/build/tupt_for_*.exe
+
+      - name: tup build
+        shell: bash
+        run: |
+          mkdir -p ./update-package-tool/build/tup/build
+          ./update-package-tool/build/tupt_for_${{ runner.os }}.exe ./update-package-tool/build/tup/build/update_${{ env.short_sha }}.tup ./update-package-tool/build/tup/src
+
+      - name: publish TesLight Update Package File
+        uses: actions/upload-artifact@v3
+        with:
+          name: TesLight_Update_Package_${{ env.short_sha }}
+          path: ./update-package-tool/build/tup/build/update_${{ env.short_sha }}.tup
+          if-no-files-found: error
+          retention-days: 90

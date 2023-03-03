@@ -22,7 +22,9 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <Arduino.h>
+#include <stdint.h>
+#include <HardwareSerial.h>
+#include <WString.h>
 #include <FS.h>
 
 #define SOURCE_LOCATION __FILE__, __func__, __LINE__

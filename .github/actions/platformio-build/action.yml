@@ -1,0 +1,46 @@
+name: 'PlatformIO Build'
+description: 'PlatformIO Build'
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+
+    - name: Cache pip
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: ${{ runner.os }}-pip-
+
+    - name: Cache PlatformIO
+      uses: actions/cache@v3
+      with:
+        path: ~/.platformio
+        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install PlatformIO Core
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install --upgrade platformio
+
+    - name: Build PlatformIO project
+      working-directory: ./mcu
+      shell: bash
+      run: pio run
+
+    - name: Get correct short commit SHA stored into env.short_sha
+      uses: ./.github/actions/get-correct-short-commit-sha
+
+    - name: publish as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: PlatformIO-build_${{ env.short_sha }}
+        path: ./mcu/.pio/build/az-delivery-devkit-v4/firmware.bin
+        if-no-files-found: error
+        retention-days: 1

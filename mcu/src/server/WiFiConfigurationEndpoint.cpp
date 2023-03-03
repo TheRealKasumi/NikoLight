@@ -109,8 +109,8 @@ void TL::WiFiConfigurationEndpoint::postWiFiConfig()
 
 	if (!jsonDoc[F("wifiConfig")].is<JsonObject>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain the \"wifiConfig\" object."));
-		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain the \"wifiConfig\" object."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"wifiConfig\" object."));
+		TL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain a \"wifiConfig\" object."));
 		return;
 	}
 

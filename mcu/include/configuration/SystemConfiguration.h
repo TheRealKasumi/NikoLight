@@ -48,8 +48,9 @@
 #define LOG_DEFAULT_LEVEL 1 			// Default log level
 
 // Configuration of the runtime configuration
-#define CONFIGURATION_FILE_VERSION 13		  // Version of the configuration file
+#define CONFIGURATION_FILE_VERSION 14		  // Version of the configuration file
 #define CONFIGURATION_FILE_NAME "/config.tli" // File name of the configuration file
+#define CONFIGURATION_MAX_PROFILES 50		  // Maximum number of profiles
 
 // LED and effect configuration
 #define LED_NUM_ZONES 8 											  // Number of LED zones

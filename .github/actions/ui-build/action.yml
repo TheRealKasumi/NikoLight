@@ -1,0 +1,55 @@
+name: 'UI build'
+description: 'UI build'
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - uses: pnpm/action-setup@v2
+      name: Install pnpm
+      id: pnpm-install
+      with:
+        version: 7
+        run_install: false
+
+    - name: Get pnpm store directory
+      id: pnpm-cache
+      working-directory: ./ui
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+    - uses: actions/cache@v3
+      name: Setup pnpm cache
+      with:
+        path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    - name: Install dependencies
+      working-directory: ./ui
+      shell: bash
+      run: pnpm install
+
+    - name: Build
+      working-directory: ./ui
+      shell: bash
+      run: pnpm build
+
+    - name: Get correct short commit SHA stored into env.short_sha
+      uses: ./.github/actions/get-correct-short-commit-sha
+
+    - name: publish as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: UI-build_${{ env.short_sha }}
+        path: ./ui/dist/
+        if-no-files-found: error
+        retention-days: 1

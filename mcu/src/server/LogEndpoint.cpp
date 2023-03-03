@@ -106,7 +106,7 @@ void TL::LogEndpoint::getLog()
 	}
 
 	TL::LogEndpoint::webServer->setContentLength(count);
-	TL::LogEndpoint::webServer->send(200, F("text/plain"), F(""));
+	TL::LogEndpoint::webServer->send(200, F("text/plain"), String());
 
 	file.seek(start);
 	uint8_t buffer[512];

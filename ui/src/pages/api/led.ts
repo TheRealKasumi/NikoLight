@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query';
 import ky from 'ky';
 
-const API_URL = '/api/config/led';
+export const LED_API_URL = '/api/config/led';
 
 export type Led = {
   animationSettings: number[];
@@ -38,8 +38,8 @@ type Context = {
 
 export const useLed = (options?: UseQueryOptions<DataResponse, Error, Led[]>) =>
   useQuery<DataResponse, Error, Led[]>({
-    queryKey: [API_URL],
-    queryFn: async () => await ky.get(API_URL).json(),
+    queryKey: [LED_API_URL],
+    queryFn: async () => await ky.get(LED_API_URL).json(),
     select: (data) => data.ledConfig,
     ...options,
   });
@@ -49,7 +49,7 @@ export const useUpdateLed = () => {
   return useMutation<Response, Error, Led[], Context>({
     mutationFn: async (data) =>
       await ky
-        .post(API_URL, {
+        .post(LED_API_URL, {
           json: { ledConfig: data },
           throwHttpErrors: false,
           hooks: {
@@ -66,11 +66,11 @@ export const useUpdateLed = () => {
         })
         .json(),
     onMutate: async (ledConfig) => {
-      await queryClient.cancelQueries({ queryKey: [API_URL] });
-      const cache = queryClient.getQueryData<DataResponse>([API_URL]);
+      await queryClient.cancelQueries({ queryKey: [LED_API_URL] });
+      const cache = queryClient.getQueryData<DataResponse>([LED_API_URL]);
 
       if (cache) {
-        queryClient.setQueryData<DataResponse>([API_URL], {
+        queryClient.setQueryData<DataResponse>([LED_API_URL], {
           ...cache,
           ledConfig,
         });
@@ -79,11 +79,11 @@ export const useUpdateLed = () => {
     },
     onError: (_err, _variables, context) => {
       if (context?.cache) {
-        queryClient.setQueryData<DataResponse>([API_URL], context.cache);
+        queryClient.setQueryData<DataResponse>([LED_API_URL], context.cache);
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [API_URL] });
+      queryClient.invalidateQueries({ queryKey: [LED_API_URL] });
     },
   });
 };
