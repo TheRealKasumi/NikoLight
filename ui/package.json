@@ -42,7 +42,7 @@
     "react-hook-form": "^7.43.2",
     "react-i18next": "^12.2.0",
     "rgb-hex": "^4.0.0",
-    "swagger-ui-react": "^4.16.1"
+    "swagger-ui-react": "^4.17.0"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^4.24.11",
