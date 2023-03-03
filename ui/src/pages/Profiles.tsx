@@ -1,4 +1,7 @@
-import { useQueryErrorResetBoundary } from '@tanstack/react-query';
+import {
+  useQueryClient,
+  useQueryErrorResetBoundary,
+} from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
@@ -12,8 +15,14 @@ import {
   Switch,
   Toast,
 } from '../components';
+import i18n from '../i18n';
+import { changeTheme } from '../libs';
 import {
+  LED_API_URL,
   Profile,
+  SYSTEM_API_URL,
+  UiDataResponse,
+  UI_API_URL,
   useCloneProfile,
   useCreateProfile,
   useDeleteProfile,
@@ -31,6 +40,8 @@ const Form = (): JSX.Element => {
   const { t } = useTranslation();
   const { data: profile } = useProfile();
   const { data: profiles } = useProfiles();
+
+  const queryClient = useQueryClient();
 
   const {
     mutateAsync: mutateAsyncCreateProfile,
@@ -81,7 +92,36 @@ const Form = (): JSX.Element => {
   });
 
   const onSelect = (name: Profile['name']) =>
-    mutateUpdateActiveProfile({ name });
+    mutateUpdateActiveProfile(
+      { name },
+      {
+        onSuccess: async () => {
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: [UI_API_URL],
+              refetchType: 'inactive',
+              exact: true,
+            }),
+            queryClient.invalidateQueries({
+              queryKey: [SYSTEM_API_URL],
+              refetchType: 'inactive',
+              exact: true,
+            }),
+            queryClient.invalidateQueries({
+              queryKey: [LED_API_URL],
+              refetchType: 'inactive',
+              exact: true,
+            }),
+          ]);
+
+          const ui = queryClient.getQueryData<UiDataResponse>([UI_API_URL]);
+          if (ui?.uiConfig) {
+            changeTheme(ui.uiConfig.theme);
+            i18n.changeLanguage(ui.uiConfig.language);
+          }
+        },
+      },
+    );
 
   const onDelete = (name: Profile['name']) => mutateDeleteProfile({ name });
 

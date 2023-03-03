@@ -5,5 +5,5 @@ export * from './profile';
 export * from './system';
 export * from './systemInfo';
 export * from './ui';
-export * from './upload';
+export * from './update';
 export * from './wifi';
