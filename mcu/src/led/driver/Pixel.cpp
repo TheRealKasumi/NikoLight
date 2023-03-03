@@ -71,9 +71,9 @@ TL::Pixel::~Pixel()
  */
 void TL::Pixel::setColor(const uint32_t colorCode)
 {
-	this->red = colorCode & 0xff0000;
-	this->green = colorCode & 0x00ff00;
-	this->blue = colorCode & 0x0000ff;
+	this->red = (colorCode & 0xff0000) >> 16;
+	this->green = (colorCode & 0x00ff00) >> 8;
+	this->blue = (colorCode & 0x0000ff);
 }
 
 /**
@@ -82,9 +82,9 @@ void TL::Pixel::setColor(const uint32_t colorCode)
  */
 void TL::Pixel::setColor(const TL::Pixel::ColorCode colorCode)
 {
-	this->red = static_cast<uint32_t>(colorCode) & 0xff0000;
-	this->green = static_cast<uint32_t>(colorCode) & 0x00ff00;
-	this->blue = static_cast<uint32_t>(colorCode) & 0x0000ff;
+	this->red = (static_cast<uint32_t>(colorCode) & 0xff0000) >> 16;
+	this->green = (static_cast<uint32_t>(colorCode) & 0x00ff00) >> 8;
+	this->blue = (static_cast<uint32_t>(colorCode) & 0x0000ff);
 }
 
 /**

@@ -38,6 +38,7 @@
 #include "led/animator/RainbowAnimatorMotion.h"
 #include "led/animator/GradientAnimatorMotion.h"
 #include "led/animator/SparkleAnimator.h"
+#include "led/animator/PulseAnimator.h"
 
 #include "util/FileUtil.h"
 #include "sensor/MotionSensor.h"

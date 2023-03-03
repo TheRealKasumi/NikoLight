@@ -46,11 +46,13 @@ TL::Updater::Error TL::Updater::install(FS *fileSystem, const String packageFile
 	TL::TupFile tupFile;
 	if (tupFile.load(fileSystem, packageFileName) != TL::TupFile::Error::OK)
 	{
+		fileSystem->remove(packageFileName);
 		return TL::Updater::Error::ERROR_INVALID_FILE;
 	}
 
 	if (!TL::FileUtil::clearRoot(fileSystem))
 	{
+		fileSystem->remove(packageFileName);
 		return TL::Updater::Error::ERROR_CLEAN_FS;
 	}
 
