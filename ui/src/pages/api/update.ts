@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import ky from 'ky';
 
-const API_URL = '/api/update';
+export const UPDATE_API_URL = '/api/update';
 
-export type Upload = {
+export type Update = {
   file: File;
 };
 
@@ -12,11 +12,13 @@ type Response = {
   message: string;
 };
 
-export const useUpload = () =>
-  useMutation<Response, Error, Upload>({
+export const useUpdate = () =>
+  useMutation<Response, Error, Update>({
     mutationFn: async (data) => {
       const formData = new FormData();
       formData.append('file', data.file);
-      return await ky.post(API_URL, { body: formData, timeout: false }).json();
+      return await ky
+        .post(UPDATE_API_URL, { body: formData, timeout: false })
+        .json();
     },
   });

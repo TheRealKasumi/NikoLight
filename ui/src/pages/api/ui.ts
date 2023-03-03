@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query';
 import ky from 'ky';
 
-const API_URL = '/api/config/ui';
+export const UI_API_URL = '/api/config/ui';
 
 export type Ui = {
   expertMode: boolean;
@@ -15,38 +15,38 @@ export type Ui = {
   theme: string;
 };
 
-type Response = {
+type UiResponse = {
   status: number;
   message: string;
 };
 
-type DataResponse = {
+export type UiDataResponse = {
   uiConfig: Ui;
-} & Response;
+} & UiResponse;
 
-type Context = {
-  cache?: DataResponse;
+type UiContext = {
+  cache?: UiDataResponse;
 };
 
-export const useUi = (options?: UseQueryOptions<DataResponse, Error, Ui>) =>
-  useQuery<DataResponse, Error, Ui>({
-    queryKey: [API_URL],
-    queryFn: async () => await ky.get(API_URL).json(),
+export const useUi = (options?: UseQueryOptions<UiDataResponse, Error, Ui>) =>
+  useQuery<UiDataResponse, Error, Ui>({
+    queryKey: [UI_API_URL],
+    queryFn: async () => await ky.get(UI_API_URL).json(),
     select: (data) => data.uiConfig,
     ...options,
   });
 
 export const useUpdateUi = () => {
   const queryClient = useQueryClient();
-  return useMutation<Response, Error, Ui, Context>({
+  return useMutation<UiResponse, Error, Ui, UiContext>({
     mutationFn: async (data) =>
-      await ky.post(API_URL, { json: { uiConfig: data } }).json(),
+      await ky.post(UI_API_URL, { json: { uiConfig: data } }).json(),
     onMutate: async (uiConfig) => {
-      await queryClient.cancelQueries({ queryKey: [API_URL] });
-      const cache = queryClient.getQueryData<DataResponse>([API_URL]);
+      await queryClient.cancelQueries({ queryKey: [UI_API_URL] });
+      const cache = queryClient.getQueryData<UiDataResponse>([UI_API_URL]);
 
       if (cache) {
-        queryClient.setQueryData<DataResponse>([API_URL], {
+        queryClient.setQueryData<UiDataResponse>([UI_API_URL], {
           ...cache,
           uiConfig,
         });
@@ -55,11 +55,11 @@ export const useUpdateUi = () => {
     },
     onError: (_err, _variables, context) => {
       if (context?.cache) {
-        queryClient.setQueryData<DataResponse>([API_URL], context.cache);
+        queryClient.setQueryData<UiDataResponse>([UI_API_URL], context.cache);
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [API_URL] });
+      queryClient.invalidateQueries({ queryKey: [UI_API_URL] });
     },
   });
 };
