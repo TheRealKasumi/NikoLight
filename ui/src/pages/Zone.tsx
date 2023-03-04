@@ -2,7 +2,7 @@ import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { useMatch } from '@tanstack/react-router';
 import hexRgb from 'hex-rgb';
-import { Suspense, useCallback, useEffect } from 'react';
+import { Suspense, useCallback, useEffect, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -15,8 +15,8 @@ import {
   Collapsible,
   ColorPicker,
   Error,
-  getAnimationTypesForAvailableHardware,
-  getDataSourceForType,
+  getAnimationTypes,
+  getDataSourcesForType,
   Loading,
   Notification,
   Select,
@@ -263,6 +263,15 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
           setValue('color2', `#${rgbHex(0, 0, 255)}`);
           setValue('dataSource', AnimationDataSource.ACC_X_G.toString());
           break;
+
+        case AnimationType.Pulse:
+          setValue(
+            'animationMode',
+            AnimationMode[AnimationType.Pulse].Linear.toString(),
+          );
+          setValue('color1', `#${rgbHex(0, 0, 0)}`);
+          setValue('dataSource', AnimationDataSource.NONE.toString());
+          break;
       }
     },
     [resetField, setValue],
@@ -280,6 +289,19 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
   }, [onTypeChange, watch]);
 
   const values = watch();
+
+  const hasMPU6050 = (systemInfo?.hardwareInfo.mpu6050 ?? 0) > 0;
+  const hasAudioUnit = (systemInfo?.hardwareInfo.audioUnit ?? 0) > 0;
+
+  const animationTypes = useMemo(
+    () => getAnimationTypes({ hasMPU6050 }),
+    [hasMPU6050],
+  );
+
+  const dataSources = useMemo(
+    () => getDataSourcesForType(Number(values.type), { hasAudioUnit }),
+    [hasAudioUnit, values.type],
+  );
 
   return (
     <>
@@ -299,9 +321,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             </span>
             <div className="basis-1/2 text-right">
               <Select<FormData> control={control} name="type">
-                {getAnimationTypesForAvailableHardware({
-                  hasMPU6050: (systemInfo?.hardwareInfo.mpu6050 ?? 0) > 0,
-                }).map(([key, value]) => (
+                {animationTypes.map(([key, value]) => (
                   <SelectItem key={key} value={value.toString()}>
                     {t(`zone.animationTypes.${key}`)}
                   </SelectItem>
@@ -337,29 +357,34 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             AnimationType.RainbowMotion,
             AnimationType.GradientMotion,
             AnimationType.Sparkle,
-          ].includes(Number(values.type)) && (
-            <label className="mb-6 flex flex-row justify-between">
-              <span className="basis-1/3 self-center">
-                {t('zone.dataSource')}
-              </span>
-              <div className="basis-2/3 text-right">
-                <Select<FormData> control={control} name="dataSource">
-                  {getDataSourceForType(Number(values.type)).map((value) => (
-                    <SelectItem
-                      key={AnimationDataSource[value]}
-                      value={value.toString()}
-                    >
-                      {t(
-                        `zone.animationDataSources.${AnimationDataSource[value]}`,
-                      )}
-                    </SelectItem>
-                  ))}
-                </Select>
-              </div>
-            </label>
-          )}
+            AnimationType.Pulse,
+          ].includes(Number(values.type)) &&
+            dataSources.length > 1 && (
+              <label className="mb-6 flex flex-row justify-between">
+                <span className="basis-1/3 self-center">
+                  {t('zone.dataSource')}
+                </span>
+                <div className="basis-2/3 text-right">
+                  <Select<FormData> control={control} name="dataSource">
+                    {dataSources.map((value) => (
+                      <SelectItem
+                        key={AnimationDataSource[value]}
+                        value={value.toString()}
+                      >
+                        {t(
+                          `zone.animationDataSources.${AnimationDataSource[value]}`,
+                        )}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                </div>
+              </label>
+            )}
 
-          {AnimationType.Sparkle === Number(values.type) &&
+          {[AnimationType.Sparkle, AnimationType.Pulse].includes(
+            Number(values.type),
+          ) &&
+            hasAudioUnit &&
             AnimationDataSource.AUDIO_FREQUENCY_TRIGGER ===
               Number(values.dataSource) && (
               <label className="mb-6 flex flex-col">
@@ -413,7 +438,9 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             </label>
           )}
 
-          {AnimationType.Static !== Number(values.type) && (
+          {![AnimationType.Static, AnimationType.Pulse].includes(
+            Number(values.type),
+          ) && (
             <label className="mb-6 flex flex-col">
               <span className="mb-2">
                 {t('zone.offset')}: {toPercentage(values.offset)}%
@@ -435,6 +462,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             AnimationType.GradientMotion,
             AnimationType.Sparkle,
             AnimationType.Static,
+            AnimationType.Pulse,
           ].includes(Number(values.type)) && (
             <label className="mb-6 flex flex-col">
               <span className="mb-2">{t('zone.color')}</span>
@@ -659,6 +687,23 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
                 </label>
               </Collapsible>
             </>
+          )}
+
+          {AnimationType.Pulse === Number(values.type) && (
+            <label className="flex flex-col">
+              <span className="mb-2">
+                {t('zone.pulseFading')}:{' '}
+                {toPercentage(values.animationSettings[9])}%
+              </span>
+              <Slider<FormData>
+                className="w-full"
+                control={control}
+                name="animationSettings.9"
+                min={0}
+                max={255}
+                step={1}
+              />
+            </label>
           )}
         </fieldset>
 
