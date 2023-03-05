@@ -417,6 +417,16 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 				TL::Pixel(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6])));
 		}
 
+		// Pulse type
+		else if (ledConfig.type == 7)
+		{
+			TL::LedManager::ledAnimator.at(i).reset(new TL::PulseAnimator(
+				static_cast<TL::PulseAnimator::PulseMode>(ledConfig.animationSettings[0]),
+				TL::Pixel(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
+				ledConfig.animationSettings[9] / 512.0f,
+				ledConfig.animationSettings[18]));
+		}
+
 		// Unknown type
 		else
 		{

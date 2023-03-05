@@ -60,7 +60,8 @@ namespace TL
 		{
 			FIRMWARE = 0,
 			FILE = 1,
-			DIRECTORY = 2
+			DIRECTORY = 2,
+			NONE = 255
 		};
 
 		struct TupDataBlock

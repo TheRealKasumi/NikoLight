@@ -89,8 +89,9 @@ void TL::UpdateEndpoint::packageUpload()
 	}
 	else if (upload.status == UPLOAD_FILE_ABORTED)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The upload was aborted by the client."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Upload was aborted by the client. The file will be deleted."));
 		TL::UpdateEndpoint::uploadFile.close();
-		TL::UpdateEndpoint::sendSimpleResponse(400, F("Upload was aborted by the client."));
+		TL::UpdateEndpoint::fileSystem->remove((String)UPDATE_DIRECTORY + F("/") + UPDATE_FILE_NAME);
+		TL::UpdateEndpoint::sendSimpleResponse(400, F("Upload was aborted by the client. The file will be deleted."));
 	}
 }

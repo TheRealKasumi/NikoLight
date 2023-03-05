@@ -74,9 +74,14 @@
 #define ANIMATOR_DEFAULT_FADE_SPEED 30 								  // Default fading speed
 
 // Voltage regulator
-#define REGULATOR_DEFAULT_VOLTAGE 5.0f																	      // Output Voltage in V
-#define REGULATOR_CURRENT_LIMIT 3.0f																	      // Current per regulator in A
-#define REGULATOR_POWER_LIMIT 12																		      // Default output power per regulator in W
+#define REGULATOR_VOLTAGE 5.0f																	      		  // Output Voltage in V
+#define REGULATOR_CURRENT_LIMIT 3.0f																	      // Current limit per regulator in A
+#define REGULATOR_POWER_LIMIT 15																			  // Output power limit per regulator in W
+#define REGULATOR_HIGH_TEMP_LIMIT 100																	      // Temp limit in °C where brightness is reduced
+#define REGULATOR_CUT_OFF_TEMP_LIMIT 110																      // Temp limit in °C where LEDs are turned off
+#define REGULATOR_DEFAULT_POWER_LIMIT 12																	  // Default output power per regulator in W
+#define REGULATOR_DEFAULT_HIGH_TEMP 70																	      // Temp in °C where brightness is reduced
+#define REGULATOR_DEFAULT_CUT_OFF_TEMP 85																      // Temp in °C where LEDs are turned off
 #if defined(HW_VERSION_1_0)																				      // Number of regulators depending on hardware version
 	#define REGULATOR_COUNT 1
 #elif defined(HW_VERSION_2_0)
@@ -91,8 +96,7 @@
 #elif defined(HW_VERSION_2_1)
 	#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 1}, {15, 0}, {16, 1}, {17, 0}, {21, 1}, {22, 0}, {25, 1}}	
 #endif
-#define REGULATOR_HIGH_TEMP 70																			      // Temp in °C where brightness is reduced
-#define REGULATOR_CUT_OFF_TEMP 85																		      // Temp in °C where LEDs are turned off
+
 
 // I2C configuration
 #define IIC_SDA_PIN 32		 // SDA pin

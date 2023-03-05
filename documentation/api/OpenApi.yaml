@@ -195,6 +195,7 @@ paths:
                   application/json:
                      schema:
                         $ref: "#/components/schemas/ApiResponse"
+
    /config/motion/calibration:
       get:
          tags:

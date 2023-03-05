@@ -1,6 +1,6 @@
 {
   "customAnimations": {
-    "deleteSuccessful": "Delete successfully!",
+    "deleteSuccessful": "Successfully deleted!",
     "file": "File",
     "fileName": "File Name",
     "name": "Name",
@@ -30,6 +30,19 @@
     "warning": {
       "headline": "Warning"
     }
+  },
+  "profiles": {
+    "active": "Active",
+    "clone": "Clone active profile",
+    "delete": "Delete",
+    "deleteSuccessful": "Successfully deleted!",
+    "name": "Name",
+    "new": "New Profile",
+    "saved": "Saved Profiles",
+    "select": "Select",
+    "submit": "Create Profile",
+    "submitSuccessful": "Successfully created!",
+    "title": "Profiles"
   },
   "settings": {
     "accessPointPassword": "Password",
@@ -114,6 +127,7 @@
       "GY_X_DEG": "GY X DEG",
       "GY_Y_DEG": "GY Y DEG",
       "GY_Z_DEG": "GY Z DEG",
+      "NONE": "None",
       "PITCH_COMPENSATED_ACC_Y_G": "Pitch Compensated Acc Y G",
       "PITCH": "Pitch",
       "RANDOM": "Random",
@@ -126,6 +140,7 @@
       "FSEQ": "Custom",
       "Gradient": "Gradient",
       "GradientMotion": "Gradient Motion",
+      "Pulse": "Pulse",
       "Rainbow": "Rainbow",
       "RainbowMotion": "Rainbow Motion",
       "Sparkle": "Sparkle",
@@ -139,6 +154,7 @@
       "Linear": "Linear",
       "LinearHardBorders": "Linear, hard borders",
       "LinearSmoothBorder": "Linear, smooth border",
+      "NonLinear": "Non Linear",
       "Random": "Random",
       "Side": "Side",
       "Solid": "Solid",
@@ -163,6 +179,7 @@
     "ledCount": "LED Count",
     "ledVoltage": "LED Voltage",
     "offset": "Offset",
+    "pulseFading": "Pulse Fading",
     "reset": "Reset to default",
     "sparkCount": "Spark Count",
     "sparkFading": "Spark Fading",
@@ -172,7 +189,7 @@
     "speed": "Speed",
     "speedVariance": "Speed Variance",
     "submit": "Apply Settings",
-    "submitSuccessful": "Saved successfully!",
+    "submitSuccessful": "Successfully saved!",
     "variance": "Variance"
   },
   "zones": {

@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query';
 import ky from 'ky';
 
-const API_URL = '/api/config/wifi';
+export const WIFI_API_URL = '/api/config/wifi';
 
 export type Wifi = {
   accessPointSsid: string;
@@ -31,8 +31,8 @@ type Context = {
 
 export const useWifi = (options?: UseQueryOptions<DataResponse, Error, Wifi>) =>
   useQuery<DataResponse, Error, Wifi>({
-    queryKey: [API_URL],
-    queryFn: async () => await ky.get(API_URL).json(),
+    queryKey: [WIFI_API_URL],
+    queryFn: async () => await ky.get(WIFI_API_URL).json(),
     select: (data) => data.wifiConfig,
     ...options,
   });
@@ -41,13 +41,13 @@ export const useUpdateWifi = () => {
   const queryClient = useQueryClient();
   return useMutation<Response, Error, Wifi, Context>({
     mutationFn: async (data) =>
-      await ky.post(API_URL, { json: { wifiConfig: data } }).json(),
+      await ky.post(WIFI_API_URL, { json: { wifiConfig: data } }).json(),
     onMutate: async (wifiConfig) => {
-      await queryClient.cancelQueries({ queryKey: [API_URL] });
-      const cache = queryClient.getQueryData<DataResponse>([API_URL]);
+      await queryClient.cancelQueries({ queryKey: [WIFI_API_URL] });
+      const cache = queryClient.getQueryData<DataResponse>([WIFI_API_URL]);
 
       if (cache) {
-        queryClient.setQueryData<DataResponse>([API_URL], {
+        queryClient.setQueryData<DataResponse>([WIFI_API_URL], {
           ...cache,
           wifiConfig,
         });
@@ -56,11 +56,11 @@ export const useUpdateWifi = () => {
     },
     onError: (_err, _variables, context) => {
       if (context?.cache) {
-        queryClient.setQueryData<DataResponse>([API_URL], context.cache);
+        queryClient.setQueryData<DataResponse>([WIFI_API_URL], context.cache);
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [API_URL] });
+      queryClient.invalidateQueries({ queryKey: [WIFI_API_URL] });
     },
   });
 };

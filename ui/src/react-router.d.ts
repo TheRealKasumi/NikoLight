@@ -8,4 +8,7 @@ declare module '@tanstack/react-router' {
     name: React.ReactNode;
     zoneId?: number;
   }
+  interface Register {
+    router: typeof router;
+  }
 }

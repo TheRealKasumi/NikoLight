@@ -780,9 +780,9 @@ TL::Configuration::Error TL::Configuration::loadProfileDefaults(const size_t pro
 	profile.systemConfig.lightSensorMinLedBrightness = LIGHT_SENSOR_DEFAULT_MIN_LED;
 	profile.systemConfig.lightSensorMaxLedBrightness = LIGHT_SENSOR_DEFAULT_MAX_LED;
 	profile.systemConfig.lightSensorDuration = LIGHT_SENSOR_DEFAULT_DURATION;
-	profile.systemConfig.regulatorPowerLimit = REGULATOR_POWER_LIMIT * REGULATOR_COUNT;
-	profile.systemConfig.regulatorHighTemperature = REGULATOR_HIGH_TEMP;
-	profile.systemConfig.regulatorCutoffTemperature = REGULATOR_CUT_OFF_TEMP;
+	profile.systemConfig.regulatorPowerLimit = REGULATOR_DEFAULT_POWER_LIMIT * REGULATOR_COUNT;
+	profile.systemConfig.regulatorHighTemperature = REGULATOR_DEFAULT_HIGH_TEMP;
+	profile.systemConfig.regulatorCutoffTemperature = REGULATOR_DEFAULT_CUT_OFF_TEMP;
 	profile.systemConfig.fanMode = FAN_DEFAULT_MODE;
 	profile.systemConfig.fanMinPwmValue = FAN_DEFAULT_PWM_MIN;
 	profile.systemConfig.fanMaxPwmValue = FAN_DEFAULT_PWM_MAX;
@@ -807,7 +807,7 @@ TL::Configuration::Error TL::Configuration::loadProfileDefaults(const size_t pro
 		{
 			profile.ledConfig[i].animationSettings[j] = 0;
 		}
-		profile.ledConfig[i].ledVoltage = REGULATOR_DEFAULT_VOLTAGE;
+		profile.ledConfig[i].ledVoltage = REGULATOR_VOLTAGE;
 		profile.ledConfig[i].ledChannelCurrent[0] = LED_DEFAULT_CHANNEL_CURRENT;
 		profile.ledConfig[i].ledChannelCurrent[1] = LED_DEFAULT_CHANNEL_CURRENT;
 		profile.ledConfig[i].ledChannelCurrent[2] = LED_DEFAULT_CHANNEL_CURRENT;
