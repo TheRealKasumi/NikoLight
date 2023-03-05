@@ -45,7 +45,7 @@ void TL::SystemInformation::begin()
 
 	TL::SystemInformation::hardwareInfo.hwVersion = HW_VERSION;
 	TL::SystemInformation::hardwareInfo.regulatorCount = REGULATOR_COUNT;
-	TL::SystemInformation::hardwareInfo.regulatorVoltage = REGULATOR_DEFAULT_VOLTAGE;
+	TL::SystemInformation::hardwareInfo.regulatorVoltage = REGULATOR_VOLTAGE;
 	TL::SystemInformation::hardwareInfo.regulatorCurrentLimit = REGULATOR_CURRENT_LIMIT * REGULATOR_COUNT;
 	TL::SystemInformation::hardwareInfo.regulatorCurrentDraw = 0.0f;
 	TL::SystemInformation::hardwareInfo.regulatorPowerLimit = REGULATOR_POWER_LIMIT * REGULATOR_COUNT;
