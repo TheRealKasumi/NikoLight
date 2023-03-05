@@ -39,20 +39,20 @@ The project is therefore mostly platform-independent.
 
 **Here is a short summary of the currently most interesting features:**
 
-- Individual control of each LED installed in the car
-- Hundreds of LEDs are possible
-- Compatible with all WS2812-type LEDs (and LEDs with the same protocol)
-- Fiber cables, light bars and normal LED strips are supported
-- Up to 8 individual zones
-- Currently 18 different effects that can be selected and further customized for each zone
-- Browser based user interface
-- Switching on/off as well as dynamic brightness via the existing lighting in the footwell
-- Rotation and acceleration sensors
-- Interactive effects
-- Light shows
-- Fully customized animations can be created on your PC (playback of fseq 1.0 files from [xLights](https://xlights.org/))
-- OTA (wireless) updates
-- Hardware is upgradeable via extensions in the future
+-  Individual control of each LED installed in the car
+-  Hundreds of LEDs are possible
+-  Compatible with all WS2812-type LEDs (and LEDs with the same protocol)
+-  Fiber cables, light bars and normal LED strips are supported
+-  Up to 8 individual zones
+-  Currently 18 different effects that can be selected and further customized for each zone
+-  Browser based user interface
+-  Switching on/off as well as dynamic brightness via the existing lighting in the footwell
+-  Rotation and acceleration sensors
+-  Interactive effects
+-  Light shows
+-  Fully customized animations can be created on your PC (playback of fseq 1.0 files from [xLights](https://xlights.org/))
+-  OTA (wireless) updates
+-  Hardware is upgradeable via extensions in the future
 
 ## Some Videos and Pictures
 
@@ -82,17 +82,112 @@ A list of required and optional parts can be found [here](documentation/part-lis
 
 The build guide can be found [here](documentation/build.md).
 
-## One request
+## One Request
 
-Creating this project has taken a lot of my time, effort and money.
-Nevertheless, I share it publicly with you.
+A lot of our time, effort and money went into this project.
+Nevertheless, we share it publicly with you.
 You can use it for free, modify it and even earn a coffee by building the parts for other people as long as you are a private person without commercial intentions.
-But please **don't steal** my work, be a little **respectful** and **give credits**.
-That's all I wish for.
+But please **don't steal** our work, be a little **respectful** and **give credits**.
+That said, I hope you have a lot of fun and great experience with TesLight!
+Thank you💖!
 
-Also, you should be careful when working on the project and especially your car.
+## Contributors
+
+<table>
+  <tbody>
+    <tr>
+      <td align="center">
+        <a href="https://github.com/TheRealKasumi">
+          <img src="https://avatars.githubusercontent.com/u/62426919" width="100px;" alt="TheRealKasumi"/>
+          <br />
+          <b>TheRealKasumi</b>
+        </a>
+      </td>
+      <td align="center" valign="top">
+        <p>Placeholder</p> 
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <a href="https://github.com/danielbayerlein">
+          <img src="https://avatars.githubusercontent.com/u/457834" width="100px;" alt="danielbayerlein"/>
+          <br />
+          <b>danielbayerlein</b>
+        </a>
+      </td>
+      <td align="center" valign="top">
+        <p>Placeholder</p> 
+      </td>
+    </tr>
+     <tr>
+      <td align="center">
+        <a href="https://github.com/JakobLichterfeld">
+          <img src="https://avatars.githubusercontent.com/u/16510328" width="100px;" alt="JakobLichterfeld"/>
+          <br />
+          <b>JakobLichterfeld</b>
+        </a>
+      </td>
+      <td align="center" valign="top">
+        <p>Placeholder</p> 
+      </td>
+    </tr>
+    </tr>
+     <tr>
+      <td align="center">
+        <a href="https://github.com/heyitsmarlon">
+          <img src="https://avatars.githubusercontent.com/u/74954698" width="100px;" alt="heyitsmarlon"/>
+          <br />
+          <b>heyitsmarlon</b>
+        </a>
+      </td>
+      <td align="center" valign="top">
+        <p>Placeholder</p> 
+      </td>
+    </tr>
+    </tr>
+     <tr>
+      <td align="center">
+        <a href="https://github.com/MathiasSeifert">
+          <img src="https://avatars.githubusercontent.com/u/19532855" width="100px;" alt="MathiasSeifert"/>
+          <br />
+          <b>MathiasSeifert</b>
+        </a>
+      </td>
+      <td align="center" valign="top">
+        <p>Placeholder</p> 
+      </td>
+    </tr>
+    </tr>
+     <tr>
+      <td align="center">
+        <a href="https://github.com/PhilippDenn">
+          <img src="https://avatars.githubusercontent.com/u/114821380" width="100px;" alt="PhilippDenn"/>
+          <br />
+          <b>PhilippDenn</b>
+        </a>
+      </td>
+      <td align="center" valign="top">
+        <p>Placeholder</p> 
+      </td>
+    </tr>
+    </tr>
+     <tr>
+      <td align="center">
+        <a href="https://github.com/rgrae81">
+          <img src="https://avatars.githubusercontent.com/u/36889990" width="100px;" alt="rgrae81"/>
+          <br />
+          <b>rgrae81</b>
+        </a>
+      </td>
+      <td align="center" valign="top">
+        <p>Placeholder</p> 
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+## Disclaimer
+
+Please be careful when working on the project and especially your car.
 I am not a professional electrical engineer and only doing this as a hobby on the side.
 Use this project at your own risk.
-
-That said, I hope you have a lot of fun and great experience with TesLight!
-Thank you💖
