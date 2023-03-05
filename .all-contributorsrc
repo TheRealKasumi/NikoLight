@@ -1,0 +1,25 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "danielbayerlein",
+      "name": "Daniel Bayerlein",
+      "avatar_url": "https://avatars.githubusercontent.com/u/457834?v=4",
+      "profile": "https://dev.to/danielbayerlein",
+      "contributions": [
+        "test"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "TesLight",
+  "projectOwner": "TheRealKasumi"
+}
