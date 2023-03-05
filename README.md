@@ -102,7 +102,7 @@ Thank you💖!
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/TheRealKasumi"><img src="https://avatars.githubusercontent.com/u/62426919?v=4?s=100" width="100px;" alt="TheRealKasumi"/><br /><sub><b>TheRealKasumi</b></sub></a><br /><a href="#video-TheRealKasumi" title="Videos">📹</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/TheRealKasumi"><img src="https://avatars.githubusercontent.com/u/62426919?v=4?s=100" width="100px;" alt="TheRealKasumi"/><br /><sub><b>TheRealKasumi</b></sub></a><br /><a href="#video-TheRealKasumi" title="Videos">📹</a> <a href="#tutorial-TheRealKasumi" title="Tutorials">✅</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/PhilippDenn"><img src="https://avatars.githubusercontent.com/u/114821380?v=4?s=100" width="100px;" alt="Philipp D."/><br /><sub><b>Philipp D.</b></sub></a><br /><a href="#ideas-PhilippDenn" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/rgrae81"><img src="https://avatars.githubusercontent.com/u/36889990?v=4?s=100" width="100px;" alt="rgrae81"/><br /><sub><b>rgrae81</b></sub></a><br /><a href="#question-rgrae81" title="Answering Questions">💬</a></td>
     </tr>
