@@ -5,7 +5,7 @@
 ![UI Build](https://github.com/TheRealKasumi/TesLight/actions/workflows/ui-build.yml/badge.svg?branch=main)
 ![TUP Build](https://github.com/TheRealKasumi/TesLight/actions/workflows/teslight-update-packaging-tool-and-tup-file-build.yml/badge.svg?branch=main)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#Contributors)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 ## Introduction
@@ -104,6 +104,7 @@ Thank you💖!
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/TheRealKasumi"><img src="https://avatars.githubusercontent.com/u/62426919?v=4?s=100" width="100px;" alt="TheRealKasumi"/><br /><sub><b>TheRealKasumi</b></sub></a><br /><a href="#video-TheRealKasumi" title="Videos">📹</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/PhilippDenn"><img src="https://avatars.githubusercontent.com/u/114821380?v=4?s=100" width="100px;" alt="Philipp D."/><br /><sub><b>Philipp D.</b></sub></a><br /><a href="#ideas-PhilippDenn" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/rgrae81"><img src="https://avatars.githubusercontent.com/u/36889990?v=4?s=100" width="100px;" alt="rgrae81"/><br /><sub><b>rgrae81</b></sub></a><br /><a href="#question-rgrae81" title="Answering Questions">💬</a></td>
     </tr>
   </tbody>
 </table>
