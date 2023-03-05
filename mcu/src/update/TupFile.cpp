@@ -277,20 +277,26 @@ uint32_t TL::TupFile::generateHash()
 	}
 
 	TL::TupFile::TupDataBlock dataBlock;
-	dataBlock.type = TL::TupFile::TupDataType::FIRMWARE;
+	dataBlock.type = TL::TupFile::TupDataType::NONE;
 	dataBlock.path = new char[256];
 	uint32_t hash = 7;
 	for (uint32_t i = 0; i < this->tupHeader.numberBlocks; i++)
 	{
-		this->file.read((uint8_t *)&dataBlock.type, 1);
-		this->file.read((uint8_t *)&dataBlock.pathLength, 2);
+		bool readError = false;
+		readError = this->file.read((uint8_t *)&dataBlock.type, 1) == 1 ? readError : true;
+		readError = this->file.read((uint8_t *)&dataBlock.pathLength, 2) == 2 ? readError : true;
 		if (dataBlock.pathLength > 255)
 		{
 			delete[] dataBlock.path;
 			return 0;
 		}
-		this->file.read((uint8_t *)dataBlock.path, dataBlock.pathLength <= 255 ? dataBlock.pathLength : 255);
-		this->file.read((uint8_t *)&dataBlock.size, 4);
+		readError = this->file.read((uint8_t *)dataBlock.path, dataBlock.pathLength <= 255 ? dataBlock.pathLength : 255) == (dataBlock.pathLength <= 255 ? dataBlock.pathLength : 255) ? readError : true;
+		readError = this->file.read((uint8_t *)&dataBlock.size, 4) == 4 ? readError : true;
+
+		if (readError)
+		{
+			return 0;
+		}
 
 		hash = hash * 31 + static_cast<uint8_t>(dataBlock.type);
 		hash = hash * 31 + dataBlock.pathLength;
@@ -313,8 +319,12 @@ uint32_t TL::TupFile::generateHash()
 			}
 
 			chunkSize = this->file.read(buffer, chunkSize);
-			readBytes += chunkSize;
+			if (chunkSize == 0)
+			{
+				return 0;
+			}
 
+			readBytes += chunkSize;
 			for (uint16_t j = 0; j < chunkSize; j++)
 			{
 				hash = hash * 31 + buffer[j];

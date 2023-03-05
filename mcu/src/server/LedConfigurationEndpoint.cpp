@@ -282,10 +282,10 @@ bool TL::LedConfigurationEndpoint::validateLedZone(const JsonObject &jsonObject,
 		return false;
 	}
 
-	if (!TL::LedConfigurationEndpoint::isInRange(jsonObject[F("type")].as<uint8_t>(), 0L, 6L) && jsonObject[F("type")].as<uint8_t>() != 255)
+	if (!TL::LedConfigurationEndpoint::isInRange(jsonObject[F("type")].as<uint8_t>(), 0L, 7L) && jsonObject[F("type")].as<uint8_t>() != 255)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field at index ") + index + F(" must be between 0 and 6."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field at index ") + index + F(" must be between 0 and 6."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field at index ") + index + F(" must be between 0 and 7."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field at index ") + index + F(" must be between 0 and 7."));
 		return false;
 	}
 
@@ -431,7 +431,7 @@ bool TL::LedConfigurationEndpoint::validateAnimationSettings(const uint8_t type,
 	// [1] = setting index
 	// [2] = min value
 	// [3] = max value
-	const size_t numElements = 8;
+	const size_t numElements = 9;
 	const uint8_t valueRanges[numElements][4] = {
 		{0, 0, 0, 2},
 		{1, 0, 0, 3},
@@ -440,7 +440,8 @@ bool TL::LedConfigurationEndpoint::validateAnimationSettings(const uint8_t type,
 		{5, 0, 0, 2},
 		{5, 7, 0, 18},
 		{6, 0, 0, 1},
-		{6, 7, 0, 18}};
+		{6, 7, 0, 18},
+		{7, 0, 0, 1}};
 
 	for (size_t i = 0; i < numElements; i++)
 	{

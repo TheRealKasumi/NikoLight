@@ -545,35 +545,34 @@ void TesLight::handleUpdate()
 	digitalWrite(FAN_PWM_PIN, HIGH);
 
 	const TL::Updater::Error updateError = TL::Updater::install(&SD, (String)UPDATE_DIRECTORY + F("/") + UPDATE_FILE_NAME);
-	if (updateError == TL::Updater::Error::ERROR_UPDATE_FILE_NOT_FOUND)
+	if (updateError == TL::Updater::Error::OK)
+	{
+		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System update installed successfully. Rebooting."));
+		TL::Updater::reboot(F("System update reboot"), 0);
+	}
+	else if (updateError == TL::Updater::Error::ERROR_UPDATE_FILE_NOT_FOUND)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("System update failed. The update package could not be found."));
-		return;
 	}
 	else if (updateError == TL::Updater::Error::ERROR_INVALID_FILE)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("System update failed. The update package is invalid."));
-		return;
 	}
 	else if (updateError == TL::Updater::Error::ERROR_CLEAN_FS)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("System update failed. The file system root could not be cleared. The MicroSD card might be corrupted. Trying to continue boot."));
-		return;
 	}
 	else if (updateError == TL::Updater::Error::ERROR_UPDATE_UNPACK)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("System update failed. The update package could not be unpacked. The MicroSD card might be corrupted. Trying to continue boot."));
-		return;
 	}
 	else if (updateError == TL::Updater::Error::ERROR_FW_FILE_NOT_FOUND)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("System update failed. The firmware file could not be found. Trying to continue boot."));
-		return;
 	}
 	else if (updateError == TL::Updater::Error::ERROR_FW_FILE_EMPTY)
 	{
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("System update failed. The firmware file is empty. Trying to continue boot."));
-		return;
 	}
 	else if (updateError == TL::Updater::Error::ERROR_OUT_OF_FLASH_MEMORY)
 	{
@@ -590,9 +589,11 @@ void TesLight::handleUpdate()
 		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("System update failed. Could not finish firmware update. It might be required to reinstall the firmware via the USB port. Rebooting."));
 		TL::Updater::reboot(F("Could not finish firmware update."), 0);
 	}
-
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("System update installed successfully. Rebooting."));
-	TL::Updater::reboot(F("System update reboot"), 0);
+	else
+	{
+		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("System update failed due to an unknown error. It might be required to reinstall the firmware via the USB port. Rebooting."));
+		TL::Updater::reboot(F("System update failed."), 0);
+	}
 }
 
 /**
