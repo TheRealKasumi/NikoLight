@@ -4,6 +4,7 @@
 ![PlatformIO Build](https://github.com/TheRealKasumi/TesLight/actions/workflows/PlatformIO-Build.yml/badge.svg?branch=main)
 ![UI Build](https://github.com/TheRealKasumi/TesLight/actions/workflows/ui-build.yml/badge.svg?branch=main)
 ![TUP Build](https://github.com/TheRealKasumi/TesLight/actions/workflows/teslight-update-packaging-tool-and-tup-file-build.yml/badge.svg?branch=main)
+[![All Contributors](https://img.shields.io/github/all-contributors/TheRealKasumi/TesLight?color=informational&style=flat)](#contributors)
 
 ## Introduction
 
