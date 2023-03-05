@@ -83,17 +83,28 @@ A list of required and optional parts can be found [here](documentation/part-lis
 
 The build guide can be found [here](documentation/build.md).
 
-## One request
+## One Request
 
-Creating this project has taken a lot of my time, effort and money.
-Nevertheless, I share it publicly with you.
+A lot of our time, effort and money went into this project.
+Nevertheless, we share it publicly with you.
 You can use it for free, modify it and even earn a coffee by building the parts for other people as long as you are a private person without commercial intentions.
-But please **don't steal** my work, be a little **respectful** and **give credits**.
-That's all I wish for.
+But please **don't steal** our work, be a little **respectful** and **give credits**.
+That said, I hope you have a lot of fun and great experience with TesLight!
+Thank you💖!
 
-Also, you should be careful when working on the project and especially your car.
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+## Disclaimer
+
+Please be careful when working on the project and especially your car.
 I am not a professional electrical engineer and only doing this as a hobby on the side.
 Use this project at your own risk.
-
-That said, I hope you have a lot of fun and great experience with TesLight!
-Thank you💖
