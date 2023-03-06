@@ -1,6 +1,5 @@
 {
 	"info": {
-		"_postman_id": "7e57b9b5-edb4-4b23-91b3-e033376642b6",
 		"name": "TesLight API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -230,7 +229,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/C:/Users/Kasumi/Desktop/xl/all_the_things_she_said.fseq"
+									"src": ""
 								}
 							]
 						},
