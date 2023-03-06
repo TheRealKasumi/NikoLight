@@ -278,7 +278,7 @@ TL::DS18B20::Error TL::DS18B20::getTemperature(float &temp, const size_t sensorI
 		raw = raw & ~1;
 	}
 
-	temp = (float)raw / 16.0f;
+	temp = raw / 16.0f;
 	TL::DS18B20::lastMeasurement.at(sensorIndex) = temp;
 	return TL::DS18B20::Error::OK;
 }
