@@ -103,12 +103,12 @@ void TL::EqualizerAnimator::render(TL::LedStrip &ledStrip)
 					{
 						this->currentVolume = peak;
 					}
-				}
 
-				// Update the maximum volume of the bar when the limit is exceeded
-				if (peak >= this->peakVolume)
-				{
-					this->peakVolume = peak;
+					// Update the maximum volume of the bar when the limit is exceeded
+					if (peak >= this->peakVolume)
+					{
+						this->peakVolume = peak;
+					}
 				}
 			}
 		}
