@@ -72,7 +72,7 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 | ----------------------- | ------- | ------------------ | ----------------------------------------------- |
 | Heatsink for Regulators | 2       | [Reichelt][hsink]  | Helps to keep the temperature a little lower    |
 | Temperature Sensors     | 2       | [Reichelt][tsense] | Not required but a safety feature               |
-| Cooling Fan 30x30       | 1       | [Reichelt][fan]    | Not required but nice to have                   |
+| Cooling Fan 30x30       | 1       | [Amazon][fan]    | Not required but nice to have                   |
 | Shrinking tube          | depends | [Amazon][tubes]    | Will help you to have a cleaner and safer build |
 | Fabric tape             | depends | [Amazon][tape]     | Will help you to have a cleaner and safer build |
 | 3 wire cable            | depends | [Amazon][3-wire-cable]     | you can use this 3 wire cable to connect the LEDs |
