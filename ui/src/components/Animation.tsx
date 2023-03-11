@@ -36,6 +36,7 @@ export enum AnimationType {
   RainbowMotion,
   GradientMotion,
   Pulse,
+  Equalizer,
   FSEQ = 255,
 }
 
@@ -102,6 +103,11 @@ export const getDataSourcesForType = (
       return [
         AnimationDataSource.NONE,
         ...(hasAudioUnit ? [AnimationDataSource.AUDIO_FREQUENCY_TRIGGER] : []),
+      ];
+    case AnimationType.Equalizer:
+      return [
+        AnimationDataSource.RANDOM,
+        ...(hasAudioUnit ? [AnimationDataSource.AUDIO_FREQUENCY_VALUE] : []),
       ];
     default:
       return [];
