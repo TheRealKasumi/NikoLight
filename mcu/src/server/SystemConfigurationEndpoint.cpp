@@ -302,10 +302,10 @@ bool TL::SystemConfigurationEndpoint::validateConfiguration(const JsonObject &js
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorHighTemperature")].as<uint8_t>(), 60, 85))
+	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorHighTemperature")].as<uint8_t>(), 60, REGULATOR_HIGH_TEMP_LIMIT))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"regulatorHighTemperature\" field is invalid. It should be between 60 and 85."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"regulatorHighTemperature\" field is invalid. It should be between 60 and 85."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorHighTemperature\" field is invalid. It should be between 60 and ") + REGULATOR_HIGH_TEMP_LIMIT + F("."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorHighTemperature\" field is invalid. It should be between 60 and ") + REGULATOR_HIGH_TEMP_LIMIT + F("."));
 		return false;
 	}
 
@@ -316,10 +316,10 @@ bool TL::SystemConfigurationEndpoint::validateConfiguration(const JsonObject &js
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorCutoffTemperature")].as<uint8_t>(), 70, 95))
+	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorCutoffTemperature")].as<uint8_t>(), 70, REGULATOR_CUT_OFF_TEMP_LIMIT))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"regulatorCutoffTemperature\" field is invalid. It should be between 70 and 95."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"regulatorCutoffTemperature\" field is invalid. It should be between 70 and 95."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorCutoffTemperature\" field is invalid. It should be between 70 and ") + REGULATOR_CUT_OFF_TEMP_LIMIT + F("."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorCutoffTemperature\" field is invalid. It should be between 70 and ") + REGULATOR_CUT_OFF_TEMP_LIMIT + F("."));
 		return false;
 	}
 

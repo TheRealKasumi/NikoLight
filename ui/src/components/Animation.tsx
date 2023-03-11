@@ -22,6 +22,11 @@ enum ColorBarMode {
   CenterSmoothBorder,
 }
 
+enum PulseMode {
+  Linear,
+  NonLinear,
+}
+
 export enum AnimationType {
   Rainbow,
   Sparkle,
@@ -30,6 +35,8 @@ export enum AnimationType {
   ColorBar,
   RainbowMotion,
   GradientMotion,
+  Pulse,
+  Equalizer,
   FSEQ = 255,
 }
 
@@ -40,6 +47,7 @@ export const AnimationMode = {
   [AnimationType.ColorBar]: ColorBarMode,
   [AnimationType.RainbowMotion]: RainbowMode,
   [AnimationType.GradientMotion]: GradientMode,
+  [AnimationType.Pulse]: PulseMode,
 } as const;
 
 export enum AnimationDataSource {
@@ -67,7 +75,10 @@ export enum AnimationDataSource {
   AUDIO_VOLUME_PEAK,
 }
 
-export const getDataSourceForType = (type: AnimationType) => {
+export const getDataSourcesForType = (
+  type: AnimationType,
+  { hasAudioUnit }: { hasAudioUnit: boolean },
+) => {
   switch (type) {
     case AnimationType.RainbowMotion:
     case AnimationType.GradientMotion:
@@ -86,18 +97,24 @@ export const getDataSourceForType = (type: AnimationType) => {
     case AnimationType.Sparkle:
       return [
         AnimationDataSource.RANDOM,
-        AnimationDataSource.AUDIO_FREQUENCY_TRIGGER,
+        ...(hasAudioUnit ? [AnimationDataSource.AUDIO_FREQUENCY_TRIGGER] : []),
+      ];
+    case AnimationType.Pulse:
+      return [
+        AnimationDataSource.NONE,
+        ...(hasAudioUnit ? [AnimationDataSource.AUDIO_FREQUENCY_TRIGGER] : []),
+      ];
+    case AnimationType.Equalizer:
+      return [
+        AnimationDataSource.RANDOM,
+        ...(hasAudioUnit ? [AnimationDataSource.AUDIO_FREQUENCY_VALUE] : []),
       ];
     default:
       return [];
   }
 };
 
-export const getAnimationTypesForAvailableHardware = ({
-  hasMPU6050,
-}: {
-  hasMPU6050: boolean;
-}) =>
+export const getAnimationTypes = ({ hasMPU6050 }: { hasMPU6050: boolean }) =>
   Object.entries(AnimationType)
     .filter(([key]) => isNaN(Number(key)))
     .filter(([, value]) => value !== AnimationType.FSEQ)
