@@ -124,6 +124,7 @@
       "ACC_Y_G": "Acc Y G",
       "ACC_Z_G": "Acc Z G",
       "AUDIO_FREQUENCY_TRIGGER": "Audiofrequenz-Trigger",
+      "AUDIO_FREQUENCY_VALUE": "Audiofrequenz-Wert",
       "GY_X_DEG": "GY X DEG",
       "GY_Y_DEG": "GY Y DEG",
       "GY_Z_DEG": "GY Z DEG",
@@ -138,6 +139,7 @@
     "animationTypes": {
       "ColorBar": "Farbbalken",
       "FSEQ": "Benutzerdefiniert",
+      "Equalizer": "Equalizer",
       "Gradient": "Farbverlauf",
       "GradientMotion": "Bewegter Farbverlauf",
       "Pulse": "Pulsieren",
@@ -160,6 +162,7 @@
       "Solid": "Durchgängig",
       "Static": "Statisch"
     },
+    "autoGain": "Automatische Verstärkung",
     "basic": "Standard",
     "birthRate": "Wahrscheinlichkeit neuer Funken",
     "brightness": "Helligkeit",
@@ -180,6 +183,7 @@
     "ledVoltage": "LED Spannung",
     "offset": "Farbversatz",
     "pulseFading": "Überblendgeschwindigkeit der Impulse",
+    "rainbowSpeed": "Regenbogen-Geschwindigkeit",
     "reset": "Auf Standardwerte zurücksetzen",
     "sparkCount": "Funken Anzahl",
     "sparkFading": "Überblendgeschwindigkeit der Funken",
