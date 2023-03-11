@@ -103,11 +103,32 @@ Thank you💖!
           <b>TheRealKasumi</b>
         </a>
       </td>
-      <td align="center" valign="top">
-        <p>Placeholder</p> 
+      <td align="center" valign="middle">
+        <p style="text-align: left" >
+          <a href="https://github.com/TheRealKasumi/TesLight/issues?q=author%3ATheRealKasumi">🐛 bug</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">💻 code</a><br />
+          🖋 content<br />
+          <a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">📖 doc</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/tree/main/ui">🎨 design</a><br />
+          💡 example<br />
+          🤔 ideas<br />
+          <a href="https://github.com/TheRealKasumi/TesLight/tree/main/.github">🚇 infra</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">🚧 maintenance</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight">🧑‍🏫 mentoring</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">📦 platform</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight">🔌 plugin</a><br />
+          📆 projectManagement<br />
+          📣 promotion<br />
+          💬 question<br />
+          🔬 research<br />
+          <a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3ATheRealKasumi">👀 review</a><br />
+          🛡️ security<br />
+          <a href="https://github.com/TheRealKasumi/TesLight">🔧 tool</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">⚠️ test</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/blob/main/documentation/build.md">✅ tutorial</a><br />
+          <a href="https://www.youtube.com/watch?v=_N5h1IViB-E">📹 video</a><br />
+        </p>
       </td>
-    </tr>
-    <tr>
       <td align="center">
         <a href="https://github.com/danielbayerlein">
           <img src="https://avatars.githubusercontent.com/u/457834" width="100px;" alt="danielbayerlein"/>
@@ -115,11 +136,21 @@ Thank you💖!
           <b>danielbayerlein</b>
         </a>
       </td>
-      <td align="center" valign="top">
-        <p>Placeholder</p> 
+      <td align="center" valign="middle">
+        <p style="text-align: left" >
+          <a href="https://github.com/TheRealKasumi/TesLight/issues?q=author%3Adanielbayerlein">🐛 bug</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/commits?author=danielbayerlein">💻 code</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/tree/main/ui">🎨 design</a><br />
+          🤔 ideas<br />
+          <a href="https://github.com/TheRealKasumi/TesLight/tree/main/.github">🚇 infra</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/commits?author=danielbayerlein">🚧 maintenance</a><br />
+          📆 projectManagement<br />
+          💬 question<br />
+          <a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3Adanielbayerlein">👀 review</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/tree/main/ui/public/locales">🌍 translation</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/commits?author=danielbayerlein">⚠️ test</a><br />
+        </p>
       </td>
-    </tr>
-     <tr>
       <td align="center">
         <a href="https://github.com/JakobLichterfeld">
           <img src="https://avatars.githubusercontent.com/u/16510328" width="100px;" alt="JakobLichterfeld"/>
@@ -127,8 +158,21 @@ Thank you💖!
           <b>JakobLichterfeld</b>
         </a>
       </td>
-      <td align="center" valign="top">
-        <p>Placeholder</p> 
+      <td align="center" valign="middle">
+        <p style="text-align: left" >
+          <a href="https://github.com/TheRealKasumi/TesLight/issues?q=author%3AJakobLichterfeld">🐛 bug</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">💻 code</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">📖 doc</a><br />
+          🤔 ideas<br />
+          <a href="https://github.com/TheRealKasumi/TesLight/tree/main/.github">🚇 infra</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">🚧 maintenance</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight">🧑‍🏫 mentoring</a><br />
+          📆 projectManagement<br />
+          💬 question<br />
+          <a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3AJakobLichterfeld">👀 review</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">⚠️ test</a><br />
+          <a href="https://github.com/TheRealKasumi/TesLight/blob/main/documentation/build.md">✅ tutorial</a><br />
+        </p>
       </td>
     </tr>
     </tr>
@@ -140,12 +184,11 @@ Thank you💖!
           <b>heyitsmarlon</b>
         </a>
       </td>
-      <td align="center" valign="top">
-        <p>Placeholder</p> 
+      <td align="center" valign="middle">
+        <p style="text-align: left" >
+          <a href="https://github.com/TheRealKasumi/TesLight/commit/0f9c097bd0b3cda26543b43a7343aa3b4d4c56f0">📖 doc</a><br />
+        </p>
       </td>
-    </tr>
-    </tr>
-     <tr>
       <td align="center">
         <a href="https://github.com/MathiasSeifert">
           <img src="https://avatars.githubusercontent.com/u/19532855" width="100px;" alt="MathiasSeifert"/>
@@ -153,12 +196,11 @@ Thank you💖!
           <b>MathiasSeifert</b>
         </a>
       </td>
-      <td align="center" valign="top">
-        <p>Placeholder</p> 
+      <td align="center" valign="middle">
+        <p style="text-align: left" >
+          <a href="https://github.com/TheRealKasumi/TesLight/commits?author=MathiasSeifert">📖 doc</a><br />
+        </p>
       </td>
-    </tr>
-    </tr>
-     <tr>
       <td align="center">
         <a href="https://github.com/PhilippDenn">
           <img src="https://avatars.githubusercontent.com/u/114821380" width="100px;" alt="PhilippDenn"/>
@@ -166,12 +208,12 @@ Thank you💖!
           <b>PhilippDenn</b>
         </a>
       </td>
-      <td align="center" valign="top">
-        <p>Placeholder</p> 
+      <td align="center" valign="middle">
+        <p style="text-align: left" >
+          <a href="https://github.com/TheRealKasumi/TesLight/issues?q=author%3APhilippDenn">🐛 bug</a><br />
+          🤔 ideas<br />
+        </p>
       </td>
-    </tr>
-    </tr>
-     <tr>
       <td align="center">
         <a href="https://github.com/rgrae81">
           <img src="https://avatars.githubusercontent.com/u/36889990" width="100px;" alt="rgrae81"/>
@@ -179,8 +221,10 @@ Thank you💖!
           <b>rgrae81</b>
         </a>
       </td>
-      <td align="center" valign="top">
-        <p>Placeholder</p> 
+      <td align="center" valign="middle">
+        <p style="text-align: left" >
+          <a href="https://github.com/TheRealKasumi/TesLight/tree/main/model">🎨 design</a><br />
+        </p>
       </td>
     </tr>
   </tbody>
