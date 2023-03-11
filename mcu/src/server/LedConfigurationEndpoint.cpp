@@ -282,10 +282,10 @@ bool TL::LedConfigurationEndpoint::validateLedZone(const JsonObject &jsonObject,
 		return false;
 	}
 
-	if (!TL::LedConfigurationEndpoint::isInRange(jsonObject[F("type")].as<uint8_t>(), 0L, 7L) && jsonObject[F("type")].as<uint8_t>() != 255)
+	if (!TL::LedConfigurationEndpoint::isInRange(jsonObject[F("type")].as<uint8_t>(), 0L, 8L) && jsonObject[F("type")].as<uint8_t>() != 255)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field at index ") + index + F(" must be between 0 and 7."));
-		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field at index ") + index + F(" must be between 0 and 7."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"type\" field at index ") + index + F(" must be between 0 and 8."));
+		TL::LedConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"type\" field at index ") + index + F(" must be between 0 and 8."));
 		return false;
 	}
 

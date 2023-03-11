@@ -427,6 +427,17 @@ TL::LedManager::Error TL::LedManager::loadCalculatedAnimations()
 				ledConfig.animationSettings[18]));
 		}
 
+		// Equalizer type
+		else if (ledConfig.type == 8)
+		{
+			TL::LedManager::ledAnimator.at(i).reset(new TL::EqualizerAnimator(
+				TL::Pixel(ledConfig.animationSettings[1], ledConfig.animationSettings[2], ledConfig.animationSettings[3]),
+				TL::Pixel(ledConfig.animationSettings[4], ledConfig.animationSettings[5], ledConfig.animationSettings[6]),
+				ledConfig.animationSettings[7],
+				ledConfig.animationSettings[8] / 255.0f,
+				ledConfig.animationSettings[18]));
+		}
+
 		// Unknown type
 		else
 		{
@@ -537,7 +548,7 @@ void TL::LedManager::limitPowerConsumption()
 		TL::Configuration::getLedConfig(i, ledConfig);
 
 		const uint8_t regulatorIndex = TL::LedManager::getRegulatorIndexFromPin(ledConfig.ledPin);
-		float multiplicator = ((float)systemConfig.regulatorPowerLimit / REGULATOR_COUNT) / regulatorPower[regulatorIndex];
+		float multiplicator = (static_cast<float>(systemConfig.regulatorPowerLimit) / REGULATOR_COUNT) / regulatorPower[regulatorIndex];
 		if (multiplicator < 0.0f)
 		{
 			multiplicator = 0.0f;
