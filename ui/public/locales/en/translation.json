@@ -124,6 +124,7 @@
       "ACC_Y_G": "Acc Y G",
       "ACC_Z_G": "Acc Z G",
       "AUDIO_FREQUENCY_TRIGGER": "Audio Frequency Trigger",
+      "AUDIO_FREQUENCY_VALUE": "Audio Frequency Value",
       "GY_X_DEG": "GY X DEG",
       "GY_Y_DEG": "GY Y DEG",
       "GY_Z_DEG": "GY Z DEG",
@@ -138,6 +139,7 @@
     "animationTypes": {
       "ColorBar": "Color Bar",
       "FSEQ": "Custom",
+      "Equalizer": "Equalizer",
       "Gradient": "Gradient",
       "GradientMotion": "Gradient Motion",
       "Pulse": "Pulse",
@@ -160,6 +162,7 @@
       "Solid": "Solid",
       "Static": "Static"
     },
+    "autoGain": "Auto Gain",
     "basic": "Basic",
     "birthRate": "Birth Rate",
     "brightness": "Brightness",
@@ -180,6 +183,7 @@
     "ledVoltage": "LED Voltage",
     "offset": "Offset",
     "pulseFading": "Pulse Fading",
+    "rainbowSpeed": "Rainbow Speed",
     "reset": "Reset to default",
     "sparkCount": "Spark Count",
     "sparkFading": "Spark Fading",
