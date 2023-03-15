@@ -96,7 +96,7 @@ Thank you💖!
 <table>
 	<tbody>
 		<tr>
-			<td align="center" valign="top" width="180px">
+			<td align="center" valign="top" width="200px">
         <br />
 				<a href="https://github.com/TheRealKasumi">
 					<img src="https://avatars.githubusercontent.com/u/62426919" width="100px;" alt="TheRealKasumi" />
@@ -129,7 +129,7 @@ Thank you💖!
 					<a href="https://www.youtube.com/watch?v=_N5h1IViB-E">📹 video</a><br />
 				</p>
 			</td>
-			<td align="center" valign="top" width="180px">
+			<td align="center" valign="top" width="200px">
         <br />
 				<a href="https://github.com/danielbayerlein">
 					<img src="https://avatars.githubusercontent.com/u/457834" width="100px;" alt="danielbayerlein" />
@@ -152,7 +152,7 @@ Thank you💖!
 					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=danielbayerlein">⚠️ test</a><br />
 				</p>
 			</td>
-			<td align="center" valign="top" width="180px">
+			<td align="center" valign="top" width="200px">
         <br />
 				<a href="https://github.com/JakobLichterfeld">
 					<img src="https://avatars.githubusercontent.com/u/16510328" width="100px;" alt="JakobLichterfeld" />
@@ -175,7 +175,7 @@ Thank you💖!
 					<a href="https://github.com/TheRealKasumi/TesLight/blob/main/documentation/build.md">✅ tutorial</a><br />
 				</p>
 			</td>
-			<td align="center" valign="top" width="180px">
+			<td align="center" valign="top" width="200px">
         <br />
 				<a href="https://github.com/heyitsmarlon">
 					<img src="https://avatars.githubusercontent.com/u/74954698" width="100px;" alt="heyitsmarlon" />
@@ -187,7 +187,7 @@ Thank you💖!
 					<a href="https://github.com/TheRealKasumi/TesLight/commit/0f9c097bd0b3cda26543b43a7343aa3b4d4c56f0">📖 doc</a><br />
 				</p>
 			</td>
-			<td align="center" valign="top" width="180px">
+			<td align="center" valign="top" width="200px">
         <br />
 				<a href="https://github.com/MathiasSeifert">
 					<img src="https://avatars.githubusercontent.com/u/19532855" width="100px;" alt="MathiasSeifert" />
@@ -199,7 +199,9 @@ Thank you💖!
 					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=MathiasSeifert">📖 doc</a><br />
 				</p>
 			</td>
-			<td align="center" valign="top" width="180px">
+      </tr>
+      <tr>
+			<td align="center" valign="top" width="200px">
         <br />
 				<a href="https://github.com/PhilippDenn">
 					<img src="https://avatars.githubusercontent.com/u/114821380" width="100px;" alt="PhilippDenn" />
@@ -212,9 +214,7 @@ Thank you💖!
 					🤔 ideas<br />
 				</p>
 			</td>
-      </tr>
-      <tr>
-			<td align="center" valign="top" width="180px">
+			<td align="center" valign="top" width="200px">
         <br />
 				<a href="https://github.com/rgrae81">
 					<img src="https://avatars.githubusercontent.com/u/36889990" width="100px;" alt="rgrae81" />
@@ -226,11 +226,9 @@ Thank you💖!
 					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/model">🎨 design</a><br />
 				</p>
 			</td>
-      <td align="center" valign="top" width="180px"></td>
-      <td align="center" valign="top" width="180px"></td>
-      <td align="center" valign="top" width="180px"></td>
-      <td align="center" valign="top" width="180px"></td>
-      <td align="center" valign="top" width="180px"></td>
+      <td align="center" valign="top" width="200px"></td>
+      <td align="center" valign="top" width="200px"></td>
+      <td align="center" valign="top" width="200px"></td>
 		</tr>
 	</tbody>
 </table>
