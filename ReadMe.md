@@ -187,8 +187,6 @@ Thank you💖!
 					<a href="https://github.com/TheRealKasumi/TesLight/commit/0f9c097bd0b3cda26543b43a7343aa3b4d4c56f0">📖 doc</a><br />
 				</p>
 			</td>
-    </tr>
-    <tr>
 			<td align="center" valign="top" width="180px">
         <br />
 				<a href="https://github.com/MathiasSeifert">
@@ -214,6 +212,8 @@ Thank you💖!
 					🤔 ideas<br />
 				</p>
 			</td>
+      </tr>
+      <tr>
 			<td align="center" valign="top" width="180px">
         <br />
 				<a href="https://github.com/rgrae81">
@@ -226,6 +226,10 @@ Thank you💖!
 					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/model">🎨 design</a><br />
 				</p>
 			</td>
+      <td align="center" valign="top" width="180px"></td>
+      <td align="center" valign="top" width="180px"></td>
+      <td align="center" valign="top" width="180px"></td>
+      <td align="center" valign="top" width="180px"></td>
       <td align="center" valign="top" width="180px"></td>
 		</tr>
 	</tbody>
