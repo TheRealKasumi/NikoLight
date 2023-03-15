@@ -82,17 +82,159 @@ A list of required and optional parts can be found [here](documentation/part-lis
 
 The build guide can be found [here](documentation/build.md).
 
-## One request
+## One Request
 
-Creating this project has taken a lot of my time, effort and money.
-Nevertheless, I share it publicly with you.
+A lot of our time, effort and money went into this project.
+Nevertheless, we share it publicly with you.
 You can use it for free, modify it and even earn a coffee by building the parts for other people as long as you are a private person without commercial intentions.
-But please **don't steal** my work, be a little **respectful** and **give credits**.
-That's all I wish for.
+But please **don't steal** our work, be a little **respectful** and **give credits**.
+That said, I hope you have a lot of fun and great experience with TesLight!
+Thank you💖!
 
-Also, you should be careful when working on the project and especially your car.
+## Contributors
+
+<table>
+	<tbody>
+		<tr>
+			<td align="center" valign="top" width="200px">
+        <br />
+				<a href="https://github.com/TheRealKasumi">
+					<img src="https://avatars.githubusercontent.com/u/62426919" width="100px;" alt="TheRealKasumi" />
+					<br />
+					<b>TheRealKasumi</b>
+				</a>
+				<hr />
+				<p style="text-align: left">
+					<a href="https://github.com/TheRealKasumi/TesLight/issues?q=author%3ATheRealKasumi">🐛 bug</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">💻 code</a><br />
+					🖋 content<br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">📖 doc</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/ui">🎨 design</a><br />
+					💡 example<br />
+					🤔 ideas<br />
+					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/.github">🚇 infra</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">🚧 maintenance</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight">🧑‍🏫 mentoring</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">📦 platform</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight">🔌 plugin</a><br />
+					📆 projectManagement<br />
+					📣 promotion<br />
+					💬 question<br />
+					🔬 research<br />
+					<a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3ATheRealKasumi">👀 review</a><br />
+					🛡️ security<br />
+					<a href="https://github.com/TheRealKasumi/TesLight">🔧 tool</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">⚠️ test</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/blob/main/documentation/build.md">✅ tutorial</a><br />
+					<a href="https://www.youtube.com/watch?v=_N5h1IViB-E">📹 video</a><br />
+				</p>
+			</td>
+			<td align="center" valign="top" width="200px">
+        <br />
+				<a href="https://github.com/danielbayerlein">
+					<img src="https://avatars.githubusercontent.com/u/457834" width="100px;" alt="danielbayerlein" />
+					<br />
+					<b>danielbayerlein</b>
+				</a>
+				<hr />
+				<p style="text-align: left">
+					<a href="https://github.com/TheRealKasumi/TesLight/issues?q=author%3Adanielbayerlein">🐛 bug</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=danielbayerlein">💻 code</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/ui">🎨 design</a><br />
+					🤔 ideas<br />
+					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/.github">🚇 infra</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=danielbayerlein">🚧 maintenance</a><br />
+					📆 projectManagement<br />
+					💬 question<br />
+					<a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3Adanielbayerlein">👀 review</a
+					><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/ui/public/locales">🌍 translation</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=danielbayerlein">⚠️ test</a><br />
+				</p>
+			</td>
+			<td align="center" valign="top" width="200px">
+        <br />
+				<a href="https://github.com/JakobLichterfeld">
+					<img src="https://avatars.githubusercontent.com/u/16510328" width="100px;" alt="JakobLichterfeld" />
+					<br />
+					<b>JakobLichterfeld</b>
+				</a>
+				<hr />
+				<p style="text-align: left">
+					<a href="https://github.com/TheRealKasumi/TesLight/issues?q=author%3AJakobLichterfeld">🐛 bug</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">💻 code</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">📖 doc</a><br />
+					🤔 ideas<br />
+					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/.github">🚇 infra</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">🚧 maintenance</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight">🧑‍🏫 mentoring</a><br />
+					📆 projectManagement<br />
+					💬 question<br />
+					<a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3AJakobLichterfeld">👀 review</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">⚠️ test</a><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/blob/main/documentation/build.md">✅ tutorial</a><br />
+				</p>
+			</td>
+			<td align="center" valign="top" width="200px">
+        <br />
+				<a href="https://github.com/heyitsmarlon">
+					<img src="https://avatars.githubusercontent.com/u/74954698" width="100px;" alt="heyitsmarlon" />
+					<br />
+					<b>heyitsmarlon</b>
+				</a>
+				<hr />
+				<p style="text-align: left">
+					<a href="https://github.com/TheRealKasumi/TesLight/commit/0f9c097bd0b3cda26543b43a7343aa3b4d4c56f0">📖 doc</a><br />
+				</p>
+			</td>
+			<td align="center" valign="top" width="200px">
+        <br />
+				<a href="https://github.com/MathiasSeifert">
+					<img src="https://avatars.githubusercontent.com/u/19532855" width="100px;" alt="MathiasSeifert" />
+					<br />
+					<b>MathiasSeifert</b>
+				</a>
+				<hr />
+				<p style="text-align: left">
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=MathiasSeifert">📖 doc</a><br />
+				</p>
+			</td>
+      </tr>
+      <tr>
+			<td align="center" valign="top" width="200px">
+        <br />
+				<a href="https://github.com/PhilippDenn">
+					<img src="https://avatars.githubusercontent.com/u/114821380" width="100px;" alt="PhilippDenn" />
+					<br />
+					<b>PhilippDenn</b>
+				</a>
+				<hr />
+				<p style="text-align: left">
+					<a href="https://github.com/TheRealKasumi/TesLight/issues?q=author%3APhilippDenn">🐛 bug</a><br />
+					🤔 ideas<br />
+				</p>
+			</td>
+			<td align="center" valign="top" width="200px">
+        <br />
+				<a href="https://github.com/rgrae81">
+					<img src="https://avatars.githubusercontent.com/u/36889990" width="100px;" alt="rgrae81" />
+					<br />
+					<b>rgrae81</b>
+				</a>
+				<hr />
+				<p style="text-align: left">
+					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/model">🎨 design</a><br />
+				</p>
+			</td>
+      <td align="center" valign="top" width="200px"></td>
+      <td align="center" valign="top" width="200px"></td>
+      <td align="center" valign="top" width="200px"></td>
+		</tr>
+	</tbody>
+</table>
+
+## Disclaimer
+
+Please be careful when working on the project and especially your car.
 I am not a professional electrical engineer and only doing this as a hobby on the side.
 Use this project at your own risk.
-
-That said, I hope you have a lot of fun and great experience with TesLight!
-Thank you💖
