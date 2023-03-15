@@ -120,14 +120,11 @@ Thank you💖!
 					📣 promotion<br />
 					💬 question<br />
 					🔬 research<br />
-					<a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3ATheRealKasumi"
-						>👀 review</a
-					><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3ATheRealKasumi">👀 review</a><br />
 					🛡️ security<br />
 					<a href="https://github.com/TheRealKasumi/TesLight">🔧 tool</a><br />
 					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">⚠️ test</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/blob/main/documentation/build.md">✅ tutorial</a
-					><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/blob/main/documentation/build.md">✅ tutorial</a><br />
 					<a href="https://www.youtube.com/watch?v=_N5h1IViB-E">📹 video</a><br />
 				</p>
 			</td>
@@ -144,12 +141,10 @@ Thank you💖!
 					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/ui">🎨 design</a><br />
 					🤔 ideas<br />
 					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/.github">🚇 infra</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=danielbayerlein">🚧 maintenance</a
-					><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=danielbayerlein">🚧 maintenance</a><br />
 					📆 projectManagement<br />
 					💬 question<br />
-					<a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3Adanielbayerlein"
-						>👀 review</a
+					<a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3Adanielbayerlein">👀 review</a
 					><br />
 					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/ui/public/locales">🌍 translation</a><br />
 					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=danielbayerlein">⚠️ test</a><br />
@@ -168,17 +163,13 @@ Thank you💖!
 					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">📖 doc</a><br />
 					🤔 ideas<br />
 					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/.github">🚇 infra</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">🚧 maintenance</a
-					><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">🚧 maintenance</a><br />
 					<a href="https://github.com/TheRealKasumi/TesLight">🧑‍🏫 mentoring</a><br />
 					📆 projectManagement<br />
 					💬 question<br />
-					<a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3AJakobLichterfeld"
-						>👀 review</a
-					><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3AJakobLichterfeld">👀 review</a><br />
 					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">⚠️ test</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/blob/main/documentation/build.md">✅ tutorial</a
-					><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/blob/main/documentation/build.md">✅ tutorial</a><br />
 				</p>
 			</td>
 			<td align="center" valign="top">
@@ -189,9 +180,7 @@ Thank you💖!
 				</a>
 				<hr />
 				<p style="text-align: left">
-					<a href="https://github.com/TheRealKasumi/TesLight/commit/0f9c097bd0b3cda26543b43a7343aa3b4d4c56f0"
-						>📖 doc</a
-					><br />
+					<a href="https://github.com/TheRealKasumi/TesLight/commit/0f9c097bd0b3cda26543b43a7343aa3b4d4c56f0">📖 doc</a><br />
 				</p>
 			</td>
 			<td align="center" valign="top">
