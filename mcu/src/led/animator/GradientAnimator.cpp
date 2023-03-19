@@ -106,18 +106,18 @@ void TL::GradientAnimator::render(TL::LedStrip &ledStrip)
 				}
 				else
 				{
-					position = 0.5f + ((float)i - middle) / ((ledStrip.getLedCount() - 1) - middle) * 0.5f;
+					position = 0.5f + (i - middle) / ((ledStrip.getLedCount() - 1) - middle) * 0.5f;
 				}
 			}
 			else if (this->gradientMode == TL::GradientAnimator::GradientMode::GRADIENT_CENTER)
 			{
 				if (i < middle)
 				{
-					position = (float)i / middle;
+					position = i / middle;
 				}
 				else
 				{
-					position = 1.0f - ((float)i - middle) / ((ledStrip.getLedCount() - 1) - middle);
+					position = 1.0f - (i - middle) / ((ledStrip.getLedCount() - 1) - middle);
 				}
 			}
 			ledStrip.setPixel(

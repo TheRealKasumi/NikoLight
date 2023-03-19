@@ -272,6 +272,14 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
           setValue('color1', `#${rgbHex(0, 0, 0)}`);
           setValue('dataSource', AnimationDataSource.NONE.toString());
           break;
+
+        case AnimationType.Equalizer:
+          setValue('color1', `#${rgbHex(255, 0, 0)}`);
+          setValue('color2', `#${rgbHex(0, 0, 255)}`);
+          setValue('animationSettings.7', 63);
+          setValue('animationSettings.8', 127);
+          setValue('dataSource', AnimationDataSource.RANDOM.toString());
+          break;
       }
     },
     [resetField, setValue],
@@ -330,7 +338,9 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             </div>
           </label>
 
-          {AnimationType.Static !== Number(values.type) && (
+          {![AnimationType.Static, AnimationType.Equalizer].includes(
+            Number(values.type),
+          ) && (
             <label className="mb-6 flex flex-row justify-between">
               <span className="basis-1/2 self-center">
                 {t('zone.animationMode')}
@@ -358,6 +368,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             AnimationType.GradientMotion,
             AnimationType.Sparkle,
             AnimationType.Pulse,
+            AnimationType.Equalizer,
           ].includes(Number(values.type)) &&
             dataSources.length > 1 && (
               <label className="mb-6 flex flex-row justify-between">
@@ -381,12 +392,16 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
               </label>
             )}
 
-          {[AnimationType.Sparkle, AnimationType.Pulse].includes(
-            Number(values.type),
-          ) &&
+          {[
+            AnimationType.Sparkle,
+            AnimationType.Pulse,
+            AnimationType.Equalizer,
+          ].includes(Number(values.type)) &&
             hasAudioUnit &&
-            AnimationDataSource.AUDIO_FREQUENCY_TRIGGER ===
-              Number(values.dataSource) && (
+            [
+              AnimationDataSource.AUDIO_FREQUENCY_TRIGGER,
+              AnimationDataSource.AUDIO_FREQUENCY_VALUE,
+            ].includes(Number(values.dataSource)) && (
               <label className="mb-6 flex flex-col">
                 <span className="mb-2">{t('zone.frequencyBands')}</span>
                 <ToggleGroup<FormData>
@@ -463,6 +478,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             AnimationType.Sparkle,
             AnimationType.Static,
             AnimationType.Pulse,
+            AnimationType.Equalizer,
           ].includes(Number(values.type)) && (
             <label className="mb-6 flex flex-col">
               <span className="mb-2">{t('zone.color')}</span>
@@ -476,6 +492,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
                   AnimationType.ColorBar,
                   AnimationType.Gradient,
                   AnimationType.GradientMotion,
+                  AnimationType.Equalizer,
                 ].includes(Number(values.type)) && (
                   <>
                     <button
@@ -704,6 +721,40 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
                 step={1}
               />
             </label>
+          )}
+
+          {AnimationType.Equalizer === Number(values.type) && (
+            <>
+              <label className="mb-6 flex flex-col">
+                <span className="mb-2">
+                  {t('zone.rainbowSpeed')}:{' '}
+                  {toPercentage(values.animationSettings[7])}%
+                </span>
+                <Slider<FormData>
+                  className="w-full"
+                  control={control}
+                  name="animationSettings.7"
+                  min={0}
+                  max={255}
+                  step={1}
+                />
+              </label>
+
+              <label className="mb-6 flex flex-col">
+                <span className="mb-2">
+                  {t('zone.autoGain')}:{' '}
+                  {toPercentage(values.animationSettings[8])}%
+                </span>
+                <Slider<FormData>
+                  className="w-full"
+                  control={control}
+                  name="animationSettings.8"
+                  min={0}
+                  max={255}
+                  step={1}
+                />
+              </label>
+            </>
           )}
         </fieldset>
 
