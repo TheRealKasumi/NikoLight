@@ -31,6 +31,7 @@ bool TL::WiFiManager::initialized = false;
 TL::WiFiManager::Error TL::WiFiManager::begin()
 {
 	TL::WiFiManager::initialized = false;
+	WiFi.persistent(false);
 	if (!WiFi.mode(WIFI_MODE_AP))
 	{
 		return TL::WiFiManager::Error::ERROR_SET_MODE;
