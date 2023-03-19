@@ -41,7 +41,7 @@ export const useUpdateWifi = () => {
   const queryClient = useQueryClient();
   return useMutation<Response, Error, Wifi, Context>({
     mutationFn: async (data) =>
-      await ky.post(WIFI_API_URL, { json: { wifiConfig: data } }).json(),
+      await ky.patch(WIFI_API_URL, { json: { wifiConfig: data } }).json(),
     onMutate: async (wifiConfig) => {
       await queryClient.cancelQueries({ queryKey: [WIFI_API_URL] });
       const cache = queryClient.getQueryData<DataResponse>([WIFI_API_URL]);

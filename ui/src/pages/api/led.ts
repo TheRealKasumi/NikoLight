@@ -49,7 +49,7 @@ export const useUpdateLed = () => {
   return useMutation<Response, Error, Led[], Context>({
     mutationFn: async (data) =>
       await ky
-        .post(LED_API_URL, {
+        .patch(LED_API_URL, {
           json: { ledConfig: data },
           throwHttpErrors: false,
           hooks: {
