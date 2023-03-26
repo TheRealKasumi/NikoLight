@@ -1,6 +1,7 @@
 export * from './fseq';
 export * from './led';
 export * from './log';
+export * from './motionSensorCalibration';
 export * from './profile';
 export * from './system';
 export * from './systemInfo';

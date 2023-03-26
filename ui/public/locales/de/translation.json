@@ -1,4 +1,8 @@
 {
+  "alertDialog": {
+    "confirm": "Bestätigen",
+    "cancel": "Schließen"
+  },
   "customAnimations": {
     "deleteSuccessful": "Erfolgreich gelöscht!",
     "file": "Datei",
@@ -87,6 +91,12 @@
       "warning": "Warnung",
       "error": "Fehler"
     },
+    "motionSensor": "Bewegungssensor",
+    "motionSensorCalibration": "Kalibrierung",
+    "motionSensorAutoCalibration": "Starte Auto-Kalibrierung",
+    "motionSensorAutoCalibrationTitle": "Möchtest du die automatische Kalibrierung des Bewegungssensors starten?",
+    "motionSensorAutoCalibrationDescription": "Stelle sicher, dass das Fahrzeug geparkt ist und die Innentemperatur zwischen -10°C und 50°C beträgt.",
+    "motionSensorAutoCalibrationSuccessful": "Erfolgreich kalibriert.",
     "power": "Power",
     "regulator": "Regler",
     "regulatorCutoffTemperature": "Abschalttemperatur (°C)",

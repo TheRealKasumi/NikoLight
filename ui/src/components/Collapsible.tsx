@@ -49,5 +49,3 @@ export const Collapsible = ({
     </CollapsiblePrimitive.Root>
   );
 };
-
-export default Collapsible;
