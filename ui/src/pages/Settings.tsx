@@ -4,6 +4,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import {
+  AlertDialog,
   Button,
   Error,
   InputPassword,
@@ -19,6 +20,7 @@ import {
 import i18n from '../i18n';
 import { changeTheme, toPercentage } from '../libs';
 import {
+  useAutoMotionSensorCalibration,
   useSystem,
   useSystemInfo,
   useUi,
@@ -134,6 +136,13 @@ const Form = (): JSX.Element => {
     isError: isUiError,
     error: uiError,
   } = useUpdateUi();
+  const {
+    mutateAsync: mutateAsyncAutoMotionSensorCalibration,
+    isSuccess: isAutoMotionSensorCalibrationSuccess,
+    isLoading: isAutoMotionSensorCalibrationLoading,
+    isError: isAutoMotionSensorCalibrationError,
+    error: autoMotionSensorCalibrationError,
+  } = useAutoMotionSensorCalibration();
 
   const {
     handleSubmit,
@@ -262,6 +271,10 @@ const Form = (): JSX.Element => {
           <Toast title={t('settings.submitSuccessful')} />
         )}
 
+      {isAutoMotionSensorCalibrationSuccess && (
+        <Toast title={t('settings.motionSensorAutoCalibrationSuccessful')} />
+      )}
+
       {isSystemError && (
         <Notification state="error" message={systemError.message} />
       )}
@@ -271,6 +284,15 @@ const Form = (): JSX.Element => {
       )}
 
       {isUiError && <Notification state="error" message={uiError.message} />}
+
+      {isAutoMotionSensorCalibrationError && (
+        <Notification
+          state="error"
+          message={autoMotionSensorCalibrationError.message}
+        />
+      )}
+
+      {isAutoMotionSensorCalibrationLoading && <Loading overlay />}
 
       {Number(values.system.fanMode) === FanMode.Automatic &&
         !hasTemperatureSensors && (
@@ -559,6 +581,38 @@ const Form = (): JSX.Element => {
               </>
             )}
         </fieldset>
+
+        {(systemInfo?.hardwareInfo.mpu6050 ?? 0) > 0 && (
+          <fieldset className="mb-6">
+            <legend className="mb-6 text-lg font-medium">
+              {t('settings.motionSensor')}
+            </legend>
+
+            <label className="mb-6 flex flex-row justify-between">
+              <span className="basis-1/2 self-center">
+                {t('settings.motionSensorCalibration')}
+              </span>
+              <div className="basis-1/2 text-right">
+                <AlertDialog
+                  title={t('settings.motionSensorAutoCalibrationTitle')}
+                  description={t(
+                    'settings.motionSensorAutoCalibrationDescription',
+                  )}
+                  onConfirm={async () => {
+                    await mutateAsyncAutoMotionSensorCalibration();
+                  }}
+                >
+                  <Button
+                    className="w-fit border-0 bg-cloud text-sm font-medium text-sky dark:bg-gray"
+                    variant="secondary"
+                  >
+                    {t('settings.motionSensorAutoCalibration')}
+                  </Button>
+                </AlertDialog>
+              </div>
+            </label>
+          </fieldset>
+        )}
 
         <fieldset className="mb-6">
           <legend className="mb-6 text-lg font-medium">

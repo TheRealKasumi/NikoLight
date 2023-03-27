@@ -1,4 +1,8 @@
 {
+  "alertDialog": {
+    "confirm": "Confirm",
+    "close": "Close"
+  },
   "customAnimations": {
     "deleteSuccessful": "Successfully deleted!",
     "file": "File",
@@ -87,6 +91,12 @@
       "info": "Info",
       "warning": "Warning"
     },
+    "motionSensor": "Motion Sensor",
+    "motionSensorCalibration": "Calibration",
+    "motionSensorAutoCalibration": "Start Auto Calibration",
+    "motionSensorAutoCalibrationTitle": "Do you want to start the automatic calibration of the motion sensor?",
+    "motionSensorAutoCalibrationDescription": "Make sure that the car is parked and the interior temperature is between -10°C and 50°C.",
+    "motionSensorAutoCalibrationSuccessful": "Successfully calibrated.",
     "power": "Power",
     "regulator": "Regulator",
     "regulatorCutoffTemperature": "Shut Down Temperature (°C)",

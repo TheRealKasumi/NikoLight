@@ -19,7 +19,7 @@ export const Toast = ({
       <ToastPrimitive.Root
         {...props}
         className={cx(
-          'fixed inset-x-4 bottom-4 z-50 w-auto rounded-lg md:top-4 md:right-4 md:left-auto md:bottom-auto md:w-full md:max-w-sm',
+          'fixed inset-x-4 bottom-4 z-10 w-auto rounded-lg md:top-4 md:right-4 md:left-auto md:bottom-auto md:w-full md:max-w-sm',
           'bg-cloud dark:bg-gray',
           'translate-x-radix-toast-swipe-move-x',
           'radix-swipe-cancel:translate-x-0 radix-swipe-cancel:duration-200 radix-swipe-cancel:ease-[ease]',
@@ -41,7 +41,7 @@ export const Toast = ({
               )}
             </div>
           </div>
-          <div className="flex space-y-1 border-l border-gray border-opacity-5 px-3 py-2 dark:border-white dark:border-opacity-5">
+          <div className="flex space-y-1 border-l border-gray/10 px-3 py-2 dark:border-white/10">
             <ToastPrimitive.Close className="flex w-full items-center justify-center rounded-lg px-3 py-2 text-sm font-medium focus:z-10 focus:outline-none focus-visible:ring focus-visible:ring-sky focus-visible:ring-opacity-75">
               {t('toast.close')}
             </ToastPrimitive.Close>

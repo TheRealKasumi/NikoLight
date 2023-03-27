@@ -2,6 +2,7 @@ import { rest } from 'msw';
 import type {
   Fseq,
   Led,
+  MotionSensorCalibration,
   Profile,
   Profiles,
   System,
@@ -36,21 +37,7 @@ const mock: {
     system: SystemInfo;
   };
   motion: {
-    // TODO: Update type
-    motionSensorCalibration: {
-      accXRaw: number;
-      accYRaw: number;
-      accZRaw: number;
-      gyroXRaw: number;
-      gyroYRaw: number;
-      gyroZRaw: number;
-      accXG: number;
-      accYG: number;
-      accZG: number;
-      gyroXDeg: number;
-      gyroYDeg: number;
-      gyroZDeg: number;
-    };
+    motionSensorCalibration: MotionSensorCalibration;
   };
   fseq: {
     fileList: Fseq[];
@@ -356,9 +343,12 @@ export const handlers = [
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 
-  rest.patch('/api/config/motioncalibration/auto', async (_req, res, ctx) => {
+  rest.patch('/api/config/motion/calibration/auto', async (_req, res, ctx) => {
     console.debug('Run the motion sensor calibration');
-    return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
+    return throttledRes(
+      ctx.status(200),
+      ctx.json({ status: 200, message: 'ok' }),
+    );
   }),
 
   // ---------------
