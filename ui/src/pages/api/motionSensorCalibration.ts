@@ -1,7 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import ky from 'ky';
 
-export const MOTION_SENSOR_CALIBRATION_API_URL = '/api/config/motion';
+export const MOTION_SENSOR_CALIBRATION_API_URL =
+  '/api/config/motion/calibration';
 
 export type MotionSensorCalibration = {
   accXRaw: number;
@@ -26,5 +27,5 @@ type Response = {
 export const useAutoMotionSensorCalibration = () =>
   useMutation<Response, Error>({
     mutationFn: async () =>
-      await ky.patch(`${MOTION_SENSOR_CALIBRATION_API_URL}`).json(),
+      await ky.patch(`${MOTION_SENSOR_CALIBRATION_API_URL}/auto`).json(),
   });
