@@ -27,7 +27,7 @@
 void TL::SystemConfigurationEndpoint::begin()
 {
 	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_GET, TL::SystemConfigurationEndpoint::getSystemConfig);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_POST, TL::SystemConfigurationEndpoint::postSystemConfig);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_PATCH, TL::SystemConfigurationEndpoint::patchSystemConfig);
 }
 
 /**
@@ -67,9 +67,9 @@ void TL::SystemConfigurationEndpoint::getSystemConfig()
 }
 
 /**
- * @brief Receive the system configuration sent by the client.
+ * @brief Update the system configuration.
  */
-void TL::SystemConfigurationEndpoint::postSystemConfig()
+void TL::SystemConfigurationEndpoint::patchSystemConfig()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the system configuration."));
 	if (!TL::Configuration::isInitialized())

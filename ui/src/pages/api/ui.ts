@@ -40,7 +40,7 @@ export const useUpdateUi = () => {
   const queryClient = useQueryClient();
   return useMutation<UiResponse, Error, Ui, UiContext>({
     mutationFn: async (data) =>
-      await ky.post(UI_API_URL, { json: { uiConfig: data } }).json(),
+      await ky.patch(UI_API_URL, { json: { uiConfig: data } }).json(),
     onMutate: async (uiConfig) => {
       await queryClient.cancelQueries({ queryKey: [UI_API_URL] });
       const cache = queryClient.getQueryData<UiDataResponse>([UI_API_URL]);

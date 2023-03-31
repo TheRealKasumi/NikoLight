@@ -27,7 +27,7 @@
 void TL::LedConfigurationEndpoint::begin()
 {
 	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/led")).c_str(), http_method::HTTP_GET, TL::LedConfigurationEndpoint::getLedConfig);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/led")).c_str(), http_method::HTTP_POST, TL::LedConfigurationEndpoint::postLedConfig);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/led")).c_str(), http_method::HTTP_PATCH, TL::LedConfigurationEndpoint::patchLedConfig);
 }
 
 /**
@@ -80,9 +80,9 @@ void TL::LedConfigurationEndpoint::getLedConfig()
 }
 
 /**
- * @brief Receive the LED configuration sent by the client.
+ * @brief Update the LED configuration.
  */
-void TL::LedConfigurationEndpoint::postLedConfig()
+void TL::LedConfigurationEndpoint::patchLedConfig()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the LED configuration."));
 	if (!TL::Configuration::isInitialized())

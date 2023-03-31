@@ -54,7 +54,7 @@ export const useUpdateSystem = () => {
   const queryClient = useQueryClient();
   return useMutation<Response, Error, System, Context>({
     mutationFn: async (data) =>
-      await ky.post(SYSTEM_API_URL, { json: { systemConfig: data } }).json(),
+      await ky.patch(SYSTEM_API_URL, { json: { systemConfig: data } }).json(),
     onMutate: async (systemConfig) => {
       await queryClient.cancelQueries({ queryKey: [SYSTEM_API_URL] });
       const cache = queryClient.getQueryData<DataResponse>([SYSTEM_API_URL]);

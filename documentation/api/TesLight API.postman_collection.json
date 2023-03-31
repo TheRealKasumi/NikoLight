@@ -57,7 +57,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "POST",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -114,7 +114,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "POST",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -168,7 +168,7 @@
 				{
 					"name": "Set WiFi Configuration",
 					"request": {
-						"method": "POST",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -441,7 +441,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/motion",
+							"raw": "http://{{TESLIGHTIP}}/api/config/motion/calibration",
 							"protocol": "http",
 							"host": [
 								"{{TESLIGHTIP}}"
@@ -449,7 +449,8 @@
 							"path": [
 								"api",
 								"config",
-								"motion"
+								"motion",
+								"calibration"
 							]
 						}
 					},
@@ -461,7 +462,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "POST",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -473,7 +474,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/motion",
+							"raw": "http://{{TESLIGHTIP}}/api/config/motion/calibration",
 							"protocol": "http",
 							"host": [
 								"{{TESLIGHTIP}}"
@@ -481,7 +482,8 @@
 							"path": [
 								"api",
 								"config",
-								"motion"
+								"motion",
+								"calibration"
 							]
 						}
 					},
@@ -496,7 +498,7 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/motion",
+							"raw": "http://{{TESLIGHTIP}}/api/config/motion/calibration/auto",
 							"protocol": "http",
 							"host": [
 								"{{TESLIGHTIP}}"
@@ -504,7 +506,9 @@
 							"path": [
 								"api",
 								"config",
-								"motion"
+								"motion",
+								"calibration",
+								"auto"
 							]
 						}
 					},
@@ -541,7 +545,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "POST",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -598,7 +602,7 @@
 						"disabledSystemHeaders": {}
 					},
 					"request": {
-						"method": "POST",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",

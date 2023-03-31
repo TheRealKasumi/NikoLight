@@ -41,7 +41,7 @@ namespace TL
 		SystemConfigurationEndpoint();
 
 		static void getSystemConfig();
-		static void postSystemConfig();
+		static void patchSystemConfig();
 
 		static bool validateConfiguration(const JsonObject &jsonObject);
 		static bool isInRange(const long value, const long min, const long max);

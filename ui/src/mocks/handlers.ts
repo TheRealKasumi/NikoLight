@@ -190,7 +190,7 @@ export const handlers = [
   // ------------------
 
   rest.get('/api/info/system', (_req, res, ctx) => {
-    console.debug(`Get system information: ${mock.info.system}`);
+    console.debug(`System information: ${mock.info.system}`);
     return res(
       ctx.status(200),
       ctx.json({ status: 200, message: 'ok', ...mock.info.system }),
@@ -202,16 +202,16 @@ export const handlers = [
   // --------------------
 
   rest.get('/api/config/system', (_req, res, ctx) => {
-    console.debug(`Get system configuration: ${mock.system}`);
+    console.debug(`System configuration: ${mock.system}`);
     return res(
       ctx.status(200),
       ctx.json({ status: 200, message: 'ok', ...mock.system }),
     );
   }),
 
-  rest.post('/api/config/system', async (req, res, ctx) => {
+  rest.patch('/api/config/system', async (req, res, ctx) => {
     mock.system = await req.json();
-    console.debug(`Post new system configuration: ${mock.system}`);
+    console.debug(`Update system configuration: ${mock.system}`);
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 
@@ -220,7 +220,7 @@ export const handlers = [
   // ------------------
 
   rest.get('/api/config/profile/active', (_req, res, ctx) => {
-    console.debug(`Get active profile: ${mock.profile}`);
+    console.debug(`Active profile: ${mock.profile}`);
     return res(
       ctx.status(200),
       ctx.json({ status: 200, message: 'ok', ...mock.profile }),
@@ -234,7 +234,7 @@ export const handlers = [
   }),
 
   rest.get('/api/config/profile', (_req, res, ctx) => {
-    console.debug(`Get profiles: ${mock.profiles}`);
+    console.debug(`Profiles: ${mock.profiles}`);
     return res(
       ctx.status(200),
       ctx.json({ status: 200, message: 'ok', ...mock.profiles }),
@@ -244,7 +244,7 @@ export const handlers = [
   rest.post('/api/config/profile', async (req, res, ctx) => {
     const data = await req.json();
     mock.profiles.profile.names.push(data.profile.name);
-    console.debug(`Post new profile: ${mock.profile}`);
+    console.debug(`Create new profile: ${mock.profile}`);
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 
@@ -254,7 +254,7 @@ export const handlers = [
       ...mock.profiles.profile.names,
       data.profile.name,
     ];
-    console.debug(`Clone profile: ${mock.profiles}`);
+    console.debug(`Clone existing profile: ${mock.profiles}`);
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 
@@ -272,16 +272,16 @@ export const handlers = [
   // ----------------------
 
   rest.get('/api/config/led', (_req, res, ctx) => {
-    console.debug(`Get LED configuration: ${mock.led}`);
+    console.debug(`LED configuration: ${mock.led}`);
     return res(
       ctx.status(200),
       ctx.json({ status: 200, message: 'ok', ...mock.led }),
     );
   }),
 
-  rest.post('/api/config/led', async (req, res, ctx) => {
+  rest.patch('/api/config/led', async (req, res, ctx) => {
     mock.led = await req.json();
-    console.debug(`Post new LED configuration: ${mock.led}`);
+    console.debug(`Update LED configuration: ${mock.led}`);
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 
@@ -290,16 +290,16 @@ export const handlers = [
   // ------------------
 
   rest.get('/api/config/wifi', (_req, res, ctx) => {
-    console.debug(`Get wifi configuration: ${mock.wifi}`);
+    console.debug(`Wifi configuration: ${mock.wifi}`);
     return res(
       ctx.status(200),
       ctx.json({ status: 200, message: 'ok', ...mock.wifi }),
     );
   }),
 
-  rest.post('/api/config/wifi', async (req, res, ctx) => {
+  rest.patch('/api/config/wifi', async (req, res, ctx) => {
     mock.wifi = await req.json();
-    console.debug(`Post new wifi configuration: ${mock.wifi}`);
+    console.debug(`Update wifi configuration: ${mock.wifi}`);
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 
@@ -308,16 +308,16 @@ export const handlers = [
   // ----------------
 
   rest.get('/api/config/ui', (_req, res, ctx) => {
-    console.debug(`Get UI configuration: ${mock.ui}`);
+    console.debug(`UI configuration: ${mock.ui}`);
     return res(
       ctx.status(200),
       ctx.json({ status: 200, message: 'ok', ...mock.ui }),
     );
   }),
 
-  rest.post('/api/config/ui', async (req, res, ctx) => {
+  rest.patch('/api/config/ui', async (req, res, ctx) => {
     mock.ui = await req.json();
-    console.debug(`Post new UI configuration: ${mock.ui}`);
+    console.debug(`Update UI configuration: ${mock.ui}`);
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 
@@ -325,8 +325,8 @@ export const handlers = [
   // Motion Sensor Calibration Configuration
   // ---------------------------------------
 
-  rest.get('/api/config/motion', (_req, res, ctx) => {
-    console.debug(`Get motion configuration: ${mock.motion}`);
+  rest.get('/api/config/motion/calibration', (_req, res, ctx) => {
+    console.debug(`Motion calibration configuration: ${mock.motion}`);
     return res(
       ctx.status(200),
       ctx.json({
@@ -337,14 +337,14 @@ export const handlers = [
     );
   }),
 
-  rest.post('/api/config/motion', async (req, res, ctx) => {
+  rest.patch('/api/config/motion/calibration', async (req, res, ctx) => {
     mock.motion = await req.json();
-    console.debug(`Post new motion configuration: ${mock.motion}`);
+    console.debug(`Update motion calibration configuration: ${mock.motion}`);
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 
-  rest.patch('/api/config/motion', async (_req, res, ctx) => {
-    console.debug(`Patch motion configuration: ${mock.motion}`);
+  rest.patch('/api/config/motion/calibration/auto', async (_req, res, ctx) => {
+    console.debug('Run the motion sensor calibration');
     return throttledRes(
       ctx.status(200),
       ctx.json({ status: 200, message: 'ok' }),
@@ -356,7 +356,7 @@ export const handlers = [
   // ---------------
 
   rest.get('/api/fseq', async (_req, res, ctx) => {
-    console.debug(`Get motion configuration: ${mock.motion}`);
+    console.debug(`FSEQ files: ${mock.fseq}`);
     return res(
       ctx.status(200),
       ctx.json({
@@ -376,7 +376,7 @@ export const handlers = [
       fileSize: arrayBuffer.byteLength,
       fileName,
     });
-    console.debug(`Post new fseq: ${fileName}`);
+    console.debug(`New FSEQ file: ${fileName}`);
     return throttledRes(
       ctx.status(200),
       ctx.json({ status: 200, message: 'ok' }),
@@ -388,7 +388,7 @@ export const handlers = [
     mock.fseq.fileList = mock.fseq.fileList.filter(
       (file) => file.fileName !== fileName,
     );
-    console.debug(`Delete fseq: ${mock.fseq}`);
+    console.debug(`Delete FSEQ file: ${mock.fseq}`);
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 
@@ -397,7 +397,7 @@ export const handlers = [
   // ------
 
   rest.post('/api/update', async (_req, _res, ctx) => {
-    console.debug('Post update');
+    console.debug('Update firmware');
     return throttledRes(
       ctx.status(200),
       ctx.json({ status: 200, message: 'ok' }),
@@ -410,7 +410,7 @@ export const handlers = [
 
   rest.get('/api/log/size', (_req, res, ctx) => {
     const logSize = mock.log.text.length * 5000;
-    console.debug(`Get log size: ${logSize}`);
+    console.debug(`Log size: ${logSize}`);
     return res(
       ctx.status(200),
       ctx.json({
@@ -454,12 +454,12 @@ export const handlers = [
   // -----
 
   rest.post('/api/reset/soft', async (_req, res, ctx) => {
-    console.debug('Post reset soft');
+    console.debug('Restart controller');
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 
   rest.post('/api/reset/hard', async (_req, res, ctx) => {
-    console.debug('Post reset hard');
+    console.debug('Restart controller an reset the configuration');
     return res(ctx.status(200), ctx.json({ status: 200, message: 'ok' }));
   }),
 ];

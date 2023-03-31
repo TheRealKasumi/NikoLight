@@ -14,7 +14,7 @@
 void TL::UIConfigurationEndpoint::begin()
 {
 	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/ui")).c_str(), http_method::HTTP_GET, TL::UIConfigurationEndpoint::getUIConfig);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/ui")).c_str(), http_method::HTTP_POST, TL::UIConfigurationEndpoint::postUIConfig);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/ui")).c_str(), http_method::HTTP_PATCH, TL::UIConfigurationEndpoint::patchUIConfig);
 }
 
 /**
@@ -42,9 +42,9 @@ void TL::UIConfigurationEndpoint::getUIConfig()
 }
 
 /**
- * @brief Receive the UI configuration sent by the client.
+ * @brief Update the UI configuration.
  */
-void TL::UIConfigurationEndpoint::postUIConfig()
+void TL::UIConfigurationEndpoint::patchUIConfig()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the UI configuration."));
 	if (!TL::Configuration::isInitialized())

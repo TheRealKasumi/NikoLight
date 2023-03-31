@@ -27,7 +27,7 @@
 void TL::AudioUnitConfigurationEndpoint::begin()
 {
 	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/audio")).c_str(), http_method::HTTP_GET, TL::AudioUnitConfigurationEndpoint::getAudioUnitConfig);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/audio")).c_str(), http_method::HTTP_POST, TL::AudioUnitConfigurationEndpoint::postAudioUnitConfig);
+	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/audio")).c_str(), http_method::HTTP_PATCH, TL::AudioUnitConfigurationEndpoint::patchAudioUnitConfig);
 }
 
 /**
@@ -70,9 +70,9 @@ void TL::AudioUnitConfigurationEndpoint::getAudioUnitConfig()
 }
 
 /**
- * @brief Receive the audio unit configuration sent by the client.
+ * @brief Update the audio unit configuration.
  */
-void TL::AudioUnitConfigurationEndpoint::postAudioUnitConfig()
+void TL::AudioUnitConfigurationEndpoint::patchAudioUnitConfig()
 {
 	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the audio unit configuration."));
 	if (!TL::Configuration::isInitialized())
