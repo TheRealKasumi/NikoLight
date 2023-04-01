@@ -54,7 +54,8 @@ namespace TL
 			AUTO_BRIGHTNESS_ADC = 3,
 			AUTO_ON_OFF_BH1750 = 4,
 			AUTO_BRIGHTNESS_BH1750 = 5,
-			AUTO_ON_OFF_MOTION = 6
+			AUTO_ON_OFF_MOTION = 6,
+			AUTO_ON_OFF_ADC_AUTO_BRIGHTNESS_BH1750 = 7
 		};
 
 		static TL::LightSensor::Error begin();

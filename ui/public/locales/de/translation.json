@@ -80,7 +80,8 @@
       "AutomaticBrightnessADC": "Automatische Helligkeit ADC",
       "AutomaticOnOffBH1750": "Automatisch An/Aus BH1750",
       "AutomaticBrightnessBH1750": "Automatische Helligkeit BH1750",
-      "AutomaticOnOffMPU6050": "Automatisch An/Aus MPU6050"
+      "AutomaticOnOffMPU6050": "Automatisch An/Aus MPU6050",
+      "AutomaticOnOffADCAutomaticBrightnessBH1750": "Automatisch An/Aus ADC + Automatische Helligkeit BH1750"
     },
     "lightSensorThreshold": "Sensor Schwellenwert",
     "loggingAndDebugging": "Protokollierung und Fehlersuche",

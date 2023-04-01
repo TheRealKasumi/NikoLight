@@ -324,6 +324,73 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 		return TL::LightSensor::Error::OK;
 	}
 
+	// Auto on/off using ADC + auto brightness using BH1070
+	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_ON_OFF_ADC_AUTO_BRIGHTNESS_BH1750)
+	{
+		if (!TL::AnalogInput::isInitialized())
+		{
+			brightness = 1.0f;
+			return TL::LightSensor::Error::ERROR_ADC_UNAVAILABLE;
+		}
+
+		float value = 0.0f;
+		for (uint8_t i = 0; i < 10; i++)
+		{
+			value += TL::AnalogInput::getAnalogVoltage() / 3.3f;
+		}
+		value /= 10.0f;
+
+		if (value > threshold + antiFlickerThreshold)
+		{
+			// Lights should be on (ADC)
+			// Determine brightness using BH1070
+			if (!TL::BH1750::isInitialized())
+			{
+				brightness = 1.0f;
+				return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
+			}
+
+			float lux = 0.0f;
+			if (TL::BH1750::getLux(lux) != TL::BH1750::Error::OK)
+			{
+				brightness = 0.0f;
+				return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
+			}
+
+			lux /= 54612.5f / 5.0f;
+			if (lux > 1.0f)
+			{
+				lux = 1.0f;
+			}
+
+			lux = (lux - minAmbientBrightness) / (maxAmbientBrightness - minAmbientBrightness);
+			if (lux < 0.0f)
+			{
+				lux = 0.0f;
+			}
+			else if (lux > 1.0f)
+			{
+				lux = 1.0f;
+			}
+
+			brightness = minLedBrightness + lux * (maxLedBrightness - minLedBrightness);
+			if (brightness < 0.0f)
+			{
+				brightness = 0.0f;
+			}
+			else if (brightness > 1.0f)
+			{
+				brightness = 1.0f;
+			}
+		}
+		else if (value < threshold - antiFlickerThreshold)
+		{
+			brightness = 0.0f;
+		}
+
+		return TL::LightSensor::Error::OK;
+	}
+
 	brightness = 1.0f;
 	return TL::LightSensor::Error::ERROR_UNKNOWN_MODE;
 }
