@@ -101,6 +101,55 @@ TL::LightSensor::Error TL::LightSensor::getBrightness(float &brightness)
 }
 
 /**
+ * @brief Read lux measurement from sensor and adjust brightness if sensor data is unavailable
+ * @param lux 0.0 for minimum measured brightness up to 1.0 for maximum measured brightness
+ * @param brightness 0.0 for minimum brightness up to 1.0 for maximum brightness
+ * @return OK when brightness was successfully measured
+ * @return ERROR_BH1750_UNAVAILABLE when the BH1750 is not available
+*/
+TL::LightSensor::Error TL::LightSensor::getLuxMeasurement(float &lux, float &brightness)
+{
+	if (!TL::BH1750::isInitialized())
+	{
+		// Turn brightness up while sensor is initializing or unavailable
+		brightness = 1.0f;
+		return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
+	}
+
+	lux = 0.0f;
+	if (TL::BH1750::getLux(lux) != TL::BH1750::Error::OK)
+	{
+		brightness = 0.0f;
+		return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
+	}
+
+	lux /= 54612.5f / 5.0f;
+	if (lux > 1.0f) lux = 1.0f;
+
+	return TL::LightSensor::Error::OK;
+}
+
+/**
+ * @brief Set the brightness of the lights based on value and system config
+*/
+void TL::LightSensor::adjustBrightnessAccordingToConfig(float &value, float &brightness)
+{
+	const TL::Configuration::SystemConfig systemConfig = TL::Configuration::getSystemConfig();
+	const float minAmbientBrightness = systemConfig.lightSensorMinAmbientBrightness / 255.0f;
+	const float maxAmbientBrightness = systemConfig.lightSensorMaxAmbientBrightness / 255.0f;
+	const float minLedBrightness = systemConfig.lightSensorMinLedBrightness / 255.0f;
+	const float maxLedBrightness = systemConfig.lightSensorMaxLedBrightness / 255.0f;
+
+	value = (value - minAmbientBrightness) / (maxAmbientBrightness - minAmbientBrightness);
+	if (value < 0.0f) value = 0.0f;
+	else if (value > 1.0f) value = 1.0f;
+
+	brightness = minLedBrightness + value * (maxLedBrightness - minLedBrightness);
+	if (brightness < 0.0f) brightness = 0.0f;
+	else if (brightness > 1.0f) brightness = 1.0f;
+}
+
+/**
  * @brief Return the brightness of the lights based on the sensors mode.
  * @param brightness 0.0 for minimum brightness up to 1.0 for maximum brightness
  * @return OK when the brightness was calculated
@@ -115,10 +164,6 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 	const float antiFlickerThreshold = 0.002f;
 	const TL::LightSensor::LightSensorMode lightSensorMode = (TL::LightSensor::LightSensorMode)systemConfig.lightSensorMode;
 	const float threshold = systemConfig.lightSensorThreshold / 255.0f;
-	const float minAmbientBrightness = systemConfig.lightSensorMinAmbientBrightness / 255.0f;
-	const float maxAmbientBrightness = systemConfig.lightSensorMaxAmbientBrightness / 255.0f;
-	const float minLedBrightness = systemConfig.lightSensorMinLedBrightness / 255.0f;
-	const float maxLedBrightness = systemConfig.lightSensorMaxLedBrightness / 255.0f;
 	const uint8_t duration = systemConfig.lightSensorDuration;
 
 	// Always off
@@ -185,27 +230,7 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 			return TL::LightSensor::Error::OK;
 		}
 		else if (value > threshold + antiFlickerThreshold)
-		{
-			value = (value - minAmbientBrightness) / (maxAmbientBrightness - minAmbientBrightness);
-			if (value < 0.0f)
-			{
-				value = 0.0f;
-			}
-			else if (value > 1.0f)
-			{
-				value = 1.0f;
-			}
-
-			brightness = minLedBrightness + value * (maxLedBrightness - minLedBrightness);
-			if (brightness < 0.0f)
-			{
-				brightness = 0.0f;
-			}
-			else if (brightness > 1.0f)
-			{
-				brightness = 1.0f;
-			}
-		}
+			TL::LightSensor::adjustBrightnessAccordingToConfig(value, brightness);
 
 		return TL::LightSensor::Error::OK;
 	}
@@ -213,24 +238,9 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 	// Auto on/off using BH1750
 	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_ON_OFF_BH1750)
 	{
-		if (!TL::BH1750::isInitialized())
-		{
-			brightness = 1.0f;
-			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
-		}
-
 		float lux = 0.0f;
-		if (TL::BH1750::getLux(lux) != TL::BH1750::Error::OK)
-		{
-			brightness = 0.0f;
+		if(TL::LightSensor::getLuxMeasurement(lux, brightness) != TL::LightSensor::Error::OK)
 			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
-		}
-
-		lux /= 54612.5f / 5.0f;
-		if (lux > 1.0f)
-		{
-			lux = 1.0f;
-		}
 
 		if (lux > threshold + antiFlickerThreshold)
 		{
@@ -247,24 +257,9 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 	// Auto brightness using BH1750
 	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_BRIGHTNESS_BH1750)
 	{
-		if (!TL::BH1750::isInitialized())
-		{
-			brightness = 1.0f;
-			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
-		}
-
 		float lux = 0.0f;
-		if (TL::BH1750::getLux(lux) != TL::BH1750::Error::OK)
-		{
-			brightness = 0.0f;
+		if(TL::LightSensor::getLuxMeasurement(lux, brightness) != TL::LightSensor::Error::OK)
 			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
-		}
-
-		lux /= 54612.5f / 5.0f;
-		if (lux > 1.0f)
-		{
-			lux = 1.0f;
-		}
 
 		if (lux > threshold + antiFlickerThreshold)
 		{
@@ -273,25 +268,7 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 		}
 		else if (lux < threshold - antiFlickerThreshold)
 		{
-			lux = (lux - minAmbientBrightness) / (maxAmbientBrightness - minAmbientBrightness);
-			if (lux < 0.0f)
-			{
-				lux = 0.0f;
-			}
-			else if (lux > 1.0f)
-			{
-				lux = 1.0f;
-			}
-
-			brightness = minLedBrightness + lux * (maxLedBrightness - minLedBrightness);
-			if (brightness < 0.0f)
-			{
-				brightness = 0.0f;
-			}
-			else if (brightness > 1.0f)
-			{
-				brightness = 1.0f;
-			}
+			TL::LightSensor::adjustBrightnessAccordingToConfig(lux, brightness);
 		}
 
 		return TL::LightSensor::Error::OK;
@@ -344,44 +321,14 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 		{
 			// Lights should be on (ADC)
 			// Determine brightness using BH1070
-			if (!TL::BH1750::isInitialized())
-			{
-				brightness = 1.0f;
-				return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
-			}
-
 			float lux = 0.0f;
-			if (TL::BH1750::getLux(lux) != TL::BH1750::Error::OK)
+			if(TL::LightSensor::getLuxMeasurement(lux, brightness) != TL::LightSensor::Error::OK)
 			{
 				brightness = 0.0f;
 				return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
 			}
 
-			lux /= 54612.5f / 5.0f;
-			if (lux > 1.0f)
-			{
-				lux = 1.0f;
-			}
-
-			lux = (lux - minAmbientBrightness) / (maxAmbientBrightness - minAmbientBrightness);
-			if (lux < 0.0f)
-			{
-				lux = 0.0f;
-			}
-			else if (lux > 1.0f)
-			{
-				lux = 1.0f;
-			}
-
-			brightness = minLedBrightness + lux * (maxLedBrightness - minLedBrightness);
-			if (brightness < 0.0f)
-			{
-				brightness = 0.0f;
-			}
-			else if (brightness > 1.0f)
-			{
-				brightness = 1.0f;
-			}
+			TL::LightSensor::adjustBrightnessAccordingToConfig(lux, brightness);
 		}
 		else if (value < threshold - antiFlickerThreshold)
 		{

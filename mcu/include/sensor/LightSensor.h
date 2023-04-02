@@ -73,6 +73,8 @@ namespace TL
 		static unsigned long motionSensorTriggerTime;
 
 		static TL::LightSensor::Error getBrightnessInt(float &brightness);
+		static TL::LightSensor::Error getLuxMeasurement(float &lux, float &brightness);
+		static void adjustBrightnessAccordingToConfig(float &lux, float &brightness);
 	};
 }
 
