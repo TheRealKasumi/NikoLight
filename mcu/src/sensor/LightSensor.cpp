@@ -25,6 +25,7 @@ bool TL::LightSensor::initialized = false;
 float TL::LightSensor::lastBrightnessValue;
 TL::MotionSensor::MotionSensorData TL::LightSensor::motionData;
 unsigned long TL::LightSensor::motionSensorTriggerTime;
+const float antiFlickerThreshold = 0.002f;
 
 /**
  * @brief Start the light sensor.
@@ -131,8 +132,9 @@ TL::LightSensor::Error TL::LightSensor::getLuxMeasurement(float &lux, float &bri
 
 /**
  * @brief Set the brightness of the lights based on value and system config
+ * @param inputValue
 */
-void TL::LightSensor::adjustBrightnessAccordingToConfig(float &value, float &brightness)
+void TL::LightSensor::mapBrightnessAccordingToConfigRanges(float &inputValue, float &brightness)
 {
 	const TL::Configuration::SystemConfig systemConfig = TL::Configuration::getSystemConfig();
 	const float minAmbientBrightness = systemConfig.lightSensorMinAmbientBrightness / 255.0f;
@@ -140,13 +142,166 @@ void TL::LightSensor::adjustBrightnessAccordingToConfig(float &value, float &bri
 	const float minLedBrightness = systemConfig.lightSensorMinLedBrightness / 255.0f;
 	const float maxLedBrightness = systemConfig.lightSensorMaxLedBrightness / 255.0f;
 
-	value = (value - minAmbientBrightness) / (maxAmbientBrightness - minAmbientBrightness);
-	if (value < 0.0f) value = 0.0f;
-	else if (value > 1.0f) value = 1.0f;
+	inputValue = (inputValue - minAmbientBrightness) / (maxAmbientBrightness - minAmbientBrightness);
+	if (inputValue < 0.0f) inputValue = 0.0f;
+	else if (inputValue > 1.0f) inputValue = 1.0f;
 
-	brightness = minLedBrightness + value * (maxLedBrightness - minLedBrightness);
+	brightness = minLedBrightness + inputValue * (maxLedBrightness - minLedBrightness);
 	if (brightness < 0.0f) brightness = 0.0f;
 	else if (brightness > 1.0f) brightness = 1.0f;
+}
+
+TL::LightSensor::Error TL::LightSensor::getBrightnessIntAdcOnOff(float &brightness)
+{
+	if (!TL::AnalogInput::isInitialized())
+	{
+		brightness = 1.0f;
+		return TL::LightSensor::Error::ERROR_ADC_UNAVAILABLE;
+	}
+
+	float value = 0.0f;
+	for (uint8_t i = 0; i < 10; i++)
+		value += TL::AnalogInput::getAnalogVoltage() / 3.3f;
+	value /= 10.0f;
+
+	const float threshold = TL::Configuration::getSystemConfig().lightSensorThreshold / 255.0f;
+
+	if (value > threshold + antiFlickerThreshold)
+		brightness = 1.0f;
+	else if (value < threshold - antiFlickerThreshold)
+		brightness = 0.0f;
+
+	return TL::LightSensor::Error::OK;
+}
+
+TL::LightSensor::Error TL::LightSensor::getBrightnessIntAdcOnOffBH1070AutoBrightness(float &brightness)
+{
+	const TL::LightSensor::Error adcError = TL::LightSensor::getBrightnessIntAdcOnOff(brightness);
+	if (adcError != TL::LightSensor::Error::OK) return adcError;
+
+	if (brightness > 0.0f)
+	{
+		// Lights should be on (ADC)
+		// Determine brightness using BH1070
+		float lux = 0.0f;
+		if(TL::LightSensor::getLuxMeasurement(lux, brightness) != TL::LightSensor::Error::OK)
+		{
+			brightness = 0.0f;
+			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
+		}
+
+		TL::LightSensor::mapBrightnessAccordingToConfigRanges(lux, brightness);
+	}
+
+	return TL::LightSensor::Error::OK;
+}
+
+TL::LightSensor::Error TL::LightSensor::getBrightnessIntAdcAutoBrightness(float &brightness)
+{
+	if (!TL::AnalogInput::isInitialized())
+	{
+		brightness = 1.0f;
+		return TL::LightSensor::Error::ERROR_ADC_UNAVAILABLE;
+	}
+
+	float value = 0.0f;
+	for (uint8_t i = 0; i < 10; i++)
+		value += TL::AnalogInput::getAnalogVoltage(false);
+	value /= 33.0f; // 3.3V * 10
+
+	const float antiFlickerThreshold = 0.002f;
+	const float threshold = TL::Configuration::getSystemConfig().lightSensorThreshold / 255.0f;
+
+	if (value < threshold - antiFlickerThreshold)
+	{
+		brightness = 0.0f;
+		return TL::LightSensor::Error::OK;
+	}
+	else if (value > threshold + antiFlickerThreshold)
+		TL::LightSensor::mapBrightnessAccordingToConfigRanges(value, brightness);
+
+	return TL::LightSensor::Error::OK;
+}
+
+TL::LightSensor::Error TL::LightSensor::getBrightnessIntBH1070OnOff(float &brightness)
+{
+	float lux = 0.0f;
+	if(TL::LightSensor::getLuxMeasurement(lux, brightness) != TL::LightSensor::Error::OK)
+		return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
+
+	const float threshold = TL::Configuration::getSystemConfig().lightSensorThreshold / 255.0f;
+
+	if (lux > threshold + antiFlickerThreshold) brightness = 0.0f;
+	else if (lux < threshold - antiFlickerThreshold) brightness = 1.0f;
+
+	return TL::LightSensor::Error::OK;
+}
+
+TL::LightSensor::Error TL::LightSensor::getBrightnessIntBH1070AutoBrightness(float &brightness)
+{
+	float lux = 0.0f;
+	if(TL::LightSensor::getLuxMeasurement(lux, brightness) != TL::LightSensor::Error::OK)
+		return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
+
+	const float threshold = TL::Configuration::getSystemConfig().lightSensorThreshold / 255.0f;
+
+	if (lux > threshold + antiFlickerThreshold)
+	{
+		brightness = 0.0f;
+		return TL::LightSensor::Error::OK;
+	}
+	else if (lux < threshold - antiFlickerThreshold)
+		TL::LightSensor::mapBrightnessAccordingToConfigRanges(lux, brightness);
+
+	return TL::LightSensor::Error::OK;
+}
+
+TL::LightSensor::Error TL::LightSensor::getBrightnessIntMotionOnOff(float &brightness)
+{
+	if (!TL::MotionSensor::isInitialized())
+	{
+		brightness = 1.0f;
+		return TL::LightSensor::Error::ERROR_MPU6050_UNAVAILABLE;
+	}
+
+	const TL::Configuration::SystemConfig systemConfig = TL::Configuration::getSystemConfig();
+	const float threshold = systemConfig.lightSensorThreshold / 255.0f;
+	const uint8_t duration = systemConfig.lightSensorDuration;
+	const TL::MotionSensor::MotionSensorData motionData = TL::MotionSensor::getMotion();
+	float trigger = sqrt(pow(motionData.accXG * 150.0f - TL::LightSensor::motionData.accXG * 150.0f, 2) + pow(motionData.accYG * 150.0f - TL::LightSensor::motionData.accYG * 150.0f, 2) + pow(motionData.accZG * 150.0f - TL::LightSensor::motionData.accZG * 150.0f, 2));
+	trigger += sqrt(pow(motionData.gyroXDeg - TL::LightSensor::motionData.gyroXDeg, 2) + pow(motionData.gyroYDeg - TL::LightSensor::motionData.gyroYDeg, 2) + pow(motionData.gyroZDeg - TL::LightSensor::motionData.gyroZDeg, 2));
+	TL::LightSensor::motionData = motionData;
+
+	if (trigger > threshold * 20.0f)
+	{
+		brightness = 1.0f;
+		TL::LightSensor::motionSensorTriggerTime = millis();
+	}
+	else if (millis() - TL::LightSensor::motionSensorTriggerTime > duration * 5000L)
+		brightness = 0.0f;
+
+	return TL::LightSensor::Error::OK;
+}
+
+TL::LightSensor::Error TL::LightSensor::getBrightnessIntMotionOnOffBH1070AutoBrightness(float &brightness)
+{
+	const TL::LightSensor::Error motionError = TL::LightSensor::getBrightnessIntMotionOnOff(brightness);
+	if (motionError != TL::LightSensor::Error::OK) return motionError;
+
+	if (brightness > 0.0f)
+	{
+		// Determine brightness using BH1070
+		float lux = 0.0f;
+		if(TL::LightSensor::getLuxMeasurement(lux, brightness) != TL::LightSensor::Error::OK)
+		{
+			brightness = 0.0f;
+			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
+		}
+
+		TL::LightSensor::mapBrightnessAccordingToConfigRanges(lux, brightness);
+	}
+
+	return TL::LightSensor::Error::OK;
 }
 
 /**
@@ -160,11 +315,7 @@ void TL::LightSensor::adjustBrightnessAccordingToConfig(float &value, float &bri
  */
 TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 {
-	const TL::Configuration::SystemConfig systemConfig = TL::Configuration::getSystemConfig();
-	const float antiFlickerThreshold = 0.002f;
-	const TL::LightSensor::LightSensorMode lightSensorMode = (TL::LightSensor::LightSensorMode)systemConfig.lightSensorMode;
-	const float threshold = systemConfig.lightSensorThreshold / 255.0f;
-	const uint8_t duration = systemConfig.lightSensorDuration;
+	const TL::LightSensor::LightSensorMode lightSensorMode = (TL::LightSensor::LightSensorMode)TL::Configuration::getSystemConfig().lightSensorMode;
 
 	// Always off
 	if (lightSensorMode == TL::LightSensor::LightSensorMode::ALWAYS_OFF)
@@ -182,161 +333,31 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 
 	// Auto on/off using ADC
 	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_ON_OFF_ADC)
-	{
-		if (!TL::AnalogInput::isInitialized())
-		{
-			brightness = 1.0f;
-			return TL::LightSensor::Error::ERROR_ADC_UNAVAILABLE;
-		}
-
-		float value = 0.0f;
-		for (uint8_t i = 0; i < 10; i++)
-		{
-			value += TL::AnalogInput::getAnalogVoltage() / 3.3f;
-		}
-		value /= 10.0f;
-
-		if (value > threshold + antiFlickerThreshold)
-		{
-			brightness = 1.0f;
-		}
-		else if (value < threshold - antiFlickerThreshold)
-		{
-			brightness = 0.0f;
-		}
-
-		return TL::LightSensor::Error::OK;
-	}
+		return TL::LightSensor::getBrightnessIntAdcOnOff(brightness);
 
 	// Auto brightness using ADC
 	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_BRIGHTNESS_ADC)
-	{
-		if (!TL::AnalogInput::isInitialized())
-		{
-			brightness = 1.0f;
-			return TL::LightSensor::Error::ERROR_ADC_UNAVAILABLE;
-		}
-
-		float value = 0.0f;
-		for (uint8_t i = 0; i < 10; i++)
-		{
-			value += TL::AnalogInput::getAnalogVoltage(false);
-		}
-		value /= 33.0f; // 3.3V * 10
-
-		if (value < threshold - antiFlickerThreshold)
-		{
-			brightness = 0.0f;
-			return TL::LightSensor::Error::OK;
-		}
-		else if (value > threshold + antiFlickerThreshold)
-			TL::LightSensor::adjustBrightnessAccordingToConfig(value, brightness);
-
-		return TL::LightSensor::Error::OK;
-	}
+		return TL::LightSensor::getBrightnessIntAdcAutoBrightness(brightness);
 
 	// Auto on/off using BH1750
 	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_ON_OFF_BH1750)
-	{
-		float lux = 0.0f;
-		if(TL::LightSensor::getLuxMeasurement(lux, brightness) != TL::LightSensor::Error::OK)
-			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
-
-		if (lux > threshold + antiFlickerThreshold)
-		{
-			brightness = 0.0f;
-		}
-		else if (lux < threshold - antiFlickerThreshold)
-		{
-			brightness = 1.0f;
-		}
-
-		return TL::LightSensor::Error::OK;
-	}
+		return TL::LightSensor::getBrightnessIntBH1070OnOff(brightness);
 
 	// Auto brightness using BH1750
 	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_BRIGHTNESS_BH1750)
-	{
-		float lux = 0.0f;
-		if(TL::LightSensor::getLuxMeasurement(lux, brightness) != TL::LightSensor::Error::OK)
-			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
-
-		if (lux > threshold + antiFlickerThreshold)
-		{
-			brightness = 0.0f;
-			return TL::LightSensor::Error::OK;
-		}
-		else if (lux < threshold - antiFlickerThreshold)
-		{
-			TL::LightSensor::adjustBrightnessAccordingToConfig(lux, brightness);
-		}
-
-		return TL::LightSensor::Error::OK;
-	}
+		return TL::LightSensor::getBrightnessIntBH1070AutoBrightness(brightness);
 
 	// Auto on/off using motion sensor MPU6050
 	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_ON_OFF_MOTION)
-	{
-		if (!TL::MotionSensor::isInitialized())
-		{
-			brightness = 1.0f;
-			return TL::LightSensor::Error::ERROR_MPU6050_UNAVAILABLE;
-		}
-
-		const TL::MotionSensor::MotionSensorData motionData = TL::MotionSensor::getMotion();
-		float trigger = sqrt(pow(motionData.accXG * 150.0f - TL::LightSensor::motionData.accXG * 150.0f, 2) + pow(motionData.accYG * 150.0f - TL::LightSensor::motionData.accYG * 150.0f, 2) + pow(motionData.accZG * 150.0f - TL::LightSensor::motionData.accZG * 150.0f, 2));
-		trigger += sqrt(pow(motionData.gyroXDeg - TL::LightSensor::motionData.gyroXDeg, 2) + pow(motionData.gyroYDeg - TL::LightSensor::motionData.gyroYDeg, 2) + pow(motionData.gyroZDeg - TL::LightSensor::motionData.gyroZDeg, 2));
-		TL::LightSensor::motionData = motionData;
-
-		if (trigger > threshold * 20.0f)
-		{
-			brightness = 1.0f;
-			TL::LightSensor::motionSensorTriggerTime = millis();
-		}
-		else if (millis() - TL::LightSensor::motionSensorTriggerTime > duration * 5000L)
-		{
-			brightness = 0.0f;
-		}
-
-		return TL::LightSensor::Error::OK;
-	}
+		return TL::LightSensor::getBrightnessIntMotionOnOff(brightness);
 
 	// Auto on/off using ADC + auto brightness using BH1070
 	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_ON_OFF_ADC_AUTO_BRIGHTNESS_BH1750)
-	{
-		if (!TL::AnalogInput::isInitialized())
-		{
-			brightness = 1.0f;
-			return TL::LightSensor::Error::ERROR_ADC_UNAVAILABLE;
-		}
+		return TL::LightSensor::getBrightnessIntAdcOnOffBH1070AutoBrightness(brightness);
 
-		float value = 0.0f;
-		for (uint8_t i = 0; i < 10; i++)
-		{
-			value += TL::AnalogInput::getAnalogVoltage() / 3.3f;
-		}
-		value /= 10.0f;
-
-		if (value > threshold + antiFlickerThreshold)
-		{
-			// Lights should be on (ADC)
-			// Determine brightness using BH1070
-			float lux = 0.0f;
-			if(TL::LightSensor::getLuxMeasurement(lux, brightness) != TL::LightSensor::Error::OK)
-			{
-				brightness = 0.0f;
-				return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
-			}
-
-			TL::LightSensor::adjustBrightnessAccordingToConfig(lux, brightness);
-		}
-		else if (value < threshold - antiFlickerThreshold)
-		{
-			brightness = 0.0f;
-		}
-
-		return TL::LightSensor::Error::OK;
-	}
+	// Auto on/off using motion sensor + auto brightness using BH1070
+	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_ON_OFF_MOTION_AUTO_BRIGHTNESS_BH1750)
+		return TL::LightSensor::getBrightnessIntMotionOnOffBH1070AutoBrightness(brightness);
 
 	brightness = 1.0f;
 	return TL::LightSensor::Error::ERROR_UNKNOWN_MODE;

@@ -81,7 +81,8 @@
       "AutomaticOnOffADC": "Automatic On/Off ADC",
       "AutomaticOnOffBH1750": "Automatic On/Off BH1750",
       "AutomaticOnOffMPU6050": "Automatic On/Off MPU6050",
-      "AutomaticOnOffADCAutomaticBrightnessBH1750": "Automatic On/Off ADC + Automatic Brightness BH1750"
+      "AutomaticOnOffADCAutomaticBrightnessBH1750": "Automatic On/Off ADC + Automatic Brightness BH1750",
+      "AutomaticOnOffMPU6050AutomaticBrightnessBH1750": "Automatic On/Off MPU6050 + Automatic Brightness BH1750"
     },
     "lightSensorThreshold": "Sensor Threshold",
     "loggingAndDebugging": "Logging and Debugging",

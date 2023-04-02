@@ -42,6 +42,7 @@ enum LightSensorMode {
   AutomaticBrightnessBH1750,
   AutomaticOnOffMPU6050,
   AutomaticOnOffADCAutomaticBrightnessBH1750,
+  AutomaticOnOffMPU6050AutomaticBrightnessBH1750,
 }
 
 enum FanMode {
@@ -265,6 +266,15 @@ const Form = (): JSX.Element => {
           (value ===
             LightSensorMode.AutomaticOnOffADCAutomaticBrightnessBH1750 &&
             hasBH1750),
+      )
+      .filter(
+        ([, value]) =>
+          value !==
+            LightSensorMode.AutomaticOnOffMPU6050AutomaticBrightnessBH1750 ||
+          (value ===
+            LightSensorMode.AutomaticOnOffMPU6050AutomaticBrightnessBH1750 &&
+            hasBH1750 &&
+            hasMPU6050),
       );
   };
 
