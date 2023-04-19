@@ -45,6 +45,7 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 | SMD Resistor 4.7kΩ 125mW   | 1     | [Reichelt][res4700]   |                                                               |
 | SMD Resistor 2.2kΩ 125mW   | 2     | [Reichelt][res2200]   |                                                               |
 | SMD Resistor 6.65Ω 500mW   | 1     | [JCSC][res6]          |                                                               |
+| SMD Transistor 1A 60V      | 1     | [Reichelt][tra1a60v]  |                                                               |
 | Zener Diode 3.0V           | 1     | [Reichelt][zener3.0]  |                                                               |
 | Fuse and Holder 5A         | 2     | [Reichelt][fuse]      |                                                               |
 | Poly Fuse 3A               | 1     | [Reichelt][pfuse]     |                                                               |
@@ -110,6 +111,7 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 [res4700]: https://www.reichelt.de/smd-widerstand-0805-4-7-kohm-125-mw-1--smd-0805-4-70k-p32894.html?&trstct=pos_6&nbc=1
 [res2200]: https://www.reichelt.de/smd-widerstand-0805-2-2-kohm-125-mw-1--smd-0805-2-20k-p32890.html?&trstct=pos_13&nbc=1
 [res6]: https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount_YAGEO-RC1210FR-076R65L_C309592.html
+[tra1a60v]: https://www.reichelt.de/bipolartransistor-npn-60v-1a-hfe-100--250-sot-223-bcp-55-16-smd-p41326.html?&trstct=pos_0&nbc=1
 [zener3.0]: https://www.reichelt.de/zenerdiode-3-3-v-300mw-sod-323-mm3z3v3t1g-ons-p219513.html?&trstct=pos_0&nbc=1
 [fuse]: https://www.reichelt.de/smd-sicherungshalter-mit-sicherung-5-0-a-125-v-superflink-litt-0154005-dr-p229204.html?&trstct=pos_14&nbc=1
 [pfuse]: https://www.reichelt.de/rueckstellende-sicherungen-8-a-litt-ruef400-p242414.html?&trstct=pos_0&nbc=1
