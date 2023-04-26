@@ -117,7 +117,7 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 [pfuse]: https://www.reichelt.de/rueckstellende-sicherungen-8-a-litt-ruef400-p242414.html?&trstct=pos_0&nbc=1
 [ws2812b]: https://www.amazon.de/BTF-LIGHTING-adressierbar-Vollfarbiger-wasserdichte-DIY-Projekte/dp/B088BRY2SH/ref=sr_1_8?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1OSVQ80JPAJDG&keywords=ws2812b+strip+60%2Fm&qid=1662188470&sprefix=ws2812b+strip+60%2Fm%2Caps%2C82&sr=8-8
 [fiber]: https://www.amazon.de/TABEN-Autoseitenlicht-LED-Beleuchtung-Innenatmosph%C3%A4re-Neonstreifenleuchten/dp/B08DLJ2JJ1/ref=sr_1_7?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&keywords=taben+fiber&qid=1662190164&sr=8-7
-[lightbars]: https://individualiseyourcar.com/en/ambitrim-digital-rgb-led-ambient-light-components.html
+[lightbars]: https://individualiseyourcar.com/en/ambitrim-digital-rgb-rgbic-full-led-ambient-light-components.html
 [lightbars_symphony]: https://de.aliexpress.com/item/1005004297563628.html
 [hsink]: https://www.reichelt.de/kuehlkoerper-15-2-mm-alu-26-k-w-to-220-fk-242-sa-220-o-p228044.html?PROVID=2788&gclid=CjwKCAiA9qKbBhAzEiwAS4yeDbgDFQnpxuPlW2l_6iWmSpzoQlH7U5ZTtUvpgh0bGrCp32GTk7xljBoCXLsQAvD_BwE
 [tsense]: https://www.reichelt.de/digital-thermometer-1-wire--0-5-c-to-92-ds-18b20-p58169.html?&trstct=pos_0&nbc=1
