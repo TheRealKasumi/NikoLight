@@ -45,6 +45,7 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 | SMD Resistor 4.7kΩ 125mW   | 1     | [Reichelt][res4700]   |                                                               |
 | SMD Resistor 2.2kΩ 125mW   | 2     | [Reichelt][res2200]   |                                                               |
 | SMD Resistor 6.65Ω 500mW   | 1     | [JCSC][res6]          |                                                               |
+| SMD Transistor 1A 60V      | 1     | [Reichelt][tra1a60v]  |                                                               |
 | Zener Diode 3.0V           | 1     | [Reichelt][zener3.0]  |                                                               |
 | Fuse and Holder 5A         | 2     | [Reichelt][fuse]      |                                                               |
 | Poly Fuse 3A               | 1     | [Reichelt][pfuse]     |                                                               |
@@ -110,12 +111,13 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 [res4700]: https://www.reichelt.de/smd-widerstand-0805-4-7-kohm-125-mw-1--smd-0805-4-70k-p32894.html?&trstct=pos_6&nbc=1
 [res2200]: https://www.reichelt.de/smd-widerstand-0805-2-2-kohm-125-mw-1--smd-0805-2-20k-p32890.html?&trstct=pos_13&nbc=1
 [res6]: https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount_YAGEO-RC1210FR-076R65L_C309592.html
+[tra1a60v]: https://www.reichelt.de/bipolartransistor-npn-60v-1a-hfe-100--250-sot-223-bcp-55-16-smd-p41326.html?&trstct=pos_0&nbc=1
 [zener3.0]: https://www.reichelt.de/zenerdiode-3-3-v-300mw-sod-323-mm3z3v3t1g-ons-p219513.html?&trstct=pos_0&nbc=1
 [fuse]: https://www.reichelt.de/smd-sicherungshalter-mit-sicherung-5-0-a-125-v-superflink-litt-0154005-dr-p229204.html?&trstct=pos_14&nbc=1
 [pfuse]: https://www.reichelt.de/rueckstellende-sicherungen-8-a-litt-ruef400-p242414.html?&trstct=pos_0&nbc=1
 [ws2812b]: https://www.amazon.de/BTF-LIGHTING-adressierbar-Vollfarbiger-wasserdichte-DIY-Projekte/dp/B088BRY2SH/ref=sr_1_8?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1OSVQ80JPAJDG&keywords=ws2812b+strip+60%2Fm&qid=1662188470&sprefix=ws2812b+strip+60%2Fm%2Caps%2C82&sr=8-8
 [fiber]: https://www.amazon.de/TABEN-Autoseitenlicht-LED-Beleuchtung-Innenatmosph%C3%A4re-Neonstreifenleuchten/dp/B08DLJ2JJ1/ref=sr_1_7?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&keywords=taben+fiber&qid=1662190164&sr=8-7
-[lightbars]: https://individualiseyourcar.com/en/ambitrim-digital-rgb-led-ambient-light-components.html
+[lightbars]: https://individualiseyourcar.com/en/ambitrim-digital-rgb-rgbic-full-led-ambient-light-components.html
 [lightbars_symphony]: https://de.aliexpress.com/item/1005004297563628.html
 [hsink]: https://www.reichelt.de/kuehlkoerper-15-2-mm-alu-26-k-w-to-220-fk-242-sa-220-o-p228044.html?PROVID=2788&gclid=CjwKCAiA9qKbBhAzEiwAS4yeDbgDFQnpxuPlW2l_6iWmSpzoQlH7U5ZTtUvpgh0bGrCp32GTk7xljBoCXLsQAvD_BwE
 [tsense]: https://www.reichelt.de/digital-thermometer-1-wire--0-5-c-to-92-ds-18b20-p58169.html?&trstct=pos_0&nbc=1

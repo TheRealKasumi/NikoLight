@@ -13,7 +13,7 @@ As the name suggests, the project was started primarily for Tesla vehicles.
 The focus is on the Model 3 and Model Y.
 However, it can also be used for other cars with some small modifications.
 
-With TesLight you can control up tp 8 zones with a variable number of WS2812-type LEDs.
+With TesLight you can control up to 8 zones with a variable number of WS2812-type LEDs.
 For example, the 4 doors, the center console, the footwell lights and a light bar under the dashboard.
 In total, several hundred LEDs can be controlled individually.
 
@@ -33,7 +33,7 @@ For example, there could be a CAN adapter to get more information from the vehic
 How relevant these extensions will be, depends a little bit on the community and the support I will receive.
 
 Once built and installed, TesLight can be configured via a browser-based UI.
-When starting the controller, a Wi-Fi hotspot is created to which you can connect to with basically any device.
+When starting the controller, a Wi-Fi hotspot is created, which you can connect to with any device.
 The user interface can be accessed via a normal browser thanks to the integrated web server.
 The project is therefore mostly platform-independent.
 
