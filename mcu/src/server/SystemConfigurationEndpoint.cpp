@@ -197,10 +197,10 @@ bool TL::SystemConfigurationEndpoint::validateConfiguration(const JsonObject &js
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("lightSensorMode")].as<uint8_t>(), 0, 6))
+	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("lightSensorMode")].as<uint8_t>(), 0, 8))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMode\" field is invalid. It should be between 0 and 6."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMode\" field is invalid. It should be between 0 and 6."));
+		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMode\" field is invalid. It should be between 0 and 8."));
+		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMode\" field is invalid. It should be between 0 and 8."));
 		return false;
 	}
 

@@ -54,7 +54,9 @@ namespace TL
 			AUTO_BRIGHTNESS_ADC = 3,
 			AUTO_ON_OFF_BH1750 = 4,
 			AUTO_BRIGHTNESS_BH1750 = 5,
-			AUTO_ON_OFF_MOTION = 6
+			AUTO_ON_OFF_MOTION = 6,
+			AUTO_ON_OFF_ADC_AUTO_BRIGHTNESS_BH1750 = 7,
+			AUTO_ON_OFF_MOTION_AUTO_BRIGHTNESS_BH1750 = 8
 		};
 
 		static TL::LightSensor::Error begin();
@@ -72,6 +74,17 @@ namespace TL
 		static unsigned long motionSensorTriggerTime;
 
 		static TL::LightSensor::Error getBrightnessInt(float &brightness);
+
+		static TL::LightSensor::Error getBrightnessIntAdcOnOff(float &brightness);
+		static TL::LightSensor::Error getBrightnessIntAdcOnOffBH1070AutoBrightness(float &brightness);
+		static TL::LightSensor::Error getBrightnessIntAdcAutoBrightness(float &brightness);
+		static TL::LightSensor::Error getBrightnessIntBH1070OnOff(float &brightness);
+		static TL::LightSensor::Error getBrightnessIntBH1070AutoBrightness(float &brightness);
+		static TL::LightSensor::Error getBrightnessIntMotionOnOff(float &brightness);
+		static TL::LightSensor::Error getBrightnessIntMotionOnOffBH1070AutoBrightness(float &brightness);
+
+		static TL::LightSensor::Error getLuxMeasurement(float &lux, float &brightness);
+		static void mapBrightnessAccordingToConfigRanges(float &lux, float &brightness);
 	};
 }
 
