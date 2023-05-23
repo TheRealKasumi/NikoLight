@@ -1,4 +1,4 @@
-name: TesLight Update Packaging Tool and TUP file Build
+name: NikoLight Update Packaging Tool and TUP file Build
 on:
   push:
     branches: ["main", "releases/**"]
@@ -52,10 +52,10 @@ jobs:
           name: UI-build_${{ env.short_sha }}
           path: ./update-package-tool/build/tup/src
 
-      - name: Download artifact - TesLight_Update_Packaging_Tool
+      - name: Download artifact - NikoLight_Update_Packaging_Tool
         uses: actions/download-artifact@v3
         with:
-          name: TesLight_Update_Packaging_Tool_for_${{ runner.os }}
+          name: NikoLight_Update_Packaging_Tool_for_${{ runner.os }}
           path: update-package-tool/build
 
       - name: File permissions
@@ -69,10 +69,10 @@ jobs:
           mkdir -p ./update-package-tool/build/tup/build
           ./update-package-tool/build/tupt_for_${{ runner.os }}.exe ./update-package-tool/build/tup/build/update_${{ env.short_sha }}.tup ./update-package-tool/build/tup/src
 
-      - name: publish TesLight Update Package File
+      - name: publish NikoLight Update Package File
         uses: actions/upload-artifact@v3
         with:
-          name: TesLight_Update_Package_${{ env.short_sha }}
+          name: NikoLight_Update_Package_${{ env.short_sha }}
           path: ./update-package-tool/build/tup/build/update_${{ env.short_sha }}.tup
           if-no-files-found: error
           retention-days: 90

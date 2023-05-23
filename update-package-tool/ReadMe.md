@@ -1,8 +1,8 @@
-# TesLight Update Package Tool
+# NikoLight Update Package Tool
 
-This tool was developted to create `TUP` files, which stands for `TesLight Update Package`.
+This tool was developted to create `TUP` files, which stands for `<redacted>Light Update Package`.
 It is a simple package that combines a variable number of files and folders into a single file.
-This package file is then used to update the TesLight controller via OTA update.
+This package file is then used to update the NikoLight controller via OTA update.
 
 When updating the controller, there are two main components to update.
 

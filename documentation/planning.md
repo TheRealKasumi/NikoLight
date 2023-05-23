@@ -51,47 +51,64 @@ So each LED per zone will get a number from 0 to n, where n is the last LED in t
 ![LED Chain](media/planning/led-chain.png)
 
 ### Luminant Types
+
 Currently there are three different types of luminants available that you can choose from. They are all fully supported by TesLight, but not each luminant is suitable for each installation location.
 
-#### Basic WS2812 LED strip 
-This is the most widely availble type of luminant - a series of WS2812 LEDs mounted in series on a thin, flexible PCB strip. 
-These strips are available in various lenghts, widths and density (count of LEDs per meter). 
-Possible installation locations for the LED strip are the dashboard and the foot wells. 
+#### Basic WS2812 LED strip
+
+This is the most widely availble type of luminant - a series of WS2812 LEDs mounted in series on a thin, flexible PCB strip.
+These strips are available in various lenghts, widths and density (count of LEDs per meter).
+Possible installation locations for the LED strip are the dashboard and the foot wells.
 A density of around 60 LEDs/meter is a good compromise between cost/power consumption and good looking light (effects).
-##### Advantages: 
-* easy to obtain in various configurations 
+
+##### Advantages
+
+* easy to obtain in various configurations
 * supports all light effects since many LEDs are distributed across the strip
-##### Disadvantages: 
+
+##### Disadvantages
+
 * can only be installed in locations where it is not directly visible
 
 #### Fiber tube with WS2812 LEDs as light injectors
+
 This type of luminant is a small flexible tube with a tab on it's side. WS2812 LEDs can be placed on one or (better) both ends of the tube to inject light into the tube and make it glow (fairly) evenly along its entire length.
 The fiber tube is suitable for all installation locations in the Tesla Model 3/Y with the exception of the footwell lighting. As of now it is also the only lumimant that can be installed in the 2021 or later center console of Model 3/Y and around the seats.
-##### Advantages: 
+
+##### Advantages of fiber tube
+
 * low cost
-* low power consumption 
+* low power consumption
 * easy, flexible installation
-##### Disadvantages: 
+
+##### Disadvantages of fiber tube
+
 * you can have at most 2 colors per tube segment, one injected from each side, which greatly limits the effects that you can display with it
 * because of it's white(-ish) color the fiber tube visually stands out a bit againts the dark interior in daylight which can look less professional depending on your taste
 
-#### Light bar with WS2812 LEDs 
-The light bar is like a hybrid of the light strip and fiber tube. It consists of a very thin WS2812 LED strip mounted onto an also very thin and flexible light distribution bar that is additionally covered in a black, translucent tape. 
-The density of the currently available light bars is very high with around 130 LEDs/meter). Possible installation locations are the dashboard, the door panels and the pre-2021 center console.
-##### Advantages: 
+#### Light bar with WS2812 LEDs
+
+The light bar is like a hybrid of the light strip and fiber tube. It consists of a very thin WS2812 LED strip mounted onto an also very thin and flexible light distribution bar that is additionally covered in a black, translucent tape.
+The density of the currently available light bars is very high with around 130 LEDs/meter. Possible installation locations are the dashboard, the door panels and the pre-2021 center console.
+
+##### Advantages of light bar
+
 * can be installed almost anywhere in the care, where a fiber tube can be installed as well
 * supports all light effects since many LEDs are distributed across the light bar
 * not very visible in daylight when turned off because it is wrapped in black tape
-##### Disadvantages: 
+
+##### Disadvantages of light bar
+
 * more expensive
 * not as easy to obtain because there are not many shops that carry it (especially in Europe)
-* only available in lengths up to 1 meter (but you can extend it by soldering 2 bars together) 
-* consumes a lot of power because of the high LED count 
+* only available in lengths up to 1 meter (but you can extend it by soldering 2 bars together)
+* consumes a lot of power because of the high LED count
 * can also not extend it very far beyond 1 meter before hitting the recommended 200 LED/channel limit
 
 #### Recommendation
-The recommendation is to use a normal LED strip under the dashboard for ease of installation, cost and power consumption. 
-As an alternative it is also possible to use a light bar for the dashboard as well, but it requires extra effort to solder two light bars together to achieved the required length. 
+
+The recommendation is to use a normal LED strip under the dashboard for ease of installation, cost and power consumption.
+As an alternative it is also possible to use a light bar for the dashboard as well, but it requires extra effort to solder two light bars together to achieved the required length.
 For the 2021 and later models use of a light bar in the dashboard and upper door panels results in a nice continuous line of light from door to door.
 
 The fiber tubes are working well for the center console or around the seats.

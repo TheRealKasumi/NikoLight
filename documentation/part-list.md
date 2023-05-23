@@ -1,8 +1,8 @@
 # Part List
 
-This document contains the full list of all parts to build TesLight.
+This document contains the full list of all parts to build NikoLight.
 The list has been split into required and optional parts.
-Since TesLight can be modified in a lot of ways, the actual part list depends a little on your individual plans.
+Since NikoLight can be modified in a lot of ways, the actual part list depends a little on your individual plans.
 Make sure to read the [planning](planning.md) document first.
 Also, this list assumes that you have all necessary tools and materials for building electronics projects, like a soldering iron.
 
@@ -14,8 +14,8 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 
 | Part                       | Count | Source                | Comment                                                       |
 | -------------------------- | ----- | --------------------- | ------------------------------------------------------------- |
-| TesLight PCB (SMT Service) | 1     | [JLCPCB][jlcpcb]      | Can be ordered from JLCPCB using board files from the project |
-| TesLight Case              | 1     | [JLCPCB][jlcpcb]      | Can be ordered from JLCPCB using 3D models from the project   |
+| NikoLight PCB (SMT Service) | 1     | [JLCPCB][jlcpcb]      | Can be ordered from JLCPCB using board files from the project |
+| NikoLight Case              | 1     | [JLCPCB][jlcpcb]      | Can be ordered from JLCPCB using 3D models from the project   |
 | AzDelivery ESP32 Dev Board | 1     | [Amazon][esp32]       | Or compatible with same size and layout                       |
 | MPU6050 Motion Sensor      | 1     | [Reichelt][mpu6050]   | Works without but is highly recommended                       |
 | JST-XH 2 Pin Male          | 2     | [Reichelt][jstxh2m]   |                                                               |
@@ -27,8 +27,8 @@ You only have to insert the ESP32 board and the MPU6050 manually.
 
 | Part                       | Count | Source                | Comment                                                       |
 | -------------------------- | ----- | --------------------- | ------------------------------------------------------------- |
-| TesLight PCB               | 1     | [JLCPCB][jlcpcb]      | Can be ordered from JLCPCB using board files from the project |
-| TesLight Case              | 1     | [JLCPCB][jlcpcb]      | Can be ordered from JLCPCB using 3D models from the project   |
+| NikoLight PCB               | 1     | [JLCPCB][jlcpcb]      | Can be ordered from JLCPCB using board files from the project |
+| NikoLight Case              | 1     | [JLCPCB][jlcpcb]      | Can be ordered from JLCPCB using 3D models from the project   |
 | AzDelivery ESP32 Dev Board | 1     | [Amazon][esp32]       | Or compatible with same size and layout                       |
 | MPU6050 Motion Sensor      | 1     | [Reichelt][mpu6050]   | Works without but is highly recommended                       |
 | Micro SD Socket            | 1     | [Amazon][sdsocket]    |                                                               |
