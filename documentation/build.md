@@ -242,10 +242,10 @@ Ordering works very similar to the steps described above.
 Go back to the [order page](https://cart.jlcpcb.com/quote) and select `3D-Printing` at the top of the page.
 The 3D files can be found in the [/model](/model/) folder of the project.
 
-In a normal build you will need both, the [TesLight_Case.stl](/model/TesLight_Case.stl) and the [TesLight_Case_Cover.stl](/model/TesLight_Case_Cover.stl).
-The all-in-one verion [TesLight_Case_AIO.stl](/model/TesLight_Case_AIO.stl) can be used as an alternative.
-When you are using a smaller 30x30x6mm fan, the [TesLight_Fan_Adapter.stl](/model/TesLight_Fan_Adapter.stl) is recommended.
-If you plan to use fiber cables and LED injectors, the [TesLight_LED_Case.stl](TesLight_LED_Case.stl) should be ordered as well.
+In a normal build you will need both, the [NikoLight_Case.stl](/model/NikoLight_Case.stl) and the [NikoLight_Case_Cover.stl](/model/NikoLight_Case_Cover.stl).
+The all-in-one verion [NikoLight_Case_AIO.stl](/model/NikoLight_Case_AIO.stl) can be used as an alternative.
+When you are using a smaller 30x30x6mm fan, the [NikoLight_Fan_Adapter.stl](/model/NikoLight_Fan_Adapter.stl) is recommended.
+If you plan to use fiber cables and LED injectors, the [NikoLight_LED_Case.stl](NikoLight_LED_Case.stl) should be ordered as well.
 The number depends on the number of light injectors you want to use for the fibre tubes.
 
 Generally the material choice shouldn't be a metal.
@@ -468,13 +468,7 @@ Now open the serial monitor by clicking the "plug" button, near to the upload bu
 You should see the NikoLight controller starting up, but then stops with `Failed to initialize SD card`.
 
 ```shell
-████████╗███████╗███████╗██╗     ██╗ ██████╗ ██╗  ██╗████████╗
-╚══██╔══╝██╔════╝██╔════╝██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
-   ██║   █████╗  ███████╗██║     ██║██║  ███╗███████║   ██║
-   ██║   ██╔══╝  ╚════██║██║     ██║██║   ██║██╔══██║   ██║
-   ██║   ███████╗███████║███████╗██║╚██████╔╝██║  ██║   ██║
-   ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
-Firmware version 1.0.0
+NikoLight Firmware version 1.0.0
 
 00:00:00:059 [INFO] (src/main.cpp) (setup) (331): Initialize SD card.
 [   364][E][sd_diskio.cpp:199] sdCommand(): Card Failed! cmd: 0x00
@@ -516,13 +510,7 @@ If required, press the reset button on the ESP32 board.
 If everything works, you should see the following (or similar) output:
 
 ```shell
-████████╗███████╗███████╗██╗     ██╗ ██████╗ ██╗  ██╗████████╗
-╚══██╔══╝██╔════╝██╔════╝██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
-   ██║   █████╗  ███████╗██║     ██║██║  ███╗███████║   ██║
-   ██║   ██╔══╝  ╚════██║██║     ██║██║   ██║██╔══██║   ██║
-   ██║   ███████╗███████║███████╗██║╚██████╔╝██║  ██║   ██║
-   ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
-Firmware version 1.0.0
+Nikolight Firmware version 1.0.0
 
 00:00:00:059 [INFO] (src/main.cpp) (setup) (331): Initialize SD card.
 00:00:00:071 [INFO] (src/main.cpp) (setup) (334): SD card initialized.
@@ -558,7 +546,7 @@ Firmware version 1.0.0
 00:00:02:610 [INFO] (src/main.cpp) (setup) (411): Load LEDs and animators from configuration using the LED Manager.
 00:00:02:661 [INFO] (src/main.cpp) (setup) (414): LEDs and animators loaded.
 00:00:02:683 [INFO] (src/main.cpp) (setup) (421): Creating to WiFi network.
-00:00:02:707 [INFO] (src/wifi/WiFiManager.cpp) (startAccessPoint) (40): Starting WiFi access point with ssid 'TesLight' and password 'TesLightPW' on channel 1.
+00:00:02:707 [INFO] (src/wifi/WiFiManager.cpp) (startAccessPoint) (40): Starting WiFi access point with ssid 'NikoLight' and password 'NikoLightPW' on channel 1.
 00:00:02:737 [INFO] (src/wifi/WiFiManager.cpp) (startAccessPoint) (53): Starting WiFi access point.
 00:00:02:859 [INFO] (src/wifi/WiFiManager.cpp) (startAccessPoint) (56): Configuring WiFi access point.
 00:00:02:882 [INFO] (src/wifi/WiFiManager.cpp) (startAccessPoint) (61): WiFi access point started. Listening on: 192.168.4.1
@@ -566,20 +554,20 @@ Firmware version 1.0.0
 00:00:02:934 [INFO] (src/main.cpp) (setup) (431): Initialize timers.
 00:00:02:955 [INFO] (src/main.cpp) (initializeTimers) (243): Initialize timers.
 00:00:02:977 [INFO] (src/main.cpp) (setup) (433): Timers initialized.
-00:00:02:999 [INFO] (src/main.cpp) (setup) (435): TesLight initialized successfully, going into work mode.
+00:00:02:999 [INFO] (src/main.cpp) (setup) (435): NikoLight initialized successfully, going into work mode.
 00:00:12:983 [INFO] (src/main.cpp) (loop) (488): LEDs running at an average of 60 FPS
 ```
 
 When this is the case, you successfully built the NikoLight controller.
 Success!
-Now search for a WiFi network called `TesLight`.
-Connect to it using the default password `TesLightPW` and open up `192.168.4.1` in your browser.
+Now search for a WiFi network called `NikoLight`.
+Connect to it using the default password `NikoLightPW` and open up `192.168.4.1` in your browser.
 Now the NikoLight UI should show up.
 Bookmark this page so that you will not forget it.
 Alternatively, you can also try to "install" the UI on your device.
 Since it is a ReactJS based UI, some devices offer support for this.
 
 From here you can control NikoLight using the browser based UI.
-But don't forget to connect to the `TesLight` WiFi first.
+But don't forget to connect to the `NikoLight` WiFi first.
 The ssid and password can be changed in the settings.
 I am sure you will figure out how the UI works :) .
