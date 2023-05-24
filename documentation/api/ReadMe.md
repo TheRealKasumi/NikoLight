@@ -1,7 +1,7 @@
-# TesLight's REST API
+# NikoLight's REST API
 
-TesLight offers a simple json based API that can be consumed by clients to read information from the controller, adjust settings and transfer files.
-Generally the API is documented in the [Postman collection](TesLight%20API.postman_collection.json) as well as the [OpenApi document](OpenApi.yaml).
+NikoLight offers a simple json based API that can be consumed by clients to read information from the controller, adjust settings and transfer files.
+Generally the API is documented in the [Postman collection](NikoLight%20API.postman_collection.json) as well as the [OpenApi document](OpenApi.yaml).
 As addition the well known Swagger UI is available under `192.168.4.1/ui/swagger.html` once you are connected to the controller.
 It can be used to explore and experiment with the API.
 In this document we will give some additional information, where we think it is necessary.
@@ -13,7 +13,7 @@ It will contain information about the LED setup and what the MCU is supposed to 
 Most parts of this endpoint should be self explaining.
 However we know that the `animationSettings` array can be a little confusing.
 
-Since TesLight implements very different animations, they also require very different parameters.
+Since NikoLight implements very different animations, they also require very different parameters.
 We found it hard to introduce fixed names for these parameters since they are different depending on the animation type.
 This is the reason why the `animationSettings`-array was introduced.
 It can/must contain addition information about how the animation is rendered depending on the selected animation.
