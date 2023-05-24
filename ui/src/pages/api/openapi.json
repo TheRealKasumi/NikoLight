@@ -1,11 +1,11 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "TesLight API Documentation",
-    "description": "This is the interactive API documentation for TesLight. Below all REST endpoints are documented and ready to be tried out.",
+    "title": "NikoLight API Documentation",
+    "description": "This is the interactive API documentation for NikoLight. Below all REST endpoints are documented and ready to be tried out.",
     "contact": {
-      "name": "TesLight on GitHub",
-      "url": "https://github.com/TheRealKasumi/TesLight"
+      "name": "NikoLight on GitHub",
+      "url": "https://github.com/TheRealKasumi/NikoLight"
     },
     "version": "1.0.0"
   },
@@ -17,11 +17,11 @@
   "tags": [
     {
       "name": "Connection Test",
-      "description": "Test the connection to the TesLight controller"
+      "description": "Test the connection to the NikoLight controller"
     },
     {
       "name": "System Information",
-      "description": "Read the system information from the TesLight controller"
+      "description": "Read the system information from the NikoLight controller"
     },
     {
       "name": "System Configuration",
@@ -93,7 +93,7 @@
       "get": {
         "tags": ["System Information"],
         "summary": "Get the current system information.",
-        "description": "Request the current system information from the controller.\nThis includes information about the soc, TesLight system and hardware.",
+        "description": "Request the current system information from the controller.\nThis includes information about the soc, NikoLight system and hardware.",
         "operationId": "getSystemInformation",
         "responses": {
           "200": {
@@ -671,8 +671,8 @@
     "/update": {
       "post": {
         "tags": ["Update"],
-        "summary": "Update the TesLight controller with a new firmware.",
-        "description": "Upload a TesLight update package and update the controller with a new firmware.",
+        "summary": "Update the NikoLight controller with a new firmware.",
+        "description": "Upload a NikoLight update package and update the controller with a new firmware.",
         "operationId": "uploadTUP",
         "requestBody": {
           "content": {
@@ -1498,11 +1498,11 @@
             "properties": {
               "accessPointSsid": {
                 "type": "string",
-                "example": "TesLight"
+                "example": "NikoLight"
               },
               "accessPointPassword": {
                 "type": "string",
-                "example": "TesLightPW"
+                "example": "NikoLightPW"
               },
               "accessPointChannel": {
                 "type": "integer",
@@ -2019,11 +2019,11 @@
                   "properties": {
                     "accessPointSsid": {
                       "type": "string",
-                      "example": "TesLight"
+                      "example": "NikoLight"
                     },
                     "accessPointPassword": {
                       "type": "string",
-                      "example": "TesLightPW"
+                      "example": "NikoLightPW"
                     },
                     "accessPointChannel": {
                       "type": "integer",
