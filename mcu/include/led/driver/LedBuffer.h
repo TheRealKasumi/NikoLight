@@ -28,12 +28,12 @@
 
 #include "LedStrip.h"
 
-namespace TL
+namespace NL
 {
 	class LedBuffer
 	{
 	public:
-		LedBuffer(const std::vector<TL::LedStrip> &ledStrips);
+		LedBuffer(const std::vector<NL::LedStrip> &ledStrips);
 		~LedBuffer();
 
 		size_t getBufferSize();
@@ -46,10 +46,10 @@ namespace TL
 		size_t getMaxHiddenLedCount();
 
 		size_t getLedStripCount();
-		TL::LedStrip &getLedStrip(const size_t index);
+		NL::LedStrip &getLedStrip(const size_t index);
 
 	private:
-		std::vector<TL::LedStrip> ledStrips;
+		std::vector<NL::LedStrip> ledStrips;
 		size_t totalLedCount;
 		size_t maxLedCount;
 		size_t totalHiddenLedCount;

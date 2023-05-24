@@ -27,7 +27,7 @@
 #include "configuration/SystemConfiguration.h"
 #include "hardware/DS18B20.h"
 
-namespace TL
+namespace NL
 {
 	class TemperatureSensor
 	{
@@ -38,13 +38,13 @@ namespace TL
 			ERROR_DS18B20_UNAVAILABLE // The DS18B20 sensor is not available
 		};
 
-		static TL::TemperatureSensor::Error begin();
+		static NL::TemperatureSensor::Error begin();
 		static void end();
 		static bool isInitialized();
 
-		static TL::TemperatureSensor::Error getMinTemperature(float &temp);
-		static TL::TemperatureSensor::Error getMaxTemperature(float &temp);
-		static TL::TemperatureSensor::Error getAverageTemperature(float &temp);
+		static NL::TemperatureSensor::Error getMinTemperature(float &temp);
+		static NL::TemperatureSensor::Error getMaxTemperature(float &temp);
+		static NL::TemperatureSensor::Error getAverageTemperature(float &temp);
 
 	private:
 		TemperatureSensor();

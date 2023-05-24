@@ -22,17 +22,17 @@
 #include "server/ConnectionTestEndpoint.h"
 
 /**
- * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
+ * @brief Add all request handler for this {@link NL::RestEndpoint} to the {@link NL::WebServerManager}.
  */
-void TL::ConnectionTestEndpoint::begin()
+void NL::ConnectionTestEndpoint::begin()
 {
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("connection_test")).c_str(), http_method::HTTP_GET, TL::ConnectionTestEndpoint::handleConnectionTest);
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("connection_test")).c_str(), http_method::HTTP_GET, NL::ConnectionTestEndpoint::handleConnectionTest);
 }
 
 /**
  * @brief Handler function for the connection test.
  */
-void TL::ConnectionTestEndpoint::handleConnectionTest()
+void NL::ConnectionTestEndpoint::handleConnectionTest()
 {
-	TL::ConnectionTestEndpoint::sendSimpleResponse(200, F("I am doing alright, thanks for asking :3 !"));
+	NL::ConnectionTestEndpoint::sendSimpleResponse(200, F("I am doing alright, thanks for asking :3 !"));
 }

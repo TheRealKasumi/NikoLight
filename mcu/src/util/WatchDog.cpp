@@ -1,7 +1,7 @@
 /**
  * @file WatchDog.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::WatchDog}.
+ * @brief Implementation of the {@link NL::WatchDog}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -29,33 +29,33 @@
  * @return ERROR_WDT_NOT_INIT when the wdt was not initialized beforehand
  * @return ERROR_UNKNOWN when a unknown error occurs
  */
-TL::WatchDog::Error TL::WatchDog::initializeTaskWatchdog()
+NL::WatchDog::Error NL::WatchDog::initializeTaskWatchdog()
 {
 	const esp_err_t initError = esp_task_wdt_init(WATCHDOG_RESET_TIME, true);
 	if (initError == ESP_ERR_NO_MEM)
 	{
-		return TL::WatchDog::Error::ERROR_OUT_OF_MEMORY;
+		return NL::WatchDog::Error::ERROR_OUT_OF_MEMORY;
 	}
 	else if (initError != ESP_OK)
 	{
-		return TL::WatchDog::Error::ERROR_UNKNOWN;
+		return NL::WatchDog::Error::ERROR_UNKNOWN;
 	}
 
 	const esp_err_t addError = esp_task_wdt_add(NULL);
 	if (addError == ESP_ERR_INVALID_ARG)
 	{
-		return TL::WatchDog::Error::ERROR_ALREADY_SUBSCRIBED;
+		return NL::WatchDog::Error::ERROR_ALREADY_SUBSCRIBED;
 	}
 	else if (addError == ESP_ERR_INVALID_STATE)
 	{
-		return TL::WatchDog::Error::ERROR_WDT_NOT_INIT;
+		return NL::WatchDog::Error::ERROR_WDT_NOT_INIT;
 	}
 	else if (addError != ESP_OK)
 	{
-		return TL::WatchDog::Error::ERROR_UNKNOWN;
+		return NL::WatchDog::Error::ERROR_UNKNOWN;
 	}
 
-	return TL::WatchDog::Error::OK;
+	return NL::WatchDog::Error::OK;
 }
 
 /**
@@ -65,23 +65,23 @@ TL::WatchDog::Error TL::WatchDog::initializeTaskWatchdog()
  * @return ERROR_WDT_NOT_INIT when the wdt was not initialized beforehand
  * @return ERROR_UNKNOWN when a unknown error occurs
  */
-TL::WatchDog::Error TL::WatchDog::resetTaskWatchdog()
+NL::WatchDog::Error NL::WatchDog::resetTaskWatchdog()
 {
 	const esp_err_t resetError = esp_task_wdt_reset();
 	if (resetError == ESP_ERR_NOT_FOUND)
 	{
-		return TL::WatchDog::Error::ERROR_WDT_NOT_FOUND;
+		return NL::WatchDog::Error::ERROR_WDT_NOT_FOUND;
 	}
 	else if (resetError == ESP_ERR_INVALID_STATE)
 	{
-		return TL::WatchDog::Error::ERROR_WDT_NOT_INIT;
+		return NL::WatchDog::Error::ERROR_WDT_NOT_INIT;
 	}
 	else if (resetError != ESP_OK)
 	{
-		return TL::WatchDog::Error::ERROR_UNKNOWN;
+		return NL::WatchDog::Error::ERROR_UNKNOWN;
 	}
 
-	return TL::WatchDog::Error::OK;
+	return NL::WatchDog::Error::OK;
 }
 
 /**
@@ -91,10 +91,10 @@ TL::WatchDog::Error TL::WatchDog::resetTaskWatchdog()
  * @return ERROR_WDT_NOT_INIT when the wdt was not initialized beforehand
  * @return ERROR_UNKNOWN when a unknown error occurs
  */
-TL::WatchDog::Error TL::WatchDog::deleteTaskWatchdog()
+NL::WatchDog::Error NL::WatchDog::deleteTaskWatchdog()
 {
-	const TL::WatchDog::Error resetError = TL::WatchDog::resetTaskWatchdog();
-	if (resetError != TL::WatchDog::Error::OK)
+	const NL::WatchDog::Error resetError = NL::WatchDog::resetTaskWatchdog();
+	if (resetError != NL::WatchDog::Error::OK)
 	{
 		return resetError;
 	}
@@ -102,16 +102,16 @@ TL::WatchDog::Error TL::WatchDog::deleteTaskWatchdog()
 	const esp_err_t deleteError = esp_task_wdt_delete(NULL);
 	if (deleteError == ESP_ERR_INVALID_ARG)
 	{
-		return TL::WatchDog::Error::ERROR_WDT_NOT_FOUND;
+		return NL::WatchDog::Error::ERROR_WDT_NOT_FOUND;
 	}
 	else if (deleteError == ESP_ERR_INVALID_STATE)
 	{
-		return TL::WatchDog::Error::ERROR_WDT_NOT_INIT;
+		return NL::WatchDog::Error::ERROR_WDT_NOT_INIT;
 	}
 	else if (deleteError != ESP_OK)
 	{
-		return TL::WatchDog::Error::ERROR_UNKNOWN;
+		return NL::WatchDog::Error::ERROR_UNKNOWN;
 	}
 
-	return TL::WatchDog::Error::OK;
+	return NL::WatchDog::Error::OK;
 }

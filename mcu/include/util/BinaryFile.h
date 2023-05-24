@@ -25,7 +25,7 @@
 #include <Arduino.h>
 #include <FS.h>
 
-namespace TL
+namespace NL
 {
 	class BinaryFile
 	{
@@ -42,7 +42,7 @@ namespace TL
 		BinaryFile(FS *fileSystem);
 		~BinaryFile();
 
-		TL::BinaryFile::Error open(const String fileName, const char *mode);
+		NL::BinaryFile::Error open(const String fileName, const char *mode);
 		void close();
 
 		/**
@@ -52,9 +52,9 @@ namespace TL
 		 * @return ERROR_FILE_WRITE when data could not be written
 		 */
 		template <typename T>
-		TL::BinaryFile::Error write(const T value)
+		NL::BinaryFile::Error write(const T value)
 		{
-			return this->file.write((uint8_t *)&value, sizeof(value)) == sizeof(value) ? TL::BinaryFile::Error::OK : TL::BinaryFile::Error::ERROR_FILE_WRITE;
+			return this->file.write((uint8_t *)&value, sizeof(value)) == sizeof(value) ? NL::BinaryFile::Error::OK : NL::BinaryFile::Error::ERROR_FILE_WRITE;
 		}
 
 		/**
@@ -64,13 +64,13 @@ namespace TL
 		 * @return ERROR_FILE_READ when data could not be read
 		 */
 		template <typename T>
-		TL::BinaryFile::Error read(T &value)
+		NL::BinaryFile::Error read(T &value)
 		{
-			return this->file.read((uint8_t *)&value, sizeof(value)) == sizeof(value) ? TL::BinaryFile::Error::OK : TL::BinaryFile::Error::ERROR_FILE_READ;
+			return this->file.read((uint8_t *)&value, sizeof(value)) == sizeof(value) ? NL::BinaryFile::Error::OK : NL::BinaryFile::Error::ERROR_FILE_READ;
 		}
 
-		TL::BinaryFile::Error writeString(const String string);
-		TL::BinaryFile::Error readString(String &string);
+		NL::BinaryFile::Error writeString(const String string);
+		NL::BinaryFile::Error readString(String &string);
 
 	private:
 		FS *fileSystem;

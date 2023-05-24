@@ -26,7 +26,7 @@
 #include <functional>
 #include "configuration/SystemConfiguration.h"
 
-namespace TL
+namespace NL
 {
 	class FileUtil
 	{

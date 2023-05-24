@@ -1,7 +1,7 @@
 /**
  * @file LogEndpoint.h
  * @author TheRealKasumi
- * @brief Contains a REST endpoint to manage the log file of the TesLight controller.
+ * @brief Contains a REST endpoint to manage the log file of the NikoLight controller.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  * 
@@ -27,7 +27,7 @@
 #include "server/RestEndpoint.h"
 #include "logging/Logger.h"
 
-namespace TL
+namespace NL
 {
 	class LogEndpoint : public RestEndpoint
 	{

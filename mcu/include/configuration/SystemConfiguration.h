@@ -118,7 +118,7 @@
 #define BH1750_IIC_ADDRESS 0x23	// I²C address of the BH1750 brightness sensor
 
 // Audio unit configuration
-#define AUDIO_UNIT_IIC_ADDRESS 42																							// I²C address of the TesLight Audio Unit
+#define AUDIO_UNIT_IIC_ADDRESS 42																							// I²C address of the NikoLight Audio Unit
 #define AUDIO_UNIT_NUM_BANDS 8																								// Number of frequency bands the audio unit must provide
 #define AUDIO_UNIT_DEFAULT_NOISE_THESHOLD 0																					// Peak2Peak Threshold under which analog values are set to the average
 #define AUDIO_UNIT_DEFAULT_FREQ_BAND_INDEX {{1, 3}, {4, 6}, {7, 13}, {14, 28}, {29, 62}, {63, 136}, {137, 298}, {299, 450}} // Indices of the frequency bins to map them into the frequency bands
@@ -151,8 +151,8 @@
 #define FAN_DEFAULT_TEMP_MAX 80	// Maximum temeprature where the fan runs at full speed
 
 // WiFi configuration
-#define AP_DEFAULT_SSID "TesLight"		 // Default SSID of the access point
-#define AP_DEDAULT_PASSWORD "TesLightPW" // Default password of the access point
+#define AP_DEFAULT_SSID "NikoLight"		 // Default SSID of the access point
+#define AP_DEDAULT_PASSWORD "NikoLightPW" // Default password of the access point
 #define AP_DEFAULT_CHANNEL 1			 // Default channel of the access point
 #define AP_DEFAULT_HIDDEN false			 // Hide or show the SSID by default
 #define AP_DEFAULT_MAX_CONN 1			 // Default maximum number of connections to the access point

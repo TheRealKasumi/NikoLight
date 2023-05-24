@@ -1,7 +1,7 @@
 /**
  * @file TemperatureSensor.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::TemperatureSensor}.
+ * @brief Implementation of the {@link NL::TemperatureSensor}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -21,43 +21,43 @@
  */
 #include "sensor/TemperatureSensor.h"
 
-bool TL::TemperatureSensor::initialized = false;
+bool NL::TemperatureSensor::initialized = false;
 
 /**
  * @brief Start the temperature sensor.
  * @return OK when the temperature sensor was initialized
  * @return ERROR_DS18B20_UNAVAILABLE when no temperature sensor is available
  */
-TL::TemperatureSensor::Error TL::TemperatureSensor::begin()
+NL::TemperatureSensor::Error NL::TemperatureSensor::begin()
 {
-	TL::TemperatureSensor::initialized = false;
-	if (!TL::DS18B20::isInitialized() || TL::DS18B20::getNumSensors() == 0)
+	NL::TemperatureSensor::initialized = false;
+	if (!NL::DS18B20::isInitialized() || NL::DS18B20::getNumSensors() == 0)
 	{
-		return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+		return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 	}
 
-	for (size_t i = 0; i < TL::DS18B20::getNumSensors(); i++)
+	for (size_t i = 0; i < NL::DS18B20::getNumSensors(); i++)
 	{
-		if (TL::DS18B20::setResolution(TL::DS18B20::DS18B20Res::DS18B20_10_BIT, i) != TL::DS18B20::Error::OK)
+		if (NL::DS18B20::setResolution(NL::DS18B20::DS18B20Res::DS18B20_10_BIT, i) != NL::DS18B20::Error::OK)
 		{
-			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+			return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 		}
-		if (TL::DS18B20::startMeasurement(i) != TL::DS18B20::Error::OK)
+		if (NL::DS18B20::startMeasurement(i) != NL::DS18B20::Error::OK)
 		{
-			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+			return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 		}
 	}
 
-	TL::TemperatureSensor::initialized = true;
-	return TL::TemperatureSensor::Error::OK;
+	NL::TemperatureSensor::initialized = true;
+	return NL::TemperatureSensor::Error::OK;
 }
 
 /**
  * @brief Stop the temperature sensor.
  */
-void TL::TemperatureSensor::end()
+void NL::TemperatureSensor::end()
 {
-	TL::TemperatureSensor::initialized = false;
+	NL::TemperatureSensor::initialized = false;
 }
 
 /**
@@ -65,9 +65,9 @@ void TL::TemperatureSensor::end()
  * @return true when initialized
  * @return false when not initialized
  */
-bool TL::TemperatureSensor::isInitialized()
+bool NL::TemperatureSensor::isInitialized()
 {
-	return TL::TemperatureSensor::initialized;
+	return NL::TemperatureSensor::initialized;
 }
 
 /**
@@ -76,33 +76,33 @@ bool TL::TemperatureSensor::isInitialized()
  * @return OK when the temperature sensor was initialized
  * @return ERROR_DS18B20_UNAVAILABLE when no temperature sensor is available
  */
-TL::TemperatureSensor::Error TL::TemperatureSensor::getMinTemperature(float &temp)
+NL::TemperatureSensor::Error NL::TemperatureSensor::getMinTemperature(float &temp)
 {
-	if (!TL::DS18B20::isInitialized() || TL::DS18B20::getNumSensors() == 0)
+	if (!NL::DS18B20::isInitialized() || NL::DS18B20::getNumSensors() == 0)
 	{
 		temp = 0.0f;
-		return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+		return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 	}
 
 	temp = 1000.0f;
-	for (size_t i = 0; i < TL::DS18B20::getNumSensors(); i++)
+	for (size_t i = 0; i < NL::DS18B20::getNumSensors(); i++)
 	{
 		float currentTemp;
-		if (TL::DS18B20::getTemperature(currentTemp, i) != TL::DS18B20::Error::OK)
+		if (NL::DS18B20::getTemperature(currentTemp, i) != NL::DS18B20::Error::OK)
 		{
-			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+			return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 		}
 
 		bool isReady;
-		if (TL::DS18B20::isMeasurementReady(isReady, i) != TL::DS18B20::Error::OK)
+		if (NL::DS18B20::isMeasurementReady(isReady, i) != NL::DS18B20::Error::OK)
 		{
-			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+			return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 		}
 		if (isReady)
 		{
-			if (TL::DS18B20::startMeasurement(i) != TL::DS18B20::Error::OK)
+			if (NL::DS18B20::startMeasurement(i) != NL::DS18B20::Error::OK)
 			{
-				return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+				return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 			}
 		}
 
@@ -112,7 +112,7 @@ TL::TemperatureSensor::Error TL::TemperatureSensor::getMinTemperature(float &tem
 		}
 	}
 
-	return TL::TemperatureSensor::Error::OK;
+	return NL::TemperatureSensor::Error::OK;
 }
 
 /**
@@ -121,33 +121,33 @@ TL::TemperatureSensor::Error TL::TemperatureSensor::getMinTemperature(float &tem
  * @return OK when the temperature sensor was initialized
  * @return ERROR_DS18B20_UNAVAILABLE when no temperature sensor is available
  */
-TL::TemperatureSensor::Error TL::TemperatureSensor::getMaxTemperature(float &temp)
+NL::TemperatureSensor::Error NL::TemperatureSensor::getMaxTemperature(float &temp)
 {
-	if (!TL::DS18B20::isInitialized() || TL::DS18B20::getNumSensors() == 0)
+	if (!NL::DS18B20::isInitialized() || NL::DS18B20::getNumSensors() == 0)
 	{
 		temp = 0.0f;
-		return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+		return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 	}
 
 	temp = -1000.0f;
-	for (size_t i = 0; i < TL::DS18B20::getNumSensors(); i++)
+	for (size_t i = 0; i < NL::DS18B20::getNumSensors(); i++)
 	{
 		float currentTemp = 0.0f;
-		if (TL::DS18B20::getTemperature(currentTemp, i) != TL::DS18B20::Error::OK)
+		if (NL::DS18B20::getTemperature(currentTemp, i) != NL::DS18B20::Error::OK)
 		{
-			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+			return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 		}
 
 		bool isReady;
-		if (TL::DS18B20::isMeasurementReady(isReady, i) != TL::DS18B20::Error::OK)
+		if (NL::DS18B20::isMeasurementReady(isReady, i) != NL::DS18B20::Error::OK)
 		{
-			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+			return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 		}
 		if (isReady)
 		{
-			if (TL::DS18B20::startMeasurement(i) != TL::DS18B20::Error::OK)
+			if (NL::DS18B20::startMeasurement(i) != NL::DS18B20::Error::OK)
 			{
-				return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+				return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 			}
 		}
 
@@ -157,7 +157,7 @@ TL::TemperatureSensor::Error TL::TemperatureSensor::getMaxTemperature(float &tem
 		}
 	}
 
-	return TL::TemperatureSensor::Error::OK;
+	return NL::TemperatureSensor::Error::OK;
 }
 
 /**
@@ -166,39 +166,39 @@ TL::TemperatureSensor::Error TL::TemperatureSensor::getMaxTemperature(float &tem
  * @return OK when the temperature sensor was initialized
  * @return ERROR_DS18B20_UNAVAILABLE when no temperature sensor is available
  */
-TL::TemperatureSensor::Error TL::TemperatureSensor::getAverageTemperature(float &temp)
+NL::TemperatureSensor::Error NL::TemperatureSensor::getAverageTemperature(float &temp)
 {
-	if (!TL::DS18B20::isInitialized() || TL::DS18B20::getNumSensors() == 0)
+	if (!NL::DS18B20::isInitialized() || NL::DS18B20::getNumSensors() == 0)
 	{
 		temp = 0.0f;
-		return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+		return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 	}
 
 	temp = 0.0f;
-	for (size_t i = 0; i < TL::DS18B20::getNumSensors(); i++)
+	for (size_t i = 0; i < NL::DS18B20::getNumSensors(); i++)
 	{
 		float currentTemp = 0.0f;
-		if (TL::DS18B20::getTemperature(currentTemp, i) != TL::DS18B20::Error::OK)
+		if (NL::DS18B20::getTemperature(currentTemp, i) != NL::DS18B20::Error::OK)
 		{
-			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+			return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 		}
 
 		bool isReady;
-		if (TL::DS18B20::isMeasurementReady(isReady, i) != TL::DS18B20::Error::OK)
+		if (NL::DS18B20::isMeasurementReady(isReady, i) != NL::DS18B20::Error::OK)
 		{
-			return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+			return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 		}
 		if (isReady)
 		{
-			if (TL::DS18B20::startMeasurement(i) != TL::DS18B20::Error::OK)
+			if (NL::DS18B20::startMeasurement(i) != NL::DS18B20::Error::OK)
 			{
-				return TL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+				return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
 			}
 		}
 
 		temp += currentTemp;
 	}
-	temp / TL::DS18B20::getNumSensors();
+	temp / NL::DS18B20::getNumSensors();
 
-	return TL::TemperatureSensor::Error::OK;
+	return NL::TemperatureSensor::Error::OK;
 }

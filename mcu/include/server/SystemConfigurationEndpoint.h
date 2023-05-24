@@ -30,7 +30,7 @@
 #include "sensor/MotionSensor.h"
 #include "logging/Logger.h"
 
-namespace TL
+namespace NL
 {
 	class SystemConfigurationEndpoint : public RestEndpoint
 	{

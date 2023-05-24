@@ -22,191 +22,191 @@
 #include "server/ProfileEndpoint.h"
 
 /**
- * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
+ * @brief Add all request handler for this {@link NL::RestEndpoint} to the {@link NL::WebServerManager}.
  */
-void TL::ProfileEndpoint::begin()
+void NL::ProfileEndpoint::begin()
 {
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile/active")).c_str(), http_method::HTTP_GET, TL::ProfileEndpoint::getActiveProfile);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile/active")).c_str(), http_method::HTTP_PATCH, TL::ProfileEndpoint::patchActiveProfile);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile")).c_str(), http_method::HTTP_GET, TL::ProfileEndpoint::getProfiles);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile")).c_str(), http_method::HTTP_POST, TL::ProfileEndpoint::postProfile);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile")).c_str(), http_method::HTTP_PUT, TL::ProfileEndpoint::cloneProfile);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile")).c_str(), http_method::HTTP_DELETE, TL::ProfileEndpoint::deleteProfile);
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile/active")).c_str(), http_method::HTTP_GET, NL::ProfileEndpoint::getActiveProfile);
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile/active")).c_str(), http_method::HTTP_PATCH, NL::ProfileEndpoint::patchActiveProfile);
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile")).c_str(), http_method::HTTP_GET, NL::ProfileEndpoint::getProfiles);
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile")).c_str(), http_method::HTTP_POST, NL::ProfileEndpoint::postProfile);
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile")).c_str(), http_method::HTTP_PUT, NL::ProfileEndpoint::cloneProfile);
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("config/profile")).c_str(), http_method::HTTP_DELETE, NL::ProfileEndpoint::deleteProfile);
 }
 
 /**
  * @brief Return the currently active profile name
  */
-void TL::ProfileEndpoint::getActiveProfile()
+void NL::ProfileEndpoint::getActiveProfile()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the active user profile."));
-	if (!TL::Configuration::isInitialized())
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the active user profile."));
+	if (!NL::Configuration::isInitialized())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The NikoLight configuration was not initialized. Can not access configuration."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("The NikoLight configuration was not initialized. Can not access configuration."));
 		return;
 	}
 
 	DynamicJsonDocument jsonDoc(1024);
 	const JsonObject profile = jsonDoc.createNestedObject(F("profile"));
-	profile[F("name")] = TL::Configuration::getActiveProfile();
+	profile[F("name")] = NL::Configuration::getActiveProfile();
 
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	TL::ProfileEndpoint::sendJsonDocument(200, F("Here is my active profile."), jsonDoc);
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	NL::ProfileEndpoint::sendJsonDocument(200, F("Here is my active profile."), jsonDoc);
 }
 
 /**
  * @brief Update the active user profile.
  */
-void TL::ProfileEndpoint::patchActiveProfile()
+void NL::ProfileEndpoint::patchActiveProfile()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the active user profile."));
-	if (!TL::Configuration::isInitialized())
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the active user profile."));
+	if (!NL::Configuration::isInitialized())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The NikoLight configuration was not initialized. Can not access configuration."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("The NikoLight configuration was not initialized. Can not access configuration."));
 		return;
 	}
 
-	if (!TL::ProfileEndpoint::webServer->hasHeader(F("content-type")) || TL::ProfileEndpoint::webServer->header(F("content-type")) != F("application/json"))
+	if (!NL::ProfileEndpoint::webServer->hasHeader(F("content-type")) || NL::ProfileEndpoint::webServer->header(F("content-type")) != F("application/json"))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/json\"."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The content type must be \"application/json\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/json\"."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The content type must be \"application/json\"."));
 		return;
 	}
 
-	if (!TL::ProfileEndpoint::webServer->hasArg(F("plain")))
+	if (!NL::ProfileEndpoint::webServer->hasArg(F("plain")))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("There must be a valid json body."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("There must be a valid json body."));
 		return;
 	}
 
-	const String body = TL::ProfileEndpoint::webServer->arg(F("plain"));
+	const String body = NL::ProfileEndpoint::webServer->arg(F("plain"));
 	if (body.length() == 0 || body.length() > 1024)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 1024 bytes."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 1024 bytes."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 1024 bytes."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 1024 bytes."));
 		return;
 	}
 
 	DynamicJsonDocument jsonDoc(1024);
-	if (!TL::ProfileEndpoint::parseJsonDocument(jsonDoc, body))
+	if (!NL::ProfileEndpoint::parseJsonDocument(jsonDoc, body))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The body could not be parsed. The json is invalid."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The body could not be parsed. The json is invalid."));
 		return;
 	}
 
 	if (!jsonDoc[F("profile")].is<JsonObject>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"profile\" object."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The json must contain a \"profile\" object."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"profile\" object."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The json must contain a \"profile\" object."));
 		return;
 	}
 
 	const JsonObject profile = jsonDoc[F("profile")].as<JsonObject>();
 	if (!profile[F("name")].is<String>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field must be of type \"string\"."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field must be of type \"string\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field must be of type \"string\"."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field must be of type \"string\"."));
 		return;
 	}
 
 	const String profileName = profile[F("name")];
-	if (!TL::ProfileEndpoint::validateProfileName(profileName))
+	if (!NL::ProfileEndpoint::validateProfileName(profileName))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field contains invalid characters."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field contains invalid characters."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field contains invalid characters."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field contains invalid characters."));
 		return;
 	}
 
-	const TL::Configuration::Error setProfileError = TL::Configuration::setActiveProfile(profileName);
-	if (setProfileError == TL::Configuration::Error::ERROR_PROFILE_NOT_FOUND)
+	const NL::Configuration::Error setProfileError = NL::Configuration::setActiveProfile(profileName);
+	if (setProfileError == NL::Configuration::Error::ERROR_PROFILE_NOT_FOUND)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The profile was not found."));
-		TL::ProfileEndpoint::sendSimpleResponse(404, F("The profile was not found."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The profile was not found."));
+		NL::ProfileEndpoint::sendSimpleResponse(404, F("The profile was not found."));
 		return;
 	}
-	else if (setProfileError != TL::Configuration::Error::OK)
+	else if (setProfileError != NL::Configuration::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set the active user profile"));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to set the active user profile"));
-		return;
-	}
-
-	const TL::Configuration::Error configSaveError = TL::Configuration::save();
-	if (configSaveError == TL::Configuration::Error::ERROR_FILE_OPEN)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be opened."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be opened."));
-		return;
-	}
-	else if (configSaveError == TL::Configuration::Error::ERROR_FILE_WRITE)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be written."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be written."));
-		return;
-	}
-	else if (configSaveError != TL::Configuration::Error::OK)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to set the active user profile"));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to set the active user profile"));
 		return;
 	}
 
-	const TL::LedManager::Error ledManagerError = TL::LedManager::reloadAnimations();
-	if (ledManagerError == TL::LedManager::Error::ERROR_INIT_LED_DRIVER)
+	const NL::Configuration::Error configSaveError = NL::Configuration::save();
+	if (configSaveError == NL::Configuration::Error::ERROR_FILE_OPEN)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialized LED driver for the current configuration."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to initialized LED driver for the current configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be opened."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be opened."));
 		return;
 	}
-	else if (ledManagerError == TL::LedManager::Error::ERROR_UNKNOWN_ANIMATOR_TYPE)
+	else if (configSaveError == NL::Configuration::Error::ERROR_FILE_WRITE)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. One of the animator types is unknown."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("Failed to apply LED configuration. One of the animator types is unknown."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be written."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be written."));
 		return;
 	}
-	else if (ledManagerError == TL::LedManager::Error::ERROR_INVALID_FSEQ)
+	else if (configSaveError != NL::Configuration::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. The selected fseq file is invalid."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("Failed to apply LED configuration. The selected fseq file is invalid."));
-		return;
-	}
-	else if (ledManagerError == TL::LedManager::Error::ERROR_FILE_NOT_FOUND)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. No fseq file with selected file id was found."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("Failed to apply LED configuration. No fseq file with selected file id was found."));
-		return;
-	}
-	else if (ledManagerError == TL::LedManager::Error::ERROR_INVALID_LED_CONFIGURATION)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. The current configurationn does not match the configuration of the fseq file."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("Failed to apply LED configuration. The current configurationn does not match the configuration of the fseq file."));
-		return;
-	}
-	else if (ledManagerError != TL::LedManager::Error::OK)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration because of unknown reason"));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to apply LED configuration because of unknown reason"));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration."));
 		return;
 	}
 
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	TL::ProfileEndpoint::sendSimpleResponse(200, F("Oki, my configuration is updated."));
+	const NL::LedManager::Error ledManagerError = NL::LedManager::reloadAnimations();
+	if (ledManagerError == NL::LedManager::Error::ERROR_INIT_LED_DRIVER)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to initialized LED driver for the current configuration."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to initialized LED driver for the current configuration."));
+		return;
+	}
+	else if (ledManagerError == NL::LedManager::Error::ERROR_UNKNOWN_ANIMATOR_TYPE)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. One of the animator types is unknown."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("Failed to apply LED configuration. One of the animator types is unknown."));
+		return;
+	}
+	else if (ledManagerError == NL::LedManager::Error::ERROR_INVALID_FSEQ)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. The selected fseq file is invalid."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("Failed to apply LED configuration. The selected fseq file is invalid."));
+		return;
+	}
+	else if (ledManagerError == NL::LedManager::Error::ERROR_FILE_NOT_FOUND)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. No fseq file with selected file id was found."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("Failed to apply LED configuration. No fseq file with selected file id was found."));
+		return;
+	}
+	else if (ledManagerError == NL::LedManager::Error::ERROR_INVALID_LED_CONFIGURATION)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration. The current configurationn does not match the configuration of the fseq file."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("Failed to apply LED configuration. The current configurationn does not match the configuration of the fseq file."));
+		return;
+	}
+	else if (ledManagerError != NL::LedManager::Error::OK)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to apply LED configuration because of unknown reason"));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to apply LED configuration because of unknown reason"));
+		return;
+	}
+
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	NL::ProfileEndpoint::sendSimpleResponse(200, F("Oki, my configuration is updated."));
 }
 
 /**
  * @brief Return a list of all known profiles.
  */
-void TL::ProfileEndpoint::getProfiles()
+void NL::ProfileEndpoint::getProfiles()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get a list of all known user profiles."));
-	if (!TL::Configuration::isInitialized())
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get a list of all known user profiles."));
+	if (!NL::Configuration::isInitialized())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The NikoLight configuration was not initialized. Can not access configuration."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("The NikoLight configuration was not initialized. Can not access configuration."));
 		return;
 	}
 
@@ -214,328 +214,328 @@ void TL::ProfileEndpoint::getProfiles()
 	const JsonObject profile = jsonDoc.createNestedObject(F("profile"));
 	const JsonArray profileArray = profile.createNestedArray(F("names"));
 
-	for (size_t i = 0; i < TL::Configuration::getProfileCount(); i++)
+	for (size_t i = 0; i < NL::Configuration::getProfileCount(); i++)
 	{
 		String profileName;
-		TL::Configuration::getProfileNameByIndex(i, profileName);
+		NL::Configuration::getProfileNameByIndex(i, profileName);
 		profileArray.add(profileName);
 	}
 
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	TL::ProfileEndpoint::sendJsonDocument(200, F("Here is your profile list."), jsonDoc);
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	NL::ProfileEndpoint::sendJsonDocument(200, F("Here is your profile list."), jsonDoc);
 }
 
 /**
  * @brief Create a new profile.
  */
-void TL::ProfileEndpoint::postProfile()
+void NL::ProfileEndpoint::postProfile()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to create a new user profile."));
-	if (!TL::Configuration::isInitialized())
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to create a new user profile."));
+	if (!NL::Configuration::isInitialized())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The NikoLight configuration was not initialized. Can not access configuration."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("The NikoLight configuration was not initialized. Can not access configuration."));
 		return;
 	}
 
-	if (!TL::ProfileEndpoint::webServer->hasHeader(F("content-type")) || TL::ProfileEndpoint::webServer->header(F("content-type")) != F("application/json"))
+	if (!NL::ProfileEndpoint::webServer->hasHeader(F("content-type")) || NL::ProfileEndpoint::webServer->header(F("content-type")) != F("application/json"))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/json\"."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The content type must be \"application/json\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/json\"."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The content type must be \"application/json\"."));
 		return;
 	}
 
-	if (!TL::ProfileEndpoint::webServer->hasArg(F("plain")))
+	if (!NL::ProfileEndpoint::webServer->hasArg(F("plain")))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("There must be a valid json body."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("There must be a valid json body."));
 		return;
 	}
 
-	const String body = TL::ProfileEndpoint::webServer->arg(F("plain"));
+	const String body = NL::ProfileEndpoint::webServer->arg(F("plain"));
 	if (body.length() == 0 || body.length() > 1024)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 1024 bytes."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 1024 bytes."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 1024 bytes."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 1024 bytes."));
 		return;
 	}
 
 	DynamicJsonDocument jsonDoc(1024);
-	if (!TL::ProfileEndpoint::parseJsonDocument(jsonDoc, body))
+	if (!NL::ProfileEndpoint::parseJsonDocument(jsonDoc, body))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The body could not be parsed. The json is invalid."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The body could not be parsed. The json is invalid."));
 		return;
 	}
 
 	if (!jsonDoc[F("profile")].is<JsonObject>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"profile\" object."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The json must contain a \"profile\" object."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"profile\" object."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The json must contain a \"profile\" object."));
 		return;
 	}
 
 	const JsonObject profile = jsonDoc[F("profile")].as<JsonObject>();
 	if (!profile[F("name")].is<String>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field must be of type \"string\"."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field must be of type \"string\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field must be of type \"string\"."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field must be of type \"string\"."));
 		return;
 	}
 
 	const String profileName = profile[F("name")];
-	if (!TL::ProfileEndpoint::validateProfileName(profileName))
+	if (!NL::ProfileEndpoint::validateProfileName(profileName))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field contains invalid characters."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field contains invalid characters."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field contains invalid characters."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field contains invalid characters."));
 		return;
 	}
 
-	const TL::Configuration::Error createError = TL::Configuration::createProfile(profileName);
-	if (createError == TL::Configuration::Error::ERROR_PROFILE_NAME_EXISTS)
+	const NL::Configuration::Error createError = NL::Configuration::createProfile(profileName);
+	if (createError == NL::Configuration::Error::ERROR_PROFILE_NAME_EXISTS)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The profile name already exists."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The profile name already exists."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The profile name already exists."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The profile name already exists."));
 		return;
 	}
-	else if (createError == TL::Configuration::Error::ERROR_TOO_MANY_PROFILES)
+	else if (createError == NL::Configuration::Error::ERROR_TOO_MANY_PROFILES)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The limit of 50 profiles is reached."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The limit of 50 profiles is reached."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The limit of 50 profiles is reached."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The limit of 50 profiles is reached."));
 		return;
 	}
-	else if (createError != TL::Configuration::Error::OK)
+	else if (createError != NL::Configuration::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to create a new profile."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to create a new profile."));
-		return;
-	}
-
-	const TL::Configuration::Error configSaveError = TL::Configuration::save();
-	if (configSaveError == TL::Configuration::Error::ERROR_FILE_OPEN)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be opened."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be opened."));
-		return;
-	}
-	else if (configSaveError == TL::Configuration::Error::ERROR_FILE_WRITE)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be written."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be written."));
-		return;
-	}
-	else if (configSaveError != TL::Configuration::Error::OK)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to create a new profile."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to create a new profile."));
 		return;
 	}
 
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	TL::ProfileEndpoint::sendSimpleResponse(200, F("Oki, I created a new profile for you."));
+	const NL::Configuration::Error configSaveError = NL::Configuration::save();
+	if (configSaveError == NL::Configuration::Error::ERROR_FILE_OPEN)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be opened."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be opened."));
+		return;
+	}
+	else if (configSaveError == NL::Configuration::Error::ERROR_FILE_WRITE)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be written."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be written."));
+		return;
+	}
+	else if (configSaveError != NL::Configuration::Error::OK)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration."));
+		return;
+	}
+
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	NL::ProfileEndpoint::sendSimpleResponse(200, F("Oki, I created a new profile for you."));
 }
 
 /**
  * @brief Clone an existing profile into a new one.
  */
-void TL::ProfileEndpoint::cloneProfile()
+void NL::ProfileEndpoint::cloneProfile()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to clone a user profile."));
-	if (!TL::Configuration::isInitialized())
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to clone a user profile."));
+	if (!NL::Configuration::isInitialized())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The NikoLight configuration was not initialized. Can not access configuration."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("The NikoLight configuration was not initialized. Can not access configuration."));
 		return;
 	}
 
-	if (!TL::ProfileEndpoint::webServer->hasHeader(F("content-type")) || TL::ProfileEndpoint::webServer->header(F("content-type")) != F("application/json"))
+	if (!NL::ProfileEndpoint::webServer->hasHeader(F("content-type")) || NL::ProfileEndpoint::webServer->header(F("content-type")) != F("application/json"))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/json\"."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The content type must be \"application/json\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/json\"."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The content type must be \"application/json\"."));
 		return;
 	}
 
-	if (!TL::ProfileEndpoint::webServer->hasArg(F("name")))
+	if (!NL::ProfileEndpoint::webServer->hasArg(F("name")))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The name of the source profile must be provided via the \"name\" parameter."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The name of the source profile must be provided via the \"name\" parameter."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The name of the source profile must be provided via the \"name\" parameter."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The name of the source profile must be provided via the \"name\" parameter."));
 		return;
 	}
 
-	const String sourceName = TL::ProfileEndpoint::webServer->arg(F("name"));
-	if (!TL::ProfileEndpoint::validateProfileName(sourceName))
+	const String sourceName = NL::ProfileEndpoint::webServer->arg(F("name"));
+	if (!NL::ProfileEndpoint::validateProfileName(sourceName))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" parameter contains invalid characters."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" parameter contains invalid characters."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" parameter contains invalid characters."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" parameter contains invalid characters."));
 		return;
 	}
 
-	if (!TL::ProfileEndpoint::webServer->hasArg(F("plain")))
+	if (!NL::ProfileEndpoint::webServer->hasArg(F("plain")))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("There must be a valid json body."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("There must be a valid json body."));
 		return;
 	}
 
-	const String body = TL::ProfileEndpoint::webServer->arg(F("plain"));
+	const String body = NL::ProfileEndpoint::webServer->arg(F("plain"));
 	if (body.length() == 0 || body.length() > 1024)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 1024 bytes."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 1024 bytes."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 1024 bytes."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 1024 bytes."));
 		return;
 	}
 
 	DynamicJsonDocument jsonDoc(1024);
-	if (!TL::ProfileEndpoint::parseJsonDocument(jsonDoc, body))
+	if (!NL::ProfileEndpoint::parseJsonDocument(jsonDoc, body))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The body could not be parsed. The json is invalid."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The body could not be parsed. The json is invalid."));
 		return;
 	}
 
 	if (!jsonDoc[F("profile")].is<JsonObject>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"profile\" object."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The json must contain a \"profile\" object."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"profile\" object."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The json must contain a \"profile\" object."));
 		return;
 	}
 
 	const JsonObject profile = jsonDoc[F("profile")].as<JsonObject>();
 	if (!profile[F("name")].is<String>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field must be of type \"string\"."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field must be of type \"string\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field must be of type \"string\"."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field must be of type \"string\"."));
 		return;
 	}
 
 	const String cloneName = profile[F("name")];
-	if (!TL::ProfileEndpoint::validateProfileName(cloneName))
+	if (!NL::ProfileEndpoint::validateProfileName(cloneName))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field contains invalid characters."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field contains invalid characters."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" field contains invalid characters."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" field contains invalid characters."));
 		return;
 	}
 
-	const TL::Configuration::Error cloneError = TL::Configuration::cloneProfile(sourceName, cloneName);
-	if (cloneError == TL::Configuration::Error::ERROR_PROFILE_NOT_FOUND)
+	const NL::Configuration::Error cloneError = NL::Configuration::cloneProfile(sourceName, cloneName);
+	if (cloneError == NL::Configuration::Error::ERROR_PROFILE_NOT_FOUND)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The source profile was not found."));
-		TL::ProfileEndpoint::sendSimpleResponse(404, F("The source profile was not found."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The source profile was not found."));
+		NL::ProfileEndpoint::sendSimpleResponse(404, F("The source profile was not found."));
 		return;
 	}
-	else if (cloneError == TL::Configuration::Error::ERROR_PROFILE_NAME_EXISTS)
+	else if (cloneError == NL::Configuration::Error::ERROR_PROFILE_NAME_EXISTS)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The clone name already exists."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The clone name already exists."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The clone name already exists."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The clone name already exists."));
 		return;
 	}
-	else if (cloneError == TL::Configuration::Error::ERROR_TOO_MANY_PROFILES)
+	else if (cloneError == NL::Configuration::Error::ERROR_TOO_MANY_PROFILES)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The limit of 50 profiles is reached."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The limit of 50 profiles is reached."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The limit of 50 profiles is reached."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The limit of 50 profiles is reached."));
 		return;
 	}
-	else if (cloneError != TL::Configuration::Error::OK)
+	else if (cloneError != NL::Configuration::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to clone the profile."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to clone the profile."));
-		return;
-	}
-
-	const TL::Configuration::Error configSaveError = TL::Configuration::save();
-	if (configSaveError == TL::Configuration::Error::ERROR_FILE_OPEN)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be opened."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be opened."));
-		return;
-	}
-	else if (configSaveError == TL::Configuration::Error::ERROR_FILE_WRITE)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be written."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be written."));
-		return;
-	}
-	else if (configSaveError != TL::Configuration::Error::OK)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to clone the profile."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to clone the profile."));
 		return;
 	}
 
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	TL::ProfileEndpoint::sendSimpleResponse(200, F("Oki, I cloned the profile for you."));
+	const NL::Configuration::Error configSaveError = NL::Configuration::save();
+	if (configSaveError == NL::Configuration::Error::ERROR_FILE_OPEN)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be opened."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be opened."));
+		return;
+	}
+	else if (configSaveError == NL::Configuration::Error::ERROR_FILE_WRITE)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be written."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be written."));
+		return;
+	}
+	else if (configSaveError != NL::Configuration::Error::OK)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration."));
+		return;
+	}
+
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	NL::ProfileEndpoint::sendSimpleResponse(200, F("Oki, I cloned the profile for you."));
 }
 
 /**
  * @brief Delete a profile.
  */
-void TL::ProfileEndpoint::deleteProfile()
+void NL::ProfileEndpoint::deleteProfile()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to delete a user profile."));
-	if (!TL::Configuration::isInitialized())
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to delete a user profile."));
+	if (!NL::Configuration::isInitialized())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The NikoLight configuration was not initialized. Can not access configuration."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("The NikoLight configuration was not initialized. Can not access configuration."));
 		return;
 	}
 
-	if (!TL::ProfileEndpoint::webServer->hasArg(F("name")))
+	if (!NL::ProfileEndpoint::webServer->hasArg(F("name")))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The name of the profile must be provided via the \"name\" parameter."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The name of the profile must be provided via the \"name\" parameter."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The name of the profile must be provided via the \"name\" parameter."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The name of the profile must be provided via the \"name\" parameter."));
 		return;
 	}
 
-	const String profileName = TL::ProfileEndpoint::webServer->arg(F("name"));
-	if (!TL::ProfileEndpoint::validateProfileName(profileName))
+	const String profileName = NL::ProfileEndpoint::webServer->arg(F("name"));
+	if (!NL::ProfileEndpoint::validateProfileName(profileName))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" parameter contains invalid characters."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" parameter contains invalid characters."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"name\" parameter contains invalid characters."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The \"name\" parameter contains invalid characters."));
 		return;
 	}
 
-	const TL::Configuration::Error deleteError = TL::Configuration::deleteProfile(profileName);
-	if (deleteError == TL::Configuration::Error::ERROR_PROFILE_IS_ACTIVE)
+	const NL::Configuration::Error deleteError = NL::Configuration::deleteProfile(profileName);
+	if (deleteError == NL::Configuration::Error::ERROR_PROFILE_IS_ACTIVE)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The profile can not be deleted while it is active."));
-		TL::ProfileEndpoint::sendSimpleResponse(400, F("The profile can not be deleted while it is active."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The profile can not be deleted while it is active."));
+		NL::ProfileEndpoint::sendSimpleResponse(400, F("The profile can not be deleted while it is active."));
 		return;
 	}
-	else if (deleteError == TL::Configuration::Error::ERROR_PROFILE_NOT_FOUND)
+	else if (deleteError == NL::Configuration::Error::ERROR_PROFILE_NOT_FOUND)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The profile was not found."));
-		TL::ProfileEndpoint::sendSimpleResponse(404, F("The profile was not found."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The profile was not found."));
+		NL::ProfileEndpoint::sendSimpleResponse(404, F("The profile was not found."));
 		return;
 	}
-	else if (deleteError != TL::Configuration::Error::OK)
+	else if (deleteError != NL::Configuration::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to delete profile."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to delete profile."));
-		return;
-	}
-
-	const TL::Configuration::Error configSaveError = TL::Configuration::save();
-	if (configSaveError == TL::Configuration::Error::ERROR_FILE_OPEN)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be opened."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be opened."));
-		return;
-	}
-	else if (configSaveError == TL::Configuration::Error::ERROR_FILE_WRITE)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be written."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be written."));
-		return;
-	}
-	else if (configSaveError != TL::Configuration::Error::OK)
-	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration."));
-		TL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to delete profile."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to delete profile."));
 		return;
 	}
 
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	TL::ProfileEndpoint::sendSimpleResponse(200, F("Oki, I deleted the profile for you."));
+	const NL::Configuration::Error configSaveError = NL::Configuration::save();
+	if (configSaveError == NL::Configuration::Error::ERROR_FILE_OPEN)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be opened."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be opened."));
+		return;
+	}
+	else if (configSaveError == NL::Configuration::Error::ERROR_FILE_WRITE)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration. The configuration file could not be written."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration. The configuration file could not be written."));
+		return;
+	}
+	else if (configSaveError != NL::Configuration::Error::OK)
+	{
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save configuration."));
+		NL::ProfileEndpoint::sendSimpleResponse(500, F("Failed to save configuration."));
+		return;
+	}
+
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	NL::ProfileEndpoint::sendSimpleResponse(200, F("Oki, I deleted the profile for you."));
 }
 
 /**
@@ -544,7 +544,7 @@ void TL::ProfileEndpoint::deleteProfile()
  * @return true when valid
  * @return false when invalid
  */
-bool TL::ProfileEndpoint::validateProfileName(const String &profileName)
+bool NL::ProfileEndpoint::validateProfileName(const String &profileName)
 {
 	if (profileName.length() < 3 || profileName.length() > 24)
 	{

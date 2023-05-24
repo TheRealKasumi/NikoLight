@@ -13,7 +13,7 @@
 #include "configuration/Configuration.h"
 #include "logging/Logger.h"
 
-namespace TL
+namespace NL
 {
 	class UIConfigurationEndpoint : public RestEndpoint
 	{

@@ -32,7 +32,7 @@
 #include "util/BinaryFile.h"
 #include "hardware/AudioUnit.h"
 
-namespace TL
+namespace NL
 {
 	class Configuration
 	{
@@ -119,7 +119,7 @@ namespace TL
 		{
 			uint16_t noiseThreshold;													// Threshold to filter out static noise
 			std::pair<uint16_t, uint16_t> frequencyBandIndex[AUDIO_UNIT_NUM_BANDS];		// Frequency band start and end bin indices
-			TL::AudioUnit::PeakDetectorConfig peakDetectorConfig[AUDIO_UNIT_NUM_BANDS]; // Settings for the peak detector
+			NL::AudioUnit::PeakDetectorConfig peakDetectorConfig[AUDIO_UNIT_NUM_BANDS]; // Settings for the peak detector
 		};
 
 		struct UIConfiguration
@@ -133,9 +133,9 @@ namespace TL
 		struct Profile
 		{
 			String name;										   // Name of the profile
-			TL::Configuration::SystemConfig systemConfig;		   // System configuration of the profile
-			TL::Configuration::LedConfig ledConfig[LED_NUM_ZONES]; // LED configuration of the profile
-			TL::Configuration::UIConfiguration uiConfiguration;	   // UI configuration of the profile
+			NL::Configuration::SystemConfig systemConfig;		   // System configuration of the profile
+			NL::Configuration::LedConfig ledConfig[LED_NUM_ZONES]; // LED configuration of the profile
+			NL::Configuration::UIConfiguration uiConfiguration;	   // UI configuration of the profile
 		};
 
 		static void begin(FS *fileSystem, const String fileName);
@@ -143,37 +143,37 @@ namespace TL
 		static bool isInitialized();
 
 		static size_t getProfileCount();
-		static TL::Configuration::Error getProfileNameByIndex(const size_t profileIndex, String &profileName);
-		static TL::Configuration::Error getProfile(const String &profileName, TL::Configuration::Profile &profile);
-		static TL::Configuration::Error createProfile(const String &profileName);
-		static TL::Configuration::Error cloneProfile(const String &sourceName, const String &destinationName);
-		static TL::Configuration::Error renameProfile(const String &profileName, const String &newProfileName);
-		static TL::Configuration::Error deleteProfile(const String &profileName);
+		static NL::Configuration::Error getProfileNameByIndex(const size_t profileIndex, String &profileName);
+		static NL::Configuration::Error getProfile(const String &profileName, NL::Configuration::Profile &profile);
+		static NL::Configuration::Error createProfile(const String &profileName);
+		static NL::Configuration::Error cloneProfile(const String &sourceName, const String &destinationName);
+		static NL::Configuration::Error renameProfile(const String &profileName, const String &newProfileName);
+		static NL::Configuration::Error deleteProfile(const String &profileName);
 
 		static String getActiveProfile();
-		static TL::Configuration::Error setActiveProfile(const String &profileName);
+		static NL::Configuration::Error setActiveProfile(const String &profileName);
 
-		static TL::Configuration::SystemConfig getSystemConfig();
-		static void setSystemConfig(TL::Configuration::SystemConfig &systemConfig);
+		static NL::Configuration::SystemConfig getSystemConfig();
+		static void setSystemConfig(NL::Configuration::SystemConfig &systemConfig);
 
-		static TL::Configuration::Error getLedConfig(const uint8_t zoneIndex, TL::Configuration::LedConfig &ledConfig);
-		static TL::Configuration::Error setLedConfig(const uint8_t zoneIndex, const TL::Configuration::LedConfig &ledConfig);
+		static NL::Configuration::Error getLedConfig(const uint8_t zoneIndex, NL::Configuration::LedConfig &ledConfig);
+		static NL::Configuration::Error setLedConfig(const uint8_t zoneIndex, const NL::Configuration::LedConfig &ledConfig);
 
-		static TL::Configuration::WiFiConfig getWiFiConfig();
-		static void setWiFiConfig(TL::Configuration::WiFiConfig &wifiConfig);
+		static NL::Configuration::WiFiConfig getWiFiConfig();
+		static void setWiFiConfig(NL::Configuration::WiFiConfig &wifiConfig);
 
-		static TL::Configuration::MotionSensorCalibration getMotionSensorCalibration();
-		static void setMotionSensorCalibration(const TL::Configuration::MotionSensorCalibration &calibration);
+		static NL::Configuration::MotionSensorCalibration getMotionSensorCalibration();
+		static void setMotionSensorCalibration(const NL::Configuration::MotionSensorCalibration &calibration);
 
-		static TL::Configuration::AudioUnitConfig getAudioUnitConfig();
-		static void setAudioUnitConfig(const TL::Configuration::AudioUnitConfig &audioUnitConfig);
+		static NL::Configuration::AudioUnitConfig getAudioUnitConfig();
+		static void setAudioUnitConfig(const NL::Configuration::AudioUnitConfig &audioUnitConfig);
 
-		static TL::Configuration::UIConfiguration getUIConfiguration();
-		static void setUIConfiguration(const TL::Configuration::UIConfiguration &uiConfiguration);
+		static NL::Configuration::UIConfiguration getUIConfiguration();
+		static void setUIConfiguration(const NL::Configuration::UIConfiguration &uiConfiguration);
 
 		static void loadDefaults();
-		static TL::Configuration::Error load();
-		static TL::Configuration::Error save();
+		static NL::Configuration::Error load();
+		static NL::Configuration::Error save();
 
 	private:
 		Configuration();
@@ -184,13 +184,13 @@ namespace TL
 		static uint16_t configurationVersion;
 
 		static size_t activeProfile;
-		static std::vector<TL::Configuration::Profile> profiles;
-		static TL::Configuration::WiFiConfig wifiConfig;
-		static TL::Configuration::MotionSensorCalibration motionSensorCalibration;
-		static TL::Configuration::AudioUnitConfig audioUnitConfig;
+		static std::vector<NL::Configuration::Profile> profiles;
+		static NL::Configuration::WiFiConfig wifiConfig;
+		static NL::Configuration::MotionSensorCalibration motionSensorCalibration;
+		static NL::Configuration::AudioUnitConfig audioUnitConfig;
 
-		static TL::Configuration::Error loadProfileDefaults(const size_t profileIndex);
-		static TL::Configuration::Error getProfileIndexByName(const String &profileName, size_t &profileIndex);
+		static NL::Configuration::Error loadProfileDefaults(const size_t profileIndex);
+		static NL::Configuration::Error getProfileIndexByName(const String &profileName, size_t &profileIndex);
 
 		static uint16_t getSimpleHash();
 		static uint16_t getSimpleStringHash(const String input);

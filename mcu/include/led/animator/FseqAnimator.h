@@ -26,19 +26,19 @@
 #include "led/animator/LedAnimator.h"
 #include "util/FseqLoader.h"
 
-namespace TL
+namespace NL
 {
 	class FseqAnimator : public LedAnimator
 	{
 	public:
-		FseqAnimator(TL::FseqLoader *fseqLoader, const bool loop = false);
+		FseqAnimator(NL::FseqLoader *fseqLoader, const bool loop = false);
 		~FseqAnimator();
 
-		void init(TL::LedStrip &ledStrip);
-		void render(TL::LedStrip &ledStrip);
+		void init(NL::LedStrip &ledStrip);
+		void render(NL::LedStrip &ledStrip);
 
 	private:
-		TL::FseqLoader *fseqLoader;
+		NL::FseqLoader *fseqLoader;
 		bool loop;
 	};
 }

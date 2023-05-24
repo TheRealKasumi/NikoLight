@@ -1,7 +1,7 @@
 /**
  * @file TupFile.h
  * @author TheRealKasumi
- * @brief Contains the implementation for the {@link TL::TupFile}.
+ * @brief Contains the implementation for the {@link NL::TupFile}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -22,17 +22,17 @@
 #include "update/TupFile.h"
 
 /**
- * @brief Create a new instance of {@link TL::TupFile}.
+ * @brief Create a new instance of {@link NL::TupFile}.
  */
-TL::TupFile::TupFile()
+NL::TupFile::TupFile()
 {
 	this->initHeader();
 }
 
 /**
- * @brief Destroy the {@link TL::TupFile} instance and free resources.
+ * @brief Destroy the {@link NL::TupFile} instance and free resources.
  */
-TL::TupFile::~TupFile()
+NL::TupFile::~TupFile()
 {
 	this->close();
 }
@@ -52,35 +52,35 @@ TL::TupFile::~TupFile()
  * @return ERROR_FILE_VERSION when the file version does not match
  * @return ERROR_FILE_HASH the file hash is invalid
  */
-TL::TupFile::Error TL::TupFile::load(FS *fileSystem, const String fileName)
+NL::TupFile::Error NL::TupFile::load(FS *fileSystem, const String fileName)
 {
 	this->close();
 	this->file = fileSystem->open(fileName, FILE_READ);
 	if (!this->file)
 	{
-		return TL::TupFile::Error::ERROR_FILE_NOT_FOUND;
+		return NL::TupFile::Error::ERROR_FILE_NOT_FOUND;
 	}
 	else if (this->file.isDirectory())
 	{
 		this->close();
-		return TL::TupFile::Error::ERROR_IS_DIRECTORY;
+		return NL::TupFile::Error::ERROR_IS_DIRECTORY;
 	}
 
-	const TL::TupFile::Error headerError = this->loadTupHeader();
-	if (headerError != TL::TupFile::Error::OK)
+	const NL::TupFile::Error headerError = this->loadTupHeader();
+	if (headerError != NL::TupFile::Error::OK)
 	{
 		this->close();
 		return headerError;
 	}
 
-	const TL::TupFile::Error verifyError = this->verify();
-	if (verifyError != TL::TupFile::Error::OK)
+	const NL::TupFile::Error verifyError = this->verify();
+	if (verifyError != NL::TupFile::Error::OK)
 	{
 		this->close();
 		return verifyError;
 	}
 
-	return TL::TupFile::Error::OK;
+	return NL::TupFile::Error::OK;
 }
 
 /**
@@ -94,15 +94,15 @@ TL::TupFile::Error TL::TupFile::load(FS *fileSystem, const String fileName)
  * @return ERROR_CREATE_DIR when a directory could not be created while unpacking
  * @return ERROR_CREATE_FILE when a file could not be created while unpacking
  */
-TL::TupFile::Error TL::TupFile::unpack(FS *fileSystem, const String root)
+NL::TupFile::Error NL::TupFile::unpack(FS *fileSystem, const String root)
 {
 	if (!this->file.seek(13))
 	{
-		return TL::TupFile::Error::ERROR_EMPTY_FILE;
+		return NL::TupFile::Error::ERROR_EMPTY_FILE;
 	}
 
-	TL::TupFile::TupDataBlock dataBlock;
-	dataBlock.type = TL::TupFile::TupDataType::FIRMWARE;
+	NL::TupFile::TupDataBlock dataBlock;
+	dataBlock.type = NL::TupFile::TupDataType::FIRMWARE;
 	dataBlock.path = new char[256];
 	for (uint32_t i = 0; i < this->tupHeader.numberBlocks; i++)
 	{
@@ -112,27 +112,27 @@ TL::TupFile::Error TL::TupFile::unpack(FS *fileSystem, const String root)
 		if (dataBlock.pathLength > 255)
 		{
 			delete[] dataBlock.path;
-			return TL::TupFile::Error::ERROR_INVALID_BLOCK_NAME;
+			return NL::TupFile::Error::ERROR_INVALID_BLOCK_NAME;
 		}
 		readError = this->file.read((uint8_t *)dataBlock.path, dataBlock.pathLength) != dataBlock.pathLength ? true : readError;
 		readError = this->file.read((uint8_t *)&dataBlock.size, 4) != 4 ? true : readError;
 
 		const String absolutePath = this->createAbsolutePath(root + F("/"), dataBlock.path, dataBlock.pathLength);
-		if (dataBlock.type == TL::TupFile::TupDataType::DIRECTORY)
+		if (dataBlock.type == NL::TupFile::TupDataType::DIRECTORY)
 		{
 			if (!fileSystem->mkdir(absolutePath))
 			{
 				delete[] dataBlock.path;
-				return TL::TupFile::Error::ERROR_CREATE_DIR;
+				return NL::TupFile::Error::ERROR_CREATE_DIR;
 			}
 		}
-		else if (dataBlock.type == TL::TupFile::TupDataType::FILE || dataBlock.type == TL::TupFile::TupDataType::FIRMWARE)
+		else if (dataBlock.type == NL::TupFile::TupDataType::FILE || dataBlock.type == NL::TupFile::TupDataType::FIRMWARE)
 		{
 			File file = fileSystem->open(absolutePath, FILE_WRITE);
 			if (!file)
 			{
 				delete[] dataBlock.path;
-				return TL::TupFile::Error::ERROR_CREATE_FILE;
+				return NL::TupFile::Error::ERROR_CREATE_FILE;
 			}
 
 			uint8_t buffer[1024];
@@ -148,7 +148,7 @@ TL::TupFile::Error TL::TupFile::unpack(FS *fileSystem, const String root)
 				chunkSize = this->file.read(buffer, chunkSize);
 				if (chunkSize == 0)
 				{
-					return TL::TupFile::Error::ERROR_FILE_READ;
+					return NL::TupFile::Error::ERROR_FILE_READ;
 				}
 				readBytes += chunkSize;
 
@@ -164,18 +164,18 @@ TL::TupFile::Error TL::TupFile::unpack(FS *fileSystem, const String root)
 
 		if (readError)
 		{
-			return TL::TupFile::Error::ERROR_FILE_READ;
+			return NL::TupFile::Error::ERROR_FILE_READ;
 		}
 	}
 
 	delete[] dataBlock.path;
-	return TL::TupFile::Error::OK;
+	return NL::TupFile::Error::OK;
 }
 
 /**
  * @brief Close the TUP file when one is opened.
  */
-void TL::TupFile::close()
+void NL::TupFile::close()
 {
 	this->initHeader();
 	if (this->file)
@@ -185,10 +185,10 @@ void TL::TupFile::close()
 }
 
 /**
- * @brief Get the currently loaded {@link TL::TupFile::TupHeader}.
+ * @brief Get the currently loaded {@link NL::TupFile::TupHeader}.
  * @return header of the loaded file
  */
-TL::TupFile::TupHeader TL::TupFile::getHeader()
+NL::TupFile::TupHeader NL::TupFile::getHeader()
 {
 	return this->tupHeader;
 }
@@ -196,7 +196,7 @@ TL::TupFile::TupHeader TL::TupFile::getHeader()
 /**
  * @brief Initialize the TUP header.
  */
-void TL::TupFile::initHeader()
+void NL::TupFile::initHeader()
 {
 	this->tupHeader.magic[0] = 0;
 	this->tupHeader.magic[1] = 0;
@@ -216,15 +216,15 @@ void TL::TupFile::initHeader()
  * @return ERROR_FILE_VERSION when the file version does not match
  * @return ERROR_FILE_READ when the file could not be read
  */
-TL::TupFile::Error TL::TupFile::loadTupHeader()
+NL::TupFile::Error NL::TupFile::loadTupHeader()
 {
 	if (!this->file)
 	{
-		return TL::TupFile::Error::ERROR_FILE_NOT_FOUND;
+		return NL::TupFile::Error::ERROR_FILE_NOT_FOUND;
 	}
 	else if (this->file.size() < 13)
 	{
-		return TL::TupFile::Error::ERROR_EMPTY_FILE;
+		return NL::TupFile::Error::ERROR_EMPTY_FILE;
 	}
 
 	bool readError = false;
@@ -234,50 +234,50 @@ TL::TupFile::Error TL::TupFile::loadTupHeader()
 	readError = this->file.read((uint8_t *)&this->tupHeader.numberBlocks, 4) == 4 ? readError : true;
 	if (readError)
 	{
-		return TL::TupFile::Error::ERROR_FILE_READ;
+		return NL::TupFile::Error::ERROR_FILE_READ;
 	}
 
 	if (this->tupHeader.magic[0] != 'T' || this->tupHeader.magic[1] != 'L' || this->tupHeader.magic[2] != 'U' || this->tupHeader.magic[3] != 'P')
 	{
-		return TL::TupFile::Error::ERROR_MAGIC_NUMBERS;
+		return NL::TupFile::Error::ERROR_MAGIC_NUMBERS;
 	}
 
 	if (this->tupHeader.fileVersion != 1)
 	{
-		return TL::TupFile::Error::ERROR_FILE_VERSION;
+		return NL::TupFile::Error::ERROR_FILE_VERSION;
 	}
 
 	if (this->tupHeader.numberBlocks == 0)
 	{
-		return TL::TupFile::Error::ERROR_EMPTY_FILE;
+		return NL::TupFile::Error::ERROR_EMPTY_FILE;
 	}
 
-	return TL::TupFile::Error::OK;
+	return NL::TupFile::Error::OK;
 }
 
 /**
- * @brief Verify a {@link TL::TupFile}.
+ * @brief Verify a {@link NL::TupFile}.
  * @return OK when the file is valid
  * @return ERROR_FILE_HASH when the file is invalid
  */
-TL::TupFile::Error TL::TupFile::verify()
+NL::TupFile::Error NL::TupFile::verify()
 {
-	return this->generateHash() == this->tupHeader.hash ? TL::TupFile::Error::OK : TL::TupFile::Error::ERROR_FILE_HASH;
+	return this->generateHash() == this->tupHeader.hash ? NL::TupFile::Error::OK : NL::TupFile::Error::ERROR_FILE_HASH;
 }
 
 /**
  * @brief Generate the simple hash to verify the TUP file.
  * @return hash
  */
-uint32_t TL::TupFile::generateHash()
+uint32_t NL::TupFile::generateHash()
 {
 	if (!this->file.seek(13))
 	{
 		return 0;
 	}
 
-	TL::TupFile::TupDataBlock dataBlock;
-	dataBlock.type = TL::TupFile::TupDataType::NONE;
+	NL::TupFile::TupDataBlock dataBlock;
+	dataBlock.type = NL::TupFile::TupDataType::NONE;
 	dataBlock.path = new char[256];
 	uint32_t hash = 7;
 	for (uint32_t i = 0; i < this->tupHeader.numberBlocks; i++)
@@ -343,7 +343,7 @@ uint32_t TL::TupFile::generateHash()
  * @param pathLength length of the realative path
  * @return String absolute path
  */
-String TL::TupFile::createAbsolutePath(const String root, const char *name, uint16_t nameLength)
+String NL::TupFile::createAbsolutePath(const String root, const char *name, uint16_t nameLength)
 {
 	String absolutePath = root;
 	for (uint16_t i = 0; i < nameLength; i++)

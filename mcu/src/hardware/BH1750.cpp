@@ -1,7 +1,7 @@
 /**
  * @file BH1750.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::BH1750}.
+ * @brief Implementation of the {@link NL::BH1750}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -21,9 +21,9 @@
  */
 #include "hardware/BH1750.h"
 
-bool TL::BH1750::initialized = false;
-uint8_t TL::BH1750::deviceAddress;
-TL::BH1750::BH1750Res TL::BH1750::resolution;
+bool NL::BH1750::initialized = false;
+uint8_t NL::BH1750::deviceAddress;
+NL::BH1750::BH1750Res NL::BH1750::resolution;
 
 /**
  * @brief Initialize the light sensor and start the measurement.
@@ -31,9 +31,9 @@ TL::BH1750::BH1750Res TL::BH1750::resolution;
  * @return OK when the sensor was found and initialized.
  * @return ERROR_IIC_COMM when the I²C communication failed
  */
-TL::BH1750::Error TL::BH1750::begin(const uint8_t deviceAddress)
+NL::BH1750::Error NL::BH1750::begin(const uint8_t deviceAddress)
 {
-	return TL::BH1750::begin(deviceAddress, TL::BH1750::BH1750Res::BH1750_HIGH);
+	return NL::BH1750::begin(deviceAddress, NL::BH1750::BH1750Res::BH1750_HIGH);
 }
 
 /**
@@ -43,22 +43,22 @@ TL::BH1750::Error TL::BH1750::begin(const uint8_t deviceAddress)
  * @return OK when the sensor was found and initialized.
  * @return ERROR_IIC_COMM when the I²C communication failed
  */
-TL::BH1750::Error TL::BH1750::begin(const uint8_t deviceAddress, const TL::BH1750::BH1750Res resolution)
+NL::BH1750::Error NL::BH1750::begin(const uint8_t deviceAddress, const NL::BH1750::BH1750Res resolution)
 {
-	TL::BH1750::deviceAddress = deviceAddress;
-	TL::BH1750::resolution = resolution;
+	NL::BH1750::deviceAddress = deviceAddress;
+	NL::BH1750::resolution = resolution;
 
-	const TL::BH1750::Error error = BH1750::setResolution(TL::BH1750::resolution);
-	TL::BH1750::initialized = error == TL::BH1750::Error::OK;
+	const NL::BH1750::Error error = BH1750::setResolution(NL::BH1750::resolution);
+	NL::BH1750::initialized = error == NL::BH1750::Error::OK;
 	return error;
 }
 
 /**
  * @brief Stop the light sensor.
  */
-void TL::BH1750::end()
+void NL::BH1750::end()
 {
-	TL::BH1750::initialized = false;
+	NL::BH1750::initialized = false;
 }
 
 /**
@@ -66,9 +66,9 @@ void TL::BH1750::end()
  * @return true when initialized
  * @return false when not initialized
  */
-bool TL::BH1750::isInitialized()
+bool NL::BH1750::isInitialized()
 {
-	return TL::BH1750::initialized;
+	return NL::BH1750::initialized;
 }
 
 /**
@@ -77,19 +77,19 @@ bool TL::BH1750::isInitialized()
  * @return OK when the resolution was set
  * @return ERROR_IIC_COMM when the I²C communication failed
  */
-TL::BH1750::Error TL::BH1750::setResolution(const TL::BH1750::BH1750Res resolution)
+NL::BH1750::Error NL::BH1750::setResolution(const NL::BH1750::BH1750Res resolution)
 {
-	TL::BH1750::resolution = resolution;
-	return TL::BH1750::write(static_cast<uint8_t>(TL::BH1750::resolution));
+	NL::BH1750::resolution = resolution;
+	return NL::BH1750::write(static_cast<uint8_t>(NL::BH1750::resolution));
 }
 
 /**
  * @brief Get the currently set resolution.
  * @return resolution value
  */
-TL::BH1750::BH1750Res TL::BH1750::getResolution()
+NL::BH1750::BH1750Res NL::BH1750::getResolution()
 {
-	return TL::BH1750::resolution;
+	return NL::BH1750::resolution;
 }
 
 /**
@@ -98,11 +98,11 @@ TL::BH1750::BH1750Res TL::BH1750::getResolution()
  * @return OK when the resolution was set
  * @return ERROR_IIC_COMM when the I²C communication failed
  */
-TL::BH1750::Error TL::BH1750::getLux(float &lux)
+NL::BH1750::Error NL::BH1750::getLux(float &lux)
 {
 	uint16_t raw;
-	const TL::BH1750::Error error = TL::BH1750::read(raw);
-	if (error == TL::BH1750::Error::OK)
+	const NL::BH1750::Error error = NL::BH1750::read(raw);
+	if (error == NL::BH1750::Error::OK)
 	{
 		lux = (raw / 1.2f);
 	}
@@ -119,18 +119,18 @@ TL::BH1750::Error TL::BH1750::getLux(float &lux)
  * @return OK when the resolution was set
  * @return ERROR_IIC_COMM when the I²C communication failed
  */
-TL::BH1750::Error TL::BH1750::write(const uint8_t command)
+NL::BH1750::Error NL::BH1750::write(const uint8_t command)
 {
-	Wire.beginTransmission(TL::BH1750::deviceAddress);
+	Wire.beginTransmission(NL::BH1750::deviceAddress);
 	if (Wire.write(command) == 0)
 	{
-		return TL::BH1750::Error::ERROR_IIC_COMM;
+		return NL::BH1750::Error::ERROR_IIC_COMM;
 	}
 	if (Wire.endTransmission() != 0)
 	{
-		return TL::BH1750::Error::ERROR_IIC_COMM;
+		return NL::BH1750::Error::ERROR_IIC_COMM;
 	}
-	return TL::BH1750::Error::OK;
+	return NL::BH1750::Error::OK;
 }
 
 /**
@@ -139,18 +139,18 @@ TL::BH1750::Error TL::BH1750::write(const uint8_t command)
  * @return OK when the resolution was set
  * @return ERROR_IIC_COMM when the I²C communication failed
  */
-TL::BH1750::Error TL::BH1750::read(uint16_t &value)
+NL::BH1750::Error NL::BH1750::read(uint16_t &value)
 {
 	uint8_t *bytes = (uint8_t *)&value;
-	if (Wire.requestFrom(static_cast<int>(TL::BH1750::deviceAddress), static_cast<int>(2)) != 2)
+	if (Wire.requestFrom(static_cast<int>(NL::BH1750::deviceAddress), static_cast<int>(2)) != 2)
 	{
-		return TL::BH1750::Error::ERROR_IIC_COMM;
+		return NL::BH1750::Error::ERROR_IIC_COMM;
 	}
 	if (Wire.available() != 2)
 	{
-		return TL::BH1750::Error::ERROR_IIC_COMM;
+		return NL::BH1750::Error::ERROR_IIC_COMM;
 	}
 	bytes[1] = Wire.read();
 	bytes[0] = Wire.read();
-	return TL::BH1750::Error::OK;
+	return NL::BH1750::Error::OK;
 }

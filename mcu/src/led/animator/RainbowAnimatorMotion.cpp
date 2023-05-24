@@ -1,7 +1,7 @@
 /**
  * @file RainbowAnimatorMotion.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@TL::RainbowAnimatorMotion}.
+ * @brief Implementation of the {@NL::RainbowAnimatorMotion}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -22,32 +22,32 @@
 #include "led/animator/RainbowAnimatorMotion.h"
 
 /**
- * @brief Create a new instance of {@link TL::RainbowAnimatorMotion}.
+ * @brief Create a new instance of {@link NL::RainbowAnimatorMotion}.
  * @param rainbowMode display mode of the rainbow
  */
-TL::RainbowAnimatorMotion::RainbowAnimatorMotion(const TL::RainbowAnimatorMotion::RainbowMode rainbowMode)
+NL::RainbowAnimatorMotion::RainbowAnimatorMotion(const NL::RainbowAnimatorMotion::RainbowMode rainbowMode)
 {
 	this->angle = 0.0f;
 	this->rainbowMode = rainbowMode;
 }
 
 /**
- * @brief Destroy the {@link TL::RainbowAnimatorMotion} instance.
+ * @brief Destroy the {@link NL::RainbowAnimatorMotion} instance.
  */
-TL::RainbowAnimatorMotion::~RainbowAnimatorMotion()
+NL::RainbowAnimatorMotion::~RainbowAnimatorMotion()
 {
 }
 
 /**
- * @brief Initialize the {@link TL::RainbowAnimatorMotion}.
+ * @brief Initialize the {@link NL::RainbowAnimatorMotion}.
  * @param ledStrip LED strip with the pixel data
  */
-void TL::RainbowAnimatorMotion::init(TL::LedStrip &ledStrip)
+void NL::RainbowAnimatorMotion::init(NL::LedStrip &ledStrip)
 {
 	this->angle = 0.0f;
 	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
-		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+		ledStrip.setPixel(NL::Pixel::ColorCode::Black, i);
 	}
 }
 
@@ -55,7 +55,7 @@ void TL::RainbowAnimatorMotion::init(TL::LedStrip &ledStrip)
  * @brief Render a rainbow to the vector holding the LED pixel data
  * @param ledStrip LED strip with the pixel data
  */
-void TL::RainbowAnimatorMotion::render(TL::LedStrip &ledStrip)
+void NL::RainbowAnimatorMotion::render(NL::LedStrip &ledStrip)
 {
 	const float middle = ledStrip.getLedCount() / 2;
 	for (uint16_t i = 0; i < ledStrip.getLedCount(); i++)
@@ -65,28 +65,28 @@ void TL::RainbowAnimatorMotion::render(TL::LedStrip &ledStrip)
 		float blueAngle = 0.0f;
 		const float offset = this->offset / 25.0f;
 
-		if (this->rainbowMode == TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_SOLID)
+		if (this->rainbowMode == NL::RainbowAnimatorMotion::RainbowMode::RAINBOW_SOLID)
 		{
 			redAngle = this->angle + 0.0f;
 			greenAngle = this->angle + 120.0f;
 			blueAngle = this->angle + 240.0f;
 		}
 
-		else if (this->rainbowMode == TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR)
+		else if (this->rainbowMode == NL::RainbowAnimatorMotion::RainbowMode::RAINBOW_LINEAR)
 		{
 			redAngle = (this->angle + 0.0f) + i * offset;
 			greenAngle = (this->angle + 120.0f) + i * offset;
 			blueAngle = (this->angle + 240.0f) + i * offset;
 		}
 
-		else if (this->rainbowMode == TL::RainbowAnimatorMotion::RainbowMode::RAINBOW_CENTER)
+		else if (this->rainbowMode == NL::RainbowAnimatorMotion::RainbowMode::RAINBOW_CENTER)
 		{
 			redAngle = i < middle ? (this->angle + 0.0f) + i * offset : (this->angle + 0.0f) + (ledStrip.getLedCount() - i) * offset;
 			greenAngle = i < middle ? (this->angle + 120.0f) + i * offset : (this->angle + 120.0f) + (ledStrip.getLedCount() - i) * offset;
 			blueAngle = i < middle ? (this->angle + 240.0f) + i * offset : (this->angle + 240.0f) + (ledStrip.getLedCount() - i) * offset;
 		}
 
-		ledStrip.setPixel(TL::Pixel(this->trapezoid(redAngle) * 255.0f, this->trapezoid(greenAngle) * 255.0f, this->trapezoid(blueAngle) * 255.0f), i);
+		ledStrip.setPixel(NL::Pixel(this->trapezoid(redAngle) * 255.0f, this->trapezoid(greenAngle) * 255.0f, this->trapezoid(blueAngle) * 255.0f), i);
 	}
 
 	this->applyBrightness(ledStrip);
@@ -115,46 +115,46 @@ void TL::RainbowAnimatorMotion::render(TL::LedStrip &ledStrip)
  * @brief Get the rainbow speed based on the motion senor value.
  * @return speed value based on the motion sensor value
  */
-float TL::RainbowAnimatorMotion::getMotionSpeed()
+float NL::RainbowAnimatorMotion::getMotionSpeed()
 {
 	float speed = this->speed / 15.0f;
-	if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ACC_X_G)
+	if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_ACC_X_G)
 	{
 		speed *= this->motionSensorData.accXG;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ACC_Y_G)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_ACC_Y_G)
 	{
 		speed *= this->motionSensorData.accYG;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ACC_Z_G)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_ACC_Z_G)
 	{
 		speed *= this->motionSensorData.accZG;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_GY_X_DEG)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_GY_X_DEG)
 	{
 		speed *= this->motionSensorData.gyroXDeg / 20.0f;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_GY_Y_DEG)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_GY_Y_DEG)
 	{
 		speed *= this->motionSensorData.gyroYDeg / 20.0f;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_GY_Z_DEG)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_GY_Z_DEG)
 	{
 		speed *= this->motionSensorData.gyroZDeg / 20.0f;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_PITCH)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_PITCH)
 	{
 		speed *= this->motionSensorData.pitch / 20.0f;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ROLL)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_ROLL)
 	{
 		speed *= this->motionSensorData.roll / 20.0f;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_PITCH_COMPENSATED_ACC_Y_G)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_PITCH_COMPENSATED_ACC_Y_G)
 	{
 		speed *= this->motionSensorData.pitchCompensatedAccYG;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ROLL_COMPENSATED_ACC_X_G)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_ROLL_COMPENSATED_ACC_X_G)
 	{
 		speed *= this->motionSensorData.rollCompensatedAccXG;
 	}

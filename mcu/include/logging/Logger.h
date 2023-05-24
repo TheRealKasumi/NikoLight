@@ -1,7 +1,7 @@
 /**
  * @file Logger.h
  * @author TheRealKasumi
- * @brief Static class containing the {@link TL::Logger}.
+ * @brief Static class containing the {@link NL::Logger}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -29,7 +29,7 @@
 
 #define SOURCE_LOCATION __FILE__, __func__, __LINE__
 
-namespace TL
+namespace NL
 {
 
 	class Logger
@@ -43,16 +43,16 @@ namespace TL
 			ERROR = 3
 		};
 
-		static bool begin(const TL::Logger::LogLevel minLogLevel = TL::Logger::LogLevel::INFO);
-		static bool begin(const uint32_t baudRate, const TL::Logger::LogLevel minLogLevel = TL::Logger::LogLevel::INFO);
-		static bool begin(FS *fs, const String fn, const TL::Logger::LogLevel minLogLevel = TL::Logger::LogLevel::INFO);
-		static bool begin(uint32_t baudRate, FS *fs, const String fn, const TL::Logger::LogLevel minLogLevel = TL::Logger::LogLevel::INFO);
+		static bool begin(const NL::Logger::LogLevel minLogLevel = NL::Logger::LogLevel::INFO);
+		static bool begin(const uint32_t baudRate, const NL::Logger::LogLevel minLogLevel = NL::Logger::LogLevel::INFO);
+		static bool begin(FS *fs, const String fn, const NL::Logger::LogLevel minLogLevel = NL::Logger::LogLevel::INFO);
+		static bool begin(uint32_t baudRate, FS *fs, const String fn, const NL::Logger::LogLevel minLogLevel = NL::Logger::LogLevel::INFO);
 		static void end();
 		static bool isInitialized();
 
-		static void setMinLogLevel(const TL::Logger::LogLevel logLevel);
+		static void setMinLogLevel(const NL::Logger::LogLevel logLevel);
 
-		static void log(const TL::Logger::LogLevel logLevel, const char *file, const char *function, const int line, const String message);
+		static void log(const NL::Logger::LogLevel logLevel, const char *file, const char *function, const int line, const String message);
 
 		static size_t getLogSize();
 		static void readLog(uint8_t *buffer, const size_t start, const size_t bufferSize);
@@ -66,10 +66,10 @@ namespace TL
 		static bool logToFile;
 		static FS *fileSystem;
 		static String fileName;
-		static TL::Logger::LogLevel minLogLevel;
+		static NL::Logger::LogLevel minLogLevel;
 
 		static bool testOpenFile(FS *fs, const String fn);
-		static String getLogLevelString(const TL::Logger::LogLevel logLevel);
+		static String getLogLevelString(const NL::Logger::LogLevel logLevel);
 		static String getTimeString();
 	};
 }

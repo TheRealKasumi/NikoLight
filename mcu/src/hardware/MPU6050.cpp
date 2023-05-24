@@ -1,7 +1,7 @@
 /**
  * @file MPU6050.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::MPU6050}.
+ * @brief Implementation of the {@link NL::MPU6050}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -21,10 +21,10 @@
  */
 #include "hardware/MPU6050.h"
 
-bool TL::MPU6050::initialized = false;
-uint8_t TL::MPU6050::deviceAddress;
-TL::MPU6050::MPU6050AccScale TL::MPU6050::accScale;
-TL::MPU6050::MPU6050GyScale TL::MPU6050::gyScale;
+bool NL::MPU6050::initialized = false;
+uint8_t NL::MPU6050::deviceAddress;
+NL::MPU6050::MPU6050AccScale NL::MPU6050::accScale;
+NL::MPU6050::MPU6050GyScale NL::MPU6050::gyScale;
 
 /**
  * @brief Start the MPU6050 motion sensor.
@@ -32,9 +32,9 @@ TL::MPU6050::MPU6050GyScale TL::MPU6050::gyScale;
  * @return OK when the sensor was initialized
  * @return ERROR_IIC_COMM when the I²C communication failed
  */
-TL::MPU6050::Error TL::MPU6050::begin(const uint8_t deviceAddress)
+NL::MPU6050::Error NL::MPU6050::begin(const uint8_t deviceAddress)
 {
-	return TL::MPU6050::begin(deviceAddress, TL::MPU6050::MPU6050AccScale::SCALE_2G, TL::MPU6050::MPU6050GyScale::SCALE_250DS);
+	return NL::MPU6050::begin(deviceAddress, NL::MPU6050::MPU6050AccScale::SCALE_2G, NL::MPU6050::MPU6050GyScale::SCALE_250DS);
 }
 
 /**
@@ -45,41 +45,41 @@ TL::MPU6050::Error TL::MPU6050::begin(const uint8_t deviceAddress)
  * @return OK when the sensor was initialized
  * @return ERROR_IIC_COMM when the I²C communication failed
  */
-TL::MPU6050::Error TL::MPU6050::begin(const uint8_t deviceAddress, const TL::MPU6050::MPU6050AccScale accScale, const TL::MPU6050::MPU6050GyScale gyScale)
+NL::MPU6050::Error NL::MPU6050::begin(const uint8_t deviceAddress, const NL::MPU6050::MPU6050AccScale accScale, const NL::MPU6050::MPU6050GyScale gyScale)
 {
-	TL::MPU6050::initialized = false;
-	TL::MPU6050::deviceAddress = deviceAddress;
-	TL::MPU6050::accScale = accScale;
-	TL::MPU6050::gyScale = gyScale;
+	NL::MPU6050::initialized = false;
+	NL::MPU6050::deviceAddress = deviceAddress;
+	NL::MPU6050::accScale = accScale;
+	NL::MPU6050::gyScale = gyScale;
 
-	const TL::MPU6050::Error wakeError = TL::MPU6050::wake();
-	if (wakeError != TL::MPU6050::Error::OK)
+	const NL::MPU6050::Error wakeError = NL::MPU6050::wake();
+	if (wakeError != NL::MPU6050::Error::OK)
 	{
-		return TL::MPU6050::Error::ERROR_IIC_COMM;
+		return NL::MPU6050::Error::ERROR_IIC_COMM;
 	}
 
-	const TL::MPU6050::Error accScaleError = TL::MPU6050::setAccScale(TL::MPU6050::accScale);
-	if (accScaleError != TL::MPU6050::Error::OK)
+	const NL::MPU6050::Error accScaleError = NL::MPU6050::setAccScale(NL::MPU6050::accScale);
+	if (accScaleError != NL::MPU6050::Error::OK)
 	{
-		return TL::MPU6050::Error::ERROR_IIC_COMM;
+		return NL::MPU6050::Error::ERROR_IIC_COMM;
 	}
 
-	const TL::MPU6050::Error gyScaleError = TL::MPU6050::setGyScale(TL::MPU6050::gyScale);
-	if (gyScaleError != TL::MPU6050::Error::OK)
+	const NL::MPU6050::Error gyScaleError = NL::MPU6050::setGyScale(NL::MPU6050::gyScale);
+	if (gyScaleError != NL::MPU6050::Error::OK)
 	{
-		return TL::MPU6050::Error::ERROR_IIC_COMM;
+		return NL::MPU6050::Error::ERROR_IIC_COMM;
 	}
 
-	TL::MPU6050::initialized = true;
-	return TL::MPU6050::Error::OK;
+	NL::MPU6050::initialized = true;
+	return NL::MPU6050::Error::OK;
 }
 
 /**
  * @brief Stop the MPU6050 motion sensor.
  */
-void TL::MPU6050::end()
+void NL::MPU6050::end()
 {
-	TL::MPU6050::initialized = false;
+	NL::MPU6050::initialized = false;
 }
 
 /**
@@ -87,9 +87,9 @@ void TL::MPU6050::end()
  * @return true when initialized
  * @return false when not initialized
  */
-bool TL::MPU6050::isInitialized()
+bool NL::MPU6050::isInitialized()
 {
-	return TL::MPU6050::initialized;
+	return NL::MPU6050::initialized;
 }
 
 /**
@@ -97,16 +97,16 @@ bool TL::MPU6050::isInitialized()
  * @return OK when the command was sent
  * @return ERROR_IIC_COMM when the communication failed
  */
-TL::MPU6050::Error TL::MPU6050::wake()
+NL::MPU6050::Error NL::MPU6050::wake()
 {
-	Wire.beginTransmission(TL::MPU6050::deviceAddress);
+	Wire.beginTransmission(NL::MPU6050::deviceAddress);
 	Wire.write(0x6B);
 	Wire.write(0B00000000);
 	if (Wire.endTransmission(true) != 0)
 	{
-		return TL::MPU6050::Error::ERROR_IIC_COMM;
+		return NL::MPU6050::Error::ERROR_IIC_COMM;
 	}
-	return TL::MPU6050::Error::OK;
+	return NL::MPU6050::Error::OK;
 }
 
 /**
@@ -114,16 +114,16 @@ TL::MPU6050::Error TL::MPU6050::wake()
  * @return OK when the command was sent
  * @return ERROR_IIC_COMM when the communication failed
  */
-TL::MPU6050::Error TL::MPU6050::sleep()
+NL::MPU6050::Error NL::MPU6050::sleep()
 {
-	Wire.beginTransmission(TL::MPU6050::deviceAddress);
+	Wire.beginTransmission(NL::MPU6050::deviceAddress);
 	Wire.write(0x6B);
 	Wire.write(0B01000000);
 	if (Wire.endTransmission(true) != 0)
 	{
-		return TL::MPU6050::Error::ERROR_IIC_COMM;
+		return NL::MPU6050::Error::ERROR_IIC_COMM;
 	}
-	return TL::MPU6050::Error::OK;
+	return NL::MPU6050::Error::OK;
 }
 
 /**
@@ -132,26 +132,26 @@ TL::MPU6050::Error TL::MPU6050::sleep()
  * @return OK when the acc scale was updated
  * @return ERROR_IIC_COMM when the communication failed
  */
-TL::MPU6050::Error TL::MPU6050::setAccScale(TL::MPU6050::MPU6050AccScale accScale)
+NL::MPU6050::Error NL::MPU6050::setAccScale(NL::MPU6050::MPU6050AccScale accScale)
 {
-	TL::MPU6050::accScale = accScale;
-	Wire.beginTransmission(TL::MPU6050::deviceAddress);
+	NL::MPU6050::accScale = accScale;
+	Wire.beginTransmission(NL::MPU6050::deviceAddress);
 	Wire.write(0x1C);
-	Wire.write(static_cast<uint8_t>(TL::MPU6050::accScale));
+	Wire.write(static_cast<uint8_t>(NL::MPU6050::accScale));
 	if (Wire.endTransmission(true) != 0)
 	{
-		return TL::MPU6050::Error::ERROR_IIC_COMM;
+		return NL::MPU6050::Error::ERROR_IIC_COMM;
 	}
-	return TL::MPU6050::Error::OK;
+	return NL::MPU6050::Error::OK;
 }
 
 /**
  * @brief Get the currently set acc scale of the MPU6050.
  * @return acc scale value
  */
-TL::MPU6050::MPU6050AccScale TL::MPU6050::getAccScale()
+NL::MPU6050::MPU6050AccScale NL::MPU6050::getAccScale()
 {
-	return TL::MPU6050::accScale;
+	return NL::MPU6050::accScale;
 }
 
 /**
@@ -160,26 +160,26 @@ TL::MPU6050::MPU6050AccScale TL::MPU6050::getAccScale()
  * @return OK when the gyro scale was updated
  * @return ERROR_IIC_COMM when the communication failed
  */
-TL::MPU6050::Error TL::MPU6050::setGyScale(TL::MPU6050::MPU6050GyScale gyScale)
+NL::MPU6050::Error NL::MPU6050::setGyScale(NL::MPU6050::MPU6050GyScale gyScale)
 {
-	TL::MPU6050::gyScale = gyScale;
-	Wire.beginTransmission(TL::MPU6050::deviceAddress);
+	NL::MPU6050::gyScale = gyScale;
+	Wire.beginTransmission(NL::MPU6050::deviceAddress);
 	Wire.write(0x1B);
-	Wire.write(static_cast<uint8_t>(TL::MPU6050::gyScale));
+	Wire.write(static_cast<uint8_t>(NL::MPU6050::gyScale));
 	if (Wire.endTransmission(true) != 0)
 	{
-		return TL::MPU6050::Error::ERROR_IIC_COMM;
+		return NL::MPU6050::Error::ERROR_IIC_COMM;
 	}
-	return TL::MPU6050::Error::OK;
+	return NL::MPU6050::Error::OK;
 }
 
 /**
  * @brief Get the currently set gyro scale of the MPU6050.
  * @return gyro scale value
  */
-TL::MPU6050::MPU6050GyScale TL::MPU6050::getGyScale()
+NL::MPU6050::MPU6050GyScale NL::MPU6050::getGyScale()
 {
-	return TL::MPU6050::gyScale;
+	return NL::MPU6050::gyScale;
 }
 
 /**
@@ -188,14 +188,14 @@ TL::MPU6050::MPU6050GyScale TL::MPU6050::getGyScale()
  * @return OK when the data was received from the sensor
  * @return ERROR_IIC_COMM when the communication failed
  */
-TL::MPU6050::Error TL::MPU6050::getData(TL::MPU6050::MPU6050MotionData &motionData)
+NL::MPU6050::Error NL::MPU6050::getData(NL::MPU6050::MPU6050MotionData &motionData)
 {
 	// Request the 6 acc registers
-	Wire.beginTransmission(TL::MPU6050::deviceAddress);
+	Wire.beginTransmission(NL::MPU6050::deviceAddress);
 	Wire.write(0x3B);
-	if (Wire.endTransmission(false) != 0 || Wire.requestFrom(static_cast<int>(TL::MPU6050::deviceAddress), static_cast<int>(6), static_cast<int>(true)) != 6 || Wire.available() != 6)
+	if (Wire.endTransmission(false) != 0 || Wire.requestFrom(static_cast<int>(NL::MPU6050::deviceAddress), static_cast<int>(6), static_cast<int>(true)) != 6 || Wire.available() != 6)
 	{
-		return TL::MPU6050::Error::ERROR_IIC_COMM;
+		return NL::MPU6050::Error::ERROR_IIC_COMM;
 	}
 
 	// Read the acc values
@@ -204,11 +204,11 @@ TL::MPU6050::Error TL::MPU6050::getData(TL::MPU6050::MPU6050MotionData &motionDa
 	motionData.accZRaw = (Wire.read() << 8 | Wire.read());
 
 	// Request the 6 gyro registers
-	Wire.beginTransmission(TL::MPU6050::deviceAddress);
+	Wire.beginTransmission(NL::MPU6050::deviceAddress);
 	Wire.write(0x43);
-	if (Wire.endTransmission(false) != 0 || Wire.requestFrom(static_cast<int>(TL::MPU6050::deviceAddress), static_cast<int>(6), static_cast<int>(true)) != 6 || Wire.available() != 6)
+	if (Wire.endTransmission(false) != 0 || Wire.requestFrom(static_cast<int>(NL::MPU6050::deviceAddress), static_cast<int>(6), static_cast<int>(true)) != 6 || Wire.available() != 6)
 	{
-		return TL::MPU6050::Error::ERROR_IIC_COMM;
+		return NL::MPU6050::Error::ERROR_IIC_COMM;
 	}
 
 	// Read the rotation values
@@ -217,30 +217,30 @@ TL::MPU6050::Error TL::MPU6050::getData(TL::MPU6050::MPU6050MotionData &motionDa
 	motionData.gyroZRaw = (Wire.read() << 8 | Wire.read());
 
 	// Request the 2 temperature registers
-	Wire.beginTransmission(TL::MPU6050::deviceAddress);
+	Wire.beginTransmission(NL::MPU6050::deviceAddress);
 	Wire.write(0x41);
-	if (Wire.endTransmission(false) != 0 || Wire.requestFrom(static_cast<int>(TL::MPU6050::deviceAddress), static_cast<int>(2), static_cast<int>(true)) != 2 || Wire.available() != 2)
+	if (Wire.endTransmission(false) != 0 || Wire.requestFrom(static_cast<int>(NL::MPU6050::deviceAddress), static_cast<int>(2), static_cast<int>(true)) != 2 || Wire.available() != 2)
 	{
-		return TL::MPU6050::Error::ERROR_IIC_COMM;
+		return NL::MPU6050::Error::ERROR_IIC_COMM;
 	}
 
 	// Read the temperature values
 	motionData.temperatureRaw = (Wire.read() << 8 | Wire.read());
 
 	// Calculate G values
-	motionData.accXG = motionData.accXRaw / getScaleDiv(TL::MPU6050::accScale);
-	motionData.accYG = motionData.accYRaw / getScaleDiv(TL::MPU6050::accScale);
-	motionData.accZG = motionData.accZRaw / getScaleDiv(TL::MPU6050::accScale);
+	motionData.accXG = motionData.accXRaw / getScaleDiv(NL::MPU6050::accScale);
+	motionData.accYG = motionData.accYRaw / getScaleDiv(NL::MPU6050::accScale);
+	motionData.accZG = motionData.accZRaw / getScaleDiv(NL::MPU6050::accScale);
 
 	// Calculate rotation value in degree/s
-	motionData.gyroXDeg = motionData.gyroXRaw / getScaleDiv(TL::MPU6050::gyScale);
-	motionData.gyroYDeg = motionData.gyroYRaw / getScaleDiv(TL::MPU6050::gyScale);
-	motionData.gyroZDeg = motionData.gyroZRaw / getScaleDiv(TL::MPU6050::gyScale);
+	motionData.gyroXDeg = motionData.gyroXRaw / getScaleDiv(NL::MPU6050::gyScale);
+	motionData.gyroYDeg = motionData.gyroYRaw / getScaleDiv(NL::MPU6050::gyScale);
+	motionData.gyroZDeg = motionData.gyroZRaw / getScaleDiv(NL::MPU6050::gyScale);
 
 	// Calculate the temeprature from raw value
 	motionData.temperatureDeg = motionData.temperatureRaw / 340.0f + 36.53f;
 
-	return TL::MPU6050::Error::OK;
+	return NL::MPU6050::Error::OK;
 }
 
 /**
@@ -248,17 +248,17 @@ TL::MPU6050::Error TL::MPU6050::getData(TL::MPU6050::MPU6050MotionData &motionDa
  * @param accScale scale value, can be 2G, 4G, 8G, 16G
  * @return float divider to convert from raw value to G
  */
-float TL::MPU6050::getScaleDiv(const TL::MPU6050::MPU6050AccScale accScale)
+float NL::MPU6050::getScaleDiv(const NL::MPU6050::MPU6050AccScale accScale)
 {
 	switch (accScale)
 	{
-	case TL::MPU6050::MPU6050AccScale::SCALE_2G:
+	case NL::MPU6050::MPU6050AccScale::SCALE_2G:
 		return 16383.5f;
-	case TL::MPU6050::MPU6050AccScale::SCALE_4G:
+	case NL::MPU6050::MPU6050AccScale::SCALE_4G:
 		return 8191.75f;
-	case TL::MPU6050::MPU6050AccScale::SCALE_8G:
+	case NL::MPU6050::MPU6050AccScale::SCALE_8G:
 		return 4095.875f;
-	case TL::MPU6050::MPU6050AccScale::SCALE_16G:
+	case NL::MPU6050::MPU6050AccScale::SCALE_16G:
 		return 2047.9375f;
 	default:
 		return 1.0f;
@@ -270,17 +270,17 @@ float TL::MPU6050::getScaleDiv(const TL::MPU6050::MPU6050AccScale accScale)
  * @param gyScale  scale value, can be 200°/S, 500°/s, 1000°/s, 2000°/s
  * @return float divider to convert from raw value to degree/s
  */
-float TL::MPU6050::getScaleDiv(const TL::MPU6050::MPU6050GyScale gyScale)
+float NL::MPU6050::getScaleDiv(const NL::MPU6050::MPU6050GyScale gyScale)
 {
 	switch (gyScale)
 	{
-	case TL::MPU6050::MPU6050GyScale::SCALE_250DS:
+	case NL::MPU6050::MPU6050GyScale::SCALE_250DS:
 		return 131.068f;
-	case TL::MPU6050::MPU6050GyScale::SCALE_500DS:
+	case NL::MPU6050::MPU6050GyScale::SCALE_500DS:
 		return 65.534f;
-	case TL::MPU6050::MPU6050GyScale::SCALE_1000DS:
+	case NL::MPU6050::MPU6050GyScale::SCALE_1000DS:
 		return 32.767f;
-	case TL::MPU6050::MPU6050GyScale::SCALE_2000DS:
+	case NL::MPU6050::MPU6050GyScale::SCALE_2000DS:
 		return 16.3835f;
 	default:
 		return 1.0f;

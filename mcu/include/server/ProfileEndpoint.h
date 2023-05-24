@@ -27,7 +27,7 @@
 #include "led/LedManager.h"
 #include "logging/Logger.h"
 
-namespace TL
+namespace NL
 {
 	class ProfileEndpoint : public RestEndpoint
 	{

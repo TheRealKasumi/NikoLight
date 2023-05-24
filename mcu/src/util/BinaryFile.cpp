@@ -1,7 +1,7 @@
 /**
  * @file BinaryFile.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::BianryFile}.
+ * @brief Implementation of the {@link NL::BianryFile}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -22,18 +22,18 @@
 #include "util/BinaryFile.h"
 
 /**
- * @brief Create a new instance of {@link TL::BinaryFile}.
+ * @brief Create a new instance of {@link NL::BinaryFile}.
  * @param fileSystem file system to use
  */
-TL::BinaryFile::BinaryFile(FS *fileSystem)
+NL::BinaryFile::BinaryFile(FS *fileSystem)
 {
 	this->fileSystem = fileSystem;
 }
 
 /**
- * @brief Destroy the {@link TL::BinaryFile} instance.
+ * @brief Destroy the {@link NL::BinaryFile} instance.
  */
-TL::BinaryFile::~BinaryFile()
+NL::BinaryFile::~BinaryFile()
 {
 	if (this->file)
 	{
@@ -49,26 +49,26 @@ TL::BinaryFile::~BinaryFile()
  * @return ERROR_FILE_NOT_FOUND when the file was not found
  * @return ERROR_FILE_IS_DIR when a directory was found
  */
-TL::BinaryFile::Error TL::BinaryFile::open(const String fileName, const char *mode)
+NL::BinaryFile::Error NL::BinaryFile::open(const String fileName, const char *mode)
 {
 	this->file = this->fileSystem->open(fileName, mode);
 	if (!this->file)
 	{
-		return TL::BinaryFile::Error::ERROR_FILE_NOT_FOUND;
+		return NL::BinaryFile::Error::ERROR_FILE_NOT_FOUND;
 	}
 	else if (this->file.isDirectory())
 	{
 		this->file.close();
-		return TL::BinaryFile::Error::ERROR_FILE_IS_DIR;
+		return NL::BinaryFile::Error::ERROR_FILE_IS_DIR;
 	}
 
-	return TL::BinaryFile::Error::OK;
+	return NL::BinaryFile::Error::OK;
 }
 
 /**
  * @brief Close the file when it was opened.
  */
-void TL::BinaryFile::close()
+void NL::BinaryFile::close()
 {
 	if (this->file)
 	{
@@ -82,25 +82,25 @@ void TL::BinaryFile::close()
  * @return OK when data was written
  * @return ERROR_FILE_WRITE when data could not be written
  */
-TL::BinaryFile::Error TL::BinaryFile::writeString(const String string)
+NL::BinaryFile::Error NL::BinaryFile::writeString(const String string)
 {
 	const uint16_t length = string.length();
-	const TL::BinaryFile::Error writeLenError = this->write(length);
-	if (writeLenError != TL::BinaryFile::Error::OK)
+	const NL::BinaryFile::Error writeLenError = this->write(length);
+	if (writeLenError != NL::BinaryFile::Error::OK)
 	{
 		return writeLenError;
 	}
 
 	for (uint16_t i = 0; i < length; i++)
 	{
-		const TL::BinaryFile::Error writeCharError = this->write(string.charAt(i));
-		if (writeCharError != TL::BinaryFile::Error::OK)
+		const NL::BinaryFile::Error writeCharError = this->write(string.charAt(i));
+		if (writeCharError != NL::BinaryFile::Error::OK)
 		{
 			return writeCharError;
 		}
 	}
 
-	return TL::BinaryFile::Error::OK;
+	return NL::BinaryFile::Error::OK;
 }
 
 /**
@@ -109,11 +109,11 @@ TL::BinaryFile::Error TL::BinaryFile::writeString(const String string)
  * @return OK when data could not be read
  * @return ERROR_FILE_READ when data could not be read
  */
-TL::BinaryFile::Error TL::BinaryFile::readString(String &string)
+NL::BinaryFile::Error NL::BinaryFile::readString(String &string)
 {
 	uint16_t length;
-	const TL::BinaryFile::Error readLenError = this->read(length);
-	if (readLenError != TL::BinaryFile::Error::OK)
+	const NL::BinaryFile::Error readLenError = this->read(length);
+	if (readLenError != NL::BinaryFile::Error::OK)
 	{
 		return readLenError;
 	}
@@ -123,13 +123,13 @@ TL::BinaryFile::Error TL::BinaryFile::readString(String &string)
 	for (uint16_t i = 0; i < length; i++)
 	{
 		char c;
-		const TL::BinaryFile::Error readCharError = this->read(c);
-		if (readCharError != TL::BinaryFile::Error::OK)
+		const NL::BinaryFile::Error readCharError = this->read(c);
+		if (readCharError != NL::BinaryFile::Error::OK)
 		{
 			return readCharError;
 		}
 		string += c;
 	}
 
-	return TL::BinaryFile::Error::OK;
+	return NL::BinaryFile::Error::OK;
 }

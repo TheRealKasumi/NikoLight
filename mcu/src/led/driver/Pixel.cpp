@@ -1,7 +1,7 @@
 /**
  * @file Pixel.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::Pixel} class.
+ * @brief Implementation of the {@link NL::Pixel} class.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -22,46 +22,46 @@
 #include "led/driver/Pixel.h"
 
 /**
- * @brief Create a new instance of {@link TL::Pixel}.
+ * @brief Create a new instance of {@link NL::Pixel}.
  */
-TL::Pixel::Pixel()
+NL::Pixel::Pixel()
 {
-	this->setColor(TL::Pixel::ColorCode::Black);
+	this->setColor(NL::Pixel::ColorCode::Black);
 }
 
 /**
- * @brief Create a new instance of {@link TL::Pixel}.
+ * @brief Create a new instance of {@link NL::Pixel}.
  * @param colorCode 24 bit color code
  */
-TL::Pixel::Pixel(const uint32_t colorCode)
+NL::Pixel::Pixel(const uint32_t colorCode)
 {
 	this->setColor(colorCode);
 }
 
 /**
- * @brief Create a new instance of {@link TL::Pixel}.
+ * @brief Create a new instance of {@link NL::Pixel}.
  * @param colorCode one of the html color codes
  */
-TL::Pixel::Pixel(const TL::Pixel::ColorCode colorCode)
+NL::Pixel::Pixel(const NL::Pixel::ColorCode colorCode)
 {
 	this->setColor(colorCode);
 }
 
 /**
- * @brief Create a new instance of {@link TL::Pixel}.
+ * @brief Create a new instance of {@link NL::Pixel}.
  * @param red red value
  * @param green green value
  * @param blue blue value
  */
-TL::Pixel::Pixel(const uint8_t red, const uint8_t green, const uint8_t blue)
+NL::Pixel::Pixel(const uint8_t red, const uint8_t green, const uint8_t blue)
 {
 	this->setColor(red, green, blue);
 }
 
 /***
- * Destroy the {@link TL::Pixel} isntance.
+ * Destroy the {@link NL::Pixel} isntance.
  */
-TL::Pixel::~Pixel()
+NL::Pixel::~Pixel()
 {
 }
 
@@ -69,7 +69,7 @@ TL::Pixel::~Pixel()
  * @brief Set the pixel color.
  * @param colorCode 24 bit color code
  */
-void TL::Pixel::setColor(const uint32_t colorCode)
+void NL::Pixel::setColor(const uint32_t colorCode)
 {
 	this->red = (colorCode & 0xff0000) >> 16;
 	this->green = (colorCode & 0x00ff00) >> 8;
@@ -80,7 +80,7 @@ void TL::Pixel::setColor(const uint32_t colorCode)
  * @brief Set the pixel color.
  * @param colorCode one of the html color codes
  */
-void TL::Pixel::setColor(const TL::Pixel::ColorCode colorCode)
+void NL::Pixel::setColor(const NL::Pixel::ColorCode colorCode)
 {
 	this->red = (static_cast<uint32_t>(colorCode) & 0xff0000) >> 16;
 	this->green = (static_cast<uint32_t>(colorCode) & 0x00ff00) >> 8;
@@ -93,7 +93,7 @@ void TL::Pixel::setColor(const TL::Pixel::ColorCode colorCode)
  * @param green green value
  * @param blue blue value
  */
-void TL::Pixel::setColor(const uint8_t red, const uint8_t green, const uint8_t blue)
+void NL::Pixel::setColor(const uint8_t red, const uint8_t green, const uint8_t blue)
 {
 	this->red = red;
 	this->green = green;

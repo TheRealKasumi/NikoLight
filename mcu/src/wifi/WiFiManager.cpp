@@ -1,7 +1,7 @@
 /**
  * @file WiFiManager.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::WiFiManager}.
+ * @brief Implementation of the {@link NL::WiFiManager}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -21,23 +21,23 @@
  */
 #include "wifi/WiFiManager.h"
 
-bool TL::WiFiManager::initialized = false;
+bool NL::WiFiManager::initialized = false;
 
 /**
  * @brief Start the WiFi manager.
  * @return OK when WiFi was initialized
  * @return ERROR_SET_MODE when the WiFi mode could not be set
  */
-TL::WiFiManager::Error TL::WiFiManager::begin()
+NL::WiFiManager::Error NL::WiFiManager::begin()
 {
-	TL::WiFiManager::initialized = false;
+	NL::WiFiManager::initialized = false;
 	WiFi.persistent(false);
 	if (!WiFi.mode(WIFI_MODE_AP))
 	{
-		return TL::WiFiManager::Error::ERROR_SET_MODE;
+		return NL::WiFiManager::Error::ERROR_SET_MODE;
 	}
-	TL::WiFiManager::initialized = true;
-	return TL::WiFiManager::Error::OK;
+	NL::WiFiManager::initialized = true;
+	return NL::WiFiManager::Error::OK;
 }
 
 /**
@@ -45,14 +45,14 @@ TL::WiFiManager::Error TL::WiFiManager::begin()
  * @return OK when WiFi was stopped
  * @return ERROR_SET_MODE when the WiFi mode could not be set
  */
-TL::WiFiManager::Error TL::WiFiManager::end()
+NL::WiFiManager::Error NL::WiFiManager::end()
 {
-	TL::WiFiManager::initialized = false;
+	NL::WiFiManager::initialized = false;
 	if (!WiFi.mode(WIFI_MODE_NULL))
 	{
-		return TL::WiFiManager::Error::ERROR_SET_MODE;
+		return NL::WiFiManager::Error::ERROR_SET_MODE;
 	}
-	return TL::WiFiManager::Error::OK;
+	return NL::WiFiManager::Error::OK;
 }
 
 /**
@@ -60,9 +60,9 @@ TL::WiFiManager::Error TL::WiFiManager::end()
  * @return true when initialized
  * @return false when not initialized
  */
-bool TL::WiFiManager::isInitialized()
+bool NL::WiFiManager::isInitialized()
 {
-	return TL::WiFiManager::initialized;
+	return NL::WiFiManager::initialized;
 }
 
 /**
@@ -77,20 +77,20 @@ bool TL::WiFiManager::isInitialized()
  * @return ERROR_INVALID_SSID when the AP ssid is invalid
  * @return ERROR_INVALID_PW when the AP password is invalid
  */
-TL::WiFiManager::Error TL::WiFiManager::startAccessPoint(const char *ssid, const char *password, uint8_t channel, bool hidden, uint8_t maxConnections)
+NL::WiFiManager::Error NL::WiFiManager::startAccessPoint(const char *ssid, const char *password, uint8_t channel, bool hidden, uint8_t maxConnections)
 {
 	if (strlen(ssid) < 4)
 	{
-		return TL::WiFiManager::Error::ERROR_INVALID_SSID;
+		return NL::WiFiManager::Error::ERROR_INVALID_SSID;
 	}
 	else if (strlen(password) > 0 && strlen(password) < 8)
 	{
-		return TL::WiFiManager::Error::ERROR_INVALID_PW;
+		return NL::WiFiManager::Error::ERROR_INVALID_PW;
 	}
 
 	if (!WiFi.softAP(ssid, strlen(password) > 0 ? password : nullptr, channel, hidden, maxConnections))
 	{
-		return TL::WiFiManager::Error::ERROR_START_AP;
+		return NL::WiFiManager::Error::ERROR_START_AP;
 	}
 	delay(100);
 
@@ -98,7 +98,7 @@ TL::WiFiManager::Error TL::WiFiManager::startAccessPoint(const char *ssid, const
 	IPAddress nMask(255, 255, 255, 0);
 	WiFi.softAPConfig(ip, ip, nMask);
 
-	return TL::WiFiManager::Error::OK;
+	return NL::WiFiManager::Error::OK;
 }
 
 /**
@@ -112,21 +112,21 @@ TL::WiFiManager::Error TL::WiFiManager::startAccessPoint(const char *ssid, const
  * @return ERROR_CONNECT_FAILED when the connection failed
  * @return ERROR_CONNECT_TIMEOUT when the connection timed out
  */
-TL::WiFiManager::Error TL::WiFiManager::connectTo(const char *ssid, const char *password, const uint32_t timeout)
+NL::WiFiManager::Error NL::WiFiManager::connectTo(const char *ssid, const char *password, const uint32_t timeout)
 {
 	if (strlen(ssid) < 4)
 	{
-		return TL::WiFiManager::Error::ERROR_INVALID_SSID;
+		return NL::WiFiManager::Error::ERROR_INVALID_SSID;
 	}
 	else if (strlen(password) > 0 && strlen(password) < 8)
 	{
-		return TL::WiFiManager::Error::ERROR_INVALID_PW;
+		return NL::WiFiManager::Error::ERROR_INVALID_PW;
 	}
 
 	const wl_status_t connError = WiFi.begin(ssid, password);
 	if (connError == WL_CONNECT_FAILED)
 	{
-		return TL::WiFiManager::Error::ERROR_CONNECT_FAILED;
+		return NL::WiFiManager::Error::ERROR_CONNECT_FAILED;
 	}
 	WiFi.setAutoReconnect(true);
 
@@ -135,9 +135,9 @@ TL::WiFiManager::Error TL::WiFiManager::connectTo(const char *ssid, const char *
 	{
 		if (millis() - start > timeout)
 		{
-			return TL::WiFiManager::Error::ERROR_CONNECT_TIMEOUT;
+			return NL::WiFiManager::Error::ERROR_CONNECT_TIMEOUT;
 		}
 	}
 
-	return TL::WiFiManager::Error::OK;
+	return NL::WiFiManager::Error::OK;
 }

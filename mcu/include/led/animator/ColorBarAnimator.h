@@ -25,7 +25,7 @@
 #include <vector>
 #include "led/animator/LedAnimator.h"
 
-namespace TL
+namespace NL
 {
 	class ColorBarAnimator : public LedAnimator
 	{
@@ -39,19 +39,19 @@ namespace TL
 		};
 
 		ColorBarAnimator();
-		ColorBarAnimator(const TL::ColorBarAnimator::ColorBarMode colorBarMode, const TL::Pixel color1, const TL::Pixel color2);
+		ColorBarAnimator(const NL::ColorBarAnimator::ColorBarMode colorBarMode, const NL::Pixel color1, const NL::Pixel color2);
 		~ColorBarAnimator();
 
-		void init(TL::LedStrip &ledStrip);
-		void render(TL::LedStrip &ledStrip);
+		void init(NL::LedStrip &ledStrip);
+		void render(NL::LedStrip &ledStrip);
 
-		void setColorBarMode(const TL::ColorBarAnimator::ColorBarMode colorBarMode);
-		void setColor(const TL::Pixel color1, const TL::Pixel color2);
+		void setColorBarMode(const NL::ColorBarAnimator::ColorBarMode colorBarMode);
+		void setColor(const NL::Pixel color1, const NL::Pixel color2);
 
 	private:
 		float angle;
-		TL::ColorBarAnimator::ColorBarMode colorBarMode;
-		TL::Pixel color[2];
+		NL::ColorBarAnimator::ColorBarMode colorBarMode;
+		NL::Pixel color[2];
 	};
 }
 

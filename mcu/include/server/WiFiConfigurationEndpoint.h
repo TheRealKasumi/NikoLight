@@ -28,7 +28,7 @@
 #include "wifi/WiFiManager.h"
 #include "logging/Logger.h"
 
-namespace TL
+namespace NL
 {
 	class WiFiConfigurationEndpoint : public RestEndpoint
 	{
@@ -45,7 +45,7 @@ namespace TL
 		static bool isInRange(const long value, const long min, const long max);
 		static bool validateWiFiSsid(const String ssid);
 		static bool validateWiFiPassword(const String password);
-		static bool hasChanged(const TL::Configuration::WiFiConfig &newConfig);
+		static bool hasChanged(const NL::Configuration::WiFiConfig &newConfig);
 	};
 }
 

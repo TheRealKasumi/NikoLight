@@ -1,7 +1,7 @@
 /**
  * @file LightSensor.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::LightSensor}.
+ * @brief Implementation of the {@link NL::LightSensor}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -21,56 +21,56 @@
  */
 #include "sensor/LightSensor.h"
 
-bool TL::LightSensor::initialized = false;
-float TL::LightSensor::lastBrightnessValue;
-TL::MotionSensor::MotionSensorData TL::LightSensor::motionData;
-unsigned long TL::LightSensor::motionSensorTriggerTime;
+bool NL::LightSensor::initialized = false;
+float NL::LightSensor::lastBrightnessValue;
+NL::MotionSensor::MotionSensorData NL::LightSensor::motionData;
+unsigned long NL::LightSensor::motionSensorTriggerTime;
 
 /**
  * @brief Start the light sensor.
  * @return OK when the light sensor was initialized
  * @return ERROR_CONFIG_UNAVAILABLE when the configuration is not available
  */
-TL::LightSensor::Error TL::LightSensor::begin()
+NL::LightSensor::Error NL::LightSensor::begin()
 {
-	TL::LightSensor::initialized = false;
-	if (!TL::Configuration::isInitialized())
+	NL::LightSensor::initialized = false;
+	if (!NL::Configuration::isInitialized())
 	{
-		return TL::LightSensor::Error::ERROR_CONFIG_UNAVAILABLE;
+		return NL::LightSensor::Error::ERROR_CONFIG_UNAVAILABLE;
 	}
 
-	TL::LightSensor::lastBrightnessValue = 0.0f;
-	TL::LightSensor::motionData.accXRaw = 0;
-	TL::LightSensor::motionData.accYRaw = 0;
-	TL::LightSensor::motionData.accZRaw = 0;
-	TL::LightSensor::motionData.gyroXRaw = 0;
-	TL::LightSensor::motionData.gyroYRaw = 0;
-	TL::LightSensor::motionData.gyroZRaw = 0;
-	TL::LightSensor::motionData.accXG = 0.0f;
-	TL::LightSensor::motionData.accYG = 0.0f;
-	TL::LightSensor::motionData.accZG = 0.0f;
-	TL::LightSensor::motionData.gyroXDeg = 0.0f;
-	TL::LightSensor::motionData.gyroYDeg = 0.0f;
-	TL::LightSensor::motionData.gyroZDeg = 0.0f;
-	TL::LightSensor::motionData.pitch = 0.0f;
-	TL::LightSensor::motionData.roll = 0.0f;
-	TL::LightSensor::motionData.yaw = 0.0f;
-	TL::LightSensor::motionData.rollCompensatedAccXG = 0.0f;
-	TL::LightSensor::motionData.pitchCompensatedAccYG = 0.0f;
-	TL::LightSensor::motionData.temperatureRaw = 0;
-	TL::LightSensor::motionData.temperatureDeg = 0;
-	TL::LightSensor::motionSensorTriggerTime = millis();
+	NL::LightSensor::lastBrightnessValue = 0.0f;
+	NL::LightSensor::motionData.accXRaw = 0;
+	NL::LightSensor::motionData.accYRaw = 0;
+	NL::LightSensor::motionData.accZRaw = 0;
+	NL::LightSensor::motionData.gyroXRaw = 0;
+	NL::LightSensor::motionData.gyroYRaw = 0;
+	NL::LightSensor::motionData.gyroZRaw = 0;
+	NL::LightSensor::motionData.accXG = 0.0f;
+	NL::LightSensor::motionData.accYG = 0.0f;
+	NL::LightSensor::motionData.accZG = 0.0f;
+	NL::LightSensor::motionData.gyroXDeg = 0.0f;
+	NL::LightSensor::motionData.gyroYDeg = 0.0f;
+	NL::LightSensor::motionData.gyroZDeg = 0.0f;
+	NL::LightSensor::motionData.pitch = 0.0f;
+	NL::LightSensor::motionData.roll = 0.0f;
+	NL::LightSensor::motionData.yaw = 0.0f;
+	NL::LightSensor::motionData.rollCompensatedAccXG = 0.0f;
+	NL::LightSensor::motionData.pitchCompensatedAccYG = 0.0f;
+	NL::LightSensor::motionData.temperatureRaw = 0;
+	NL::LightSensor::motionData.temperatureDeg = 0;
+	NL::LightSensor::motionSensorTriggerTime = millis();
 
-	TL::LightSensor::initialized = true;
-	return TL::LightSensor::Error::OK;
+	NL::LightSensor::initialized = true;
+	return NL::LightSensor::Error::OK;
 }
 
 /**
  * @brief Stop the light sensor.
  */
-void TL::LightSensor::end()
+void NL::LightSensor::end()
 {
-	TL::LightSensor::initialized = false;
+	NL::LightSensor::initialized = false;
 }
 
 /**
@@ -78,9 +78,9 @@ void TL::LightSensor::end()
  * @return true when initialized
  * @return false when not initialized
  */
-bool TL::LightSensor::isInitialized()
+bool NL::LightSensor::isInitialized()
 {
-	return TL::LightSensor::initialized;
+	return NL::LightSensor::initialized;
 }
 
 /**
@@ -92,11 +92,11 @@ bool TL::LightSensor::isInitialized()
  * @return ERROR_MPU6050_UNAVAILABLE when the MPU6050 is not available
  * @return ERROR_UNKNOWN_MODE when the light sensor mode is invalid
  */
-TL::LightSensor::Error TL::LightSensor::getBrightness(float &brightness)
+NL::LightSensor::Error NL::LightSensor::getBrightness(float &brightness)
 {
-	brightness = TL::LightSensor::lastBrightnessValue;
-	const TL::LightSensor::Error error = TL::LightSensor::getBrightnessInt(brightness);
-	TL::LightSensor::lastBrightnessValue = brightness;
+	brightness = NL::LightSensor::lastBrightnessValue;
+	const NL::LightSensor::Error error = NL::LightSensor::getBrightnessInt(brightness);
+	NL::LightSensor::lastBrightnessValue = brightness;
 	return error;
 }
 
@@ -109,11 +109,11 @@ TL::LightSensor::Error TL::LightSensor::getBrightness(float &brightness)
  * @return ERROR_MPU6050_UNAVAILABLE when the MPU6050 is not available
  * @return ERROR_UNKNOWN_MODE when the light sensor mode is invalid
  */
-TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
+NL::LightSensor::Error NL::LightSensor::getBrightnessInt(float &brightness)
 {
-	const TL::Configuration::SystemConfig systemConfig = TL::Configuration::getSystemConfig();
+	const NL::Configuration::SystemConfig systemConfig = NL::Configuration::getSystemConfig();
 	const float antiFlickerThreshold = 0.002f;
-	const TL::LightSensor::LightSensorMode lightSensorMode = (TL::LightSensor::LightSensorMode)systemConfig.lightSensorMode;
+	const NL::LightSensor::LightSensorMode lightSensorMode = (NL::LightSensor::LightSensorMode)systemConfig.lightSensorMode;
 	const float threshold = systemConfig.lightSensorThreshold / 255.0f;
 	const float minAmbientBrightness = systemConfig.lightSensorMinAmbientBrightness / 255.0f;
 	const float maxAmbientBrightness = systemConfig.lightSensorMaxAmbientBrightness / 255.0f;
@@ -122,32 +122,32 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 	const uint8_t duration = systemConfig.lightSensorDuration;
 
 	// Always off
-	if (lightSensorMode == TL::LightSensor::LightSensorMode::ALWAYS_OFF)
+	if (lightSensorMode == NL::LightSensor::LightSensorMode::ALWAYS_OFF)
 	{
 		brightness = 0.0f;
-		return TL::LightSensor::Error::OK;
+		return NL::LightSensor::Error::OK;
 	}
 
 	// Always on
-	else if (lightSensorMode == TL::LightSensor::LightSensorMode::ALWAYS_ON)
+	else if (lightSensorMode == NL::LightSensor::LightSensorMode::ALWAYS_ON)
 	{
 		brightness = 1.0f;
-		return TL::LightSensor::Error::OK;
+		return NL::LightSensor::Error::OK;
 	}
 
 	// Auto on/off using ADC
-	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_ON_OFF_ADC)
+	else if (lightSensorMode == NL::LightSensor::LightSensorMode::AUTO_ON_OFF_ADC)
 	{
-		if (!TL::AnalogInput::isInitialized())
+		if (!NL::AnalogInput::isInitialized())
 		{
 			brightness = 1.0f;
-			return TL::LightSensor::Error::ERROR_ADC_UNAVAILABLE;
+			return NL::LightSensor::Error::ERROR_ADC_UNAVAILABLE;
 		}
 
 		float value = 0.0f;
 		for (uint8_t i = 0; i < 10; i++)
 		{
-			value += TL::AnalogInput::getAnalogVoltage() / 3.3f;
+			value += NL::AnalogInput::getAnalogVoltage() / 3.3f;
 		}
 		value /= 10.0f;
 
@@ -160,29 +160,29 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 			brightness = 0.0f;
 		}
 
-		return TL::LightSensor::Error::OK;
+		return NL::LightSensor::Error::OK;
 	}
 
 	// Auto brightness using ADC
-	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_BRIGHTNESS_ADC)
+	else if (lightSensorMode == NL::LightSensor::LightSensorMode::AUTO_BRIGHTNESS_ADC)
 	{
-		if (!TL::AnalogInput::isInitialized())
+		if (!NL::AnalogInput::isInitialized())
 		{
 			brightness = 1.0f;
-			return TL::LightSensor::Error::ERROR_ADC_UNAVAILABLE;
+			return NL::LightSensor::Error::ERROR_ADC_UNAVAILABLE;
 		}
 
 		float value = 0.0f;
 		for (uint8_t i = 0; i < 10; i++)
 		{
-			value += TL::AnalogInput::getAnalogVoltage(false);
+			value += NL::AnalogInput::getAnalogVoltage(false);
 		}
 		value /= 33.0f; // 3.3V * 10
 
 		if (value < threshold - antiFlickerThreshold)
 		{
 			brightness = 0.0f;
-			return TL::LightSensor::Error::OK;
+			return NL::LightSensor::Error::OK;
 		}
 		else if (value > threshold + antiFlickerThreshold)
 		{
@@ -207,23 +207,23 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 			}
 		}
 
-		return TL::LightSensor::Error::OK;
+		return NL::LightSensor::Error::OK;
 	}
 
 	// Auto on/off using BH1750
-	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_ON_OFF_BH1750)
+	else if (lightSensorMode == NL::LightSensor::LightSensorMode::AUTO_ON_OFF_BH1750)
 	{
-		if (!TL::BH1750::isInitialized())
+		if (!NL::BH1750::isInitialized())
 		{
 			brightness = 1.0f;
-			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
+			return NL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
 		}
 
 		float lux = 0.0f;
-		if (TL::BH1750::getLux(lux) != TL::BH1750::Error::OK)
+		if (NL::BH1750::getLux(lux) != NL::BH1750::Error::OK)
 		{
 			brightness = 0.0f;
-			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
+			return NL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
 		}
 
 		lux /= 54612.5f / 5.0f;
@@ -241,23 +241,23 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 			brightness = 1.0f;
 		}
 
-		return TL::LightSensor::Error::OK;
+		return NL::LightSensor::Error::OK;
 	}
 
 	// Auto brightness using BH1750
-	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_BRIGHTNESS_BH1750)
+	else if (lightSensorMode == NL::LightSensor::LightSensorMode::AUTO_BRIGHTNESS_BH1750)
 	{
-		if (!TL::BH1750::isInitialized())
+		if (!NL::BH1750::isInitialized())
 		{
 			brightness = 1.0f;
-			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
+			return NL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
 		}
 
 		float lux = 0.0f;
-		if (TL::BH1750::getLux(lux) != TL::BH1750::Error::OK)
+		if (NL::BH1750::getLux(lux) != NL::BH1750::Error::OK)
 		{
 			brightness = 0.0f;
-			return TL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
+			return NL::LightSensor::Error::ERROR_BH1750_UNAVAILABLE;
 		}
 
 		lux /= 54612.5f / 5.0f;
@@ -269,7 +269,7 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 		if (lux > threshold + antiFlickerThreshold)
 		{
 			brightness = 0.0f;
-			return TL::LightSensor::Error::OK;
+			return NL::LightSensor::Error::OK;
 		}
 		else if (lux < threshold - antiFlickerThreshold)
 		{
@@ -294,36 +294,36 @@ TL::LightSensor::Error TL::LightSensor::getBrightnessInt(float &brightness)
 			}
 		}
 
-		return TL::LightSensor::Error::OK;
+		return NL::LightSensor::Error::OK;
 	}
 
 	// Auto on/off using motion sensor MPU6050
-	else if (lightSensorMode == TL::LightSensor::LightSensorMode::AUTO_ON_OFF_MOTION)
+	else if (lightSensorMode == NL::LightSensor::LightSensorMode::AUTO_ON_OFF_MOTION)
 	{
-		if (!TL::MotionSensor::isInitialized())
+		if (!NL::MotionSensor::isInitialized())
 		{
 			brightness = 1.0f;
-			return TL::LightSensor::Error::ERROR_MPU6050_UNAVAILABLE;
+			return NL::LightSensor::Error::ERROR_MPU6050_UNAVAILABLE;
 		}
 
-		const TL::MotionSensor::MotionSensorData motionData = TL::MotionSensor::getMotion();
-		float trigger = sqrt(pow(motionData.accXG * 150.0f - TL::LightSensor::motionData.accXG * 150.0f, 2) + pow(motionData.accYG * 150.0f - TL::LightSensor::motionData.accYG * 150.0f, 2) + pow(motionData.accZG * 150.0f - TL::LightSensor::motionData.accZG * 150.0f, 2));
-		trigger += sqrt(pow(motionData.gyroXDeg - TL::LightSensor::motionData.gyroXDeg, 2) + pow(motionData.gyroYDeg - TL::LightSensor::motionData.gyroYDeg, 2) + pow(motionData.gyroZDeg - TL::LightSensor::motionData.gyroZDeg, 2));
-		TL::LightSensor::motionData = motionData;
+		const NL::MotionSensor::MotionSensorData motionData = NL::MotionSensor::getMotion();
+		float trigger = sqrt(pow(motionData.accXG * 150.0f - NL::LightSensor::motionData.accXG * 150.0f, 2) + pow(motionData.accYG * 150.0f - NL::LightSensor::motionData.accYG * 150.0f, 2) + pow(motionData.accZG * 150.0f - NL::LightSensor::motionData.accZG * 150.0f, 2));
+		trigger += sqrt(pow(motionData.gyroXDeg - NL::LightSensor::motionData.gyroXDeg, 2) + pow(motionData.gyroYDeg - NL::LightSensor::motionData.gyroYDeg, 2) + pow(motionData.gyroZDeg - NL::LightSensor::motionData.gyroZDeg, 2));
+		NL::LightSensor::motionData = motionData;
 
 		if (trigger > threshold * 20.0f)
 		{
 			brightness = 1.0f;
-			TL::LightSensor::motionSensorTriggerTime = millis();
+			NL::LightSensor::motionSensorTriggerTime = millis();
 		}
-		else if (millis() - TL::LightSensor::motionSensorTriggerTime > duration * 5000L)
+		else if (millis() - NL::LightSensor::motionSensorTriggerTime > duration * 5000L)
 		{
 			brightness = 0.0f;
 		}
 
-		return TL::LightSensor::Error::OK;
+		return NL::LightSensor::Error::OK;
 	}
 
 	brightness = 1.0f;
-	return TL::LightSensor::Error::ERROR_UNKNOWN_MODE;
+	return NL::LightSensor::Error::ERROR_UNKNOWN_MODE;
 }

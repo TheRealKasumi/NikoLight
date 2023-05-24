@@ -45,7 +45,7 @@
 #include "sensor/MotionSensor.h"
 #include "hardware/AudioUnit.h"
 
-namespace TL
+namespace NL
 {
 	class LedManager
 	{
@@ -62,11 +62,11 @@ namespace TL
 			ERROR_INVALID_LED_CONFIGURATION // The current LED configuration does not match the custom animation
 		};
 
-		static TL::LedManager::Error begin();
+		static NL::LedManager::Error begin();
 		static void end();
 		static bool isInitialized();
 
-		static TL::LedManager::Error reloadAnimations();
+		static NL::LedManager::Error reloadAnimations();
 		static void clearAnimations();
 
 		static void setAmbientBrightness(const float ambientBrightness);
@@ -74,8 +74,8 @@ namespace TL
 		static void setFrameInterval(const uint32_t frameInterval);
 		static uint32_t getFrameInterval();
 
-		static void setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData);
-		static void setAudioAnalysis(const TL::AudioUnit::AudioAnalysis &audioAnalysis);
+		static void setMotionSensorData(const NL::MotionSensor::MotionSensorData &motionSensorData);
+		static void setAudioAnalysis(const NL::AudioUnit::AudioAnalysis &audioAnalysis);
 
 		static void setRegulatorTemperature(const float regulatorTemperature);
 
@@ -84,24 +84,24 @@ namespace TL
 		static size_t getHiddenLedCount();
 
 		static void render();
-		static TL::LedManager::Error waitShow(const TickType_t timeout);
-		static TL::LedManager::Error show(const TickType_t timeout);
+		static NL::LedManager::Error waitShow(const TickType_t timeout);
+		static NL::LedManager::Error show(const TickType_t timeout);
 
 	private:
 		LedManager();
 
 		static bool initialized;
-		static std::unique_ptr<TL::LedBuffer> ledBuffer;
-		static std::vector<std::unique_ptr<TL::LedAnimator>> ledAnimator;
-		static std::unique_ptr<TL::FseqLoader> fseqLoader;
+		static std::unique_ptr<NL::LedBuffer> ledBuffer;
+		static std::vector<std::unique_ptr<NL::LedAnimator>> ledAnimator;
+		static std::unique_ptr<NL::FseqLoader> fseqLoader;
 
 		static uint32_t frameInterval;
 		static float regulatorTemperature;
 
-		static TL::LedManager::Error initLedDriver();
-		static TL::LedManager::Error createAnimators();
-		static TL::LedManager::Error loadCalculatedAnimations();
-		static TL::LedManager::Error loadCustomAnimation(const String &fileName);
+		static NL::LedManager::Error initLedDriver();
+		static NL::LedManager::Error createAnimators();
+		static NL::LedManager::Error loadCalculatedAnimations();
+		static NL::LedManager::Error loadCustomAnimation(const String &fileName);
 
 		static void calculateRegulatorPowerDraw(float regulatorPower[REGULATOR_COUNT]);
 		static void limitPowerConsumption();

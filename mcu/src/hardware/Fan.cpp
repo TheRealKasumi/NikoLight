@@ -1,7 +1,7 @@
 /**
  * @file Fan.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::Fan}.
+ * @brief Implementation of the {@link NL::Fan}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -21,15 +21,15 @@
  */
 #include "hardware/Fan.h"
 
-bool TL::Fan::initialized = false;
-uint8_t TL::Fan::fanPin;
-uint8_t TL::Fan::pwmChannel;
-uint32_t TL::Fan::frequency;
-uint8_t TL::Fan::resolution;
-uint8_t TL::Fan::pwmValue;
+bool NL::Fan::initialized = false;
+uint8_t NL::Fan::fanPin;
+uint8_t NL::Fan::pwmChannel;
+uint32_t NL::Fan::frequency;
+uint8_t NL::Fan::resolution;
+uint8_t NL::Fan::pwmValue;
 
 /**
- * @brief Initialize the {@link TL::Fan}. This required the {@link TL::Configuration} to be initialized beforehand.
+ * @brief Initialize the {@link NL::Fan}. This required the {@link NL::Configuration} to be initialized beforehand.
  * @param fanPin output pin for the pwm signal to controll the fan
  * @param pwmChannel channel for the PWM output
  * @param frequency frequency of the pwm output
@@ -38,37 +38,37 @@ uint8_t TL::Fan::pwmValue;
  * @return ERROR_CONFIG_UNAVAILABLE when the configuration is not available
  * @return ERROR_SETUP_PIN when the output pin could not be configured
  */
-TL::Fan::Error TL::Fan::begin(const uint8_t fanPin, const uint8_t pwmChannel, const uint32_t frequency, const uint8_t resolution)
+NL::Fan::Error NL::Fan::begin(const uint8_t fanPin, const uint8_t pwmChannel, const uint32_t frequency, const uint8_t resolution)
 {
-	TL::Fan::initialized = false;
-	TL::Fan::fanPin = fanPin;
-	TL::Fan::pwmChannel = pwmChannel;
-	TL::Fan::frequency = frequency;
-	TL::Fan::resolution = resolution;
-	TL::Fan::pwmValue = 0;
+	NL::Fan::initialized = false;
+	NL::Fan::fanPin = fanPin;
+	NL::Fan::pwmChannel = pwmChannel;
+	NL::Fan::frequency = frequency;
+	NL::Fan::resolution = resolution;
+	NL::Fan::pwmValue = 0;
 
-	if (!TL::Configuration::isInitialized())
+	if (!NL::Configuration::isInitialized())
 	{
-		return TL::Fan::Error::ERROR_CONFIG_UNAVAILABLE;
+		return NL::Fan::Error::ERROR_CONFIG_UNAVAILABLE;
 	}
 
-	if (ledcSetup(TL::Fan::pwmChannel, TL::Fan::frequency, TL::Fan::resolution) == 0)
+	if (ledcSetup(NL::Fan::pwmChannel, NL::Fan::frequency, NL::Fan::resolution) == 0)
 	{
-		return TL::Fan::Error::ERROR_SETUP_PIN;
+		return NL::Fan::Error::ERROR_SETUP_PIN;
 	}
-	ledcAttachPin(TL::Fan::fanPin, TL::Fan::pwmChannel);
+	ledcAttachPin(NL::Fan::fanPin, NL::Fan::pwmChannel);
 
-	TL::Fan::initialized = true;
-	return TL::Fan::Error::OK;
+	NL::Fan::initialized = true;
+	return NL::Fan::Error::OK;
 }
 
 /**
  * @brief Stop the fan controller.
  */
-void TL::Fan::end()
+void NL::Fan::end()
 {
-	TL::Fan::initialized = false;
-	ledcDetachPin(TL::Fan::fanPin);
+	NL::Fan::initialized = false;
+	ledcDetachPin(NL::Fan::fanPin);
 }
 
 /**
@@ -76,9 +76,9 @@ void TL::Fan::end()
  * @return true when initialized
  * @return false when not initialized
  */
-bool TL::Fan::isInitialized()
+bool NL::Fan::isInitialized()
 {
-	return TL::Fan::initialized;
+	return NL::Fan::initialized;
 }
 
 /**
@@ -88,15 +88,15 @@ bool TL::Fan::isInitialized()
  * @return ERROR_TEMP_UNAVAILABLE when the temperature could not be read
  * @return ERROR_UNKNOWN_MODE when the fan mode is unknown
  */
-TL::Fan::Error TL::Fan::run(const TL::Fan::FanMode fanMode)
+NL::Fan::Error NL::Fan::run(const NL::Fan::FanMode fanMode)
 {
-	TL::Fan::Error error = TL::Fan::Error::OK;
-	const TL::Configuration::SystemConfig systemConfig = TL::Configuration::getSystemConfig();
-	if (fanMode == TL::Fan::FanMode::AUTOMATIC)
+	NL::Fan::Error error = NL::Fan::Error::OK;
+	const NL::Configuration::SystemConfig systemConfig = NL::Configuration::getSystemConfig();
+	if (fanMode == NL::Fan::FanMode::AUTOMATIC)
 	{
 		float temperature;
-		const TL::TemperatureSensor::Error tempError = TL::TemperatureSensor::getMaxTemperature(temperature);
-		if (tempError == TL::TemperatureSensor::Error::OK)
+		const NL::TemperatureSensor::Error tempError = NL::TemperatureSensor::getMaxTemperature(temperature);
+		if (tempError == NL::TemperatureSensor::Error::OK)
 		{
 			if (temperature < systemConfig.fanMinTemperature)
 			{
@@ -108,44 +108,44 @@ TL::Fan::Error TL::Fan::run(const TL::Fan::FanMode fanMode)
 			}
 			temperature = (temperature - systemConfig.fanMinTemperature) / (systemConfig.fanMaxTemperature - systemConfig.fanMinTemperature);
 
-			TL::Fan::pwmValue = temperature == 0.0f ? 0 : (systemConfig.fanMaxPwmValue - systemConfig.fanMinPwmValue) * temperature + systemConfig.fanMinPwmValue;
-			if (TL::Fan::pwmValue > systemConfig.fanMaxPwmValue)
+			NL::Fan::pwmValue = temperature == 0.0f ? 0 : (systemConfig.fanMaxPwmValue - systemConfig.fanMinPwmValue) * temperature + systemConfig.fanMinPwmValue;
+			if (NL::Fan::pwmValue > systemConfig.fanMaxPwmValue)
 			{
-				TL::Fan::pwmValue = systemConfig.fanMaxPwmValue;
+				NL::Fan::pwmValue = systemConfig.fanMaxPwmValue;
 			}
 		}
 		else
 		{
-			error = TL::Fan::Error::ERROR_TEMP_UNAVAILABLE;
-			TL::Fan::pwmValue = 255;
+			error = NL::Fan::Error::ERROR_TEMP_UNAVAILABLE;
+			NL::Fan::pwmValue = 255;
 		}
 	}
-	else if (fanMode == TL::Fan::FanMode::MANUAL_OFF)
+	else if (fanMode == NL::Fan::FanMode::MANUAL_OFF)
 	{
-		TL::Fan::pwmValue = 0;
+		NL::Fan::pwmValue = 0;
 	}
-	else if (fanMode == TL::Fan::FanMode::MANUAL_25)
+	else if (fanMode == NL::Fan::FanMode::MANUAL_25)
 	{
-		TL::Fan::pwmValue = 63;
+		NL::Fan::pwmValue = 63;
 	}
-	else if (fanMode == TL::Fan::FanMode::MANUAL_50)
+	else if (fanMode == NL::Fan::FanMode::MANUAL_50)
 	{
-		TL::Fan::pwmValue = 127;
+		NL::Fan::pwmValue = 127;
 	}
-	else if (fanMode == TL::Fan::FanMode::MANUAL_75)
+	else if (fanMode == NL::Fan::FanMode::MANUAL_75)
 	{
-		TL::Fan::pwmValue = 191;
+		NL::Fan::pwmValue = 191;
 	}
-	else if (fanMode == TL::Fan::FanMode::MANUAL_100)
+	else if (fanMode == NL::Fan::FanMode::MANUAL_100)
 	{
-		TL::Fan::pwmValue = 255;
+		NL::Fan::pwmValue = 255;
 	}
 	else
 	{
-		error = TL::Fan::Error::ERROR_UNKNOWN_MODE;
+		error = NL::Fan::Error::ERROR_UNKNOWN_MODE;
 	}
 
-	ledcWrite(TL::Fan::pwmChannel, TL::Fan::pwmValue);
+	ledcWrite(NL::Fan::pwmChannel, NL::Fan::pwmValue);
 	return error;
 }
 
@@ -153,7 +153,7 @@ TL::Fan::Error TL::Fan::run(const TL::Fan::FanMode fanMode)
  * @brief Get the currently set pwm value.
  * @return currently set pwm value
  */
-uint8_t TL::Fan::getPwmValue()
+uint8_t NL::Fan::getPwmValue()
 {
-	return TL::Fan::pwmValue;
+	return NL::Fan::pwmValue;
 }

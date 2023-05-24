@@ -21,44 +21,44 @@
  */
 #include "server/ResetEndpoint.h"
 
-FS *TL::ResetEndpoint::fileSystem = nullptr;
+FS *NL::ResetEndpoint::fileSystem = nullptr;
 
 /**
- * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
+ * @brief Add all request handler for this {@link NL::RestEndpoint} to the {@link NL::WebServerManager}.
  */
-void TL::ResetEndpoint::begin(FS *_fileSystem)
+void NL::ResetEndpoint::begin(FS *_fileSystem)
 {
-	TL::ResetEndpoint::fileSystem = _fileSystem;
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("reset/soft")).c_str(), http_method::HTTP_POST, TL::ResetEndpoint::handleSoftReset);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("reset/hard")).c_str(), http_method::HTTP_POST, TL::ResetEndpoint::handleHardReset);
+	NL::ResetEndpoint::fileSystem = _fileSystem;
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("reset/soft")).c_str(), http_method::HTTP_POST, NL::ResetEndpoint::handleSoftReset);
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("reset/hard")).c_str(), http_method::HTTP_POST, NL::ResetEndpoint::handleHardReset);
 }
 
 /**
  * @brief Handler function for the soft reset.
  */
-void TL::ResetEndpoint::handleSoftReset()
+void NL::ResetEndpoint::handleSoftReset()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to execute a soft reset."));
-	TL::ResetEndpoint::sendSimpleResponse(200, F("I will reboot for you in 3 seconds."));
-	TL::Updater::reboot(F("Soft Reset"), 3000);
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to execute a soft reset."));
+	NL::ResetEndpoint::sendSimpleResponse(200, F("I will reboot for you in 3 seconds."));
+	NL::Updater::reboot(F("Soft Reset"), 3000);
 }
 
 /**
  * @brief Handler function for the hard reset. This also deletes the configuration to start with defaults.
  */
-void TL::ResetEndpoint::handleHardReset()
+void NL::ResetEndpoint::handleHardReset()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to execute a hard reset."));
-	TL::ResetEndpoint::sendSimpleResponse(200, F("I will reset my configuration and then reboot for you in 3 seconds."));
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to execute a hard reset."));
+	NL::ResetEndpoint::sendSimpleResponse(200, F("I will reset my configuration and then reboot for you in 3 seconds."));
 
-	if (!TL::ResetEndpoint::fileSystem->remove(CONFIGURATION_FILE_NAME))
+	if (!NL::ResetEndpoint::fileSystem->remove(CONFIGURATION_FILE_NAME))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to remove configuration. This might be normal if it was not saved before."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to remove configuration. This might be normal if it was not saved before."));
 	}
 	else
 	{
-		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Configuration was reset."));
+		NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Configuration was reset."));
 	}
 
-	TL::Updater::reboot(F("Hard Reset"), 3000);
+	NL::Updater::reboot(F("Hard Reset"), 3000);
 }

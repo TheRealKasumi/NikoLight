@@ -37,7 +37,7 @@
 
 #include "led/driver/LedBuffer.h"
 
-namespace TL
+namespace NL
 {
     class LedDriver
     {
@@ -59,12 +59,12 @@ namespace TL
             I2S_DEV_1 = 1  // I2S Device 1
         };
 
-        static TL::LedDriver::Error begin(TL::LedBuffer &ledBuffer, const TL::LedDriver::I2SDevice i2sDeviceIdentifier = TL::LedDriver::I2SDevice::I2S_DEV_0);
+        static NL::LedDriver::Error begin(NL::LedBuffer &ledBuffer, const NL::LedDriver::I2SDevice i2sDeviceIdentifier = NL::LedDriver::I2SDevice::I2S_DEV_0);
         static bool isInitialized();
         static void end();
 
-        static TL::LedDriver::Error isReady(const TickType_t timeout = 0);
-        static TL::LedDriver::Error showPixels(const TickType_t timeout = 0);
+        static NL::LedDriver::Error isReady(const TickType_t timeout = 0);
+        static NL::LedDriver::Error showPixels(const TickType_t timeout = 0);
 
     private:
         LedDriver();
@@ -84,24 +84,24 @@ namespace TL
         static volatile uint16_t ledStripMaxLength;
 
         static i2s_dev_t *i2sDevice;
-        static TL::LedDriver::I2SDevice i2sDeviceIdentifier;
+        static NL::LedDriver::I2SDevice i2sDeviceIdentifier;
 
-        static TL::LedDriver::DMABuffer *dmaBuffer[4];
+        static NL::LedDriver::DMABuffer *dmaBuffer[4];
         static volatile uint8_t dmaBufferIndex;
 
         static intr_handle_t interruptHandle;
         static volatile xSemaphoreHandle semaphore;
 
-        static TL::LedDriver::Error initPin(const uint8_t outputPin, const uint8_t ledStripIndex);
-        static TL::LedDriver::Error initI2S();
-        static TL::LedDriver::Error startI2S(const TL::LedDriver::DMABuffer *startBuffer);
+        static NL::LedDriver::Error initPin(const uint8_t outputPin, const uint8_t ledStripIndex);
+        static NL::LedDriver::Error initI2S();
+        static NL::LedDriver::Error startI2S(const NL::LedDriver::DMABuffer *startBuffer);
         static void IRAM_ATTR resetI2S();
         static void IRAM_ATTR stopI2S();
         static void resetDMA();
         static void resetFIFO();
 
-        static TL::LedDriver::DMABuffer *allocateDMABuffer(const uint32_t size);
-        static void freeDMABuffer(TL::LedDriver::DMABuffer *dmaBuffer);
+        static NL::LedDriver::DMABuffer *allocateDMABuffer(const uint32_t size);
+        static void freeDMABuffer(NL::LedDriver::DMABuffer *dmaBuffer);
         static void initDMABuffers();
 
         static void IRAM_ATTR interruptHandler(void *args);

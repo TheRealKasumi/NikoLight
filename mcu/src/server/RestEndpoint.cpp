@@ -22,35 +22,35 @@
 #include "server/RestEndpoint.h"
 
 // Initialize
-WebServer *TL::RestEndpoint::webServer;
-String TL::RestEndpoint::baseUri;
+WebServer *NL::RestEndpoint::webServer;
+String NL::RestEndpoint::baseUri;
 
 /**
  * @brief Initialize the rest endpoint.
  * @param _baseUri base uri under which the endpoint is exposed
  */
-void TL::RestEndpoint::init(String _baseUri)
+void NL::RestEndpoint::init(String _baseUri)
 {
-	TL::RestEndpoint::webServer = TL::WebServerManager::getWebServer();
-	TL::RestEndpoint::baseUri = _baseUri;
+	NL::RestEndpoint::webServer = NL::WebServerManager::getWebServer();
+	NL::RestEndpoint::baseUri = _baseUri;
 }
 
 /**
  * @brief Get the {@link WebServer} reference.
  * @return {@link WebServer} reference
  */
-WebServer *TL::RestEndpoint::getServer()
+WebServer *NL::RestEndpoint::getServer()
 {
-	return TL::RestEndpoint::webServer;
+	return NL::RestEndpoint::webServer;
 }
 
 /**
  * @brief Get the base uri of the endpoint.
  * @return {@link String} containing the base uri
  */
-String TL::RestEndpoint::getBaseUri()
+String NL::RestEndpoint::getBaseUri()
 {
-	return TL::RestEndpoint::baseUri;
+	return NL::RestEndpoint::baseUri;
 }
 
 /**
@@ -58,17 +58,17 @@ String TL::RestEndpoint::getBaseUri()
  * @param code http status code
  * @param message status or information message
  */
-void TL::RestEndpoint::sendSimpleResponse(const int code, const String &message)
+void NL::RestEndpoint::sendSimpleResponse(const int code, const String &message)
 {
 	DynamicJsonDocument jsonDoc(1024);
-	TL::RestEndpoint::sendJsonDocument(code, message, jsonDoc);
+	NL::RestEndpoint::sendJsonDocument(code, message, jsonDoc);
 }
 
 /**
  * @brief Send a json document to the client. The status code is determined from the json document itself.
  * @param jsonDocument reference to the json document to send to the client
  */
-void TL::RestEndpoint::sendJsonDocument(const int code, const String &message, DynamicJsonDocument &jsonDocument)
+void NL::RestEndpoint::sendJsonDocument(const int code, const String &message, DynamicJsonDocument &jsonDocument)
 {
 	jsonDocument[F("status")] = code;
 	jsonDocument[F("message")] = message;
@@ -79,7 +79,7 @@ void TL::RestEndpoint::sendJsonDocument(const int code, const String &message, D
 	const size_t length = serializeJson(jsonDocument, buffer, serializedSize);
 	webServer->setContentLength(length);
 
-	TL::RestEndpoint::webServer->send_P(code, "application/json", (char *)buffer, length);
+	NL::RestEndpoint::webServer->send_P(code, "application/json", (char *)buffer, length);
 	delete[] buffer;
 }
 
@@ -90,7 +90,7 @@ void TL::RestEndpoint::sendJsonDocument(const int code, const String &message, D
  * @return true when successful
  * @return false when there was an error
  */
-bool TL::RestEndpoint::parseJsonDocument(DynamicJsonDocument &jsonDocument, const String &json)
+bool NL::RestEndpoint::parseJsonDocument(DynamicJsonDocument &jsonDocument, const String &json)
 {
 	DeserializationError error = deserializeJson(jsonDocument, json);
 	return error.code() == DeserializationError::Code::Ok;

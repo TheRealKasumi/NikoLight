@@ -1,7 +1,7 @@
 /**
  * @file GradientAnimator.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::GradientAnimator}.
+ * @brief Implementation of the {@link NL::GradientAnimator}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -22,12 +22,12 @@
 #include "led/animator/GradientAnimator.h"
 
 /**
- * @brief Create a new instance of {@link TL::GradientAnimator}.
+ * @brief Create a new instance of {@link NL::GradientAnimator}.
  * @param gradientMode mode of the gradient
  * @param color1 first color value
  * @param color2 second color value
  */
-TL::GradientAnimator::GradientAnimator(const TL::GradientAnimator::GradientMode gradientMode, const TL::Pixel color1, const TL::Pixel color2)
+NL::GradientAnimator::GradientAnimator(const NL::GradientAnimator::GradientMode gradientMode, const NL::Pixel color1, const NL::Pixel color2)
 {
 	this->gradientMode = gradientMode;
 	this->color[0] = color1;
@@ -35,21 +35,21 @@ TL::GradientAnimator::GradientAnimator(const TL::GradientAnimator::GradientMode 
 }
 
 /**
- * @brief Destroy the {@link TL::GradientAnimator}.
+ * @brief Destroy the {@link NL::GradientAnimator}.
  */
-TL::GradientAnimator::~GradientAnimator()
+NL::GradientAnimator::~GradientAnimator()
 {
 }
 
 /**
- * @brief Initialize the {@link TL::GradientAnimator}.
+ * @brief Initialize the {@link NL::GradientAnimator}.
  * @param ledStrip LED strip with the pixel data
  */
-void TL::GradientAnimator::init(TL::LedStrip &ledStrip)
+void NL::GradientAnimator::init(NL::LedStrip &ledStrip)
 {
 	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
-		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+		ledStrip.setPixel(NL::Pixel::ColorCode::Black, i);
 	}
 }
 
@@ -57,16 +57,16 @@ void TL::GradientAnimator::init(TL::LedStrip &ledStrip)
  * @brief Render the gradient to the vector holding the LED pixel data
  * @param ledStrip LED strip with the pixel data
  */
-void TL::GradientAnimator::render(TL::LedStrip &ledStrip)
+void NL::GradientAnimator::render(NL::LedStrip &ledStrip)
 {
 	if (ledStrip.getLedCount() == 2)
 	{
 		const float middle = (this->offset / 255.0f - 0.5f) * 2.0f;
 		if (middle < 0.0f)
 		{
-			ledStrip.setPixel(TL::Pixel(this->color[1].red, this->color[1].green, this->color[1].blue), 0);
+			ledStrip.setPixel(NL::Pixel(this->color[1].red, this->color[1].green, this->color[1].blue), 0);
 			ledStrip.setPixel(
-				TL::Pixel(
+				NL::Pixel(
 					(-middle * this->color[1].red + (1 + middle) * this->color[0].red),
 					(-middle * this->color[1].green + (1 + middle) * this->color[0].green),
 					(-middle * this->color[1].blue + (1 + middle) * this->color[0].blue)),
@@ -75,12 +75,12 @@ void TL::GradientAnimator::render(TL::LedStrip &ledStrip)
 		else
 		{
 			ledStrip.setPixel(
-				TL::Pixel(
+				NL::Pixel(
 					(middle * this->color[0].red + (1 - middle) * this->color[1].red),
 					(middle * this->color[0].green + (1 - middle) * this->color[1].green),
 					(middle * this->color[0].blue + (1 - middle) * this->color[1].blue)),
 				0);
-			ledStrip.setPixel(TL::Pixel(this->color[0].red, this->color[0].green, this->color[0].blue), 1);
+			ledStrip.setPixel(NL::Pixel(this->color[0].red, this->color[0].green, this->color[0].blue), 1);
 		}
 	}
 	else
@@ -98,7 +98,7 @@ void TL::GradientAnimator::render(TL::LedStrip &ledStrip)
 		for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 		{
 			float position = 0.0f;
-			if (this->gradientMode == TL::GradientAnimator::GradientMode::GRADIENT_LINEAR)
+			if (this->gradientMode == NL::GradientAnimator::GradientMode::GRADIENT_LINEAR)
 			{
 				if (i < middle)
 				{
@@ -109,7 +109,7 @@ void TL::GradientAnimator::render(TL::LedStrip &ledStrip)
 					position = 0.5f + (i - middle) / ((ledStrip.getLedCount() - 1) - middle) * 0.5f;
 				}
 			}
-			else if (this->gradientMode == TL::GradientAnimator::GradientMode::GRADIENT_CENTER)
+			else if (this->gradientMode == NL::GradientAnimator::GradientMode::GRADIENT_CENTER)
 			{
 				if (i < middle)
 				{
@@ -121,7 +121,7 @@ void TL::GradientAnimator::render(TL::LedStrip &ledStrip)
 				}
 			}
 			ledStrip.setPixel(
-				TL::Pixel(
+				NL::Pixel(
 					(position * this->color[1].red + (1 - position) * this->color[0].red),
 					(position * this->color[1].green + (1 - position) * this->color[0].green),
 					(position * this->color[1].blue + (1 - position) * this->color[0].blue)),

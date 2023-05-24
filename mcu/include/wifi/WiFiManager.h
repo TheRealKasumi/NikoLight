@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include <WiFi.h>
 
-namespace TL
+namespace NL
 {
 	class WiFiManager
 	{
@@ -41,12 +41,12 @@ namespace TL
 			ERROR_CONNECT_TIMEOUT // Failed to connect to a WiFi network due to timeout
 		};
 
-		static TL::WiFiManager::Error begin();
-		static TL::WiFiManager::Error end();
+		static NL::WiFiManager::Error begin();
+		static NL::WiFiManager::Error end();
 		static bool isInitialized();
 
-		static TL::WiFiManager::Error startAccessPoint(const char *ssid, const char *password = 0, uint8_t channel = 1, bool hidden = 0, uint8_t maxConnections = 1);
-		static TL::WiFiManager::Error connectTo(const char *ssid, const char *password, const uint32_t timeout);
+		static NL::WiFiManager::Error startAccessPoint(const char *ssid, const char *password = 0, uint8_t channel = 1, bool hidden = 0, uint8_t maxConnections = 1);
+		static NL::WiFiManager::Error connectTo(const char *ssid, const char *password, const uint32_t timeout);
 
 	private:
 		WiFiManager();

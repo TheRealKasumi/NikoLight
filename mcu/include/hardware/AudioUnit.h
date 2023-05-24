@@ -1,7 +1,7 @@
 /**
  * @file AudioUnit.h
  * @author TheRealKasumi
- * @brief Contains a class for connecting to the TesLight Audio Unit.
+ * @brief Contains a class for connecting to the NikoLight Audio Unit.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
  *
@@ -19,15 +19,15 @@
  * from the owner.
  *
  */
-#ifndef TL_AUDIO_UNIT_H
-#define TL_AUDIO_UNIT_H
+#ifndef NL_AUDIO_UNIT_H
+#define NL_AUDIO_UNIT_H
 
 #include <stdint.h>
 #include <vector>
 #include <tuple>
 #include <Wire.h>
 
-namespace TL
+namespace NL
 {
 	class AudioUnit
 	{
@@ -63,7 +63,7 @@ namespace TL
 
 		struct PeakResult
 		{
-			TL::AudioUnit::Trigger trigger; // Trigger to check if a peak is detected
+			NL::AudioUnit::Trigger trigger; // Trigger to check if a peak is detected
 			double value;					// Intensity of the frequency band
 			double mean;					// Mean value of the frequency band
 			double standardDeviation;		// Standard eviation of the frequency band
@@ -75,22 +75,22 @@ namespace TL
 			uint8_t seq;												  // Sequence number
 			uint16_t volumePeak;										  // Maximum volume detected since the last cycle
 			std::vector<uint16_t> frequencyBandValues;					  // Intensity values for each frequency band
-			std::vector<TL::AudioUnit::PeakResult> frequencyBandTriggers; // Trigger for each frequency band
+			std::vector<NL::AudioUnit::PeakResult> frequencyBandTriggers; // Trigger for each frequency band
 		};
 
-		static TL::AudioUnit::Error begin(const uint8_t deviceAddress);
+		static NL::AudioUnit::Error begin(const uint8_t deviceAddress);
 		static void end();
 		static bool isInitialized();
 
 		static uint8_t getFrequencyBandCount();
 
-		static TL::AudioUnit::Error getAudioAnalysis(TL::AudioUnit::AudioAnalysis &audioAnalysis);
+		static NL::AudioUnit::Error getAudioAnalysis(NL::AudioUnit::AudioAnalysis &audioAnalysis);
 
-		static TL::AudioUnit::Error getAudioUnitConfig(TL::AudioUnit::AudioUnitConfig &analyzerConfig);
-		static TL::AudioUnit::Error setAudioUnitConfig(TL::AudioUnit::AudioUnitConfig &analyzerConfig);
+		static NL::AudioUnit::Error getAudioUnitConfig(NL::AudioUnit::AudioUnitConfig &analyzerConfig);
+		static NL::AudioUnit::Error setAudioUnitConfig(NL::AudioUnit::AudioUnitConfig &analyzerConfig);
 
-		static TL::AudioUnit::Error getPeakDetectorConfig(TL::AudioUnit::PeakDetectorConfig &peakDetectorConfig, const uint8_t index);
-		static TL::AudioUnit::Error setPeakDetectorConfig(TL::AudioUnit::PeakDetectorConfig &peakDetectorConfig, const uint8_t index);
+		static NL::AudioUnit::Error getPeakDetectorConfig(NL::AudioUnit::PeakDetectorConfig &peakDetectorConfig, const uint8_t index);
+		static NL::AudioUnit::Error setPeakDetectorConfig(NL::AudioUnit::PeakDetectorConfig &peakDetectorConfig, const uint8_t index);
 
 	private:
 		AudioUnit();

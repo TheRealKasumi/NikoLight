@@ -1,7 +1,7 @@
 /**
  * @file LedAnimator.cpp
  * @author TheRealKasumi
- * @brief Contains the implementation of {@link TL::LedAnimator}.
+ * @brief Contains the implementation of {@link NL::LedAnimator}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -22,11 +22,11 @@
 #include "led/animator/LedAnimator.h"
 
 /**
- * @brief Create a new instance of {@link TL::LedAnimator}.
+ * @brief Create a new instance of {@link NL::LedAnimator}.
  */
-TL::LedAnimator::LedAnimator()
+NL::LedAnimator::LedAnimator()
 {
-	this->dataSource = TL::LedAnimator::DataSource::DS_NONE;
+	this->dataSource = NL::LedAnimator::DataSource::DS_NONE;
 	this->speed = 0;
 	this->offset = 0;
 	this->animationBrightness = 0.0f;
@@ -50,9 +50,9 @@ TL::LedAnimator::LedAnimator()
 }
 
 /**
- * @brief Destroy the {@link TL::LedAnimator} instance.
+ * @brief Destroy the {@link NL::LedAnimator} instance.
  */
-TL::LedAnimator::~LedAnimator()
+NL::LedAnimator::~LedAnimator()
 {
 }
 
@@ -60,7 +60,7 @@ TL::LedAnimator::~LedAnimator()
  * @brief Set the data source used by the animation.
  * @param dataSource data source the animation is using
  */
-void TL::LedAnimator::setDataSource(const TL::LedAnimator::DataSource dataSource)
+void NL::LedAnimator::setDataSource(const NL::LedAnimator::DataSource dataSource)
 {
 	this->dataSource = dataSource;
 }
@@ -69,7 +69,7 @@ void TL::LedAnimator::setDataSource(const TL::LedAnimator::DataSource dataSource
  * @brief Get the currently used data source used by the animation.
  * @return currently used data source
  */
-TL::LedAnimator::DataSource TL::LedAnimator::getDataSource()
+NL::LedAnimator::DataSource NL::LedAnimator::getDataSource()
 {
 	return this->dataSource;
 }
@@ -78,7 +78,7 @@ TL::LedAnimator::DataSource TL::LedAnimator::getDataSource()
  * @brief Set the animation speed.
  * @param speed animation speed
  */
-void TL::LedAnimator::setSpeed(const uint8_t speed)
+void NL::LedAnimator::setSpeed(const uint8_t speed)
 {
 	this->speed = speed;
 }
@@ -87,7 +87,7 @@ void TL::LedAnimator::setSpeed(const uint8_t speed)
  * @brief Get the animation speed.
  * @return uint8_t animation speed
  */
-uint8_t TL::LedAnimator::getSpeed()
+uint8_t NL::LedAnimator::getSpeed()
 {
 	return this->speed;
 }
@@ -96,7 +96,7 @@ uint8_t TL::LedAnimator::getSpeed()
  * @brief Set the animation offset.
  * @param offset animation offset
  */
-void TL::LedAnimator::setOffset(const uint16_t offset)
+void NL::LedAnimator::setOffset(const uint16_t offset)
 {
 	this->offset = offset;
 }
@@ -105,7 +105,7 @@ void TL::LedAnimator::setOffset(const uint16_t offset)
  * @brief Get the animation offset.
  * @return animation offset
  */
-uint16_t TL::LedAnimator::getOffset()
+uint16_t NL::LedAnimator::getOffset()
 {
 	return this->offset;
 }
@@ -114,7 +114,7 @@ uint16_t TL::LedAnimator::getOffset()
  * @brief Set the animation brightness.
  * @param animationBrightness brightness of the animation from 0.0 to 1.0
  */
-void TL::LedAnimator::setAnimationBrightness(const float animationBrightness)
+void NL::LedAnimator::setAnimationBrightness(const float animationBrightness)
 {
 	this->animationBrightness = animationBrightness;
 	if (this->animationBrightness < 0.0f)
@@ -131,7 +131,7 @@ void TL::LedAnimator::setAnimationBrightness(const float animationBrightness)
  * @brief Get the animation brightness.
  * @return animation brightness from 0.0 to 1.0
  */
-float TL::LedAnimator::getAnimationBrightness()
+float NL::LedAnimator::getAnimationBrightness()
 {
 	return this->animationBrightness;
 }
@@ -140,7 +140,7 @@ float TL::LedAnimator::getAnimationBrightness()
  * @brief Set the ambient brightness.
  * @param ambientBrightness ambient brightness from 0.0 to 1.0
  */
-void TL::LedAnimator::setAmbientBrightness(const float ambientBrightness)
+void NL::LedAnimator::setAmbientBrightness(const float ambientBrightness)
 {
 	this->ambientBrightness = ambientBrightness;
 	if (this->ambientBrightness < 0.0f)
@@ -157,7 +157,7 @@ void TL::LedAnimator::setAmbientBrightness(const float ambientBrightness)
  * @brief Get the ambient brightness.
  * @return ambient brightness from 0.0 to 1.0
  */
-float TL::LedAnimator::getAmbientBrightness()
+float NL::LedAnimator::getAmbientBrightness()
 {
 	return this->ambientBrightness;
 }
@@ -166,7 +166,7 @@ float TL::LedAnimator::getAmbientBrightness()
  * @brief Set the fading speed.
  * @param fadeSpeed fading speed from 0.0 to 1.0
  */
-void TL::LedAnimator::setFadeSpeed(const float fadeSpeed)
+void NL::LedAnimator::setFadeSpeed(const float fadeSpeed)
 {
 	this->fadeSpeed = fadeSpeed;
 	if (this->fadeSpeed < 0.0f)
@@ -183,7 +183,7 @@ void TL::LedAnimator::setFadeSpeed(const float fadeSpeed)
  * @brief Get the fading speed.
  * @return fading speed from 0.0 to 1.0
  */
-float TL::LedAnimator::getFadeSpeed()
+float NL::LedAnimator::getFadeSpeed()
 {
 	return this->fadeSpeed;
 }
@@ -192,7 +192,7 @@ float TL::LedAnimator::getFadeSpeed()
  * @brief Reverse the animation.
  * @param reverse {@code true} to reverse, {@code false} to not reverse
  */
-void TL::LedAnimator::setReverse(const bool reverse)
+void NL::LedAnimator::setReverse(const bool reverse)
 {
 	this->reverse = reverse;
 }
@@ -202,7 +202,7 @@ void TL::LedAnimator::setReverse(const bool reverse)
  * @return true reversed
  * @return false not reversed
  */
-bool TL::LedAnimator::getReverse()
+bool NL::LedAnimator::getReverse()
 {
 	return this->reverse;
 }
@@ -211,7 +211,7 @@ bool TL::LedAnimator::getReverse()
  * @brief Set the motion sensor data.
  * @param motionSensorData motion sensor data
  */
-void TL::LedAnimator::setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData)
+void NL::LedAnimator::setMotionSensorData(const NL::MotionSensor::MotionSensorData &motionSensorData)
 {
 	this->motionSensorData = motionSensorData;
 }
@@ -220,7 +220,7 @@ void TL::LedAnimator::setMotionSensorData(const TL::MotionSensor::MotionSensorDa
  * @brief Get the currently set motion sensor data.
  * @return currently set motion sensor data
  */
-TL::MotionSensor::MotionSensorData &TL::LedAnimator::getMotionSensorData()
+NL::MotionSensor::MotionSensorData &NL::LedAnimator::getMotionSensorData()
 {
 	return this->motionSensorData;
 }
@@ -229,7 +229,7 @@ TL::MotionSensor::MotionSensorData &TL::LedAnimator::getMotionSensorData()
  * @brief Set the audio analysis data to be used by an animator.
  * @param audioAnalysis audio analysis
  */
-void TL::LedAnimator::setAudioAnalysis(const TL::AudioUnit::AudioAnalysis &audioAnalysis)
+void NL::LedAnimator::setAudioAnalysis(const NL::AudioUnit::AudioAnalysis &audioAnalysis)
 {
 	this->audioAnalysis = audioAnalysis;
 }
@@ -238,7 +238,7 @@ void TL::LedAnimator::setAudioAnalysis(const TL::AudioUnit::AudioAnalysis &audio
  * @brief Get the audio analysis data.
  * @return audio analysis data
  */
-TL::AudioUnit::AudioAnalysis &TL::LedAnimator::getAudioAnalysis()
+NL::AudioUnit::AudioAnalysis &NL::LedAnimator::getAudioAnalysis()
 {
 	return this->audioAnalysis;
 }
@@ -247,11 +247,11 @@ TL::AudioUnit::AudioAnalysis &TL::LedAnimator::getAudioAnalysis()
  * @brief Reverse the order of all pixels to reverse the animation.
  * @param ledStrip LED strip with the pixel data
  */
-void TL::LedAnimator::reversePixels(TL::LedStrip &ledStrip)
+void NL::LedAnimator::reversePixels(NL::LedStrip &ledStrip)
 {
 	for (size_t i = 0; i < ledStrip.getLedCount() / 2; i++)
 	{
-		const TL::Pixel copy = ledStrip.getPixel(i);
+		const NL::Pixel copy = ledStrip.getPixel(i);
 		const size_t inverseIndex = (ledStrip.getLedCount() - 1) - i;
 		ledStrip.setPixel(ledStrip.getPixel(inverseIndex), i);
 		ledStrip.setPixel(copy, inverseIndex);
@@ -262,7 +262,7 @@ void TL::LedAnimator::reversePixels(TL::LedStrip &ledStrip)
  * @brief Apply the brightness settings to all pixels.
  * @param ledStrip LED strip with the pixel data
  */
-void TL::LedAnimator::applyBrightness(TL::LedStrip &ledStrip)
+void NL::LedAnimator::applyBrightness(NL::LedStrip &ledStrip)
 {
 	if (this->smoothedAmbBrightness < this->ambientBrightness)
 	{
@@ -284,7 +284,7 @@ void TL::LedAnimator::applyBrightness(TL::LedStrip &ledStrip)
 	const float totalBrightness = this->animationBrightness * this->smoothedAmbBrightness;
 	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
-		TL::Pixel pixel = ledStrip.getPixel(i);
+		NL::Pixel pixel = ledStrip.getPixel(i);
 		pixel.red *= totalBrightness;
 		pixel.green *= totalBrightness;
 		pixel.blue *= totalBrightness;
@@ -298,7 +298,7 @@ void TL::LedAnimator::applyBrightness(TL::LedStrip &ledStrip)
  * @param max maximum value
  * @return random value within given bounds
  */
-int32_t TL::LedAnimator::random(const int32_t min, const int32_t max)
+int32_t NL::LedAnimator::random(const int32_t min, const int32_t max)
 {
 	return rand() % (max - min) + min;
 }
@@ -308,7 +308,7 @@ int32_t TL::LedAnimator::random(const int32_t min, const int32_t max)
  * @param angle input angle in degree
  * @return float value between 0.0 and 1.0 representing the trapezoid
  */
-float TL::LedAnimator::trapezoid(float angle)
+float NL::LedAnimator::trapezoid(float angle)
 {
 	// This will limit the angle to [0...360]
 	float factor = angle / 360.0f;
@@ -348,7 +348,7 @@ float TL::LedAnimator::trapezoid(float angle)
  * @param angle input angle in degree
  * @return float value between 0.0 and 1.0 representing the trapezoid
  */
-float TL::LedAnimator::trapezoid2(float angle)
+float NL::LedAnimator::trapezoid2(float angle)
 {
 	// This will limit the angle to [0...360]
 	float factor = angle / 360.0f;

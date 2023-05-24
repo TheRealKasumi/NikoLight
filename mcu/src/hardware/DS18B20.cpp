@@ -1,7 +1,7 @@
 /**
  * @file DS18B20.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::DS18B20}.
+ * @brief Implementation of the {@link NL::DS18B20}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -21,12 +21,12 @@
  */
 #include "hardware/DS18B20.h"
 
-bool TL::DS18B20::initialized = false;
-OneWire TL::DS18B20::oneWire;
-std::vector<uint64_t> TL::DS18B20::sensorAddress;
-std::vector<TL::DS18B20::DS18B20Res> TL::DS18B20::resolution;
-std::vector<float> TL::DS18B20::lastMeasurement;
-std::vector<unsigned long> TL::DS18B20::measurementReadyTime;
+bool NL::DS18B20::initialized = false;
+OneWire NL::DS18B20::oneWire;
+std::vector<uint64_t> NL::DS18B20::sensorAddress;
+std::vector<NL::DS18B20::DS18B20Res> NL::DS18B20::resolution;
+std::vector<float> NL::DS18B20::lastMeasurement;
+std::vector<unsigned long> NL::DS18B20::measurementReadyTime;
 
 /**
  * @brief Start the DS18B20 sensors.
@@ -34,38 +34,38 @@ std::vector<unsigned long> TL::DS18B20::measurementReadyTime;
  * @return ERROR_OW_COMM when the OneWire communication failed
  * @return ERROR_OW_CRC when the crc check failed
  */
-TL::DS18B20::Error TL::DS18B20::begin(const uint8_t busPin)
+NL::DS18B20::Error NL::DS18B20::begin(const uint8_t busPin)
 {
-	TL::DS18B20::initialized = false;
-	TL::DS18B20::oneWire = OneWire(busPin);
+	NL::DS18B20::initialized = false;
+	NL::DS18B20::oneWire = OneWire(busPin);
 	std::vector<uint64_t> sensorAddress;
 	sensorAddress.reserve(10);
 
-	const TL::DS18B20::Error getSensorError = TL::DS18B20::getSensors(sensorAddress);
-	if (getSensorError != TL::DS18B20::Error::OK)
+	const NL::DS18B20::Error getSensorError = NL::DS18B20::getSensors(sensorAddress);
+	if (getSensorError != NL::DS18B20::Error::OK)
 	{
 		return getSensorError;
 	}
 
-	TL::DS18B20::sensorAddress = sensorAddress;
-	TL::DS18B20::resolution.assign(sensorAddress.size(), TL::DS18B20::DS18B20Res::DS18B20_12_BIT);
-	TL::DS18B20::lastMeasurement.assign(sensorAddress.size(), 0.0f);
-	TL::DS18B20::measurementReadyTime.assign(sensorAddress.size(), ULONG_MAX);
+	NL::DS18B20::sensorAddress = sensorAddress;
+	NL::DS18B20::resolution.assign(sensorAddress.size(), NL::DS18B20::DS18B20Res::DS18B20_12_BIT);
+	NL::DS18B20::lastMeasurement.assign(sensorAddress.size(), 0.0f);
+	NL::DS18B20::measurementReadyTime.assign(sensorAddress.size(), ULONG_MAX);
 
-	TL::DS18B20::initialized = true;
-	return TL::DS18B20::Error::OK;
+	NL::DS18B20::initialized = true;
+	return NL::DS18B20::Error::OK;
 }
 
 /**
  * @brief Stop the DS18B20 sensors and free memory.
  */
-void TL::DS18B20::end()
+void NL::DS18B20::end()
 {
-	TL::DS18B20::initialized = false;
-	TL::DS18B20::sensorAddress.clear();
-	TL::DS18B20::resolution.clear();
-	TL::DS18B20::lastMeasurement.clear();
-	TL::DS18B20::measurementReadyTime.clear();
+	NL::DS18B20::initialized = false;
+	NL::DS18B20::sensorAddress.clear();
+	NL::DS18B20::resolution.clear();
+	NL::DS18B20::lastMeasurement.clear();
+	NL::DS18B20::measurementReadyTime.clear();
 }
 
 /**
@@ -73,18 +73,18 @@ void TL::DS18B20::end()
  * @return true when initialized
  * @return false when not initialized
  */
-bool TL::DS18B20::isInitialized()
+bool NL::DS18B20::isInitialized()
 {
-	return TL::DS18B20::initialized;
+	return NL::DS18B20::initialized;
 }
 
 /**
  * @brief Get the number of available sensors.
  * @return number of sensors
  */
-size_t TL::DS18B20::getNumSensors()
+size_t NL::DS18B20::getNumSensors()
 {
-	return TL::DS18B20::sensorAddress.size();
+	return NL::DS18B20::sensorAddress.size();
 }
 
 /**
@@ -94,16 +94,16 @@ size_t TL::DS18B20::getNumSensors()
  * @return OK when the address was read
  * @return ERROR_OUT_OF_BOUNDS when the index is out of bounds
  */
-TL::DS18B20::Error TL::DS18B20::getSensorAddress(uint64_t &sensorAddress, const size_t sensorIndex)
+NL::DS18B20::Error NL::DS18B20::getSensorAddress(uint64_t &sensorAddress, const size_t sensorIndex)
 {
-	if (sensorIndex >= TL::DS18B20::sensorAddress.size())
+	if (sensorIndex >= NL::DS18B20::sensorAddress.size())
 	{
 		sensorAddress = 0;
-		return TL::DS18B20::Error::ERROR_OUT_OF_BOUNDS;
+		return NL::DS18B20::Error::ERROR_OUT_OF_BOUNDS;
 	}
 
-	sensorAddress = TL::DS18B20::sensorAddress.at(sensorIndex);
-	return TL::DS18B20::Error::OK;
+	sensorAddress = NL::DS18B20::sensorAddress.at(sensorIndex);
+	return NL::DS18B20::Error::OK;
 }
 
 /**
@@ -113,26 +113,26 @@ TL::DS18B20::Error TL::DS18B20::getSensorAddress(uint64_t &sensorAddress, const 
  * @return OK when the resolution was set
  * @return ERROR_OW_COMM when the OneWire communication failed
  */
-TL::DS18B20::Error TL::DS18B20::setResolution(const TL::DS18B20::DS18B20Res resolution, const size_t sensorIndex)
+NL::DS18B20::Error NL::DS18B20::setResolution(const NL::DS18B20::DS18B20Res resolution, const size_t sensorIndex)
 {
-	if (sensorIndex >= TL::DS18B20::sensorAddress.size())
+	if (sensorIndex >= NL::DS18B20::sensorAddress.size())
 	{
-		return TL::DS18B20::Error::ERROR_OUT_OF_BOUNDS;
+		return NL::DS18B20::Error::ERROR_OUT_OF_BOUNDS;
 	}
 
-	if (!TL::DS18B20::oneWire.reset())
+	if (!NL::DS18B20::oneWire.reset())
 	{
-		return TL::DS18B20::Error::ERROR_OW_COMM;
+		return NL::DS18B20::Error::ERROR_OW_COMM;
 	}
 
-	TL::DS18B20::oneWire.select((uint8_t *)&TL::DS18B20::sensorAddress.at(sensorIndex));
-	TL::DS18B20::oneWire.write(0x4E, 0);
-	TL::DS18B20::oneWire.write(0x00, 0);
-	TL::DS18B20::oneWire.write(0x00, 0);
-	TL::DS18B20::oneWire.write(static_cast<uint8_t>(resolution));
-	TL::DS18B20::resolution.at(sensorIndex) = resolution;
+	NL::DS18B20::oneWire.select((uint8_t *)&NL::DS18B20::sensorAddress.at(sensorIndex));
+	NL::DS18B20::oneWire.write(0x4E, 0);
+	NL::DS18B20::oneWire.write(0x00, 0);
+	NL::DS18B20::oneWire.write(0x00, 0);
+	NL::DS18B20::oneWire.write(static_cast<uint8_t>(resolution));
+	NL::DS18B20::resolution.at(sensorIndex) = resolution;
 
-	return TL::DS18B20::Error::OK;
+	return NL::DS18B20::Error::OK;
 }
 
 /**
@@ -142,16 +142,16 @@ TL::DS18B20::Error TL::DS18B20::setResolution(const TL::DS18B20::DS18B20Res reso
  * @return OK when the resolution was set
  * @return ERROR_OUT_OF_BOUNDS when the index is out of bounds
  */
-TL::DS18B20::Error TL::DS18B20::getResolution(TL::DS18B20::DS18B20Res &resolution, const size_t sensorIndex)
+NL::DS18B20::Error NL::DS18B20::getResolution(NL::DS18B20::DS18B20Res &resolution, const size_t sensorIndex)
 {
-	if (sensorIndex >= TL::DS18B20::sensorAddress.size())
+	if (sensorIndex >= NL::DS18B20::sensorAddress.size())
 	{
-		resolution = TL::DS18B20::DS18B20Res::DS18B20_9_BIT;
-		return TL::DS18B20::Error::ERROR_OUT_OF_BOUNDS;
+		resolution = NL::DS18B20::DS18B20Res::DS18B20_9_BIT;
+		return NL::DS18B20::Error::ERROR_OUT_OF_BOUNDS;
 	}
-	resolution = TL::DS18B20::resolution.at(sensorIndex);
+	resolution = NL::DS18B20::resolution.at(sensorIndex);
 
-	return TL::DS18B20::Error::OK;
+	return NL::DS18B20::Error::OK;
 }
 
 /**
@@ -162,38 +162,38 @@ TL::DS18B20::Error TL::DS18B20::getResolution(TL::DS18B20::DS18B20Res &resolutio
  * @return ERROR_OUT_OF_BOUNDS when the sensor index is out of bounds
  * @return ERROR_OW_COMM when the OneWire communication failed
  */
-TL::DS18B20::Error TL::DS18B20::startMeasurement(const size_t sensorIndex)
+NL::DS18B20::Error NL::DS18B20::startMeasurement(const size_t sensorIndex)
 {
-	if (sensorIndex >= TL::DS18B20::sensorAddress.size())
+	if (sensorIndex >= NL::DS18B20::sensorAddress.size())
 	{
-		return TL::DS18B20::Error::ERROR_OUT_OF_BOUNDS;
+		return NL::DS18B20::Error::ERROR_OUT_OF_BOUNDS;
 	}
 
-	if (!TL::DS18B20::oneWire.reset())
+	if (!NL::DS18B20::oneWire.reset())
 	{
-		return TL::DS18B20::Error::ERROR_OW_COMM;
+		return NL::DS18B20::Error::ERROR_OW_COMM;
 	}
 
-	TL::DS18B20::oneWire.select((uint8_t *)&TL::DS18B20::sensorAddress.at(sensorIndex));
-	TL::DS18B20::oneWire.write(0x44, 0);
-	if (TL::DS18B20::resolution.at(sensorIndex) == TL::DS18B20::DS18B20Res::DS18B20_9_BIT)
+	NL::DS18B20::oneWire.select((uint8_t *)&NL::DS18B20::sensorAddress.at(sensorIndex));
+	NL::DS18B20::oneWire.write(0x44, 0);
+	if (NL::DS18B20::resolution.at(sensorIndex) == NL::DS18B20::DS18B20Res::DS18B20_9_BIT)
 	{
-		TL::DS18B20::measurementReadyTime.at(sensorIndex) = millis() + 110;
+		NL::DS18B20::measurementReadyTime.at(sensorIndex) = millis() + 110;
 	}
-	else if (TL::DS18B20::resolution.at(sensorIndex) == TL::DS18B20::DS18B20Res::DS18B20_10_BIT)
+	else if (NL::DS18B20::resolution.at(sensorIndex) == NL::DS18B20::DS18B20Res::DS18B20_10_BIT)
 	{
-		TL::DS18B20::measurementReadyTime.at(sensorIndex) = millis() + 200;
+		NL::DS18B20::measurementReadyTime.at(sensorIndex) = millis() + 200;
 	}
-	else if (TL::DS18B20::resolution.at(sensorIndex) == TL::DS18B20::DS18B20Res::DS18B20_11_BIT)
+	else if (NL::DS18B20::resolution.at(sensorIndex) == NL::DS18B20::DS18B20Res::DS18B20_11_BIT)
 	{
-		TL::DS18B20::measurementReadyTime.at(sensorIndex) = millis() + 400;
+		NL::DS18B20::measurementReadyTime.at(sensorIndex) = millis() + 400;
 	}
-	else if (TL::DS18B20::resolution.at(sensorIndex) == TL::DS18B20::DS18B20Res::DS18B20_12_BIT)
+	else if (NL::DS18B20::resolution.at(sensorIndex) == NL::DS18B20::DS18B20Res::DS18B20_12_BIT)
 	{
-		TL::DS18B20::measurementReadyTime.at(sensorIndex) = millis() + 800;
+		NL::DS18B20::measurementReadyTime.at(sensorIndex) = millis() + 800;
 	}
 
-	return TL::DS18B20::Error::OK;
+	return NL::DS18B20::Error::OK;
 }
 
 /**
@@ -203,15 +203,15 @@ TL::DS18B20::Error TL::DS18B20::startMeasurement(const size_t sensorIndex)
  * @return OK when the function call was successful
  * @return ERROR_OUT_OF_BOUNDS when the sensor index is out of bounds
  */
-TL::DS18B20::Error TL::DS18B20::isMeasurementReady(bool &isReady, const size_t sensorIndex)
+NL::DS18B20::Error NL::DS18B20::isMeasurementReady(bool &isReady, const size_t sensorIndex)
 {
-	if (sensorIndex >= TL::DS18B20::sensorAddress.size())
+	if (sensorIndex >= NL::DS18B20::sensorAddress.size())
 	{
 		isReady = false;
-		return TL::DS18B20::Error::ERROR_OUT_OF_BOUNDS;
+		return NL::DS18B20::Error::ERROR_OUT_OF_BOUNDS;
 	}
-	isReady = millis() >= TL::DS18B20::measurementReadyTime.at(sensorIndex);
-	return TL::DS18B20::Error::OK;
+	isReady = millis() >= NL::DS18B20::measurementReadyTime.at(sensorIndex);
+	return NL::DS18B20::Error::OK;
 }
 
 /**
@@ -223,44 +223,44 @@ TL::DS18B20::Error TL::DS18B20::isMeasurementReady(bool &isReady, const size_t s
  * @return ERROR_OW_COMM when the OneWire communication failed
  * @return ERROR_OW_CRC when the crc check failed
  */
-TL::DS18B20::Error TL::DS18B20::getTemperature(float &temp, const size_t sensorIndex)
+NL::DS18B20::Error NL::DS18B20::getTemperature(float &temp, const size_t sensorIndex)
 {
-	if (sensorIndex >= TL::DS18B20::sensorAddress.size())
+	if (sensorIndex >= NL::DS18B20::sensorAddress.size())
 	{
 		temp = 0.0f;
-		return TL::DS18B20::Error::ERROR_OUT_OF_BOUNDS;
+		return NL::DS18B20::Error::ERROR_OUT_OF_BOUNDS;
 	}
 
 	bool measurementReady;
-	const TL::DS18B20::Error readyCheckError = TL::DS18B20::isMeasurementReady(measurementReady, sensorIndex);
-	if (readyCheckError != TL::DS18B20::Error::OK)
+	const NL::DS18B20::Error readyCheckError = NL::DS18B20::isMeasurementReady(measurementReady, sensorIndex);
+	if (readyCheckError != NL::DS18B20::Error::OK)
 	{
 		return readyCheckError;
 	}
 	if (!measurementReady)
 	{
-		temp = TL::DS18B20::lastMeasurement.at(sensorIndex);
-		return TL::DS18B20::Error::OK;
+		temp = NL::DS18B20::lastMeasurement.at(sensorIndex);
+		return NL::DS18B20::Error::OK;
 	}
 
-	if (!TL::DS18B20::oneWire.reset())
+	if (!NL::DS18B20::oneWire.reset())
 	{
-		return TL::DS18B20::Error::ERROR_OW_COMM;
+		return NL::DS18B20::Error::ERROR_OW_COMM;
 	}
 
-	TL::DS18B20::oneWire.select((uint8_t *)&TL::DS18B20::sensorAddress.at(sensorIndex));
-	TL::DS18B20::oneWire.write(0xBE);
+	NL::DS18B20::oneWire.select((uint8_t *)&NL::DS18B20::sensorAddress.at(sensorIndex));
+	NL::DS18B20::oneWire.write(0xBE);
 
 	uint8_t data[9] = {0};
 	for (uint8_t i = 0; i < 9; i++)
 	{
-		data[i] = TL::DS18B20::oneWire.read();
+		data[i] = NL::DS18B20::oneWire.read();
 	}
 
 	if (OneWire::crc8(data, 8) != data[8])
 	{
 		temp = 0.0f;
-		return TL::DS18B20::Error::ERROR_OW_CRC;
+		return NL::DS18B20::Error::ERROR_OW_CRC;
 	}
 
 	int16_t raw = (data[1] << 8) | data[0];
@@ -279,8 +279,8 @@ TL::DS18B20::Error TL::DS18B20::getTemperature(float &temp, const size_t sensorI
 	}
 
 	temp = raw / 16.0f;
-	TL::DS18B20::lastMeasurement.at(sensorIndex) = temp;
-	return TL::DS18B20::Error::OK;
+	NL::DS18B20::lastMeasurement.at(sensorIndex) = temp;
+	return NL::DS18B20::Error::OK;
 }
 
 /**
@@ -289,16 +289,16 @@ TL::DS18B20::Error TL::DS18B20::getTemperature(float &temp, const size_t sensorI
  * @return OK when the sensor list was received
  * @return ERROR_OW_CRC when the crc check failed
  */
-TL::DS18B20::Error TL::DS18B20::getSensors(std::vector<uint64_t> &sensorAddress)
+NL::DS18B20::Error NL::DS18B20::getSensors(std::vector<uint64_t> &sensorAddress)
 {
 	sensorAddress.clear();
 	uint64_t address;
-	TL::DS18B20::oneWire.reset_search();
-	while (TL::DS18B20::oneWire.search((uint8_t *)&address))
+	NL::DS18B20::oneWire.reset_search();
+	while (NL::DS18B20::oneWire.search((uint8_t *)&address))
 	{
 		if (OneWire::crc8((uint8_t *)&address, 7) != ((uint8_t *)&address)[7])
 		{
-			return TL::DS18B20::Error::ERROR_OW_CRC;
+			return NL::DS18B20::Error::ERROR_OW_CRC;
 		}
 
 		if (((uint8_t *)&address)[0] != 0x28)
@@ -308,5 +308,5 @@ TL::DS18B20::Error TL::DS18B20::getSensors(std::vector<uint64_t> &sensorAddress)
 
 		sensorAddress.push_back(address);
 	}
-	return TL::DS18B20::Error::OK;
+	return NL::DS18B20::Error::OK;
 }

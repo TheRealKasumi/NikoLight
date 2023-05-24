@@ -1,7 +1,7 @@
 /**
- * @file TesLight.h
+ * @file NikoLight.h
  * @author TheRealKasumi
- * @brief Static class encapsulating all TesLight functionality.
+ * @brief Static class encapsulating all NikoLight functionality.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -19,8 +19,8 @@
  * from the owner.
  *
  */
-#ifndef TES_LIGHT_MAIN_H
-#define TES_LIGHT_MAIN_H
+#ifndef NIKO_LIGHT_MAIN_H
+#define NIKO_LIGHT_MAIN_H
 
 #include <Arduino.h>
 #include <SD.h>
@@ -58,14 +58,14 @@
 #include "util/WatchDog.h"
 #include "update/Updater.h"
 
-class TesLight
+class NikoLight
 {
 public:
 	static void begin();
 	static void run();
 
 private:
-	TesLight();
+	NikoLight();
 
 	// Timer
 	static unsigned long lightSensorInterval;

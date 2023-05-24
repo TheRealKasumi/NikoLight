@@ -1,7 +1,7 @@
 /**
  * @file ESP32ADC.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::AnalogInput}.
+ * @brief Implementation of the {@link NL::AnalogInput}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -21,18 +21,18 @@
  */
 #include "hardware/AnalogInput.h"
 
-bool TL::AnalogInput::initialized = false;
-uint8_t TL::AnalogInput::inputPin;
-uint8_t TL::AnalogInput::inputMode;
-float TL::AnalogInput::maxVoltage;
+bool NL::AnalogInput::initialized = false;
+uint8_t NL::AnalogInput::inputPin;
+uint8_t NL::AnalogInput::inputMode;
+float NL::AnalogInput::maxVoltage;
 
 /**
  * @brief Start the analog input.
  * @param inputPin physical input pin
  */
-void TL::AnalogInput::begin(const uint8_t inputPin)
+void NL::AnalogInput::begin(const uint8_t inputPin)
 {
-	TL::AnalogInput::begin(inputPin, INPUT, 3.3f);
+	NL::AnalogInput::begin(inputPin, INPUT, 3.3f);
 }
 
 /**
@@ -40,9 +40,9 @@ void TL::AnalogInput::begin(const uint8_t inputPin)
  * @param inputPin physical input pin
  * @param inputMode input mode, INPUT, INPUT_PULLUP, INPUT_PULLDOWN
  */
-void TL::AnalogInput::begin(const uint8_t inputPin, const uint8_t inputMode)
+void NL::AnalogInput::begin(const uint8_t inputPin, const uint8_t inputMode)
 {
-	TL::AnalogInput::begin(inputPin, inputMode, 3.3f);
+	NL::AnalogInput::begin(inputPin, inputMode, 3.3f);
 }
 
 /**
@@ -51,22 +51,22 @@ void TL::AnalogInput::begin(const uint8_t inputPin, const uint8_t inputMode)
  * @param inputMode input mode, INPUT, INPUT_PULLUP, INPUT_PULLDOWN
  * @param maxVoltage maximum voltage value, used to convert from analog value to voltage
  */
-void TL::AnalogInput::begin(const uint8_t inputPin, const uint8_t inputMode, const float maxVoltage)
+void NL::AnalogInput::begin(const uint8_t inputPin, const uint8_t inputMode, const float maxVoltage)
 {
-	TL::AnalogInput::initialized = true;
-	TL::AnalogInput::inputPin = inputPin;
-	TL::AnalogInput::inputMode = inputMode;
-	TL::AnalogInput::maxVoltage = maxVoltage;
-	TL::AnalogInput::setupPin();
+	NL::AnalogInput::initialized = true;
+	NL::AnalogInput::inputPin = inputPin;
+	NL::AnalogInput::inputMode = inputMode;
+	NL::AnalogInput::maxVoltage = maxVoltage;
+	NL::AnalogInput::setupPin();
 }
 
 /**
  * @brief Stop the analog input.
  */
-void TL::AnalogInput::end()
+void NL::AnalogInput::end()
 {
-	TL::AnalogInput::initialized = false;
-	pinMode(TL::AnalogInput::inputPin, INPUT);
+	NL::AnalogInput::initialized = false;
+	pinMode(NL::AnalogInput::inputPin, INPUT);
 }
 
 /**
@@ -74,74 +74,74 @@ void TL::AnalogInput::end()
  * @return true when initialized
  * @return false when not initialized
  */
-bool TL::AnalogInput::isInitialized()
+bool NL::AnalogInput::isInitialized()
 {
-	return TL::AnalogInput::initialized;
+	return NL::AnalogInput::initialized;
 }
 
 /**
  * @brief Set the input pin.
  * @param inputPin physical pin for the input
  */
-void TL::AnalogInput::setInputPin(const uint8_t inputPin)
+void NL::AnalogInput::setInputPin(const uint8_t inputPin)
 {
-	TL::AnalogInput::inputPin = inputPin;
-	TL::AnalogInput::setupPin();
+	NL::AnalogInput::inputPin = inputPin;
+	NL::AnalogInput::setupPin();
 }
 
 /**
  * @brief Get the phcysical input pin currently used.
  * @return uint8_t physical pin number
  */
-uint8_t TL::AnalogInput::getInputPin()
+uint8_t NL::AnalogInput::getInputPin()
 {
-	return TL::AnalogInput::inputPin;
+	return NL::AnalogInput::inputPin;
 }
 
 /**
  * @brief Set the input mode.
  * @param inputMode input mode, INPUT, INPUT_PULLUP, INPUT_PULLDOWN
  */
-void TL::AnalogInput::setInputMode(const uint8_t inputMode)
+void NL::AnalogInput::setInputMode(const uint8_t inputMode)
 {
-	TL::AnalogInput::inputMode = inputMode;
-	TL::AnalogInput::setupPin();
+	NL::AnalogInput::inputMode = inputMode;
+	NL::AnalogInput::setupPin();
 }
 
 /**
  * @brief Get the currently set input mode.
  * @return uint8_t input mode
  */
-uint8_t TL::AnalogInput::getInputMode()
+uint8_t NL::AnalogInput::getInputMode()
 {
-	return TL::AnalogInput::inputMode;
+	return NL::AnalogInput::inputMode;
 }
 
 /**
  * @brief Set the maximum voltage value, used to convert from analog value to voltage.
  * @param maxVoltage maximum voltage value, used to convert from analog value to voltage
  */
-void TL::AnalogInput::setMaxVoltage(const float maxVoltage)
+void NL::AnalogInput::setMaxVoltage(const float maxVoltage)
 {
-	TL::AnalogInput::maxVoltage = maxVoltage;
+	NL::AnalogInput::maxVoltage = maxVoltage;
 }
 
 /**
  * @brief Get the maximum voltage value, used to convert from analog value to voltage.
  * @return float maximum voltage value, used to convert from analog value to voltage
  */
-float TL::AnalogInput::getMaxVoltage()
+float NL::AnalogInput::getMaxVoltage()
 {
-	return TL::AnalogInput::maxVoltage;
+	return NL::AnalogInput::maxVoltage;
 }
 
 /**
  * @brief Get the raw analog value.
  * @return uint16_t raw analog value
  */
-uint16_t TL::AnalogInput::getAnalogValue()
+uint16_t NL::AnalogInput::getAnalogValue()
 {
-	return analogRead(TL::AnalogInput::inputPin);
+	return analogRead(NL::AnalogInput::inputPin);
 }
 
 /**
@@ -149,9 +149,9 @@ uint16_t TL::AnalogInput::getAnalogValue()
  * @param usePolynomialCorrection use a polynomial curve to correct the ADC values
  * @return float analog voltage
  */
-float TL::AnalogInput::getAnalogVoltage(const bool usePolynomialCorrection)
+float NL::AnalogInput::getAnalogVoltage(const bool usePolynomialCorrection)
 {
-	const double analogValue = TL::AnalogInput::getAnalogValue();
+	const double analogValue = NL::AnalogInput::getAnalogValue();
 	if (analogValue < 1.0f || analogValue > 4095.0f)
 	{
 		return 0.0f;
@@ -160,19 +160,19 @@ float TL::AnalogInput::getAnalogVoltage(const bool usePolynomialCorrection)
 	if (usePolynomialCorrection)
 	{
 		const double correctedVoltage = -0.000000000000016 * pow(analogValue, 4) + 0.000000000118171 * pow(analogValue, 3) - 0.000000301211691 * pow(analogValue, 2) + 0.001109019271794 * analogValue + 0.034143524634089;
-		return correctedVoltage / 3.14f * TL::AnalogInput::maxVoltage;
+		return correctedVoltage / 3.14f * NL::AnalogInput::maxVoltage;
 	}
 	else
 	{
-		return analogValue / 4095.0f * TL::AnalogInput::maxVoltage;
+		return analogValue / 4095.0f * NL::AnalogInput::maxVoltage;
 	}
 }
 
 /**
  * @brief Configure the input pin.
  */
-void TL::AnalogInput::setupPin()
+void NL::AnalogInput::setupPin()
 {
-	pinMode(TL::AnalogInput::inputPin, TL::AnalogInput::inputMode);
+	pinMode(NL::AnalogInput::inputPin, NL::AnalogInput::inputMode);
 	analogReadResolution(12);
 }

@@ -1,7 +1,7 @@
 /**
  * @file TupFile.h
  * @author TheRealKasumi
- * @brief Contains a class for loading a TesLight Update Package file.
+ * @brief Contains a class for loading a NikoLight Update Package file.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -26,7 +26,7 @@
 #include <WString.h>
 #include <FS.h>
 
-namespace TL
+namespace NL
 {
 	class TupFile
 	{
@@ -76,20 +76,20 @@ namespace TL
 		TupFile();
 		~TupFile();
 
-		TL::TupFile::Error load(FS *fileSystem, const String fileName);
-		TL::TupFile::Error unpack(FS *fileSystem, const String root);
+		NL::TupFile::Error load(FS *fileSystem, const String fileName);
+		NL::TupFile::Error unpack(FS *fileSystem, const String root);
 		void close();
 
-		TL::TupFile::TupHeader getHeader();
+		NL::TupFile::TupHeader getHeader();
 
 	private:
 		File file;
-		TL::TupFile::TupHeader tupHeader;
+		NL::TupFile::TupHeader tupHeader;
 
 		void initHeader();
-		TL::TupFile::Error loadTupHeader();
+		NL::TupFile::Error loadTupHeader();
 
-		TL::TupFile::Error verify();
+		NL::TupFile::Error verify();
 		uint32_t generateHash();
 
 		String createAbsolutePath(const String root, const char *name, uint16_t nameLength);

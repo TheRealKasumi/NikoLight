@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include <Wire.h>
 
-namespace TL
+namespace NL
 {
 	class MPU6050
 	{
@@ -70,32 +70,32 @@ namespace TL
 			float temperatureDeg;
 		};
 
-		static TL::MPU6050::Error begin(const uint8_t deviceAddress);
-		static TL::MPU6050::Error begin(const uint8_t deviceAddress, const TL::MPU6050::MPU6050AccScale accScale, const TL::MPU6050::MPU6050GyScale gyScale);
+		static NL::MPU6050::Error begin(const uint8_t deviceAddress);
+		static NL::MPU6050::Error begin(const uint8_t deviceAddress, const NL::MPU6050::MPU6050AccScale accScale, const NL::MPU6050::MPU6050GyScale gyScale);
 		static void end();
 		static bool isInitialized();
 
-		static TL::MPU6050::Error wake();
-		static TL::MPU6050::Error sleep();
+		static NL::MPU6050::Error wake();
+		static NL::MPU6050::Error sleep();
 
-		static TL::MPU6050::Error setAccScale(TL::MPU6050::MPU6050AccScale accScale);
-		static TL::MPU6050::MPU6050AccScale getAccScale();
+		static NL::MPU6050::Error setAccScale(NL::MPU6050::MPU6050AccScale accScale);
+		static NL::MPU6050::MPU6050AccScale getAccScale();
 
-		static TL::MPU6050::Error setGyScale(TL::MPU6050::MPU6050GyScale gyScale);
-		static TL::MPU6050::MPU6050GyScale getGyScale();
+		static NL::MPU6050::Error setGyScale(NL::MPU6050::MPU6050GyScale gyScale);
+		static NL::MPU6050::MPU6050GyScale getGyScale();
 
-		static TL::MPU6050::Error getData(TL::MPU6050::MPU6050MotionData &motionData);
+		static NL::MPU6050::Error getData(NL::MPU6050::MPU6050MotionData &motionData);
 
 	private:
 		MPU6050();
 
 		static bool initialized;
 		static uint8_t deviceAddress;
-		static TL::MPU6050::MPU6050AccScale accScale;
-		static TL::MPU6050::MPU6050GyScale gyScale;
+		static NL::MPU6050::MPU6050AccScale accScale;
+		static NL::MPU6050::MPU6050GyScale gyScale;
 
-		static float getScaleDiv(const TL::MPU6050::MPU6050AccScale accScale);
-		static float getScaleDiv(const TL::MPU6050::MPU6050GyScale gyScale);
+		static float getScaleDiv(const NL::MPU6050::MPU6050AccScale accScale);
+		static float getScaleDiv(const NL::MPU6050::MPU6050GyScale gyScale);
 	};
 }
 

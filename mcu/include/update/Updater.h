@@ -31,7 +31,7 @@
 #include "update/TupFile.h"
 #include "util/FileUtil.h"
 
-namespace TL
+namespace NL
 {
 	class Updater
 	{
@@ -51,13 +51,13 @@ namespace TL
 
 		};
 
-		static TL::Updater::Error install(FS *fileSystem, const String packageFileName);
+		static NL::Updater::Error install(FS *fileSystem, const String packageFileName);
 		static void reboot(const String reason, const uint16_t delayMillis);
 
 	private:
 		Updater();
 
-		static TL::Updater::Error installFirmware(FS *fileSystem, const String firmwareFileName);
+		static NL::Updater::Error installFirmware(FS *fileSystem, const String firmwareFileName);
 		static void rebootInt(void *params);
 	};
 }

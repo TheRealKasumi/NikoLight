@@ -30,7 +30,7 @@
 #include "sensor/MotionSensor.h"
 #include "hardware/AudioUnit.h"
 
-namespace TL
+namespace NL
 {
 	class LedAnimator
 	{
@@ -64,8 +64,8 @@ namespace TL
 		LedAnimator();
 		virtual ~LedAnimator() = 0;
 
-		void setDataSource(const TL::LedAnimator::DataSource dataSource);
-		TL::LedAnimator::DataSource getDataSource();
+		void setDataSource(const NL::LedAnimator::DataSource dataSource);
+		NL::LedAnimator::DataSource getDataSource();
 
 		void setSpeed(const uint8_t speed);
 		uint8_t getSpeed();
@@ -85,17 +85,17 @@ namespace TL
 		void setReverse(const bool reverse);
 		bool getReverse();
 
-		void setMotionSensorData(const TL::MotionSensor::MotionSensorData &motionSensorData);
-		TL::MotionSensor::MotionSensorData &getMotionSensorData();
+		void setMotionSensorData(const NL::MotionSensor::MotionSensorData &motionSensorData);
+		NL::MotionSensor::MotionSensorData &getMotionSensorData();
 
-		void setAudioAnalysis(const TL::AudioUnit::AudioAnalysis &audioAnalysis);
-		TL::AudioUnit::AudioAnalysis &getAudioAnalysis();
+		void setAudioAnalysis(const NL::AudioUnit::AudioAnalysis &audioAnalysis);
+		NL::AudioUnit::AudioAnalysis &getAudioAnalysis();
 
-		virtual void init(TL::LedStrip &ledStrip) = 0;
-		virtual void render(TL::LedStrip &ledStrip) = 0;
+		virtual void init(NL::LedStrip &ledStrip) = 0;
+		virtual void render(NL::LedStrip &ledStrip) = 0;
 
 	protected:
-		TL::LedAnimator::DataSource dataSource;
+		NL::LedAnimator::DataSource dataSource;
 		uint8_t speed;
 		uint16_t offset;
 		float animationBrightness;
@@ -104,11 +104,11 @@ namespace TL
 		float fadeSpeed;
 		bool reverse;
 
-		TL::MotionSensor::MotionSensorData motionSensorData;
-		TL::AudioUnit::AudioAnalysis audioAnalysis;
+		NL::MotionSensor::MotionSensorData motionSensorData;
+		NL::AudioUnit::AudioAnalysis audioAnalysis;
 
-		void reversePixels(TL::LedStrip &ledStrip);
-		void applyBrightness(TL::LedStrip &ledStrip);
+		void reversePixels(NL::LedStrip &ledStrip);
+		void applyBrightness(NL::LedStrip &ledStrip);
 		static int32_t random(const int32_t min, const int32_t max);
 		static float trapezoid(float angle);
 		static float trapezoid2(float angle);

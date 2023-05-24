@@ -1,7 +1,7 @@
 /**
  * @file FseqLoader.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::FseqLoader}.
+ * @brief Implementation of the {@link NL::FseqLoader}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -22,10 +22,10 @@
 #include "util/FseqLoader.h"
 
 /**
- * @brief Create a new instance of {@link TL::FseqLoader::FseqLoader}
+ * @brief Create a new instance of {@link NL::FseqLoader::FseqLoader}
  * @param fileSystem file system from which the file should be loaded
  */
-TL::FseqLoader::FseqLoader(FS *fileSystem)
+NL::FseqLoader::FseqLoader(FS *fileSystem)
 {
 	this->fileSystem = fileSystem;
 	this->initFseqHeader();
@@ -35,9 +35,9 @@ TL::FseqLoader::FseqLoader(FS *fileSystem)
 }
 
 /**
- * @brief Destroy the {@link TL::FseqLoader::FseqLoader} and close resources.
+ * @brief Destroy the {@link NL::FseqLoader::FseqLoader} and close resources.
  */
-TL::FseqLoader::~FseqLoader()
+NL::FseqLoader::~FseqLoader()
 {
 	this->close();
 }
@@ -55,22 +55,22 @@ TL::FseqLoader::~FseqLoader()
  * @return ERROR_HEADER_LENGTH when the header length is invalid
  * @return ERROR_INVALID_DATA_LENGTH when the data length does not match the length specified in header
  */
-TL::FseqLoader::Error TL::FseqLoader::loadFromFile(const String fileName)
+NL::FseqLoader::Error NL::FseqLoader::loadFromFile(const String fileName)
 {
 	this->file = this->fileSystem->open(fileName, FILE_READ);
 	if (!this->file)
 	{
-		return TL::FseqLoader::Error::ERROR_FILE_NOT_FOUND;
+		return NL::FseqLoader::Error::ERROR_FILE_NOT_FOUND;
 	}
 	else if (this->file.isDirectory())
 	{
 		this->file.close();
-		return TL::FseqLoader::Error::ERROR_FILE_IS_DIR;
+		return NL::FseqLoader::Error::ERROR_FILE_IS_DIR;
 	}
 	else if (this->file.size() < 28)
 	{
 		this->file.close();
-		return TL::FseqLoader::Error::ERROR_FILE_TOO_SMALL;
+		return NL::FseqLoader::Error::ERROR_FILE_TOO_SMALL;
 	}
 
 	bool readError = false;
@@ -92,25 +92,25 @@ TL::FseqLoader::Error TL::FseqLoader::loadFromFile(const String fileName)
 	if (readError)
 	{
 		this->file.close();
-		return TL::FseqLoader::Error::ERROR_FILE_READ;
+		return NL::FseqLoader::Error::ERROR_FILE_READ;
 	}
 
-	const TL::FseqLoader::Error validationError = this->isValid();
-	if (validationError != TL::FseqLoader::Error::OK)
+	const NL::FseqLoader::Error validationError = this->isValid();
+	if (validationError != NL::FseqLoader::Error::OK)
 	{
 		this->file.close();
 		return validationError;
 	}
 
 	this->moveToStart();
-	return TL::FseqLoader::Error::OK;
+	return NL::FseqLoader::Error::OK;
 }
 
 /**
  * @brief Return the number of remaining pixels in the file.
  * @return size_t number of pixels available to read
  */
-size_t TL::FseqLoader::available()
+size_t NL::FseqLoader::available()
 {
 	return this->file ? this->file.available() / 3 : 0;
 }
@@ -118,7 +118,7 @@ size_t TL::FseqLoader::available()
 /**
  * @brief Reset the animation to the start.
  */
-void TL::FseqLoader::moveToStart()
+void NL::FseqLoader::moveToStart()
 {
 	if (this->file)
 	{
@@ -130,7 +130,7 @@ void TL::FseqLoader::moveToStart()
 /**
  * @brief Close the input file.
  */
-void TL::FseqLoader::close()
+void NL::FseqLoader::close()
 {
 	if (this->file)
 	{
@@ -140,9 +140,9 @@ void TL::FseqLoader::close()
 
 /**
  * @brief Get the file header.
- * @return {@link TL::FseqLoader::FseqHeader} header of the opened file
+ * @return {@link NL::FseqLoader::FseqHeader} header of the opened file
  */
-TL::FseqLoader::FseqHeader TL::FseqLoader::getHeader()
+NL::FseqLoader::FseqHeader NL::FseqLoader::getHeader()
 {
 	return this->fseqHeader;
 }
@@ -153,7 +153,7 @@ TL::FseqLoader::FseqHeader TL::FseqLoader::getHeader()
  * @return OK when the pixel buffer was read
  * @return ERROR_END_OF_FILE when there is no more data to read
  */
-TL::FseqLoader::Error TL::FseqLoader::readLedStrip(TL::LedStrip &ledStrip)
+NL::FseqLoader::Error NL::FseqLoader::readLedStrip(NL::LedStrip &ledStrip)
 {
 	if (this->file && this->available() >= ledStrip.getLedCount())
 	{
@@ -163,24 +163,24 @@ TL::FseqLoader::Error TL::FseqLoader::readLedStrip(TL::LedStrip &ledStrip)
 			this->zoneCounter = 0;
 			if (!this->file.seek(this->fillerBytes, fs::SeekMode::SeekCur))
 			{
-				return TL::FseqLoader::Error::ERROR_END_OF_FILE;
+				return NL::FseqLoader::Error::ERROR_END_OF_FILE;
 			}
 		}
 
 		if (this->file.read(ledStrip.getBuffer(), ledStrip.getLedCount() * 3) == ledStrip.getLedCount() * 3)
 		{
-			return TL::FseqLoader::Error::OK;
+			return NL::FseqLoader::Error::OK;
 		}
 	}
 
-	return TL::FseqLoader::Error::ERROR_END_OF_FILE;
+	return NL::FseqLoader::Error::ERROR_END_OF_FILE;
 }
 
 /**
  * @brief Set the number of filler bytes which is skipped after each completed frame.
  * @param fillerBytes number of filler bytes
  */
-void TL::FseqLoader::setFillerBytes(const uint8_t fillerBytes)
+void NL::FseqLoader::setFillerBytes(const uint8_t fillerBytes)
 {
 	this->fillerBytes = fillerBytes;
 }
@@ -188,7 +188,7 @@ void TL::FseqLoader::setFillerBytes(const uint8_t fillerBytes)
 /**
  * @brief Get the number of filler bytes which is skipped after each completed frame.
  */
-uint8_t TL::FseqLoader::getFillerBytes()
+uint8_t NL::FseqLoader::getFillerBytes()
 {
 	return this->fillerBytes;
 }
@@ -197,7 +197,7 @@ uint8_t TL::FseqLoader::getFillerBytes()
  * @brief Set the number of zones that will read from the file.
  * @param zoneCount number of zones
  */
-void TL::FseqLoader::setZoneCount(const uint8_t zoneCount)
+void NL::FseqLoader::setZoneCount(const uint8_t zoneCount)
 {
 	this->zoneCount = zoneCount;
 }
@@ -205,7 +205,7 @@ void TL::FseqLoader::setZoneCount(const uint8_t zoneCount)
 /**
  * @brief Get the number of zones that will read from the file.
  */
-uint8_t TL::FseqLoader::getZoneCount()
+uint8_t NL::FseqLoader::getZoneCount()
 {
 	return this->zoneCount;
 }
@@ -213,7 +213,7 @@ uint8_t TL::FseqLoader::getZoneCount()
 /**
  * @brief Initialize the fseqHeader with 0.
  */
-void TL::FseqLoader::initFseqHeader()
+void NL::FseqLoader::initFseqHeader()
 {
 	this->fseqHeader.identifier[0] = 0;
 	this->fseqHeader.identifier[1] = 0;
@@ -242,24 +242,24 @@ void TL::FseqLoader::initFseqHeader()
  * @return ERROR_HEADER_LENGTH when the header length is invalid
  * @return ERROR_INVALID_DATA_LENGTH when the data length does not match the length specified in header
  */
-TL::FseqLoader::Error TL::FseqLoader::isValid()
+NL::FseqLoader::Error NL::FseqLoader::isValid()
 {
 	// Check the identifier
 	if (this->fseqHeader.identifier[0] != 'P' || this->fseqHeader.identifier[1] != 'S' || this->fseqHeader.identifier[2] != 'E' || this->fseqHeader.identifier[3] != 'Q')
 	{
-		return TL::FseqLoader::Error::ERROR_MAGIC_NUMBERS;
+		return NL::FseqLoader::Error::ERROR_MAGIC_NUMBERS;
 	}
 
 	// Check the version
 	if (this->fseqHeader.minorVersion != 0 || this->fseqHeader.majorVersion != 1)
 	{
-		return TL::FseqLoader::Error::ERROR_FILE_VERSION;
+		return NL::FseqLoader::Error::ERROR_FILE_VERSION;
 	}
 
 	// Check the header length
 	if (this->fseqHeader.headerLength != 28)
 	{
-		return TL::FseqLoader::Error::ERROR_HEADER_LENGTH;
+		return NL::FseqLoader::Error::ERROR_HEADER_LENGTH;
 	}
 
 	// Check the channelCount, frameCount and data block length
@@ -267,8 +267,8 @@ TL::FseqLoader::Error TL::FseqLoader::isValid()
 	uint32_t expectedLength = this->fseqHeader.channelCount * this->fseqHeader.frameCount;
 	if (dataLength != expectedLength)
 	{
-		return TL::FseqLoader::Error::ERROR_INVALID_DATA_LENGTH;
+		return NL::FseqLoader::Error::ERROR_INVALID_DATA_LENGTH;
 	}
 
-	return TL::FseqLoader::Error::OK;
+	return NL::FseqLoader::Error::OK;
 }
