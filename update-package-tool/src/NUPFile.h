@@ -1,13 +1,13 @@
 /**
- * @file TUPFile.h
+ * @file NUPFile.h
  * @author TheRealKasumi
- * @brief Contains a class for building a TesLight Update Package file from a folder.
+ * @brief Contains a class for building a NikoLight Update Package file from a folder.
  *
  * @copyright Copyright (c) 2022
  *
  */
-#ifndef TUP_FILE_H
-#define TUP_FILE_H
+#ifndef NUP_FILE_H
+#define NUP_FILE_H
 
 #include <stdint.h>
 #include <cstring>
@@ -16,10 +16,10 @@
 #include <filesystem>
 #include <fstream>
 
-class TUPFile
+class NUPFile
 {
 public:
-	struct TUPHeader
+	struct NUPHeader
 	{
 		char magic[4];
 		uint8_t fileVersion;
@@ -27,31 +27,31 @@ public:
 		uint32_t numberBlocks;
 	};
 
-	enum TUPDataType
+	enum NUPDataType
 	{
 		FIRMWARE = 0,
 		FILE = 1,
 		DIRECTORY = 2
 	};
 
-	struct TUPDataBlock
+	struct NUPDataBlock
 	{
-		TUPDataType type;
+		NUPDataType type;
 		uint16_t pathLength;
 		char *path;
 		uint32_t size;
 		uint8_t *data;
 	};
 
-	TUPFile();
-	~TUPFile();
+	NUPFile();
+	~NUPFile();
 
 	bool generateFromFolder(const std::filesystem::path rootPath);
 	bool saveToFile(const std::filesystem::path fileName);
 
 private:
-	TUPHeader header;
-	std::vector<TUPDataBlock> dataBlocks;
+	NUPHeader header;
+	std::vector<NUPDataBlock> dataBlocks;
 
 	void addFolder(const std::filesystem::path path);
 	bool addFile(const std::filesystem::path fileName, const std::filesystem::path name);

@@ -1,6 +1,6 @@
 # NikoLight Update Package Tool
 
-This tool was developted to create `TUP` files, which stands for `<redacted>Light Update Package`.
+This tool was developted to create `NUP` files, which stands for `NikoLight Update Package`.
 It is a simple package that combines a variable number of files and folders into a single file.
 This package file is then used to update the NikoLight controller via OTA update.
 
@@ -26,7 +26,7 @@ I used [gcc](https://www.mingw-w64.org/) on Windows but this tool can also be bu
 
 ```sh
 mkdir build
-g++ -std=c++17 -g ./src/*.cpp -o build/tupt.exe
+g++ -std=c++17 -g ./src/*.cpp -o build/nupt.exe
 ```
 
 ## Usage
@@ -39,27 +39,27 @@ By convention the firmware file for the controller is called `firmware.bin` and 
 Once you copied all files to the update folder, we are ready to go.
 
 ```sh
-tupt <output_file> <source_directory>
+nupt <output_file> <source_directory>
 ```
 
-## TUP File Format
+## NUP File Format
 
 There is nothing complicated about this file format.
 It consists of a simple header and a variable number of data blocks.
 The header contains some general information while each data block represents a file or directory.
 
-### TUP Header
+### NUP Header
 
 | index | type    | description                                            |
 | ----- | ------- | ------------------------------------------------------ |
-| 0     | char[4] | Identifier, always "TLUP"                              |
+| 0     | char[4] | Identifier, always "NLUP"                              |
 | 4     | uint8   | File version, should be 1                              |
 | 5     | uint32  | A very simple hash to run a quick check on the package |
 | 9     | uint32  | Number of following data blocks                        |
 
 The data blocks start directly after the header.
 
-### TUP Data Blocks
+### NUP Data Blocks
 
 | index | type    | description                                                   |
 | ----- | ------- | ------------------------------------------------------------- |

@@ -179,7 +179,7 @@
 
 // Update configuration
 #define UPDATE_DIRECTORY "/update"	  // Update folder
-#define UPDATE_FILE_NAME "update.tup" // Update package file name
+#define UPDATE_FILE_NAME "update.nup" // Update package file name
 
 // UI configuration
 #define UI_DEFAULT_LANGUAGE "en" // Default language of the UI

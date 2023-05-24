@@ -22,8 +22,8 @@
 #include "update/Updater.h"
 
 /**
- * @brief Run a full system update from a TUP file.
- * @param fileSystem where the TUP file is stored and unpacked
+ * @brief Run a full system update from a NUP file.
+ * @param fileSystem where the NUP file is stored and unpacked
  * @param packageFileName full path and name of the package file
  * @return OK when the update was installed
  * @return ERROR_UPDATE_FILE_NOT_FOUND when the update file was not found
@@ -43,8 +43,8 @@ NL::Updater::Error NL::Updater::install(FS *fileSystem, const String packageFile
 		return NL::Updater::Error::ERROR_UPDATE_FILE_NOT_FOUND;
 	}
 
-	NL::TupFile tupFile;
-	if (tupFile.load(fileSystem, packageFileName) != NL::TupFile::Error::OK)
+	NL::NupFile nupFile;
+	if (nupFile.load(fileSystem, packageFileName) != NL::NupFile::Error::OK)
 	{
 		fileSystem->remove(packageFileName);
 		return NL::Updater::Error::ERROR_INVALID_FILE;
@@ -56,13 +56,13 @@ NL::Updater::Error NL::Updater::install(FS *fileSystem, const String packageFile
 		return NL::Updater::Error::ERROR_CLEAN_FS;
 	}
 
-	if (tupFile.unpack(fileSystem, F("/")) != NL::TupFile::Error::OK)
+	if (nupFile.unpack(fileSystem, F("/")) != NL::NupFile::Error::OK)
 	{
 		fileSystem->remove(packageFileName);
 		return NL::Updater::Error::ERROR_UPDATE_UNPACK;
 	}
 
-	tupFile.close();
+	nupFile.close();
 	fileSystem->remove(packageFileName);
 
 	NL::Updater::Error fwError = NL::Updater::installFirmware(fileSystem, F("/firmware.bin"));

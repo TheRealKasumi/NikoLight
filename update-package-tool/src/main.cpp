@@ -1,7 +1,7 @@
 /**
  * @file main.cpp
  * @author TheRealKasumi
- * @brief Entry point for the TesLight Update Packaging Tool.
+ * @brief Entry point for the NikoLight Update Packaging Tool.
  *
  * @copyright Copyright (c) 2022
  *
@@ -14,7 +14,7 @@
 #include <fcntl.h>
 #endif
 
-#include "TUPFile.h"
+#include "NUPFile.h"
 
 // Function declarations
 void printHeader();
@@ -55,24 +55,24 @@ int main(int argc, char *argv[])
 		exit(2);
 	}
 
-	// Generate the TUP file
-	std::wcout << L"Generate TesLight Update Package from folder: " << updateFolder << std::endl;
-	TUPFile tupFile;
-	if (!tupFile.generateFromFolder(updateFolder))
+	// Generate the NUP file
+	std::wcout << L"Generate NikoLight Update Package from folder: " << updateFolder << std::endl;
+	NUPFile nupFile;
+	if (!nupFile.generateFromFolder(updateFolder))
 	{
-		std::cerr << "Failed to generate TesLight Update Package from folder.";
+		std::cerr << "Failed to generate NikoLight Update Package from folder.";
 		exit(3);
 	}
 
-	// Write the TUP to the disk
-	std::wcout << L"Write TesLight Update Package to: " << outputFile << std::endl;
-	if (!tupFile.saveToFile(outputFile))
+	// Write the NUP to the disk
+	std::wcout << L"Write NikoLight Update Package to: " << outputFile << std::endl;
+	if (!nupFile.saveToFile(outputFile))
 	{
-		std::cerr << "Failed to write TesLight Update Package.";
+		std::cerr << "Failed to write NikoLight Update Package.";
 		exit(4);
 	}
 
-	std::wcout << L"Nice! The TesLight Update Package created successfully.";
+	std::wcout << L"Nice! The NikoLight Update Package created successfully.";
 	exit(0);
 }
 
@@ -81,19 +81,7 @@ int main(int argc, char *argv[])
  */
 void printHeader()
 {
-	std::wcout << L"████████╗███████╗███████╗██╗     ██╗ ██████╗ ██╗  ██╗████████╗    ██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗" << std::endl;
-	std::wcout << L"╚══██╔══╝██╔════╝██╔════╝██║     ██║██╔════╝ ██║  ██║╚══██╔══╝    ██║   ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝" << std::endl;
-	std::wcout << L"   ██║   █████╗  ███████╗██║     ██║██║  ███╗███████║   ██║       ██║   ██║██████╔╝██║  ██║███████║   ██║   █████╗  " << std::endl;
-	std::wcout << L"   ██║   ██╔══╝  ╚════██║██║     ██║██║   ██║██╔══██║   ██║       ██║   ██║██╔═══╝ ██║  ██║██╔══██║   ██║   ██╔══╝  " << std::endl;
-	std::wcout << L"   ██║   ███████╗███████║███████╗██║╚██████╔╝██║  ██║   ██║       ╚██████╔╝██║     ██████╔╝██║  ██║   ██║   ███████╗" << std::endl;
-	std::wcout << L"   ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝        ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝" << std::endl;
-	std::wcout << L"                                                                                                                    " << std::endl;
-	std::wcout << L"         ██████╗  █████╗  ██████╗██╗  ██╗ █████╗  ██████╗ ███████╗    ████████╗ ██████╗  ██████╗ ██╗                " << std::endl;
-	std::wcout << L"         ██╔══██╗██╔══██╗██╔════╝██║ ██╔╝██╔══██╗██╔════╝ ██╔════╝    ╚══██╔══╝██╔═══██╗██╔═══██╗██║                " << std::endl;
-	std::wcout << L"         ██████╔╝███████║██║     █████╔╝ ███████║██║  ███╗█████╗         ██║   ██║   ██║██║   ██║██║                " << std::endl;
-	std::wcout << L"         ██╔═══╝ ██╔══██║██║     ██╔═██╗ ██╔══██║██║   ██║██╔══╝         ██║   ██║   ██║██║   ██║██║                " << std::endl;
-	std::wcout << L"         ██║     ██║  ██║╚██████╗██║  ██╗██║  ██║╚██████╔╝███████╗       ██║   ╚██████╔╝╚██████╔╝███████╗           " << std::endl;
-	std::wcout << L"         ╚═╝     ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝       ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝           " << std::endl;
+	std::wcout << L"NikoLight Update Packe Tool (NUPT)" << std::endl;
 	std::wcout << std::endl;
 }
 
@@ -102,8 +90,8 @@ void printHeader()
  */
 void printHelp()
 {
-	std::wcout << L"This tool will help you to create a TesLight Update Package (TUP). ";
-	std::wcout << L"These packages are used to update the TesLight firmware and MicroSD card content. ";
+	std::wcout << L"This tool will help you to create a NikoLight Update Package (NUP). ";
+	std::wcout << L"These packages are used to update the NikoLight firmware and MicroSD card content. ";
 	std::wcout << L"If you want to generate such a file, you need to create a folder first. ";
 	std::wcout << L"Here you need to copy all data for the update, including the firmware and the frotnend files. ";
 	std::wcout << L"All other data, except user settings, log and animation data is removed from the MicroSD card. ";
@@ -111,5 +99,5 @@ void printHelp()
 	std::wcout << L"By convention the firmware file for the controller is called 'firmware.bin' and must be in the root of the update folder. ";
 	std::wcout << L"Once you copied all files to the update folder, we are ready to go." << std::endl
 			   << std::endl;
-	std::wcout << L"Please call me again with the following arguments: tupt <output_file> <source_directory>";
+	std::wcout << L"Please call me again with the following arguments: nupt <output_file> <source_directory>";
 }

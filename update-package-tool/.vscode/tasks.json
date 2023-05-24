@@ -5,7 +5,7 @@
 			"label": "C/C++: g++.exe build project",
 			"type": "cppbuild",
 			"command": "g++.exe",
-			"args": ["-std=c++17", "-g", "${workspaceRoot}\\src\\*.cpp", "-o", "${workspaceRoot}\\build\\tupt.exe"],
+			"args": ["-std=c++17", "-g", "${workspaceRoot}\\src\\*.cpp", "-o", "${workspaceRoot}\\build\\nupt.exe"],
 			"group": {
 				"kind": "build",
 				"isDefault": true

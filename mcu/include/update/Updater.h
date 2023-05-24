@@ -28,7 +28,7 @@
 #include <Update.h>
 
 #include "logging/Logger.h"
-#include "update/TupFile.h"
+#include "update/NupFile.h"
 #include "util/FileUtil.h"
 
 namespace NL
