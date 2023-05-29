@@ -13,8 +13,8 @@
       "sizes": "512x512"
     }
   ],
-  "name": "TesLight",
-  "short_name": "TesLight",
+  "name": "NikoLight",
+  "short_name": "NikoLight",
   "start_url": ".",
   "theme_color": "#161717"
 }

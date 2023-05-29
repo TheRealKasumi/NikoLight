@@ -102,8 +102,8 @@ const DEFAULT_VALUES: FormData = {
     regulatorPowerLimit: 24,
   },
   wifi: {
-    accessPointPassword: 'TesLightPW',
-    accessPointSsid: 'TesLight',
+    accessPointPassword: 'NikoLightPW',
+    accessPointSsid: 'NikoLight',
   },
   ui: {
     expertMode: false,
@@ -436,7 +436,7 @@ const Form = (): JSX.Element => {
                 minLength={2}
                 name="wifi.accessPointSsid"
                 pattern="^[0-9a-zA-Z-_ ]+$"
-                placeholder="TesLight"
+                placeholder="NikoLight"
               />
             </div>
           </label>

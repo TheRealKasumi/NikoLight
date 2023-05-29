@@ -15,7 +15,7 @@ export type SystemInfo = {
     sketchSize: number;
     freeSketchSpace: number;
   };
-  tlSystemInfo: {
+  nlSystemInfo: {
     rps: number;
     fps: number;
     ledCount: number;
@@ -52,7 +52,7 @@ export const useSystemInfo = (
     select: (data) => ({
       hardwareInfo: data.hardwareInfo,
       socInfo: data.socInfo,
-      tlSystemInfo: data.tlSystemInfo,
+      nlSystemInfo: data.nlSystemInfo,
     }),
     ...options,
   });

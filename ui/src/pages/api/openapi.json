@@ -1202,7 +1202,7 @@
               }
             }
           },
-          "tlSystemInfo": {
+          "nlSystemInfo": {
             "type": "object",
             "properties": {
               "rps": {

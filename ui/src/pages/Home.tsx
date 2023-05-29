@@ -39,7 +39,7 @@ export const Home = (): JSX.Element => {
 
   return (
     <>
-      <h1 className="text-3xl">TesLight</h1>
+      <h1 className="text-3xl">NikoLight</h1>
       <h2 className="text-base text-zinc">v{version}</h2>
       <Logo className="my-12 h-44" />
 

@@ -44,11 +44,11 @@ export const Update = (): JSX.Element => {
           components={{
             github: (
               <a
-                href="https://github.com/TheRealKasumi/TesLight"
+                href="https://github.com/TheRealKasumi/NikoLight"
                 target="_blank"
                 rel="noreferrer"
               >
-                https://github.com/TheRealKasumi/TesLight
+                https://github.com/TheRealKasumi/NikoLight
               </a>
             ),
           }}

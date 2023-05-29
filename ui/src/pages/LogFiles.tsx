@@ -21,7 +21,7 @@ export const LogFiles = (): JSX.Element => {
   const onDownload = () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const blob = new Blob([data!], { type: 'text/plain;charset=utf-8' });
-    saveAs(blob, `TesLight_${Date.now()}.log`);
+    saveAs(blob, `NikoLight_${Date.now()}.log`);
   };
 
   const onClear = () => mutate();

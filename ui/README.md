@@ -1,4 +1,4 @@
-# TesLight UI
+# NikoLight UI
 
 ## Requirements
 
@@ -20,5 +20,5 @@ pnpm install
 
 ## Entry Points
 
-- The TesLight UI is accessible via `/ui/index.html`
+- The NikoLight UI is accessible via `/ui/index.html`
 - The [Swagger UI](https://github.com/swagger-api/swagger-ui) is accessible via `/ui/swagger.html`

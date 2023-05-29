@@ -97,8 +97,8 @@ const mock: {
   },
   wifi: {
     wifiConfig: {
-      accessPointSsid: 'TesLight',
-      accessPointPassword: 'TesLightPW',
+      accessPointSsid: 'NikoLight',
+      accessPointPassword: 'NikoLightPW',
       accessPointChannel: 1,
       accessPointHidden: false,
       accessPointMaxConnections: 1,
@@ -125,7 +125,7 @@ const mock: {
         sketchSize: 1161168,
         freeSketchSpace: 1966080,
       },
-      tlSystemInfo: {
+      nlSystemInfo: {
         rps: 60,
         fps: 60,
         ledCount: 720,

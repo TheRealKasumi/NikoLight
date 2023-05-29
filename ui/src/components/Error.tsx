@@ -40,7 +40,7 @@ export const Error = ({
 
   return (
     <>
-      <h1 className="text-3xl">TesLight</h1>
+      <h1 className="text-3xl">NikoLight</h1>
       <h2 className="text-base text-zinc">v{version}</h2>
       <div className="mt-12 flex flex-col items-center">
         <ErrorContent error={error} />
