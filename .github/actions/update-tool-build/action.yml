@@ -45,12 +45,12 @@ runs:
       working-directory: update-package-tool
       run: |
         mkdir build
-        g++ -std=c++17 -g ./src/*.cpp -o build/tupt_for_${{ runner.os }}.exe
+        g++ -std=c++17 -g ./src/*.cpp -o build/nupt_for_${{ runner.os }}.exe
 
     - name: publish NikoLight Update Packaging Tool for ${{ runner.os }}
       uses: actions/upload-artifact@v3
       with:
         name: NikoLight_Update_Packaging_Tool_for_${{ runner.os }}
-        path: update-package-tool/build/tupt_for_${{ runner.os }}.exe
+        path: update-package-tool/build/nupt_for_${{ runner.os }}.exe
         if-no-files-found: error
         retention-days: 90
