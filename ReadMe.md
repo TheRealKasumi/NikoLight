@@ -3,7 +3,7 @@
 [![latest release](https://img.shields.io/github/v/release/TheRealKasumi/NikoLight)](https://github.com/TheRealKasumi/NikoLight/releases/latest)
 ![PlatformIO Build](https://github.com/TheRealKasumi/NikoLight/actions/workflows/PlatformIO-Build.yml/badge.svg?branch=main)
 ![UI Build](https://github.com/TheRealKasumi/NikoLight/actions/workflows/ui-build.yml/badge.svg?branch=main)
-![NUP Build](https://github.com/TheRealKasumi/NikoLight/actions/workflows/nikolight-update-packaging-tool-and-tup-file-build.yml/badge.svg?branch=main)
+![NUP Build](https://github.com/TheRealKasumi/NikoLight/actions/workflows/nikolight-update-packaging-tool-and-nup-file-build.yml/badge.svg?branch=main)
 
 ## Introduction
 
