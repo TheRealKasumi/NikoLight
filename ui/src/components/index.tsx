@@ -10,6 +10,7 @@ export * from './InputText';
 export * from './InputType';
 export * from './Loading';
 export * from './Log';
+export * from './Logo';
 export * from './Notification';
 export * from './Select';
 export * from './Slider';

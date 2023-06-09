@@ -5,9 +5,8 @@ import {
 import { AnyRoute, Link, RootRoute, useRouter } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { version } from '../../package.json';
-import { ReactComponent as Logo } from '../assets/logo.svg';
 import { ReactComponent as SwaggerIcon } from '../assets/swagger.svg';
-import { AnimationType } from '../components';
+import { AnimationType, Logo } from '../components';
 import i18n from '../i18n';
 import { changeTheme, toPercentage } from '../libs';
 import { useLed, useUi } from './api';
@@ -41,7 +40,7 @@ export const Home = (): JSX.Element => {
     <>
       <h1 className="text-3xl">NikoLight</h1>
       <h2 className="text-base text-zinc">v{version}</h2>
-      <Logo className="my-12 h-44" />
+      <Logo className="my-12 mx-auto h-48" />
 
       {routes.map((route) => {
         const meta = route.options.meta;

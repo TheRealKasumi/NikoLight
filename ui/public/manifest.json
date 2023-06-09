@@ -3,8 +3,8 @@
   "display": "standalone",
   "icons": [
     {
-      "src": "logo.svg",
-      "type": "image/svg+xml",
+      "src": "logo-light.png",
+      "type": "image/png",
       "sizes": "512x512"
     },
     {
