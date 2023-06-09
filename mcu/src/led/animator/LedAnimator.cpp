@@ -3,20 +3,20 @@
  * @author TheRealKasumi
  * @brief Contains the implementation of {@link NL::LedAnimator}.
  *
- * @copyright Copyright (c) 2022-2023 TheRealKasumi
+ * @copyright Copyright (c) 2023 TheRealKasumi
  *
- * This project, including hardware and software, is provided "as is". There is no warranty
- * of any kind, express or implied, including but not limited to the warranties of fitness
- * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
- * is holding ownership of this project. You are free to use, modify, distribute and contribute
- * to this project for private, non-commercial purposes. It is granted to include this hardware
- * and software into private, non-commercial projects. However, the source code of any project,
- * software and hardware that is including this project must be public and free to use for private
- * persons. Any commercial use is hereby strictly prohibited without agreement from the owner.
- * By contributing to the project, you agree that the ownership of your work is transferred to
- * the project owner and that you lose any claim to your contribute work. This copyright and
- * license note applies to all files of this project and must not be removed without agreement
- * from the owner.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
 #include "led/animator/LedAnimator.h"

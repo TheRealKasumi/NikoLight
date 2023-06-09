@@ -2,6 +2,7 @@
   "name": "ui",
   "private": true,
   "version": "1.1.0",
+  "license": "GPLV3",
   "type": "module",
   "scripts": {
     "audit": "pnpm --prod audit",
