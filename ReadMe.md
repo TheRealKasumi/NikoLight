@@ -3,34 +3,39 @@
 [![latest release](https://img.shields.io/github/v/release/TheRealKasumi/NikoLight)](https://github.com/TheRealKasumi/NikoLight/releases/latest)
 ![PlatformIO Build](https://github.com/TheRealKasumi/NikoLight/actions/workflows/PlatformIO-Build.yml/badge.svg?branch=main)
 ![UI Build](https://github.com/TheRealKasumi/NikoLight/actions/workflows/ui-build.yml/badge.svg?branch=main)
-![NUP Build](https://github.com/TheRealKasumi/NikoLight/actions/workflows/nikolight-update-packaging-tool-and-nup-file-build.yml/badge.svg?branch=main)
+![TUP Build](https://github.com/TheRealKasumi/NikoLight/actions/workflows/teslight-update-packaging-tool-and-tup-file-build.yml/badge.svg?branch=main)
+[![Discord Server](./documentation/media/readme/dicord_icon.png)](https://discord.gg/Zq4sWKZm8n)
 
 ## Introduction
 
-NikoLight is an open source ambient light that you can build yourself.
-The project is primarily aimed at people who are not looking for a ready-made solution and prefer to tinker, modify, extend and work on it as a community.
-As the name suggests, the project was started primarily for Tesla vehicles.
-The focus is on the Model 3 and Model Y.
-However, it can also be used for other cars with some small modifications.
+NikoLight is an open source ambient light that you can build and individualize yourself.
+It was initially created with modern EV's in mind.
+However, recent versions of the project are very flexible.
+NikoLight can be used in almost any vehicle including cars, trucks, campers, boats, ... 
 
-With NikoLight you can control up to 8 zones with a variable number of WS2812-type LEDs.
+The project was primarily made for people who are looking for something unique system that differs from boring ambient light systems that can be found all over the internet.
+With NikoLight you can control up to 8 individual zones of WS2812-type LEDs.
 For example, the 4 doors, the center console, the footwell lights and a light bar under the dashboard.
-In total, several hundred LEDs can be controlled individually.
+Each zone can have up to 250 LEDs which means there can be up to 2000 LEDs in total.
+Every single LED can be addressed and individually controlled by the NikoLight board.
+This allows to create a variety of beautiful effects.
 
-Since there should be an easy way to control all these LEDs, there are many different effects for each zone.
-These can display a simple color, color gradients or even animations in the individual zones.
-Since the controller has a motion sensor, some effects are even interactive.
-The effects are expandable in the future and can be adapted to your wishes over time.
-Even fully customized animation are possible.
-You can create these on your computer and play them back in the car.
+Since there should be an easy way to control all these LEDs, there are many premade and highly configurable effects for each zone.
+These can display a simple color, color gradients or moving animations in each zone.
+Fully customized animation are possible as well and can be created on your computer.
 
-NikoLight can be easily integrated into your Tesla (and other cars).
-There is a sensor that can be connected to the lighting around the footwell.
-This way, NikoLight switches on and off automatically when you open or lock the car.
-It is also possible to regulate the brightness together with the factory-installed lights or via the display.
-The controller is also expandable and could support additional hardware in the future.
-For example, there could be a CAN adapter to get more information from the vehicle.
-How relevant these extensions will be, depends a little bit on the community and the support I will receive.
+The NikoLight board also comes with sensors and extensions.
+These can be used to display special effects based on the motion of the vehicle or sound.
+This allows to create very unique and interactive effects which makes NikoLight special.
+The controller and all extensions can be updated at any time.
+As a consequence all effects are expandable and new features can be added.
+
+NikoLight can easily be integrated into your vehicle.
+It offers a voltage sensor that can be used to turn the lights on or off.
+This voltage sensor can be connected to any signal source of the vehicle.
+This way, NikoLight switches on and off automatically when you open or lock the vehicle.
+It is also possible to adjust the brightness together with the factory-installed lights or depending on the ambiente brightness.
+Alternatively, the internal motion sensor or an external light sensor can be used to turn the controller on or off.
 
 Once built and installed, NikoLight can be configured via a browser-based UI.
 When starting the controller, a Wi-Fi hotspot is created, which you can connect to with any device.
@@ -39,40 +44,57 @@ The project is therefore mostly platform-independent.
 
 **Here is a short summary of the currently most interesting features:**
 
+- Up to 8 zones per board
 - Individual control of each LED installed in the car
-- Hundreds of LEDs are possible
-- Compatible with all WS2812-type LEDs (and LEDs with the same protocol)
-- Fiber cables, light bars and normal LED strips are supported
-- Up to 8 individual zones
-- Currently 18 different effects that can be selected and further customized for each zone
-- Browser based user interface
-- Switching on/off as well as dynamic brightness via the existing lighting in the footwell
-- Rotation and acceleration sensors
-- Interactive effects
+- Up to 2000 LEDs can be controlled, more in the future via software update
+- Premade, highly customizable and interactive effects
+- Own effects can be created on a computer and played from the SD card
 - Light shows
-- Fully customized animations can be created on your PC (playback of fseq 1.0 files from [xLights](https://xlights.org/))
+- Motion and sound based effects are available
+- On-board rotation and acceleration sensors
+- External light sensors
+- Extension modules for sound (NikoLight Audio Unit) and CAN (upcoming)
+- Browser based user interface
 - OTA (wireless) updates
-- Hardware is upgradeable via extensions in the future
+- Compatible with all WS2812-type LEDs (and LEDs with the same protocol)
+- Fiber cables, light bars and LED strips can be used
+- Overcurrent, short circuit and over temperature protection for a high safety level
 
 ## Some Videos and Pictures
 
-[![NikoLight Demo 2](https://img.youtube.com/vi/_N5h1IViB-E/0.jpg)](https://www.youtube.com/watch?v=_N5h1IViB-E)
+### Live Demo with Custom Animation
 
+[![NikoLight Demo 2](https://img.youtube.com/vi/_N5h1IViB-E/0.jpg)](https://www.youtube.com/watch?v=_N5h1IViB-E)
+<br/>
 (click to watch on YouTube)
+
+### Live Demo with Custom Animation
 
 [![NikoLight Demo 1](https://img.youtube.com/vi/bwzbVkCsNws/0.jpg)](https://www.youtube.com/watch?v=bwzbVkCsNws)
-
+<br/>
 (click to watch on YouTube)
+
+### App (web-based)
 
 ![App](documentation/media/readme/app.jpg)
 
-![PCB](documentation/media/build/pcb.png)
+### NikoLight 2.2 Board
 
-## Planning
+![NikoLight 2.2 PCB](documentation/media/readme/NikoLight-pcb-2.2.png)
 
-It is recommended to read the [planning](documentation/planning.md) document before you start the project.
-There are some important considerations and decisions you have to make first.
-This will save you some trouble and makes it easier to buy the right parts.
+### NikoLight 2.1 Board
+
+![NikoLight 2.1 PCB](documentation/media/readme/NikoLight-pcb-2.1.png)
+
+### NikoLight Audio Unit 1.0
+
+![Audio Unit 1.0 PCB](documentation/media/readme/Audio-Unit-pcb-1.0.png)
+
+## General Knowledge Collection
+
+We highly recommend to read the [General Knowledge Collection](documentation/knowledge.md) before the project is started.
+It contains important information about the project and how to set it up.
+This will answer many questions and save you some trouble later.
 
 ## Part List
 
@@ -81,6 +103,11 @@ A list of required and optional parts can be found [here](documentation/part-lis
 ## Build Guide
 
 The build guide can be found [here](documentation/build.md).
+
+## Discord Server
+
+We have a [Discord Server](https://discord.gg/Zq4sWKZm8n) for our small community.
+If you have any questions about the project or need help and guidance, feel free to join us.
 
 ## One Request
 
