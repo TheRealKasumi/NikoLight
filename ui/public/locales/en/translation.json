@@ -119,7 +119,7 @@
   },
   "update": {
     "desc": {
-      "1": "Here a system update can be installed to the NikoLight controller. This includes the firmware of the mcu as well as the user interface. To install a system update, you first need to download a so called \"NikoLight Update Package\". These files have the extension \".tup\" and can be found in the release section on my GitHub page: <github>https://github.com/TheRealKasumi/NikoLight</github>.",
+      "1": "Here a system update can be installed to the NikoLight controller. This includes the firmware of the mcu as well as the user interface. To install a system update, you first need to download a so called \"NikoLight Update Package\". These files have the extension \".nup\" and can be found in the release section on my GitHub page: <github>https://github.com/TheRealKasumi/NikoLight</github>.",
       "2": "After the download, please use this page to upload the update package to the controller. Once the file is uploaded, the controller will restart and install the update. This can take up to 2 minutes but usually is faster. During this time, the controller will not be reachable via the WiFi hotspot. Please be patient. Afterwards the controller will restart and become reachable as usual.",
       "3": "But here is also a word of warning. Uploading broken update packages could make the controller unreachable. Then a wired connection to reinstall the firmware is required. So it is recommended to only upload stable and tested update packages from the GitHub page."
     },

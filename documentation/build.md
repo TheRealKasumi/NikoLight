@@ -517,7 +517,7 @@ Nikolight Firmware version 1.0.0
 00:00:00:072 [INFO] (src/main.cpp) (setup) (342): Switching to SD card logger.
 00:00:00:593 [INFO] (src/main.cpp) (setup) (346): Switched to SD card logger.
 00:00:00:645 [INFO] (src/main.cpp) (setup) (354): Check if system update is available.
-[   674][E][vfs_api.cpp:104] open(): /sd/update/update.tup does not exist, no permits for creation
+[   674][E][vfs_api.cpp:104] open(): /sd/update/update.nup does not exist, no permits for creation
 00:00:00:675 [INFO] (src/main.cpp) (setup) (362): No available system update found.
 00:00:00:832 [INFO] (src/main.cpp) (setup) (365): Initialize, load and save configuration.
 [  1045][E][vfs_api.cpp:104] open(): /sd/config.tli does not exist, no permits for creation

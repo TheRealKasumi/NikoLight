@@ -59,7 +59,7 @@ export const Update = (): JSX.Element => {
 
       <form onSubmit={onSubmit}>
         <InputType<FormData>
-          accept=".tup"
+          accept=".nup"
           className="mb-6"
           control={control}
           name="files"
