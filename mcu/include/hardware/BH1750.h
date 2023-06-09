@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include <Wire.h>
 
-namespace TL
+namespace NL
 {
 	class BH1750
 	{
@@ -42,25 +42,25 @@ namespace TL
 			BH1750_LOW = 0b00010011
 		};
 
-		static TL::BH1750::Error begin(const uint8_t deviceAddress);
-		static TL::BH1750::Error begin(const uint8_t deviceAddress, const TL::BH1750::BH1750Res resolution);
+		static NL::BH1750::Error begin(const uint8_t deviceAddress);
+		static NL::BH1750::Error begin(const uint8_t deviceAddress, const NL::BH1750::BH1750Res resolution);
 		static void end();
 		static bool isInitialized();
 
-		static TL::BH1750::Error setResolution(const TL::BH1750::BH1750Res resolution);
-		static TL::BH1750::BH1750Res getResolution();
+		static NL::BH1750::Error setResolution(const NL::BH1750::BH1750Res resolution);
+		static NL::BH1750::BH1750Res getResolution();
 
-		static TL::BH1750::Error getLux(float &lux);
+		static NL::BH1750::Error getLux(float &lux);
 
 	private:
 		BH1750();
 
 		static bool initialized;
 		static uint8_t deviceAddress;
-		static TL::BH1750::BH1750Res resolution;
+		static NL::BH1750::BH1750Res resolution;
 
-		static TL::BH1750::Error write(const uint8_t command);
-		static TL::BH1750::Error read(uint16_t &value);
+		static NL::BH1750::Error write(const uint8_t command);
+		static NL::BH1750::Error read(uint16_t &value);
 	};
 }
 

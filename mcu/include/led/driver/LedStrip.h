@@ -1,7 +1,7 @@
 /**
  * @file LedStrip.h
  * @author TheRealKasumi
- * @brief Contains a class that represents a single LED strip inside the {@link TL::LedBuffer}.
+ * @brief Contains a class that represents a single LED strip inside the {@link NL::LedBuffer}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -28,7 +28,7 @@
 
 #include "Pixel.h"
 
-namespace TL
+namespace NL
 {
 	class LedStrip
 	{
@@ -40,8 +40,8 @@ namespace TL
 		size_t getLedCount();
 		size_t getHiddenLedCount();
 
-		TL::Pixel getPixel(const size_t index);
-		void setPixel(const TL::Pixel &pixel, const size_t index);
+		NL::Pixel getPixel(const size_t index);
+		void setPixel(const NL::Pixel &pixel, const size_t index);
 
 		uint8_t *getBuffer();
 		void setBuffer(uint8_t *buffer);

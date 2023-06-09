@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import { ReactComponent as Logo } from '../assets/logo.svg';
+import { Logo } from '../components';
 
 type LoadingProps = { overlay?: boolean };
 
@@ -15,7 +15,7 @@ export const Loading = ({ overlay = false }: LoadingProps): JSX.Element => {
             'top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]',
           )}
         >
-          <Logo className="h-44" />
+          <Logo className="h-48" />
         </div>
       </div>
     );
@@ -23,7 +23,7 @@ export const Loading = ({ overlay = false }: LoadingProps): JSX.Element => {
 
   return (
     <div className="-m-12 flex h-screen items-center justify-center">
-      <Logo className="h-44" />
+      <Logo className="h-48" />
     </div>
   );
 };

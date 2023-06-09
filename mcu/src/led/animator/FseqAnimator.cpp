@@ -1,7 +1,7 @@
 /**
  * @file FseqAnimator.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::FseqAnimator}.
+ * @brief Implementation of the {@link NL::FseqAnimator}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -22,20 +22,20 @@
 #include "led/animator/FseqAnimator.h"
 
 /**
- * @brief Create a new instance of {@link TL::FseqAnimator}.
- * @param fseqLoader reference to a {@link TL::FseqLoader} instance
+ * @brief Create a new instance of {@link NL::FseqAnimator}.
+ * @param fseqLoader reference to a {@link NL::FseqLoader} instance
  * @param loop if set to true, the animation will loop
  */
-TL::FseqAnimator::FseqAnimator(TL::FseqLoader *fseqLoader, const bool loop)
+NL::FseqAnimator::FseqAnimator(NL::FseqLoader *fseqLoader, const bool loop)
 {
 	this->fseqLoader = fseqLoader;
 	this->loop = loop;
 }
 
 /**
- * @brief Destroy the {@link TL::FseqAnimator}.
+ * @brief Destroy the {@link NL::FseqAnimator}.
  */
-TL::FseqAnimator::~FseqAnimator()
+NL::FseqAnimator::~FseqAnimator()
 {
 }
 
@@ -43,12 +43,12 @@ TL::FseqAnimator::~FseqAnimator()
  * @brief Initialize the {@link FseqAnimator}.
  * @param ledStrip LED strip with the pixel data
  */
-void TL::FseqAnimator::init(TL::LedStrip &ledStrip)
+void NL::FseqAnimator::init(NL::LedStrip &ledStrip)
 {
 	this->fseqLoader->moveToStart();
 	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
-		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+		ledStrip.setPixel(NL::Pixel::ColorCode::Black, i);
 	}
 }
 
@@ -56,7 +56,7 @@ void TL::FseqAnimator::init(TL::LedStrip &ledStrip)
  * @brief Render the values from the fseq file to the vector holding the LED pixel data
  * @param ledStrip LED strip with the pixel data
  */
-void TL::FseqAnimator::render(TL::LedStrip &ledStrip)
+void NL::FseqAnimator::render(NL::LedStrip &ledStrip)
 {
 	if (this->fseqLoader->available() < ledStrip.getLedCount())
 	{
@@ -70,12 +70,12 @@ void TL::FseqAnimator::render(TL::LedStrip &ledStrip)
 		}
 	}
 
-	const TL::FseqLoader::Error fseqError = this->fseqLoader->readLedStrip(ledStrip);
-	if (fseqError != TL::FseqLoader::Error::OK)
+	const NL::FseqLoader::Error fseqError = this->fseqLoader->readLedStrip(ledStrip);
+	if (fseqError != NL::FseqLoader::Error::OK)
 	{
 		for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 		{
-			ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+			ledStrip.setPixel(NL::Pixel::ColorCode::Black, i);
 		}
 	}
 

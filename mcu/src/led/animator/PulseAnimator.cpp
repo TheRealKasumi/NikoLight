@@ -1,7 +1,7 @@
 /**
  * @file PulseAnimator.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@TL::PulseAnimator}.
+ * @brief Implementation of the {@NL::PulseAnimator}.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
  *
@@ -22,13 +22,13 @@
 #include "led/animator/PulseAnimator.h"
 
 /**
- * @brief Create a new instance of {@link TL::PulseAnimator}.
+ * @brief Create a new instance of {@link NL::PulseAnimator}.
  * @param pulseMode mode for the pulse, linear or non-linear
  * @param color color of the pulses, rainbow when set to black
  * @param pulseFading speed with which the pulse will fade
  * @param frequencyBandMask bit mask to mask frequency bands in audio mode
  */
-TL::PulseAnimator::PulseAnimator(const PulseMode pulseMode, const TL::Pixel color, const float pulseFading, const uint8_t frequencyBandMask)
+NL::PulseAnimator::PulseAnimator(const PulseMode pulseMode, const NL::Pixel color, const float pulseFading, const uint8_t frequencyBandMask)
 {
 	this->pulseMode = pulseMode;
 	this->color = color;
@@ -51,17 +51,17 @@ TL::PulseAnimator::PulseAnimator(const PulseMode pulseMode, const TL::Pixel colo
 }
 
 /**
- * @brief Destroy the {@link TL::PulseAnimator} instance.
+ * @brief Destroy the {@link NL::PulseAnimator} instance.
  */
-TL::PulseAnimator::~PulseAnimator()
+NL::PulseAnimator::~PulseAnimator()
 {
 }
 
 /**
- * @brief Initialize the {@link TL::PulseAnimator}.
+ * @brief Initialize the {@link NL::PulseAnimator}.
  * @param ledStrip LED strip with the pixel data
  */
-void TL::PulseAnimator::init(TL::LedStrip &ledStrip)
+void NL::PulseAnimator::init(NL::LedStrip &ledStrip)
 {
 	this->mode = 0;
 	this->pulseBrightness = 0.0f;
@@ -69,7 +69,7 @@ void TL::PulseAnimator::init(TL::LedStrip &ledStrip)
 	this->audioSequence = 0;
 	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
-		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+		ledStrip.setPixel(NL::Pixel::ColorCode::Black, i);
 	}
 }
 
@@ -77,13 +77,13 @@ void TL::PulseAnimator::init(TL::LedStrip &ledStrip)
  * @brief Render the pulse animator.
  * @param ledStrip LED strip with the pixel data
  */
-void TL::PulseAnimator::render(TL::LedStrip &ledStrip)
+void NL::PulseAnimator::render(NL::LedStrip &ledStrip)
 {
 	// Check if a new pulse should be triggered depending on the data source
-	if (this->getDataSource() == TL::LedAnimator::DataSource::DS_AUDIO_FREQUENCY_TRIGGER)
+	if (this->getDataSource() == NL::LedAnimator::DataSource::DS_AUDIO_FREQUENCY_TRIGGER)
 	{
 		// Get the audio frequency analysis
-		const TL::AudioUnit::AudioAnalysis audioAnalysis = this->getAudioAnalysis();
+		const NL::AudioUnit::AudioAnalysis audioAnalysis = this->getAudioAnalysis();
 		if (audioAnalysis.frequencyBandTriggers.size() == AUDIO_UNIT_NUM_BANDS && audioAnalysis.seq != this->audioSequence)
 		{
 			// Check the sequency number
@@ -91,7 +91,7 @@ void TL::PulseAnimator::render(TL::LedStrip &ledStrip)
 			for (size_t i = 0; i < AUDIO_UNIT_NUM_BANDS; i++)
 			{
 				// Trigger a new pulse depending on the band mask and the tigger status
-				if (this->frequencyBandMask & (0B10000000 >> i) && audioAnalysis.frequencyBandTriggers.at(i).trigger == TL::AudioUnit::Trigger::TRIGGER_RISING)
+				if (this->frequencyBandMask & (0B10000000 >> i) && audioAnalysis.frequencyBandTriggers.at(i).trigger == NL::AudioUnit::Trigger::TRIGGER_RISING)
 				{
 					this->mode = 2;
 					this->pulseBrightness = 1.0f;
@@ -111,7 +111,7 @@ void TL::PulseAnimator::render(TL::LedStrip &ledStrip)
 		}
 		else if (this->mode == 1)
 		{
-			this->pulseBrightness += this->pulseMode == TL::PulseAnimator::PulseMode::LINEAR ? this->pulseFading / 12.0f : this->pulseBrightness * this->pulseFading;
+			this->pulseBrightness += this->pulseMode == NL::PulseAnimator::PulseMode::LINEAR ? this->pulseFading / 12.0f : this->pulseBrightness * this->pulseFading;
 			if (this->pulseBrightness >= 1.0f)
 			{
 				this->mode = 2;
@@ -136,7 +136,7 @@ void TL::PulseAnimator::render(TL::LedStrip &ledStrip)
 		if (this->color.red == 0 && this->color.green == 0 && this->color.blue == 0)
 		{
 			// Rainbow mode
-			ledStrip.setPixel(TL::Pixel(
+			ledStrip.setPixel(NL::Pixel(
 								  this->trapezoid(this->colorAngle + 0.0f) * 255.0f * this->pulseBrightness,
 								  this->trapezoid(this->colorAngle + 120.0f) * 255.0f * this->pulseBrightness,
 								  this->trapezoid(this->colorAngle + 240.0f) * 255.0f * this->pulseBrightness),
@@ -145,14 +145,14 @@ void TL::PulseAnimator::render(TL::LedStrip &ledStrip)
 		else
 		{
 			// Static color mode
-			ledStrip.setPixel(TL::Pixel(this->color.red * this->pulseBrightness, this->color.green * this->pulseBrightness, this->color.blue * this->pulseBrightness), i);
+			ledStrip.setPixel(NL::Pixel(this->color.red * this->pulseBrightness, this->color.green * this->pulseBrightness, this->color.blue * this->pulseBrightness), i);
 		}
 	}
 
 	// Reduce the brightness of the pulse
 	if (this->mode == 2)
 	{
-		this->pulseBrightness -= this->pulseMode == TL::PulseAnimator::PulseMode::LINEAR ? this->pulseFading / 12.0f : this->pulseBrightness * this->pulseFading;
+		this->pulseBrightness -= this->pulseMode == NL::PulseAnimator::PulseMode::LINEAR ? this->pulseFading / 12.0f : this->pulseBrightness * this->pulseFading;
 		if (this->pulseBrightness < 0.003f)
 		{
 			this->pulseBrightness = 0.0f;

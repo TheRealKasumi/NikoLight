@@ -12,13 +12,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/TheRealKasumi/TesLight.git",
+    "url": "https://github.com/TheRealKasumi/NikoLight.git",
     "directory": "ui"
   },
   "engines": {
     "node": "18",
-    "pnpm": "7",
-    "npm": "8"
+    "pnpm": "8",
+    "npm": "9"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.16",

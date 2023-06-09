@@ -26,7 +26,7 @@
 #include "led/animator/LedAnimator.h"
 #include "sensor/MotionSensor.h"
 
-namespace TL
+namespace NL
 {
 	class GradientAnimatorMotion : public LedAnimator
 	{
@@ -37,15 +37,15 @@ namespace TL
 			GRADIENT_CENTER = 1
 		};
 
-		GradientAnimatorMotion(const TL::GradientAnimatorMotion::GradientMode gradientMode, const TL::Pixel color1, const TL::Pixel color2);
+		GradientAnimatorMotion(const NL::GradientAnimatorMotion::GradientMode gradientMode, const NL::Pixel color1, const NL::Pixel color2);
 		~GradientAnimatorMotion();
 
-		void init(TL::LedStrip &ledStrip);
-		void render(TL::LedStrip &ledStrip);
+		void init(NL::LedStrip &ledStrip);
+		void render(NL::LedStrip &ledStrip);
 
 	private:
-		TL::GradientAnimatorMotion::GradientMode gradientMode;
-		TL::Pixel color[2];
+		NL::GradientAnimatorMotion::GradientMode gradientMode;
+		NL::Pixel color[2];
 
 		float getMotionOffset();
 	};

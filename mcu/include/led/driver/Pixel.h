@@ -24,7 +24,7 @@
 
 #include "stdint.h"
 
-namespace TL
+namespace NL
 {
 	class Pixel
 	{
@@ -194,12 +194,12 @@ namespace TL
 
 		Pixel();
 		Pixel(const uint32_t colorCode);
-		Pixel(const TL::Pixel::ColorCode colorCode);
+		Pixel(const NL::Pixel::ColorCode colorCode);
 		Pixel(const uint8_t red, const uint8_t green, const uint8_t blue);
 		~Pixel();
 
 		void setColor(const uint32_t colorCode);
-		void setColor(const TL::Pixel::ColorCode colorCode);
+		void setColor(const NL::Pixel::ColorCode colorCode);
 		void setColor(const uint8_t red, const uint8_t green, const uint8_t blue);
 
 		Pixel &operator=(const Pixel &pixel)

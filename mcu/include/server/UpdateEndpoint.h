@@ -1,7 +1,7 @@
 /**
  * @file UpdateEndpoint.h
  * @author TheRealKasumi
- * @brief Contains a REST endpoint to load update packages to the TesLight controller.
+ * @brief Contains a REST endpoint to load update packages to the NikoLight controller.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  * 
@@ -29,7 +29,7 @@
 #include "util/FileUtil.h"
 #include "update/Updater.h"
 
-namespace TL
+namespace NL
 {
 	class UpdateEndpoint : public RestEndpoint
 	{

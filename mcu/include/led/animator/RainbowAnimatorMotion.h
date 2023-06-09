@@ -26,7 +26,7 @@
 #include "led/animator/LedAnimator.h"
 #include "sensor/MotionSensor.h"
 
-namespace TL
+namespace NL
 {
 	class RainbowAnimatorMotion : public LedAnimator
 	{
@@ -38,15 +38,15 @@ namespace TL
 			RAINBOW_CENTER = 2
 		};
 
-		RainbowAnimatorMotion(const TL::RainbowAnimatorMotion::RainbowMode rainbowMode);
+		RainbowAnimatorMotion(const NL::RainbowAnimatorMotion::RainbowMode rainbowMode);
 		~RainbowAnimatorMotion();
 
-		void init(TL::LedStrip &ledStrip);
-		void render(TL::LedStrip &ledStrip);
+		void init(NL::LedStrip &ledStrip);
+		void render(NL::LedStrip &ledStrip);
 
 	private:
 		float angle;
-		TL::RainbowAnimatorMotion::RainbowMode rainbowMode;
+		NL::RainbowAnimatorMotion::RainbowMode rainbowMode;
 
 		float getMotionSpeed();
 	};

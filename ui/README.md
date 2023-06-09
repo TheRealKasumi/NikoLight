@@ -1,9 +1,9 @@
-# TesLight UI
+# NikoLight UI
 
 ## Requirements
 
 - [Node.js](https://nodejs.org/) (18.x.x)
-- [pnpm](https://pnpm.io/) (7.x.x) or [npm](https://www.npmjs.com/package/npm) (8.x.x)
+- [pnpm](https://pnpm.io/) (8.x.x) or [npm](https://www.npmjs.com/package/npm) (9.x.x)
 
 ## Installation
 
@@ -20,5 +20,5 @@ pnpm install
 
 ## Entry Points
 
-- The TesLight UI is accessible via `/ui/index.html`
+- The NikoLight UI is accessible via `/ui/index.html`
 - The [Swagger UI](https://github.com/swagger-api/swagger-ui) is accessible via `/ui/swagger.html`

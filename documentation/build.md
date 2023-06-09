@@ -9,16 +9,16 @@ If you start to build the project blindly, you might run into issues later.
 Let's start with some general knowledge about the hardware.
 I know this might be boring, but I also have to cover people who want to know more about it.
 
-At first the TesLight controller is based on an ESP32 microcontroller board, which is placed on a custom PCB.
+At first the NikoLight controller is based on an ESP32 microcontroller board, which is placed on a custom PCB.
 The ESP32 contains two Tensilica-LX6 cores, running at 80MHz or 240MHz.
 They come with 512kB of SRAM and 4MB of flash memory.
 Also, they have onboard WiFi (802.11bgn) as well as Bluetooth (classic and LE).
 Hardware support for SPI, I2C, CAN, UART, etc. could be used in the future.
 Generally the board operates at the 3.3V level.
-It has a voltage regulator which will provide the 3.3V from the 5V, provided by the TesLight PCB.
+It has a voltage regulator which will provide the 3.3V from the 5V, provided by the NikoLight PCB.
 If you plan to do your own customisations please keep in mind that all IO pins can only handle 3.3V and a very limited current in the range of a few milliamps.
 
-The TesLight PCB contains a few active and passive components.
+The NikoLight PCB contains a few active and passive components.
 First of all, there is voltage regulator, providing stable 5V to the LEDs and the ESP32 board.
 To be more precise, there now are two channels that can provide a max of 3A per channel or 6A in total.
 There is no force to build both channels.
@@ -48,7 +48,7 @@ But keep in mind that the input capacitors might need to be changed and that the
 
 Next the PCB holds a MPU6050 motion sensor.
 It is used for interactive animations using acceleration and rotation data.
-The sensor is suitable for up to 16g's but TesLight is using a limit of 2g's currently.
+The sensor is suitable for up to 16g's but NikoLight is using a limit of 2g's currently.
 If anyone can prove to me that 2g's are not enough in a Tesla, then I will congratulate you and we can talk about setting it to 4g in the software😋.
 Hidden challenge?
 I... I would never challenge you to do stupid things...
@@ -63,7 +63,7 @@ This now allows us so safely drive all kind of WS2812-type LEDs, even over longe
 
 There is also a voltage divider, with a following low-pass filter used to lower and smooth the voltage of the sensor pin
 It can then be used by the ESP32 and converted into a digital value using it's ADC (analog digital converter).
-This pin can be connected to your car's existing ambient light to give TesLight a signal when to turn on and off or to adjust the brightness automatically.
+This pin can be connected to your car's existing ambient light to give NikoLight a signal when to turn on and off or to adjust the brightness automatically.
 
 Lastly, there are some passive components like resistors and capacitors to protect the data lines, pull the I2C data lines to 3.3V and to smooth some things out...
 I guess we are getting too basic here...
@@ -71,14 +71,14 @@ I guess we are getting too basic here...
 Like mentioned the used LED type is WS2812 or compatible.
 These LEDs have integrated controllers, capable of receiving a digital 24 bit colour value.
 When connected in series they function as a shift register.
-TesLight is able to drive a variable number of LEDs in series (up to a few hundred).
+NikoLight is able to drive a variable number of LEDs in series (up to a few hundred).
 The LEDs operate at 5V and **only 5V**.
 Never connect them directly to the 12V of your car.
-If you are using other LEDs that are 12V compatible and share the same data protocoll, make sure to never feed 12V into the TesLight board via the power output or data pins.
+If you are using other LEDs that are 12V compatible and share the same data protocoll, make sure to never feed 12V into the NikoLight board via the power output or data pins.
 
-The following picture shows the pinout of the TesLight board.
+The following picture shows the pinout of the NikoLight board.
 
-![Teslight Pinout](media/build/testlight-pinout.png)
+![NikoLight Pinout](media/build/nikolight-pinout.png)
 
 As you can see there are 8 connectors for the LED outputs.
 These provide power to your LEDs and a data signal suitable for driving the WS2812 type.
@@ -115,7 +115,7 @@ Never connect the ground pin to the positive wire of your footwell lights.
 If you are sure that there is a good ground connection, which is usually the case, there is no need to use it.
 One last thing to keep in mind is that only positive voltages can be measured, so avoid doing something crazy with this simple input.
 
-The center 2 pin XH connector can be used as a sensor to measure the voltage of your car's ambient light and supply TesLight an on/off or brightness signal.
+The center 2 pin XH connector can be used as a sensor to measure the voltage of your car's ambient light and supply NikoLight an on/off or brightness signal.
 The pin can be used with analog voltages and also PWM signals due to the low-pass filter.
 It is recommended to not measure voltages above 19V with this controller.
 There is an overvoltage protection in place and exceeding this limit for a short period should be possible but not recommended.
@@ -129,15 +129,15 @@ Another 2 pin XH connector is for powering an optinal, 5V cooling fan.
 
 There is a micro USB port on the ESP32 board which will later be used to upload the software.
 This should be a one time proceedure due to the OTA (wireless) updates.
-The micro SDCard is required by TesLight.
+The micro SDCard is required by NikoLight.
 It's used to save configuration data, UI files and custom animations of the user.
 
 ## Clone or Download the Project Files
 
 Alright, now the point has come where we can start.
 At first you should clone or download the project files.
-Go to the [project's main page](https://github.com/TheRealKasumi/TesLight) and click the `Code` button.
-You can then decide if you want to clone the repository using [Git](https://git-scm.com/) or [download](https://github.com/TheRealKasumi/TesLight/archive/refs/heads/main.zip) it as zip file.
+Go to the [project's main page](https://github.com/TheRealKasumi/NikoLight) and click the `Code` button.
+You can then decide if you want to clone the repository using [Git](https://git-scm.com/) or [download](https://github.com/TheRealKasumi/NikoLight/archive/refs/heads/main.zip) it as zip file.
 
 ![Clone](media/build/clone.jpeg)
 
@@ -145,14 +145,14 @@ As an alternative you can also go to the releases and download one of them.
 
 ### Using Git
 
--  Open a terminal in your destination folder
--  Run `git clone https://github.com/TheRealKasumi/TesLight.git`
--  A folder `TesLight` will be created, containing all project files
+- Open a terminal in your destination folder
+- Run `git clone https://github.com/TheRealKasumi/NikoLight.git`
+- A folder `NikoLight` will be created, containing all project files
 
 ### Download as Zip
 
--  Click the [download link](https://github.com/TheRealKasumi/TesLight/archive/refs/heads/main.zip)
--  Extract the TesLight folder
+- Click the [download link](https://github.com/TheRealKasumi/NikoLight/archive/refs/heads/main.zip)
+- Extract the NikoLight folder
 
 ## Order the PCB and 3D Printed Parts
 
@@ -200,17 +200,17 @@ At first you need to chose one of their assembly services.
 
 Economic:
 
--  Cheaper
--  Collection of boards of different customers are created together
--  No borders required
--  Takes longer
+- Cheaper
+- Collection of boards of different customers are created together
+- No borders required
+- Takes longer
 
 Standard:
 
--  More expensive
--  Your boards are checked, adjusted and produced individually
--  Borders and markers are required
--  Faster production
+- More expensive
+- Your boards are checked, adjusted and produced individually
+- Borders and markers are required
+- Faster production
 
 Once more, choice is yours but `Economic` is recommended.
 Assembly side must always be `top`.
@@ -242,10 +242,10 @@ Ordering works very similar to the steps described above.
 Go back to the [order page](https://cart.jlcpcb.com/quote) and select `3D-Printing` at the top of the page.
 The 3D files can be found in the [/model](/model/) folder of the project.
 
-In a normal build you will need both, the [TesLight_Case.stl](/model/TesLight_Case.stl) and the [TesLight_Case_Cover.stl](/model/TesLight_Case_Cover.stl).
-The all-in-one verion [TesLight_Case_AIO.stl](/model/TesLight_Case_AIO.stl) can be used as an alternative.
-When you are using a smaller 30x30x6mm fan, the [TesLight_Fan_Adapter.stl](/model/TesLight_Fan_Adapter.stl) is recommended.
-If you plan to use fiber cables and LED injectors, the [TesLight_LED_Case.stl](TesLight_LED_Case.stl) should be ordered as well.
+In a normal build you will need both, the [NikoLight_Case.stl](/model/NikoLight_Case.stl) and the [NikoLight_Case_Cover.stl](/model/NikoLight_Case_Cover.stl).
+The all-in-one verion [NikoLight_Case_AIO.stl](/model/NikoLight_Case_AIO.stl) can be used as an alternative.
+When you are using a smaller 30x30x6mm fan, the [NikoLight_Fan_Adapter.stl](/model/NikoLight_Fan_Adapter.stl) is recommended.
+If you plan to use fiber cables and LED injectors, the [NikoLight_LED_Case.stl](NikoLight_LED_Case.stl) should be ordered as well.
 The number depends on the number of light injectors you want to use for the fibre tubes.
 
 Generally the material choice shouldn't be a metal.
@@ -255,15 +255,15 @@ Ideally a flame-retardant material is used.
 
 When you plan to print the case yourself, the following setup is recommended:
 
--  Nozzle: 0.4 - 0.6mm
--  Layerheight 0.1 - 0.2mm
+- Nozzle: 0.4 - 0.6mm
+- Layerheight 0.1 - 0.2mm
 
 ### Order
 
 Open your shopping cart and make sure it contains all required items.
 Then complete the order.
 
-## Assemble the TesLight Controller
+## Assemble the NikoLight Controller
 
 ### Fully Assembled Boards
 
@@ -288,7 +288,7 @@ Especially when you are new to SMD components, it is recommended to watch the vi
 Some steps might be missing or are different depending on your board version.
 But since you are a tinkerer, I am sure you can do it.
 
-[![TesLight Demo](https://img.youtube.com/vi/Nh1XLG8EGs4/0.jpg)](https://www.youtube.com/watch?v=Nh1XLG8EGs4)
+[![NikoLight Demo](https://img.youtube.com/vi/Nh1XLG8EGs4/0.jpg)](https://www.youtube.com/watch?v=Nh1XLG8EGs4)
 
 #### Soldering the remaining Components
 
@@ -317,7 +317,7 @@ It would be good practice to use a low current limit like 250mA.
 The polarity and right connections were already shown at the beginning of the guide.
 You should then be able to measure a voltage of 5V at the LED outputs.
 
-![Teslight Pinout](media/build/testlight-pinout.png)
+![NikoLight Pinout](media/build/nikolight-pinout.png)
 
 Increase the Voltage up to 18V if possible.
 The output voltage should stay stable at 5V and the input current should stay very low (usually less than 10mA).
@@ -339,7 +339,7 @@ Solder them to the PCB and you are done.
 > You may find you have bad contacts.
 > So it's recommended to push the board a little bit against the PCB to ensure good contact.
 
-When you are done, the TesLight controller should look similar to this (some components might look a little different):
+When you are done, the NikoLight controller should look similar to this (some components might look a little different):
 ![Controller](media/build/pcb-finished.png)
 
 ## Install position in car
@@ -404,16 +404,16 @@ At the end the 3 pin XH connectors must have the following pinout.
 
 ## Upload the Software
 
-### TesLight Controller
+### NikoLight Controller
 
 Uploading the software is the final step before you can test your work.
 Please install the following software and extension for the upload procedure:
 
--  [Git](https://git-scm.com/downloads)
--  [VS Code](https://code.visualstudio.com/download)
--  [PlatformIO](https://platformio.org/install/ide?install=vscode)
--  [NodeJS](https://nodejs.org)
--  [NPM (comes with NodeJS)](https://www.npmjs.com/)
+- [Git](https://git-scm.com/downloads)
+- [VS Code](https://code.visualstudio.com/download)
+- [PlatformIO](https://platformio.org/install/ide?install=vscode)
+- [NodeJS](https://nodejs.org)
+- [NPM (comes with NodeJS)](https://www.npmjs.com/)
 
 Start VS Code and then open the [mcu](/mcu/) folder of the project.
 You can do so by clicking `File` -> `Open Folder...`.
@@ -423,7 +423,7 @@ In the configuration you can see two attributes, `upload_port` and `monitor_port
 
 ![plattformio.ini](media/build/plattformio-ini.jpeg)
 
-Connect the TesLight controller to your computer via a micro USB cable.
+Connect the NikoLight controller to your computer via a micro USB cable.
 Now you need to find out which port the controller was assigned to.
 The recommendation is to use the device manager when you are using Windows.
 Press the Windows key + R and type `devmgmt.msc`.
@@ -439,20 +439,20 @@ Please navigate to [include/configuration](/mcu/include/configuration) and open 
 
 If you decided to only install one voltage regulator, please do the following changes:
 
--  `#define REGULATOR_COUNT 1`
--  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
+- `#define REGULATOR_COUNT 1`
+- `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
 
 Also depending on the board version, the following changes are required.
 
 Board version 1.0 (@luap):
 
--  `#define REGULATOR_COUNT 1`
--  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
+- `#define REGULATOR_COUNT 1`
+- `#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}`
 
 Board version 2.0 (@PhilippDen):
 
--  `#define LED_DEFAULT_OUTPUT_PINS {13, 17, 14, 21, 15, 22, 16, 25}`
--  `#define REGULATOR_ZONE_MAPPING {{13, 0}, {17, 1}, {14, 0}, {21, 1}, {15, 0}, {22, 1}, {16, 0}, {25, 1}}`
+- `#define LED_DEFAULT_OUTPUT_PINS {13, 17, 14, 21, 15, 22, 16, 25}`
+- `#define REGULATOR_ZONE_MAPPING {{13, 0}, {17, 1}, {14, 0}, {21, 1}, {15, 0}, {22, 1}, {16, 0}, {25, 1}}`
 
 Save the files and then click the upload button in the bottom left.
 
@@ -465,16 +465,10 @@ Now open the serial monitor by clicking the "plug" button, near to the upload bu
 
 ![Serial Button](media/build/monitor-button.jpeg)
 
-You should see the TesLight controller starting up, but then stops with `Failed to initialize SD card`.
+You should see the NikoLight controller starting up, but then stops with `Failed to initialize SD card`.
 
 ```shell
-████████╗███████╗███████╗██╗     ██╗ ██████╗ ██╗  ██╗████████╗
-╚══██╔══╝██╔════╝██╔════╝██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
-   ██║   █████╗  ███████╗██║     ██║██║  ███╗███████║   ██║
-   ██║   ██╔══╝  ╚════██║██║     ██║██║   ██║██╔══██║   ██║
-   ██║   ███████╗███████║███████╗██║╚██████╔╝██║  ██║   ██║
-   ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
-Firmware version 1.0.0
+NikoLight Firmware version 1.0.0
 
 00:00:00:059 [INFO] (src/main.cpp) (setup) (331): Initialize SD card.
 [   364][E][sd_diskio.cpp:199] sdCommand(): Card Failed! cmd: 0x00
@@ -485,7 +479,7 @@ Firmware version 1.0.0
 
 ### Prepare and insert the Micro SD Card
 
-TesLight **requires** a `FAT` or `FAT32` formatted micro SD card.
+NikoLight **requires** a `FAT` or `FAT32` formatted micro SD card.
 At least 128MB of storage is recommended for upcoming features.
 Well... we live in year 2022.
 So just throw a 4GB+ card inside and be done.
@@ -506,7 +500,7 @@ npm run build
 This can take a moment and should create a [dist](/ui/dist/) folder.
 Create a new folder called `ui` in the root of your SD card.
 Copy the content of [dist](/ui/dist/) into the newly created folder.
-Eject the SD card from your computer and insert it into the micro SD card slot of the TesLight controller.
+Eject the SD card from your computer and insert it into the micro SD card slot of the NikoLight controller.
 
 ## Let's test it
 
@@ -516,20 +510,14 @@ If required, press the reset button on the ESP32 board.
 If everything works, you should see the following (or similar) output:
 
 ```shell
-████████╗███████╗███████╗██╗     ██╗ ██████╗ ██╗  ██╗████████╗
-╚══██╔══╝██╔════╝██╔════╝██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
-   ██║   █████╗  ███████╗██║     ██║██║  ███╗███████║   ██║
-   ██║   ██╔══╝  ╚════██║██║     ██║██║   ██║██╔══██║   ██║
-   ██║   ███████╗███████║███████╗██║╚██████╔╝██║  ██║   ██║
-   ╚═╝   ╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
-Firmware version 1.0.0
+Nikolight Firmware version 1.0.0
 
 00:00:00:059 [INFO] (src/main.cpp) (setup) (331): Initialize SD card.
 00:00:00:071 [INFO] (src/main.cpp) (setup) (334): SD card initialized.
 00:00:00:072 [INFO] (src/main.cpp) (setup) (342): Switching to SD card logger.
 00:00:00:593 [INFO] (src/main.cpp) (setup) (346): Switched to SD card logger.
 00:00:00:645 [INFO] (src/main.cpp) (setup) (354): Check if system update is available.
-[   674][E][vfs_api.cpp:104] open(): /sd/update/update.tup does not exist, no permits for creation
+[   674][E][vfs_api.cpp:104] open(): /sd/update/update.nup does not exist, no permits for creation
 00:00:00:675 [INFO] (src/main.cpp) (setup) (362): No available system update found.
 00:00:00:832 [INFO] (src/main.cpp) (setup) (365): Initialize, load and save configuration.
 [  1045][E][vfs_api.cpp:104] open(): /sd/config.tli does not exist, no permits for creation
@@ -558,7 +546,7 @@ Firmware version 1.0.0
 00:00:02:610 [INFO] (src/main.cpp) (setup) (411): Load LEDs and animators from configuration using the LED Manager.
 00:00:02:661 [INFO] (src/main.cpp) (setup) (414): LEDs and animators loaded.
 00:00:02:683 [INFO] (src/main.cpp) (setup) (421): Creating to WiFi network.
-00:00:02:707 [INFO] (src/wifi/WiFiManager.cpp) (startAccessPoint) (40): Starting WiFi access point with ssid 'TesLight' and password 'TesLightPW' on channel 1.
+00:00:02:707 [INFO] (src/wifi/WiFiManager.cpp) (startAccessPoint) (40): Starting WiFi access point with ssid 'NikoLight' and password 'NikoLightPW' on channel 1.
 00:00:02:737 [INFO] (src/wifi/WiFiManager.cpp) (startAccessPoint) (53): Starting WiFi access point.
 00:00:02:859 [INFO] (src/wifi/WiFiManager.cpp) (startAccessPoint) (56): Configuring WiFi access point.
 00:00:02:882 [INFO] (src/wifi/WiFiManager.cpp) (startAccessPoint) (61): WiFi access point started. Listening on: 192.168.4.1
@@ -566,20 +554,20 @@ Firmware version 1.0.0
 00:00:02:934 [INFO] (src/main.cpp) (setup) (431): Initialize timers.
 00:00:02:955 [INFO] (src/main.cpp) (initializeTimers) (243): Initialize timers.
 00:00:02:977 [INFO] (src/main.cpp) (setup) (433): Timers initialized.
-00:00:02:999 [INFO] (src/main.cpp) (setup) (435): TesLight initialized successfully, going into work mode.
+00:00:02:999 [INFO] (src/main.cpp) (setup) (435): NikoLight initialized successfully, going into work mode.
 00:00:12:983 [INFO] (src/main.cpp) (loop) (488): LEDs running at an average of 60 FPS
 ```
 
-When this is the case, you successfully built the TesLight controller.
+When this is the case, you successfully built the NikoLight controller.
 Success!
-Now search for a WiFi network called `TesLight`.
-Connect to it using the default password `TesLightPW` and open up `192.168.4.1` in your browser.
-Now the TesLight UI should show up.
+Now search for a WiFi network called `NikoLight`.
+Connect to it using the default password `NikoLightPW` and open up `192.168.4.1` in your browser.
+Now the NikoLight UI should show up.
 Bookmark this page so that you will not forget it.
 Alternatively, you can also try to "install" the UI on your device.
 Since it is a ReactJS based UI, some devices offer support for this.
 
-From here you can control TesLight using the browser based UI.
-But don't forget to connect to the `TesLight` WiFi first.
+From here you can control NikoLight using the browser based UI.
+But don't forget to connect to the `NikoLight` WiFi first.
 The ssid and password can be changed in the settings.
 I am sure you will figure out how the UI works :) .

@@ -1,7 +1,7 @@
 /**
  * @file FseqEndpoint.h
  * @author TheRealKasumi
- * @brief Contains a REST endpoint to manage fseq files on the TesLight controller.
+ * @brief Contains a REST endpoint to manage fseq files on the NikoLight controller.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -30,7 +30,7 @@
 #include "util/FileUtil.h"
 #include "util/FseqLoader.h"
 
-namespace TL
+namespace NL
 {
 	class FseqEndpoint : public RestEndpoint
 	{
@@ -49,7 +49,7 @@ namespace TL
 		static void deleteFseq();
 
 		static bool validateFileName(const String fileName);
-		static TL::FseqLoader::Error validateFseqFile(const String fileName);
+		static NL::FseqLoader::Error validateFseqFile(const String fileName);
 	};
 }
 

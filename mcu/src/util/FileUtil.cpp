@@ -1,7 +1,7 @@
 /**
  * @file FileUtil.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::FileUtil}.
+ * @brief Implementation of the {@link NL::FileUtil}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -28,7 +28,7 @@
  * @return true when the file exists
  * @return false when the file does not exist
  */
-bool TL::FileUtil::fileExists(FS *fileSystem, const String fileName)
+bool NL::FileUtil::fileExists(FS *fileSystem, const String fileName)
 {
 	File file = fileSystem->open(fileName, FILE_READ);
 	if (!file)
@@ -52,7 +52,7 @@ bool TL::FileUtil::fileExists(FS *fileSystem, const String fileName)
  * @return true when the directory exists
  * @return false when the directory does not exist
  */
-bool TL::FileUtil::directoryExists(FS *fileSystem, const String path)
+bool NL::FileUtil::directoryExists(FS *fileSystem, const String path)
 {
 	File file = fileSystem->open(path, FILE_READ);
 	if (!file)
@@ -77,7 +77,7 @@ bool TL::FileUtil::directoryExists(FS *fileSystem, const String path)
  * @return true when successful
  * @return false when there was an error
  */
-bool TL::FileUtil::getFileIdentifier(FS *fileSystem, const String fileName, uint32_t &identifier)
+bool NL::FileUtil::getFileIdentifier(FS *fileSystem, const String fileName, uint32_t &identifier)
 {
 	File file = fileSystem->open(fileName, FILE_READ);
 	if (!file)
@@ -111,7 +111,7 @@ bool TL::FileUtil::getFileIdentifier(FS *fileSystem, const String fileName, uint
  * @return true when the counting was successful
  * @return false when there was an error counting
  */
-bool TL::FileUtil::countFiles(FS *fileSystem, const String directory, uint16_t &count, const bool includeDirs)
+bool NL::FileUtil::countFiles(FS *fileSystem, const String directory, uint16_t &count, const bool includeDirs)
 {
 	File dir = fileSystem->open(directory, FILE_READ);
 	if (!dir)
@@ -156,7 +156,7 @@ bool TL::FileUtil::countFiles(FS *fileSystem, const String directory, uint16_t &
  * @return true when the list was created successfully
  * @return false when there was an error
  */
-bool TL::FileUtil::listFiles(FS *fileSystem, const String directory, std::function<void(const String fileName, const size_t fileSize)> callback, const bool includeDirs)
+bool NL::FileUtil::listFiles(FS *fileSystem, const String directory, std::function<void(const String fileName, const size_t fileSize)> callback, const bool includeDirs)
 {
 	File dir = fileSystem->open(directory, FILE_READ);
 	if (!dir)
@@ -178,7 +178,7 @@ bool TL::FileUtil::listFiles(FS *fileSystem, const String directory, std::functi
 			if (includeDirs || !file.isDirectory())
 			{
 				uint32_t id = 0;
-				if (TL::FileUtil::getFileIdentifier(fileSystem, directory + F("/") + file.name(), id))
+				if (NL::FileUtil::getFileIdentifier(fileSystem, directory + F("/") + file.name(), id))
 				{
 					callback(file.name(), file.size());
 				}
@@ -205,7 +205,7 @@ bool TL::FileUtil::listFiles(FS *fileSystem, const String directory, std::functi
  * @return true when the seach was successful
  * @return false when there was an error
  */
-bool TL::FileUtil::getFileNameFromIndex(FS *fileSystem, const String directory, const uint16_t fileIndex, String &fileName, const bool includeDirs)
+bool NL::FileUtil::getFileNameFromIndex(FS *fileSystem, const String directory, const uint16_t fileIndex, String &fileName, const bool includeDirs)
 {
 	File dir = fileSystem->open(directory, FILE_READ);
 	if (!dir)
@@ -256,7 +256,7 @@ bool TL::FileUtil::getFileNameFromIndex(FS *fileSystem, const String directory, 
  * @return true when the search was successful
  * @return false when there was an error
  */
-bool TL::FileUtil::getFileNameFromIdentifier(FS *fileSystem, const String directory, const uint32_t identifier, String &fileName)
+bool NL::FileUtil::getFileNameFromIdentifier(FS *fileSystem, const String directory, const uint32_t identifier, String &fileName)
 {
 	File dir = fileSystem->open(directory, FILE_READ);
 	if (!dir)
@@ -278,7 +278,7 @@ bool TL::FileUtil::getFileNameFromIdentifier(FS *fileSystem, const String direct
 			if (!file.isDirectory())
 			{
 				uint32_t id = 0;
-				if (TL::FileUtil::getFileIdentifier(fileSystem, directory + F("/") + file.name(), id))
+				if (NL::FileUtil::getFileIdentifier(fileSystem, directory + F("/") + file.name(), id))
 				{
 					if (id == identifier)
 					{
@@ -308,10 +308,10 @@ bool TL::FileUtil::getFileNameFromIdentifier(FS *fileSystem, const String direct
  * @return true when the directory was deleted
  * @return false when there was an error
  */
-bool TL::FileUtil::deleteDirectory(FS *fileSystem, const String directory, const bool removeDir)
+bool NL::FileUtil::deleteDirectory(FS *fileSystem, const String directory, const bool removeDir)
 {
 	uint16_t fileCount = 0;
-	if (!TL::FileUtil::countFiles(fileSystem, directory, fileCount, true))
+	if (!NL::FileUtil::countFiles(fileSystem, directory, fileCount, true))
 	{
 		return false;
 	}
@@ -319,7 +319,7 @@ bool TL::FileUtil::deleteDirectory(FS *fileSystem, const String directory, const
 	for (uint16_t i = 0; i < fileCount; i++)
 	{
 		String name;
-		if (!TL::FileUtil::getFileNameFromIndex(fileSystem, directory, i, name, true))
+		if (!NL::FileUtil::getFileNameFromIndex(fileSystem, directory, i, name, true))
 		{
 			return false;
 		}
@@ -330,16 +330,16 @@ bool TL::FileUtil::deleteDirectory(FS *fileSystem, const String directory, const
 			continue;
 		}
 
-		if (TL::FileUtil::directoryExists(fileSystem, name))
+		if (NL::FileUtil::directoryExists(fileSystem, name))
 		{
-			if (!TL::FileUtil::deleteDirectory(fileSystem, name, true))
+			if (!NL::FileUtil::deleteDirectory(fileSystem, name, true))
 			{
 				return false;
 			}
 			i--;
 			fileCount--;
 		}
-		else if (TL::FileUtil::fileExists(fileSystem, name))
+		else if (NL::FileUtil::fileExists(fileSystem, name))
 		{
 			if (!fileSystem->remove(name))
 			{
@@ -368,7 +368,7 @@ bool TL::FileUtil::deleteDirectory(FS *fileSystem, const String directory, const
  * @return true when cleared successfully
  * @return false when there was an error
  */
-bool TL::FileUtil::clearRoot(FS *filesSystem)
+bool NL::FileUtil::clearRoot(FS *filesSystem)
 {
-	return TL::FileUtil::deleteDirectory(filesSystem, F("/"), false);
+	return NL::FileUtil::deleteDirectory(filesSystem, F("/"), false);
 }

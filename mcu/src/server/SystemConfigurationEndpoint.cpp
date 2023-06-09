@@ -22,108 +22,108 @@
 #include "server/SystemConfigurationEndpoint.h"
 
 /**
- * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
+ * @brief Add all request handler for this {@link NL::RestEndpoint} to the {@link NL::WebServerManager}.
  */
-void TL::SystemConfigurationEndpoint::begin()
+void NL::SystemConfigurationEndpoint::begin()
 {
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_GET, TL::SystemConfigurationEndpoint::getSystemConfig);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_PATCH, TL::SystemConfigurationEndpoint::patchSystemConfig);
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_GET, NL::SystemConfigurationEndpoint::getSystemConfig);
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("config/system")).c_str(), http_method::HTTP_PATCH, NL::SystemConfigurationEndpoint::patchSystemConfig);
 }
 
 /**
  * @brief Return the system configuration to the client.
  */
-void TL::SystemConfigurationEndpoint::getSystemConfig()
+void NL::SystemConfigurationEndpoint::getSystemConfig()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the system configuration."));
-	if (!TL::Configuration::isInitialized())
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the system configuration."));
+	if (!NL::Configuration::isInitialized())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The NikoLight configuration was not initialized. Can not access configuration."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("The NikoLight configuration was not initialized. Can not access configuration."));
 		return;
 	}
 
 	DynamicJsonDocument jsonDoc(1024);
 	const JsonObject config = jsonDoc.createNestedObject(F("systemConfig"));
-	config[F("logLevel")] = TL::Configuration::getSystemConfig().logLevel;
-	config[F("lightSensorMode")] = TL::Configuration::getSystemConfig().lightSensorMode;
-	config[F("lightSensorThreshold")] = TL::Configuration::getSystemConfig().lightSensorThreshold;
-	config[F("lightSensorMinAmbientBrightness")] = TL::Configuration::getSystemConfig().lightSensorMinAmbientBrightness;
-	config[F("lightSensorMaxAmbientBrightness")] = TL::Configuration::getSystemConfig().lightSensorMaxAmbientBrightness;
-	config[F("lightSensorMinLedBrightness")] = TL::Configuration::getSystemConfig().lightSensorMinLedBrightness;
-	config[F("lightSensorMaxLedBrightness")] = TL::Configuration::getSystemConfig().lightSensorMaxLedBrightness;
-	config[F("lightSensorDuration")] = TL::Configuration::getSystemConfig().lightSensorDuration;
-	config[F("regulatorPowerLimit")] = TL::Configuration::getSystemConfig().regulatorPowerLimit;
-	config[F("regulatorHighTemperature")] = TL::Configuration::getSystemConfig().regulatorHighTemperature;
-	config[F("regulatorCutoffTemperature")] = TL::Configuration::getSystemConfig().regulatorCutoffTemperature;
-	config[F("fanMode")] = TL::Configuration::getSystemConfig().fanMode;
-	config[F("fanMinPwmValue")] = TL::Configuration::getSystemConfig().fanMinPwmValue;
-	config[F("fanMaxPwmValue")] = TL::Configuration::getSystemConfig().fanMaxPwmValue;
-	config[F("fanMinTemperature")] = TL::Configuration::getSystemConfig().fanMinTemperature;
-	config[F("fanMaxTemperature")] = TL::Configuration::getSystemConfig().fanMaxTemperature;
+	config[F("logLevel")] = NL::Configuration::getSystemConfig().logLevel;
+	config[F("lightSensorMode")] = NL::Configuration::getSystemConfig().lightSensorMode;
+	config[F("lightSensorThreshold")] = NL::Configuration::getSystemConfig().lightSensorThreshold;
+	config[F("lightSensorMinAmbientBrightness")] = NL::Configuration::getSystemConfig().lightSensorMinAmbientBrightness;
+	config[F("lightSensorMaxAmbientBrightness")] = NL::Configuration::getSystemConfig().lightSensorMaxAmbientBrightness;
+	config[F("lightSensorMinLedBrightness")] = NL::Configuration::getSystemConfig().lightSensorMinLedBrightness;
+	config[F("lightSensorMaxLedBrightness")] = NL::Configuration::getSystemConfig().lightSensorMaxLedBrightness;
+	config[F("lightSensorDuration")] = NL::Configuration::getSystemConfig().lightSensorDuration;
+	config[F("regulatorPowerLimit")] = NL::Configuration::getSystemConfig().regulatorPowerLimit;
+	config[F("regulatorHighTemperature")] = NL::Configuration::getSystemConfig().regulatorHighTemperature;
+	config[F("regulatorCutoffTemperature")] = NL::Configuration::getSystemConfig().regulatorCutoffTemperature;
+	config[F("fanMode")] = NL::Configuration::getSystemConfig().fanMode;
+	config[F("fanMinPwmValue")] = NL::Configuration::getSystemConfig().fanMinPwmValue;
+	config[F("fanMaxPwmValue")] = NL::Configuration::getSystemConfig().fanMaxPwmValue;
+	config[F("fanMinTemperature")] = NL::Configuration::getSystemConfig().fanMinTemperature;
+	config[F("fanMaxTemperature")] = NL::Configuration::getSystemConfig().fanMaxTemperature;
 
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	TL::SystemConfigurationEndpoint::sendJsonDocument(200, F("Here you go."), jsonDoc);
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	NL::SystemConfigurationEndpoint::sendJsonDocument(200, F("Here you go."), jsonDoc);
 }
 
 /**
  * @brief Update the system configuration.
  */
-void TL::SystemConfigurationEndpoint::patchSystemConfig()
+void NL::SystemConfigurationEndpoint::patchSystemConfig()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the system configuration."));
-	if (!TL::Configuration::isInitialized())
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the system configuration."));
+	if (!NL::Configuration::isInitialized())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The NikoLight configuration was not initialized. Can not access configuration."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("The NikoLight configuration was not initialized. Can not access configuration."));
 		return;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::webServer->hasHeader(F("content-type")) || TL::SystemConfigurationEndpoint::webServer->header(F("content-type")) != F("application/json"))
+	if (!NL::SystemConfigurationEndpoint::webServer->hasHeader(F("content-type")) || NL::SystemConfigurationEndpoint::webServer->header(F("content-type")) != F("application/json"))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/json\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The content type must be \"application/json\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/json\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The content type must be \"application/json\"."));
 		return;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::webServer->hasArg(F("plain")))
+	if (!NL::SystemConfigurationEndpoint::webServer->hasArg(F("plain")))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body with the system configuration."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("There must be a valid json body with the system configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body with the system configuration."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("There must be a valid json body with the system configuration."));
 		return;
 	}
 
-	const String body = TL::SystemConfigurationEndpoint::webServer->arg(F("plain"));
+	const String body = NL::SystemConfigurationEndpoint::webServer->arg(F("plain"));
 	if (body.length() == 0 || body.length() > 1024)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 1024 bytes."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 1024 bytes."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 1024 bytes."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 1024 bytes."));
 		return;
 	}
 
 	DynamicJsonDocument jsonDoc(1024);
-	if (!TL::SystemConfigurationEndpoint::parseJsonDocument(jsonDoc, body))
+	if (!NL::SystemConfigurationEndpoint::parseJsonDocument(jsonDoc, body))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The body could not be parsed. The json is invalid."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The body could not be parsed. The json is invalid."));
 		return;
 	}
 
 	if (!jsonDoc[F("systemConfig")].is<JsonObject>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"systemConfig\" object."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain a \"systemConfig\" object."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"systemConfig\" object."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain a \"systemConfig\" object."));
 		return;
 	}
 
 	const JsonObject configuration = jsonDoc[F("systemConfig")].as<JsonObject>();
-	if (!TL::SystemConfigurationEndpoint::validateConfiguration(configuration))
+	if (!NL::SystemConfigurationEndpoint::validateConfiguration(configuration))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The validation of the configuration failed."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The validation of the configuration failed."));
 		return;
 	}
 
-	TL::Configuration::SystemConfig config;
+	NL::Configuration::SystemConfig config;
 	config.logLevel = configuration[F("logLevel")].as<uint8_t>();
 	config.lightSensorMode = configuration[F("lightSensorMode")].as<uint8_t>();
 	config.lightSensorThreshold = configuration[F("lightSensorThreshold")].as<uint8_t>();
@@ -141,31 +141,31 @@ void TL::SystemConfigurationEndpoint::patchSystemConfig()
 	config.fanMinTemperature = configuration[F("fanMinTemperature")].as<uint8_t>();
 	config.fanMaxTemperature = configuration[F("fanMaxTemperature")].as<uint8_t>();
 
-	TL::Configuration::setSystemConfig(config);
-	const TL::Configuration::Error configSaveError = TL::Configuration::save();
-	if (configSaveError == TL::Configuration::Error::ERROR_FILE_OPEN)
+	NL::Configuration::setSystemConfig(config);
+	const NL::Configuration::Error configSaveError = NL::Configuration::save();
+	if (configSaveError == NL::Configuration::Error::ERROR_FILE_OPEN)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save system configuration. The configuration file could not be opened."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save system configuration. The configuration file could not be opened."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save system configuration. The configuration file could not be opened."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save system configuration. The configuration file could not be opened."));
 		return;
 	}
-	else if (configSaveError == TL::Configuration::Error::ERROR_FILE_WRITE)
+	else if (configSaveError == NL::Configuration::Error::ERROR_FILE_WRITE)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save system configuration. The configuration file could not be written."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save system configuration. The configuration file could not be written."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save system configuration. The configuration file could not be written."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save system configuration. The configuration file could not be written."));
 		return;
 	}
-	else if (configSaveError != TL::Configuration::Error::OK)
+	else if (configSaveError != NL::Configuration::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save system configuration."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save system configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save system configuration."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save system configuration."));
 		return;
 	}
 
-	TL::Logger::setMinLogLevel((TL::Logger::LogLevel)TL::Configuration::getSystemConfig().logLevel);
+	NL::Logger::setMinLogLevel((NL::Logger::LogLevel)NL::Configuration::getSystemConfig().logLevel);
 
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	TL::SystemConfigurationEndpoint::sendSimpleResponse(200, F("Oki, my system configuration is updated."));
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	NL::SystemConfigurationEndpoint::sendSimpleResponse(200, F("Oki, my system configuration is updated."));
 }
 
 /**
@@ -174,229 +174,229 @@ void TL::SystemConfigurationEndpoint::patchSystemConfig()
  * @return true when valid
  * @return false when invalid
  */
-bool TL::SystemConfigurationEndpoint::validateConfiguration(const JsonObject &jsonObject)
+bool NL::SystemConfigurationEndpoint::validateConfiguration(const JsonObject &jsonObject)
 {
 	if (!jsonObject[F("logLevel")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"logLevel\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"logLevel\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"logLevel\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"logLevel\" field must be of type \"uint8\"."));
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("logLevel")].as<uint8_t>(), 0, 3))
+	if (!NL::SystemConfigurationEndpoint::isInRange(jsonObject[F("logLevel")].as<uint8_t>(), 0, 3))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"logLevel\" field is invalid. It should be between 0 and 3."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"logLevel\" field is invalid. It should be between 0 and 3."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"logLevel\" field is invalid. It should be between 0 and 3."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"logLevel\" field is invalid. It should be between 0 and 3."));
 		return false;
 	}
 
 	if (!jsonObject[F("lightSensorMode")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMode\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMode\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMode\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMode\" field must be of type \"uint8\"."));
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("lightSensorMode")].as<uint8_t>(), 0, 6))
+	if (!NL::SystemConfigurationEndpoint::isInRange(jsonObject[F("lightSensorMode")].as<uint8_t>(), 0, 6))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMode\" field is invalid. It should be between 0 and 6."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMode\" field is invalid. It should be between 0 and 6."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMode\" field is invalid. It should be between 0 and 6."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMode\" field is invalid. It should be between 0 and 6."));
 		return false;
 	}
 
-	if (!TL::AnalogInput::isInitialized() && TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("lightSensorMode")].as<uint8_t>(), 2, 3))
+	if (!NL::AnalogInput::isInitialized() && NL::SystemConfigurationEndpoint::isInRange(jsonObject[F("lightSensorMode")].as<uint8_t>(), 2, 3))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMode\" field is invalid. Can not select ADC based mode because the ADC is not available."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMode\" field is invalid. Can not select ADC based mode because the ADC is not available."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMode\" field is invalid. Can not select ADC based mode because the ADC is not available."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMode\" field is invalid. Can not select ADC based mode because the ADC is not available."));
 		return false;
 	}
 
-	if (!TL::BH1750::isInitialized() && TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("lightSensorMode")].as<uint8_t>(), 4, 5))
+	if (!NL::BH1750::isInitialized() && NL::SystemConfigurationEndpoint::isInRange(jsonObject[F("lightSensorMode")].as<uint8_t>(), 4, 5))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMode\" field is invalid. Can not select BH1750 based mode because the BH1750 is not available."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMode\" field is invalid. Can not select BH1750 based mode because the BH1750 is not available."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMode\" field is invalid. Can not select BH1750 based mode because the BH1750 is not available."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMode\" field is invalid. Can not select BH1750 based mode because the BH1750 is not available."));
 		return false;
 	}
 
-	if (!TL::MotionSensor::isInitialized() && jsonObject[F("lightSensorMode")].as<uint8_t>() == 6)
+	if (!NL::MotionSensor::isInitialized() && jsonObject[F("lightSensorMode")].as<uint8_t>() == 6)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMode\" field is invalid. Can not select motion sensor based mode because the motion sensor is not available."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMode\" field is invalid. Can not select motion sensor based mode because the motion sensor is not available."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMode\" field is invalid. Can not select motion sensor based mode because the motion sensor is not available."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMode\" field is invalid. Can not select motion sensor based mode because the motion sensor is not available."));
 		return false;
 	}
 
 	if (!jsonObject[F("lightSensorThreshold")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorThreshold\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorThreshold\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorThreshold\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorThreshold\" field must be of type \"uint8\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("lightSensorMinAmbientBrightness")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMinAmbientBrightness\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMinAmbientBrightness\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMinAmbientBrightness\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMinAmbientBrightness\" field must be of type \"uint8\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("lightSensorMaxAmbientBrightness")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMaxAmbientBrightness\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMaxAmbientBrightness\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMaxAmbientBrightness\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMaxAmbientBrightness\" field must be of type \"uint8\"."));
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("lightSensorMinAmbientBrightness")].as<uint8_t>(), jsonObject[F("lightSensorMaxAmbientBrightness")].as<uint8_t>()))
+	if (!NL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("lightSensorMinAmbientBrightness")].as<uint8_t>(), jsonObject[F("lightSensorMaxAmbientBrightness")].as<uint8_t>()))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMinAmbientBrightness\" must be smaller than the \"lightSensorMaxAmbientBrightness\" value."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMinAmbientBrightness\" must be smaller than the \"lightSensorMaxAmbientBrightness\" value."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMinAmbientBrightness\" must be smaller than the \"lightSensorMaxAmbientBrightness\" value."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMinAmbientBrightness\" must be smaller than the \"lightSensorMaxAmbientBrightness\" value."));
 		return false;
 	}
 
 	if (!jsonObject[F("lightSensorMinLedBrightness")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMinLedBrightness\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMinLedBrightness\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMinLedBrightness\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMinLedBrightness\" field must be of type \"uint8\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("lightSensorMaxLedBrightness")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMaxLedBrightness\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMaxLedBrightness\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMaxLedBrightness\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMaxLedBrightness\" field must be of type \"uint8\"."));
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("lightSensorMinLedBrightness")].as<uint8_t>(), jsonObject[F("lightSensorMaxLedBrightness")].as<uint8_t>()))
+	if (!NL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("lightSensorMinLedBrightness")].as<uint8_t>(), jsonObject[F("lightSensorMaxLedBrightness")].as<uint8_t>()))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMinLedBrightness\" must be smaller than the \"lightSensorMaxLedBrightness\" value."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMinLedBrightness\" must be smaller than the \"lightSensorMaxLedBrightness\" value."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorMinLedBrightness\" must be smaller than the \"lightSensorMaxLedBrightness\" value."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorMinLedBrightness\" must be smaller than the \"lightSensorMaxLedBrightness\" value."));
 		return false;
 	}
 
 	if (!jsonObject[F("lightSensorDuration")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorDuration\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorDuration\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"lightSensorDuration\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"lightSensorDuration\" field must be of type \"uint8\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("regulatorPowerLimit")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"regulatorPowerLimit\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"regulatorPowerLimit\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"regulatorPowerLimit\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"regulatorPowerLimit\" field must be of type \"uint8\"."));
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorPowerLimit")].as<uint8_t>(), 1, REGULATOR_POWER_LIMIT * REGULATOR_COUNT))
+	if (!NL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorPowerLimit")].as<uint8_t>(), 1, REGULATOR_POWER_LIMIT * REGULATOR_COUNT))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorPowerLimit\" field is invalid. It should be between 1 and ") + REGULATOR_POWER_LIMIT * REGULATOR_COUNT);
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorPowerLimit\" field is invalid. It should be between 1 and ") + REGULATOR_POWER_LIMIT * REGULATOR_COUNT);
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorPowerLimit\" field is invalid. It should be between 1 and ") + REGULATOR_POWER_LIMIT * REGULATOR_COUNT);
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorPowerLimit\" field is invalid. It should be between 1 and ") + REGULATOR_POWER_LIMIT * REGULATOR_COUNT);
 		return false;
 	}
 
 	if (!jsonObject[F("regulatorHighTemperature")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"regulatorHighTemperature\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"regulatorHighTemperature\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"regulatorHighTemperature\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"regulatorHighTemperature\" field must be of type \"uint8\"."));
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorHighTemperature")].as<uint8_t>(), 60, REGULATOR_HIGH_TEMP_LIMIT))
+	if (!NL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorHighTemperature")].as<uint8_t>(), 60, REGULATOR_HIGH_TEMP_LIMIT))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorHighTemperature\" field is invalid. It should be between 60 and ") + REGULATOR_HIGH_TEMP_LIMIT + F("."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorHighTemperature\" field is invalid. It should be between 60 and ") + REGULATOR_HIGH_TEMP_LIMIT + F("."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorHighTemperature\" field is invalid. It should be between 60 and ") + REGULATOR_HIGH_TEMP_LIMIT + F("."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorHighTemperature\" field is invalid. It should be between 60 and ") + REGULATOR_HIGH_TEMP_LIMIT + F("."));
 		return false;
 	}
 
 	if (!jsonObject[F("regulatorCutoffTemperature")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"regulatorCutoffTemperature\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"regulatorCutoffTemperature\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"regulatorCutoffTemperature\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"regulatorCutoffTemperature\" field must be of type \"uint8\"."));
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorCutoffTemperature")].as<uint8_t>(), 70, REGULATOR_CUT_OFF_TEMP_LIMIT))
+	if (!NL::SystemConfigurationEndpoint::isInRange(jsonObject[F("regulatorCutoffTemperature")].as<uint8_t>(), 70, REGULATOR_CUT_OFF_TEMP_LIMIT))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorCutoffTemperature\" field is invalid. It should be between 70 and ") + REGULATOR_CUT_OFF_TEMP_LIMIT + F("."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorCutoffTemperature\" field is invalid. It should be between 70 and ") + REGULATOR_CUT_OFF_TEMP_LIMIT + F("."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"regulatorCutoffTemperature\" field is invalid. It should be between 70 and ") + REGULATOR_CUT_OFF_TEMP_LIMIT + F("."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"regulatorCutoffTemperature\" field is invalid. It should be between 70 and ") + REGULATOR_CUT_OFF_TEMP_LIMIT + F("."));
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("regulatorHighTemperature")].as<uint8_t>(), jsonObject[F("regulatorCutoffTemperature")].as<uint8_t>()))
+	if (!NL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("regulatorHighTemperature")].as<uint8_t>(), jsonObject[F("regulatorCutoffTemperature")].as<uint8_t>()))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"regulatorHighTemperature\" must be smaller than the \"regulatorCutoffTemperature\" value."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"regulatorHighTemperature\" must be smaller than the \"regulatorCutoffTemperature\" value."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"regulatorHighTemperature\" must be smaller than the \"regulatorCutoffTemperature\" value."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"regulatorHighTemperature\" must be smaller than the \"regulatorCutoffTemperature\" value."));
 		return false;
 	}
 
 	if (!jsonObject[F("fanMode")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMode\" field in configuration must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMode\" field in configuration must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMode\" field in configuration must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMode\" field in configuration must be of type \"uint8\"."));
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("fanMode")].as<uint8_t>(), 0, 5))
+	if (!NL::SystemConfigurationEndpoint::isInRange(jsonObject[F("fanMode")].as<uint8_t>(), 0, 5))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMode\" field is invalid. It should be between 0 and 5."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMode\" field is invalid. It should be between 0 and 5."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("The \"fanMode\" field is invalid. It should be between 0 and 5."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, (String)F("The \"fanMode\" field is invalid. It should be between 0 and 5."));
 		return false;
 	}
 
 	if (!jsonObject[F("fanMinPwmValue")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMinPwmValue\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMinPwmValue\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMinPwmValue\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMinPwmValue\" field must be of type \"uint8\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("fanMaxPwmValue")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMaxPwmValue\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMaxPwmValue\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMaxPwmValue\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMaxPwmValue\" field must be of type \"uint8\"."));
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("fanMinPwmValue")].as<uint8_t>(), jsonObject[F("fanMaxPwmValue")].as<uint8_t>()))
+	if (!NL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("fanMinPwmValue")].as<uint8_t>(), jsonObject[F("fanMaxPwmValue")].as<uint8_t>()))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMinPwmValue\" must be smaller than the \"fanMaxPwmValue\" value."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMinPwmValue\" must be smaller than the \"fanMaxPwmValue\" value."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMinPwmValue\" must be smaller than the \"fanMaxPwmValue\" value."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMinPwmValue\" must be smaller than the \"fanMaxPwmValue\" value."));
 		return false;
 	}
 
 	if (!jsonObject[F("fanMinTemperature")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMinTemperature\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMinTemperature\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMinTemperature\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMinTemperature\" field must be of type \"uint8\"."));
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("fanMinTemperature")].as<uint8_t>(), 45, 70))
+	if (!NL::SystemConfigurationEndpoint::isInRange(jsonObject[F("fanMinTemperature")].as<uint8_t>(), 45, 70))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMinTemperature\" field is invalid. It should be between 45 and 70."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMinTemperature\" field is invalid. It should be between 45 and 70."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMinTemperature\" field is invalid. It should be between 45 and 70."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMinTemperature\" field is invalid. It should be between 45 and 70."));
 		return false;
 	}
 
 	if (!jsonObject[F("fanMaxTemperature")].is<uint8_t>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMaxTemperature\" field must be of type \"uint8\"."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMaxTemperature\" field must be of type \"uint8\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMaxTemperature\" field must be of type \"uint8\"."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMaxTemperature\" field must be of type \"uint8\"."));
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::isInRange(jsonObject[F("fanMaxTemperature")].as<uint8_t>(), 60, 90))
+	if (!NL::SystemConfigurationEndpoint::isInRange(jsonObject[F("fanMaxTemperature")].as<uint8_t>(), 60, 90))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMaxTemperature\" field is invalid. It should be between 60 and 90."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMaxTemperature\" field is invalid. It should be between 60 and 90."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMaxTemperature\" field is invalid. It should be between 60 and 90."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMaxTemperature\" field is invalid. It should be between 60 and 90."));
 		return false;
 	}
 
-	if (!TL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("fanMinTemperature")].as<uint8_t>(), jsonObject[F("fanMaxTemperature")].as<uint8_t>()))
+	if (!NL::SystemConfigurationEndpoint::validateMinMax(jsonObject[F("fanMinTemperature")].as<uint8_t>(), jsonObject[F("fanMaxTemperature")].as<uint8_t>()))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMinTemperature\" must be smaller than the \"fanMaxTemperature\" value."));
-		TL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMinTemperature\" must be smaller than the \"fanMaxTemperature\" value."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"fanMinTemperature\" must be smaller than the \"fanMaxTemperature\" value."));
+		NL::SystemConfigurationEndpoint::sendSimpleResponse(400, F("The \"fanMinTemperature\" must be smaller than the \"fanMaxTemperature\" value."));
 		return false;
 	}
 
@@ -411,7 +411,7 @@ bool TL::SystemConfigurationEndpoint::validateConfiguration(const JsonObject &js
  * @return true when the value is valid
  * @return false when the value is invalid
  */
-bool TL::SystemConfigurationEndpoint::isInRange(const long value, const long min, const long max)
+bool NL::SystemConfigurationEndpoint::isInRange(const long value, const long min, const long max)
 {
 	return value >= min && value <= max;
 }
@@ -423,7 +423,7 @@ bool TL::SystemConfigurationEndpoint::isInRange(const long value, const long min
  * @return true when the min value is smaller than the max value
  * @return false when the min value is bigger than the max value
  */
-bool TL::SystemConfigurationEndpoint::validateMinMax(const long min, const long max)
+bool NL::SystemConfigurationEndpoint::validateMinMax(const long min, const long max)
 {
 	return min < max;
 }

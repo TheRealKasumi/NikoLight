@@ -4,7 +4,7 @@
  * @brief Contains a class to render a static color
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -25,19 +25,19 @@
 #include <vector>
 #include "led/animator/LedAnimator.h"
 
-namespace TL
+namespace NL
 {
 	class StaticColorAnimator : public LedAnimator
 	{
 	public:
-		StaticColorAnimator(const TL::Pixel color);
+		StaticColorAnimator(const NL::Pixel color);
 		~StaticColorAnimator();
 
-		void init(TL::LedStrip &ledStrip);
-		void render(TL::LedStrip &ledStrip);
+		void init(NL::LedStrip &ledStrip);
+		void render(NL::LedStrip &ledStrip);
 
 	private:
-		TL::Pixel color;
+		NL::Pixel color;
 	};
 }
 

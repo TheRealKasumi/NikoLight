@@ -119,13 +119,13 @@
   },
   "update": {
     "desc": {
-      "1": "Hier kann eine Systemaktualisierung auf das TesLight-Steuergerät installiert werden. Dies gilt sowohl für die Firmware des Mikroprozessors als auch für die Benutzeroberfläche. Um eine Systemaktualisierung zu installieren, muss zunächst ein so genanntes \"TesLight Update Package\" herunterladen. Diese Dateien haben die Erweiterung \".tup\" und kann im Release-Bereich auf meiner GitHub-Seite gefunden werden: <github>https://github.com/TheRealKasumi/TesLight</github>.",
+      "1": "Hier kann eine Systemaktualisierung auf das NikoLight-Steuergerät installiert werden. Dies gilt sowohl für die Firmware des Mikroprozessors als auch für die Benutzeroberfläche. Um eine Systemaktualisierung zu installieren, muss zunächst ein so genanntes \"NikoLight Update Package\" herunterladen. Diese Dateien haben die Erweiterung \".tup\" und kann im Release-Bereich auf meiner GitHub-Seite gefunden werden: <github>https://github.com/TheRealKasumi/NikoLight</github>.",
       "2": "Nach dem Herunterladen benutze bitte diese Seite, um das Aktualisierungspaket auf den Controller zu laden. Sobald die Datei hochgeladen ist, wird das Steuergerät neu gestartet und die Aktualisierung installiert. Dies kann bis zu 2 Minuten dauern, geht aber normalerweise schneller. Während dieser Zeit ist der Controller nicht über den WiFi-Hotspot erreichbar. Bitte habe Geduld. Danach wird der Controller neu gestartet und ist wie gewohnt erreichbar.",
       "3": "Warnung: Das Hochladen fehlerhafter Aktualisierungspakete kann dazu führen, dass der Controller nicht mehr erreichbar ist. Dann ist eine kabelgebundene Verbindung zur Neuinstallation der Firmware erforderlich. Es wird daher empfohlen, nur stabile und getestete Aktualisierungspakete von der GitHub-Seite hochzuladen."
     },
-    "submit": "TesLight aktualisieren",
+    "submit": "NikoLight aktualisieren",
     "title": "Aktualisierung",
-    "updateSuccessful": "TesLight erfolgreich aktualisiert!"
+    "updateSuccessful": "NikoLight erfolgreich aktualisiert!"
   },
   "zone": {
     "advanced": "Erweitert",

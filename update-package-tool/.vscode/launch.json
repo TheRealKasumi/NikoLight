@@ -5,7 +5,7 @@
 			"name": "g++.exe - Build and debug project",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceRoot}\\build\\tupt.exe",
+			"program": "${workspaceRoot}\\build\\nupt.exe",
 			"cwd": "${workspaceRoot}\\build",
 			"stopAtEntry": false,
 			"MIMode": "gdb",

@@ -22,32 +22,32 @@
 #include "server/FseqEndpoint.h"
 
 // Initialize
-FS *TL::FseqEndpoint::fileSystem = nullptr;
-File TL::FseqEndpoint::uploadFile = File();
+FS *NL::FseqEndpoint::fileSystem = nullptr;
+File NL::FseqEndpoint::uploadFile = File();
 
 /**
- * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
+ * @brief Add all request handler for this {@link NL::RestEndpoint} to the {@link NL::WebServerManager}.
  */
-void TL::FseqEndpoint::begin(FS *_fileSystem)
+void NL::FseqEndpoint::begin(FS *_fileSystem)
 {
-	TL::FseqEndpoint::fileSystem = _fileSystem;
-	TL::FseqEndpoint::fileSystem->mkdir(FSEQ_DIRECTORY);
+	NL::FseqEndpoint::fileSystem = _fileSystem;
+	NL::FseqEndpoint::fileSystem->mkdir(FSEQ_DIRECTORY);
 
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_GET, TL::FseqEndpoint::getFseqList);
-	TL::WebServerManager::addUploadRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_POST, TL::FseqEndpoint::postFseq, TL::FseqEndpoint::fseqUpload);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_DELETE, TL::FseqEndpoint::deleteFseq);
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_GET, NL::FseqEndpoint::getFseqList);
+	NL::WebServerManager::addUploadRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_POST, NL::FseqEndpoint::postFseq, NL::FseqEndpoint::fseqUpload);
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("fseq")).c_str(), http_method::HTTP_DELETE, NL::FseqEndpoint::deleteFseq);
 }
 
 /**
  * @brief Return a list of available fseq files on the controller.
  */
-void TL::FseqEndpoint::getFseqList()
+void NL::FseqEndpoint::getFseqList()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the fseq list."));
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the fseq list."));
 	DynamicJsonDocument jsonDoc(4096);
 	const JsonArray fileList = jsonDoc.createNestedArray(F("fileList"));
 
-	if (!TL::FileUtil::listFiles(
+	if (!NL::FileUtil::listFiles(
 			fileSystem, FSEQ_DIRECTORY, [jsonDoc, fileList](const String fileName, const size_t fileSize)
 			{ 
 				if(!jsonDoc.overflowed()) 
@@ -57,139 +57,139 @@ void TL::FseqEndpoint::getFseqList()
 					object[F("fileSize")] = fileSize;
 
 					uint32_t fileId;
-					if(TL::FileUtil::getFileIdentifier(fileSystem, FSEQ_DIRECTORY + (String)F("/") + fileName, fileId))
+					if(NL::FileUtil::getFileIdentifier(fileSystem, FSEQ_DIRECTORY + (String)F("/") + fileName, fileId))
 					{
 						object[F("fileId")] = fileId;
 					}
 					else 
 					{
-						TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to get file identifier."));	
+						NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to get file identifier."));	
 						object[F("fileId")] = 0;
 					}
 				} },
 			false))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to list files."));
-		TL::FseqEndpoint::sendSimpleResponse(500, F("The file list could not be read."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to list files."));
+		NL::FseqEndpoint::sendSimpleResponse(500, F("The file list could not be read."));
 		return;
 	}
 
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	TL::FseqEndpoint::sendJsonDocument(200, F("Happily serving the file list to you :3 !"), jsonDoc);
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	NL::FseqEndpoint::sendJsonDocument(200, F("Happily serving the file list to you :3 !"), jsonDoc);
 }
 
 /**
  * @brief Is called after the file upload of a fseq file.
  */
-void TL::FseqEndpoint::postFseq()
+void NL::FseqEndpoint::postFseq()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Upload of fseq file completed."));
-	TL::FseqEndpoint::sendSimpleResponse(200, F("File received! Can't wait to unpack it... Can I? Pleaaaase?"));
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Upload of fseq file completed."));
+	NL::FseqEndpoint::sendSimpleResponse(200, F("File received! Can't wait to unpack it... Can I? Pleaaaase?"));
 }
 
 /**
  * @brief Upload a new fseq files to the controller.
  */
-void TL::FseqEndpoint::fseqUpload()
+void NL::FseqEndpoint::fseqUpload()
 {
 	const String fileName = webServer->arg(F("fileName"));
 	HTTPUpload &upload = webServer->upload();
 	if (upload.status == UPLOAD_FILE_START)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to upload a new fseq file."));
+		NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to upload a new fseq file."));
 		if (fileName.length() == 0)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The fileName parameter must not be empty. Can not upload file."));
-			TL::FseqEndpoint::sendSimpleResponse(400, F("The fileName parameter must not be empty. Can not upload file."));
+			NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The fileName parameter must not be empty. Can not upload file."));
+			NL::FseqEndpoint::sendSimpleResponse(400, F("The fileName parameter must not be empty. Can not upload file."));
 			return;
 		}
-		else if (!TL::FseqEndpoint::validateFileName(fileName))
+		else if (!NL::FseqEndpoint::validateFileName(fileName))
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The received file name is invalid."));
-			TL::FseqEndpoint::sendSimpleResponse(400, F("The received file name is invalid."));
+			NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The received file name is invalid."));
+			NL::FseqEndpoint::sendSimpleResponse(400, F("The received file name is invalid."));
 			return;
 		}
 
-		if (TL::FileUtil::fileExists(TL::FseqEndpoint::fileSystem, (String)FSEQ_DIRECTORY + F("/") + fileName))
+		if (NL::FileUtil::fileExists(NL::FseqEndpoint::fileSystem, (String)FSEQ_DIRECTORY + F("/") + fileName))
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("A file with name \"") + fileName + F("\" already exists."));
-			TL::FseqEndpoint::sendSimpleResponse(409, (String)F("A file with name \"") + fileName + F("\" already exists."));
+			NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("A file with name \"") + fileName + F("\" already exists."));
+			NL::FseqEndpoint::sendSimpleResponse(409, (String)F("A file with name \"") + fileName + F("\" already exists."));
 			return;
 		}
 
-		TL::FseqEndpoint::uploadFile = TL::FseqEndpoint::fileSystem->open((String)FSEQ_DIRECTORY + F("/") + fileName, FILE_WRITE);
+		NL::FseqEndpoint::uploadFile = NL::FseqEndpoint::fileSystem->open((String)FSEQ_DIRECTORY + F("/") + fileName, FILE_WRITE);
 		if (!uploadFile)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to write to file for upload."));
-			TL::FseqEndpoint::sendSimpleResponse(500, F("Failed to write to file for upload."));
+			NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to write to file for upload."));
+			NL::FseqEndpoint::sendSimpleResponse(500, F("Failed to write to file for upload."));
 			return;
 		}
 	}
-	else if (upload.status == UPLOAD_FILE_WRITE && TL::FseqEndpoint::uploadFile)
+	else if (upload.status == UPLOAD_FILE_WRITE && NL::FseqEndpoint::uploadFile)
 	{
-		if (TL::FseqEndpoint::uploadFile.write(upload.buf, upload.currentSize) != upload.currentSize)
+		if (NL::FseqEndpoint::uploadFile.write(upload.buf, upload.currentSize) != upload.currentSize)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to write chunk to file. Not all bytes were written."));
-			TL::FseqEndpoint::sendSimpleResponse(500, F("Failed to write chunk to file. Not all bytes were written."));
+			NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to write chunk to file. Not all bytes were written."));
+			NL::FseqEndpoint::sendSimpleResponse(500, F("Failed to write chunk to file. Not all bytes were written."));
 			return;
 		}
 	}
 	else if (upload.status == UPLOAD_FILE_END)
 	{
-		TL::FseqEndpoint::uploadFile.close();
-		TL::FseqLoader::Error fseqError = TL::FseqEndpoint::validateFseqFile((String)FSEQ_DIRECTORY + F("/") + fileName);
+		NL::FseqEndpoint::uploadFile.close();
+		NL::FseqLoader::Error fseqError = NL::FseqEndpoint::validateFseqFile((String)FSEQ_DIRECTORY + F("/") + fileName);
 
-		if (fseqError == TL::FseqLoader::Error::ERROR_FILE_TOO_SMALL)
+		if (fseqError == NL::FseqLoader::Error::ERROR_FILE_TOO_SMALL)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file is invalid because it is too small. File will be deleted."));
-			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
-			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file is invalid because it is too small. File will be deleted."));
+			NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file is invalid because it is too small. File will be deleted."));
+			NL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			NL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file is invalid because it is too small. File will be deleted."));
 			return;
 		}
-		else if (fseqError == TL::FseqLoader::Error::ERROR_MAGIC_NUMBERS)
+		else if (fseqError == NL::FseqLoader::Error::ERROR_MAGIC_NUMBERS)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file is not a valid fseq file. File will be deleted."));
-			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
-			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file is not a valid fseq file. File will be deleted."));
+			NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file is not a valid fseq file. File will be deleted."));
+			NL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			NL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file is not a valid fseq file. File will be deleted."));
 			return;
 		}
-		else if (fseqError == TL::FseqLoader::Error::ERROR_FILE_VERSION)
+		else if (fseqError == NL::FseqLoader::Error::ERROR_FILE_VERSION)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file has a invalid version. File will be deleted."));
-			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
-			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file has a invalid version. File will be deleted."));
+			NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file has a invalid version. File will be deleted."));
+			NL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			NL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file has a invalid version. File will be deleted."));
 			return;
 		}
-		else if (fseqError == TL::FseqLoader::Error::ERROR_HEADER_LENGTH)
+		else if (fseqError == NL::FseqLoader::Error::ERROR_HEADER_LENGTH)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file has a invalid header length. File will be deleted."));
-			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
-			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file has a invalid header length. File will be deleted."));
+			NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file has a invalid header length. File will be deleted."));
+			NL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			NL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file has a invalid header length. File will be deleted."));
 			return;
 		}
-		else if (fseqError == TL::FseqLoader::Error::ERROR_INVALID_DATA_LENGTH)
+		else if (fseqError == NL::FseqLoader::Error::ERROR_INVALID_DATA_LENGTH)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file has a invalid data length. File will be deleted."));
-			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
-			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file has a invalid data length. File will be deleted."));
+			NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file has a invalid data length. File will be deleted."));
+			NL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			NL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file has a invalid data length. File will be deleted."));
 			return;
 		}
-		else if (fseqError != TL::FseqLoader::Error::OK)
+		else if (fseqError != NL::FseqLoader::Error::OK)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file is invalid and will be deleted."));
-			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
-			TL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file is invalid and will be deleted."));
+			NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The uploaded fseq file is invalid and will be deleted."));
+			NL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			NL::FseqEndpoint::sendSimpleResponse(400, F("The uploaded fseq file is invalid and will be deleted."));
 			return;
 		}
 	}
 	else if (upload.status == UPLOAD_FILE_ABORTED)
 	{
-		if (TL::FseqEndpoint::uploadFile)
+		if (NL::FseqEndpoint::uploadFile)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Upload was aborted, file will be deleted."));
-			TL::FseqEndpoint::uploadFile.close();
-			TL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
-			TL::FseqEndpoint::sendSimpleResponse(400, F("Upload was aborted by the client. The data was dropped."));
+			NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Upload was aborted, file will be deleted."));
+			NL::FseqEndpoint::uploadFile.close();
+			NL::FseqEndpoint::fileSystem->remove((String)FSEQ_DIRECTORY + F("/") + fileName);
+			NL::FseqEndpoint::sendSimpleResponse(400, F("Upload was aborted by the client. The data was dropped."));
 		}
 	}
 }
@@ -197,55 +197,55 @@ void TL::FseqEndpoint::fseqUpload()
 /**
  * @brief Delete a fseq files from the controller.
  */
-void TL::FseqEndpoint::deleteFseq()
+void NL::FseqEndpoint::deleteFseq()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to delete a fseq file."));
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to delete a fseq file."));
 	const String fileName = webServer->arg(F("fileName"));
 	if (fileName.length() == 0)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to delete fseq file because file name parameter is empty."));
-		TL::FseqEndpoint::sendSimpleResponse(400, F("Failed to delete fseq file because the file name parameter is empty."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to delete fseq file because file name parameter is empty."));
+		NL::FseqEndpoint::sendSimpleResponse(400, F("Failed to delete fseq file because the file name parameter is empty."));
 		return;
 	}
 
 	if (!fileSystem->exists(FSEQ_DIRECTORY + (String)F("/") + fileName))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("File ") + FSEQ_DIRECTORY + F("/") + fileName + F(" was not found."));
-		TL::FseqEndpoint::sendSimpleResponse(404, (String)F("File ") + FSEQ_DIRECTORY + F("/") + fileName + F(" was not found."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, (String)F("File ") + FSEQ_DIRECTORY + F("/") + fileName + F(" was not found."));
+		NL::FseqEndpoint::sendSimpleResponse(404, (String)F("File ") + FSEQ_DIRECTORY + F("/") + fileName + F(" was not found."));
 		return;
 	}
 
-	TL::Configuration::LedConfig ledConfig;
-	TL::Configuration::getLedConfig(0, ledConfig);
+	NL::Configuration::LedConfig ledConfig;
+	NL::Configuration::getLedConfig(0, ledConfig);
 	if (ledConfig.type == 255)
 	{
 		uint32_t idFile = 0;
 		uint32_t idConfig = 0;
-		if (!TL::FileUtil::getFileIdentifier(TL::FseqEndpoint::fileSystem, FSEQ_DIRECTORY + (String)F("/") + fileName, idFile))
+		if (!NL::FileUtil::getFileIdentifier(NL::FseqEndpoint::fileSystem, FSEQ_DIRECTORY + (String)F("/") + fileName, idFile))
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to calculate file identifier."));
-			TL::FseqEndpoint::sendSimpleResponse(500, F("Failed to calculate file identifier."));
+			NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to calculate file identifier."));
+			NL::FseqEndpoint::sendSimpleResponse(500, F("Failed to calculate file identifier."));
 			return;
 		}
 
 		memcpy(&idConfig, &ledConfig.animationSettings[20], sizeof(idConfig));
 		if (idFile == idConfig)
 		{
-			TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Can not delete a fseq file that is currently used."));
-			TL::FseqEndpoint::sendSimpleResponse(400, F("Can not delete a fseq file that is currently used."));
+			NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Can not delete a fseq file that is currently used."));
+			NL::FseqEndpoint::sendSimpleResponse(400, F("Can not delete a fseq file that is currently used."));
 			return;
 		}
 	}
 
 	if (!fileSystem->remove(FSEQ_DIRECTORY + (String)F("/") + fileName))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to delete file."));
-		TL::FseqEndpoint::sendSimpleResponse(500, F("Failed to delete file."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Failed to delete file."));
+		NL::FseqEndpoint::sendSimpleResponse(500, F("Failed to delete file."));
 		return;
 	}
 
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	TL::FseqEndpoint::sendSimpleResponse(200, F("File deleted."));
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	NL::FseqEndpoint::sendSimpleResponse(200, F("File deleted."));
 }
 
 /**
@@ -254,7 +254,7 @@ void TL::FseqEndpoint::deleteFseq()
  * @return true when valid
  * @return false when invalid
  */
-bool TL::FseqEndpoint::validateFileName(const String fileName)
+bool NL::FseqEndpoint::validateFileName(const String fileName)
 {
 	if (fileName.length() < 1)
 	{
@@ -277,22 +277,22 @@ bool TL::FseqEndpoint::validateFileName(const String fileName)
 }
 
 /**
- * @brief Validate a fseq file by using the {@link TL::FseqLoader}.
+ * @brief Validate a fseq file by using the {@link NL::FseqLoader}.
  * @param fileName full path and name of the file to check
- * @return TL::FseqLoader::OK when the file was loaded and is valid
- * @return TL::FseqLoader::ERROR_FILE_NOT_FOUND when the file was not found
- * @return TL::FseqLoader::ERROR_FILE_IS_DIR when the file is a directory
- * @return TL::FseqLoader::ERROR_FILE_TOO_SMALL when the file is too small to be valid
- * @return TL::FseqLoader::ERROR_FILE_READ when the file could not be read
- * @return TL::FseqLoader::ERROR_MAGIC_NUMBERS when the magic numbers do not match
- * @return TL::FseqLoader::ERROR_FILE_VERSION  when the file version is unsupported
- * @return TL::FseqLoader::ERROR_HEADER_LENGTH when the header length is invalid
- * @return TL::FseqLoader::ERROR_INVALID_DATA_LENGTH when the data length does not match the length specified in header
+ * @return NL::FseqLoader::OK when the file was loaded and is valid
+ * @return NL::FseqLoader::ERROR_FILE_NOT_FOUND when the file was not found
+ * @return NL::FseqLoader::ERROR_FILE_IS_DIR when the file is a directory
+ * @return NL::FseqLoader::ERROR_FILE_TOO_SMALL when the file is too small to be valid
+ * @return NL::FseqLoader::ERROR_FILE_READ when the file could not be read
+ * @return NL::FseqLoader::ERROR_MAGIC_NUMBERS when the magic numbers do not match
+ * @return NL::FseqLoader::ERROR_FILE_VERSION  when the file version is unsupported
+ * @return NL::FseqLoader::ERROR_HEADER_LENGTH when the header length is invalid
+ * @return NL::FseqLoader::ERROR_INVALID_DATA_LENGTH when the data length does not match the length specified in header
  */
-TL::FseqLoader::Error TL::FseqEndpoint::validateFseqFile(const String fileName)
+NL::FseqLoader::Error NL::FseqEndpoint::validateFseqFile(const String fileName)
 {
-	TL::FseqLoader fseqLoader(TL::FseqEndpoint::fileSystem);
-	const TL::FseqLoader::Error fseqError = fseqLoader.loadFromFile(fileName);
+	NL::FseqLoader fseqLoader(NL::FseqEndpoint::fileSystem);
+	const NL::FseqLoader::Error fseqError = fseqLoader.loadFromFile(fileName);
 	fseqLoader.close();
 	return fseqError;
 }

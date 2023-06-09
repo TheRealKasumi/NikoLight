@@ -1,7 +1,7 @@
 /**
  * @file GradientAnimatorMotion.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::GradientAnimatorMotion}.
+ * @brief Implementation of the {@link NL::GradientAnimatorMotion}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -22,12 +22,12 @@
 #include "led/animator/GradientAnimatorMotion.h"
 
 /**
- * @brief Create a new instance of {@link TL::GradientAnimatorMotion}.
+ * @brief Create a new instance of {@link NL::GradientAnimatorMotion}.
  * @param gradientMode mode of the gradient
  * @param color1 first color value
  * @param color2 second color value
  */
-TL::GradientAnimatorMotion::GradientAnimatorMotion(const TL::GradientAnimatorMotion::GradientMode gradientMode, const TL::Pixel color1, const TL::Pixel color2)
+NL::GradientAnimatorMotion::GradientAnimatorMotion(const NL::GradientAnimatorMotion::GradientMode gradientMode, const NL::Pixel color1, const NL::Pixel color2)
 {
 	this->gradientMode = gradientMode;
 	this->color[0] = color1;
@@ -35,21 +35,21 @@ TL::GradientAnimatorMotion::GradientAnimatorMotion(const TL::GradientAnimatorMot
 }
 
 /**
- * @brief Destroy the {@link TL::GradientAnimatorMotion}.
+ * @brief Destroy the {@link NL::GradientAnimatorMotion}.
  */
-TL::GradientAnimatorMotion::~GradientAnimatorMotion()
+NL::GradientAnimatorMotion::~GradientAnimatorMotion()
 {
 }
 
 /**
- * @brief Initialize the {@link TL::GradientAnimatorMotion}.
+ * @brief Initialize the {@link NL::GradientAnimatorMotion}.
  * @param ledStrip LED strip with the pixel data
  */
-void TL::GradientAnimatorMotion::init(TL::LedStrip &ledStrip)
+void NL::GradientAnimatorMotion::init(NL::LedStrip &ledStrip)
 {
 	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
-		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+		ledStrip.setPixel(NL::Pixel::ColorCode::Black, i);
 	}
 }
 
@@ -57,16 +57,16 @@ void TL::GradientAnimatorMotion::init(TL::LedStrip &ledStrip)
  * @brief Render the gradient to the vector holding the LED pixel data
  * @param ledStrip LED strip with the pixel data
  */
-void TL::GradientAnimatorMotion::render(TL::LedStrip &ledStrip)
+void NL::GradientAnimatorMotion::render(NL::LedStrip &ledStrip)
 {
 	if (ledStrip.getLedCount() == 2)
 	{
 		const float motionOffset = (this->getMotionOffset() - 0.5f) * 2.0f;
 		if (motionOffset < 0.0f)
 		{
-			ledStrip.setPixel(TL::Pixel(this->color[0].red, this->color[0].green, this->color[0].blue), 0);
+			ledStrip.setPixel(NL::Pixel(this->color[0].red, this->color[0].green, this->color[0].blue), 0);
 			ledStrip.setPixel(
-				TL::Pixel(
+				NL::Pixel(
 					(-motionOffset * this->color[0].red + (1 + motionOffset) * this->color[1].red),
 					(-motionOffset * this->color[0].green + (1 + motionOffset) * this->color[1].green),
 					(-motionOffset * this->color[0].blue + (1 + motionOffset) * this->color[1].blue)),
@@ -75,12 +75,12 @@ void TL::GradientAnimatorMotion::render(TL::LedStrip &ledStrip)
 		else
 		{
 			ledStrip.setPixel(
-				TL::Pixel(
+				NL::Pixel(
 					(motionOffset * this->color[1].red + (1 - motionOffset) * this->color[0].red),
 					(motionOffset * this->color[1].green + (1 - motionOffset) * this->color[0].green),
 					(motionOffset * this->color[1].blue + (1 - motionOffset) * this->color[0].blue)),
 				0);
-			ledStrip.setPixel(TL::Pixel(this->color[1].red, this->color[1].green, this->color[1].blue), 1);
+			ledStrip.setPixel(NL::Pixel(this->color[1].red, this->color[1].green, this->color[1].blue), 1);
 		}
 	}
 	else
@@ -98,7 +98,7 @@ void TL::GradientAnimatorMotion::render(TL::LedStrip &ledStrip)
 		for (uint16_t i = 0; i < ledStrip.getLedCount(); i++)
 		{
 			float position = 0.0f;
-			if (this->gradientMode == TL::GradientAnimatorMotion::GradientMode::GRADIENT_LINEAR)
+			if (this->gradientMode == NL::GradientAnimatorMotion::GradientMode::GRADIENT_LINEAR)
 			{
 				if (i < motionOffset)
 				{
@@ -109,7 +109,7 @@ void TL::GradientAnimatorMotion::render(TL::LedStrip &ledStrip)
 					position = 0.5f + (i - motionOffset) / ((ledStrip.getLedCount() - 1) - motionOffset) * 0.5f;
 				}
 			}
-			else if (this->gradientMode == TL::GradientAnimatorMotion::GradientMode::GRADIENT_CENTER)
+			else if (this->gradientMode == NL::GradientAnimatorMotion::GradientMode::GRADIENT_CENTER)
 			{
 				if (i < motionOffset)
 				{
@@ -121,7 +121,7 @@ void TL::GradientAnimatorMotion::render(TL::LedStrip &ledStrip)
 				}
 			}
 			ledStrip.setPixel(
-				TL::Pixel(
+				NL::Pixel(
 					(position * this->color[0].red + (1 - position) * this->color[1].red),
 					(position * this->color[0].green + (1 - position) * this->color[1].green),
 					(position * this->color[0].blue + (1 - position) * this->color[1].blue)),
@@ -140,46 +140,46 @@ void TL::GradientAnimatorMotion::render(TL::LedStrip &ledStrip)
  * @brief Get the motion based offset value between 0.0 and 1.0.
  * @return motion based offset value
  */
-float TL::GradientAnimatorMotion::getMotionOffset()
+float NL::GradientAnimatorMotion::getMotionOffset()
 {
 	float motionValue = 0.0f;
-	if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ACC_X_G)
+	if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_ACC_X_G)
 	{
 		motionValue = this->motionSensorData.accXG;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ACC_Y_G)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_ACC_Y_G)
 	{
 		motionValue = this->motionSensorData.accYG;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ACC_Z_G)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_ACC_Z_G)
 	{
 		motionValue = this->motionSensorData.accZG;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_GY_X_DEG)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_GY_X_DEG)
 	{
 		motionValue = this->motionSensorData.gyroXDeg / 30.0f;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_GY_Y_DEG)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_GY_Y_DEG)
 	{
 		motionValue = this->motionSensorData.gyroYDeg / 30.0f;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_GY_Z_DEG)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_GY_Z_DEG)
 	{
 		motionValue = this->motionSensorData.gyroZDeg / 30.0f;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_PITCH)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_PITCH)
 	{
 		motionValue = this->motionSensorData.pitch / 30.0f;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ROLL)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_ROLL)
 	{
 		motionValue = this->motionSensorData.roll / 30.0f;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_ROLL_COMPENSATED_ACC_X_G)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_ROLL_COMPENSATED_ACC_X_G)
 	{
 		motionValue = this->motionSensorData.rollCompensatedAccXG;
 	}
-	else if (this->getDataSource() == TL::LedAnimator::DataSource::DS_MOTION_PITCH_COMPENSATED_ACC_Y_G)
+	else if (this->getDataSource() == NL::LedAnimator::DataSource::DS_MOTION_PITCH_COMPENSATED_ACC_Y_G)
 	{
 		motionValue = this->motionSensorData.pitchCompensatedAccYG;
 	}

@@ -1,7 +1,7 @@
 /**
  * @file Updater.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::Updater} class.
+ * @brief Implementation of the {@link NL::Updater} class.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -22,8 +22,8 @@
 #include "update/Updater.h"
 
 /**
- * @brief Run a full system update from a TUP file.
- * @param fileSystem where the TUP file is stored and unpacked
+ * @brief Run a full system update from a NUP file.
+ * @param fileSystem where the NUP file is stored and unpacked
  * @param packageFileName full path and name of the package file
  * @return OK when the update was installed
  * @return ERROR_UPDATE_FILE_NOT_FOUND when the update file was not found
@@ -36,44 +36,44 @@
  * @return ERROR_WRITE_FW_DATA when the firmware could not be written
  * @return ERROR_FINISH_FW_UPDATE when the firmware update could not be finalized
  */
-TL::Updater::Error TL::Updater::install(FS *fileSystem, const String packageFileName)
+NL::Updater::Error NL::Updater::install(FS *fileSystem, const String packageFileName)
 {
-	if (!TL::FileUtil::fileExists(fileSystem, packageFileName))
+	if (!NL::FileUtil::fileExists(fileSystem, packageFileName))
 	{
-		return TL::Updater::Error::ERROR_UPDATE_FILE_NOT_FOUND;
+		return NL::Updater::Error::ERROR_UPDATE_FILE_NOT_FOUND;
 	}
 
-	TL::TupFile tupFile;
-	if (tupFile.load(fileSystem, packageFileName) != TL::TupFile::Error::OK)
-	{
-		fileSystem->remove(packageFileName);
-		return TL::Updater::Error::ERROR_INVALID_FILE;
-	}
-
-	if (!TL::FileUtil::clearRoot(fileSystem))
+	NL::NupFile nupFile;
+	if (nupFile.load(fileSystem, packageFileName) != NL::NupFile::Error::OK)
 	{
 		fileSystem->remove(packageFileName);
-		return TL::Updater::Error::ERROR_CLEAN_FS;
+		return NL::Updater::Error::ERROR_INVALID_FILE;
 	}
 
-	if (tupFile.unpack(fileSystem, F("/")) != TL::TupFile::Error::OK)
+	if (!NL::FileUtil::clearRoot(fileSystem))
 	{
 		fileSystem->remove(packageFileName);
-		return TL::Updater::Error::ERROR_UPDATE_UNPACK;
+		return NL::Updater::Error::ERROR_CLEAN_FS;
 	}
 
-	tupFile.close();
+	if (nupFile.unpack(fileSystem, F("/")) != NL::NupFile::Error::OK)
+	{
+		fileSystem->remove(packageFileName);
+		return NL::Updater::Error::ERROR_UPDATE_UNPACK;
+	}
+
+	nupFile.close();
 	fileSystem->remove(packageFileName);
 
-	TL::Updater::Error fwError = TL::Updater::installFirmware(fileSystem, F("/firmware.bin"));
-	if (fwError != TL::Updater::Error::OK)
+	NL::Updater::Error fwError = NL::Updater::installFirmware(fileSystem, F("/firmware.bin"));
+	if (fwError != NL::Updater::Error::OK)
 	{
 		fileSystem->remove(F("/firmware.bin"));
 		return fwError;
 	}
 
 	fileSystem->remove(F("/firmware.bin"));
-	return TL::Updater::Error::OK;
+	return NL::Updater::Error::OK;
 }
 
 /**
@@ -81,9 +81,9 @@ TL::Updater::Error TL::Updater::install(FS *fileSystem, const String packageFile
  * @param reason String containing the reason for the reboot
  * @param rebootDelay delay in milliseconds until the controller will reboot, if set to 0 function will not return
  */
-void TL::Updater::reboot(const String reason, const uint16_t rebootDelay)
+void NL::Updater::reboot(const String reason, const uint16_t rebootDelay)
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Rebooting controller in ") + String(rebootDelay / 1000.0f) + F(" seconds for reason: ") + reason);
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, (String)F("Rebooting controller in ") + String(rebootDelay / 1000.0f) + F(" seconds for reason: ") + reason);
 	if (rebootDelay == 0)
 	{
 		ESP.restart();
@@ -91,7 +91,7 @@ void TL::Updater::reboot(const String reason, const uint16_t rebootDelay)
 	else
 	{
 		uint16_t *rDelay = new uint16_t(rebootDelay);
-		xTaskCreatePinnedToCore(TL::Updater::rebootInt, ("ResetTask" + String(millis())).c_str(), 1000, (void *)rDelay, 1, NULL, 1);
+		xTaskCreatePinnedToCore(NL::Updater::rebootInt, ("ResetTask" + String(millis())).c_str(), 1000, (void *)rDelay, 1, NULL, 1);
 	}
 }
 
@@ -106,60 +106,60 @@ void TL::Updater::reboot(const String reason, const uint16_t rebootDelay)
  * @return ERROR_WRITE_FW_DATA when the firmware could not be written
  * @return ERROR_FINISH_FW_UPDATE when the firmware update could not be finalized
  */
-TL::Updater::Error TL::Updater::installFirmware(FS *fileSystem, const String firmwareFileName)
+NL::Updater::Error NL::Updater::installFirmware(FS *fileSystem, const String firmwareFileName)
 {
 	File firmware = fileSystem->open(firmwareFileName, FILE_READ);
 	if (!firmware)
 	{
-		return TL::Updater::Error::ERROR_FW_FILE_NOT_FOUND;
+		return NL::Updater::Error::ERROR_FW_FILE_NOT_FOUND;
 	}
 	else if (firmware.isDirectory())
 	{
 		firmware.close();
-		return TL::Updater::Error::ERROR_FW_FILE_NOT_FOUND;
+		return NL::Updater::Error::ERROR_FW_FILE_NOT_FOUND;
 	}
 
 	const size_t firmwareSize = firmware.size();
 	if (firmwareSize == 0)
 	{
 		firmware.close();
-		return TL::Updater::Error::ERROR_FW_FILE_EMPTY;
+		return NL::Updater::Error::ERROR_FW_FILE_EMPTY;
 	}
 
 	if (!Update.begin(firmwareSize))
 	{
 		firmware.close();
-		return TL::Updater::Error::ERROR_OUT_OF_FLASH_MEMORY;
+		return NL::Updater::Error::ERROR_OUT_OF_FLASH_MEMORY;
 	}
 
 	const size_t writtenBytes = Update.writeStream(firmware);
 	if (writtenBytes != firmwareSize)
 	{
 		firmware.close();
-		return TL::Updater::Error::ERROR_WRITE_FW_DATA;
+		return NL::Updater::Error::ERROR_WRITE_FW_DATA;
 	}
 
 	if (!Update.end())
 	{
 		firmware.close();
-		return TL::Updater::Error::ERROR_FINISH_FW_UPDATE;
+		return NL::Updater::Error::ERROR_FINISH_FW_UPDATE;
 	}
 	firmware.close();
 
 	if (!Update.isFinished())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Found the following error during firmware update: ") + String(Update.getError()));
-		return TL::Updater::Error::ERROR_FINISH_FW_UPDATE;
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, (String)F("Found the following error during firmware update: ") + String(Update.getError()));
+		return NL::Updater::Error::ERROR_FINISH_FW_UPDATE;
 	}
 
-	return TL::Updater::Error::OK;
+	return NL::Updater::Error::OK;
 }
 
 /**
  * @brief Task function to reboot the controller.
  * @param params parameters for the function call, should contain only the delay
  */
-void TL::Updater::rebootInt(void *params)
+void NL::Updater::rebootInt(void *params)
 {
 	uint16_t *paramPtr = (uint16_t *)params;
 	uint16_t rebootDelay = *paramPtr;

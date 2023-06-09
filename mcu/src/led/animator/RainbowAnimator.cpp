@@ -1,7 +1,7 @@
 /**
  * @file RainbowAnimator.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@TL::RainbowAnimator}.
+ * @brief Implementation of the {@NL::RainbowAnimator}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -22,33 +22,33 @@
 #include "led/animator/RainbowAnimator.h"
 
 /**
- * @brief Create a new instance of {@link TL::RainbowAnimator}.
+ * @brief Create a new instance of {@link NL::RainbowAnimator}.
  *
  * @param rainbowMode display mode of the rainbow
  */
-TL::RainbowAnimator::RainbowAnimator(const TL::RainbowAnimator::RainbowMode rainbowMode)
+NL::RainbowAnimator::RainbowAnimator(const NL::RainbowAnimator::RainbowMode rainbowMode)
 {
 	this->angle = 0.0f;
 	this->rainbowMode = rainbowMode;
 }
 
 /**
- * @brief Destroy the {@link TL::RainbowAnimator} instance.
+ * @brief Destroy the {@link NL::RainbowAnimator} instance.
  */
-TL::RainbowAnimator::~RainbowAnimator()
+NL::RainbowAnimator::~RainbowAnimator()
 {
 }
 
 /**
- * @brief Initialize the {@link TL::RainbowAnimator}.
+ * @brief Initialize the {@link NL::RainbowAnimator}.
  * @param pixels reference to the vector holding the LED pixel data
  */
-void TL::RainbowAnimator::init(TL::LedStrip &ledStrip)
+void NL::RainbowAnimator::init(NL::LedStrip &ledStrip)
 {
 	this->angle = 0.0f;
 	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
-		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+		ledStrip.setPixel(NL::Pixel::ColorCode::Black, i);
 	}
 }
 
@@ -56,7 +56,7 @@ void TL::RainbowAnimator::init(TL::LedStrip &ledStrip)
  * @brief Render a rainbow to the vector holding the LED pixel data
  * @param pixels reference to the vector holding the LED pixel data
  */
-void TL::RainbowAnimator::render(TL::LedStrip &ledStrip)
+void NL::RainbowAnimator::render(NL::LedStrip &ledStrip)
 {
 	const float middle = ledStrip.getLedCount() / 2;
 	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
@@ -66,28 +66,28 @@ void TL::RainbowAnimator::render(TL::LedStrip &ledStrip)
 		float blueAngle = 0.0f;
 		const float offset = this->offset / 25.0f;
 
-		if (this->rainbowMode == TL::RainbowAnimator::RainbowMode::RAINBOW_SOLID)
+		if (this->rainbowMode == NL::RainbowAnimator::RainbowMode::RAINBOW_SOLID)
 		{
 			redAngle = this->angle + 0.0f;
 			greenAngle = this->angle + 120.0f;
 			blueAngle = this->angle + 240.0f;
 		}
 
-		else if (this->rainbowMode == TL::RainbowAnimator::RainbowMode::RAINBOW_LINEAR)
+		else if (this->rainbowMode == NL::RainbowAnimator::RainbowMode::RAINBOW_LINEAR)
 		{
 			redAngle = (this->angle + 0.0f) + i * offset;
 			greenAngle = (this->angle + 120.0f) + i * offset;
 			blueAngle = (this->angle + 240.0f) + i * offset;
 		}
 
-		else if (this->rainbowMode == TL::RainbowAnimator::RainbowMode::RAINBOW_CENTER)
+		else if (this->rainbowMode == NL::RainbowAnimator::RainbowMode::RAINBOW_CENTER)
 		{
 			redAngle = i < middle ? (this->angle + 0.0f) + i * offset : (this->angle + 0.0f) + (ledStrip.getLedCount() - i) * offset;
 			greenAngle = i < middle ? (this->angle + 120.0f) + i * offset : (this->angle + 120.0f) + (ledStrip.getLedCount() - i) * offset;
 			blueAngle = i < middle ? (this->angle + 240.0f) + i * offset : (this->angle + 240.0f) + (ledStrip.getLedCount() - i) * offset;
 		}
 
-		ledStrip.setPixel(TL::Pixel(this->trapezoid(redAngle) * 255.0f, this->trapezoid(greenAngle) * 255.0f, this->trapezoid(blueAngle) * 255.0f), i);
+		ledStrip.setPixel(NL::Pixel(this->trapezoid(redAngle) * 255.0f, this->trapezoid(greenAngle) * 255.0f, this->trapezoid(blueAngle) * 255.0f), i);
 	}
 
 	this->applyBrightness(ledStrip);

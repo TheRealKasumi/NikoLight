@@ -13,10 +13,10 @@ This is personal preference and will influence the part list and building steps.
 Also, it will affect how much work you have to put into the project.
 So let's start with some important information that hopefully will answer some of your questions and help you with the planning.
 
-### TesLight, Channels, Zones and LEDs
+### NikoLight, Channels, Zones and LEDs
 
 Alright, let's start with first thing first.
-TesLight currently has a total of **8 LED channels**.
+NikoLight currently has a total of **8 LED channels**.
 These channels are for the individual zones in your car.
 This means that there are **8 different zones** that can be controlled independently.
 How you spread them in your car is completely up to you.
@@ -34,7 +34,7 @@ An example could look like this:
 | 7            | Footwell lighting 1 |
 | 8            | Footwell lighting 2 |
 
-TesLight is using digital LEDs, so that it control each LED individually.
+NikoLight is using digital LEDs, so that it control each LED individually.
 The LED type used is **WS2812** and all LEDs accepting the same protocol at a 5V input.
 Other LED types might not work as expected.
 
@@ -43,7 +43,7 @@ This number can reach from **0 up to a few hundreds**.
 The limiting factors for this are: available memory, time required for data transmission and processing power of the microcontroller. In practice this means a zone should not have more than 200 LEDs.
 
 Every single LED in a zone is **addressable**.
-This means that TesLight can "talk" to the individual LEDs and set a 24 bit color value for each.
+This means that NikoLight can "talk" to the individual LEDs and set a 24 bit color value for each.
 You can compare this to the pixels of your monitor.
 This is achieved by **chaining the LEDs**, like it is done on LED strips.
 So each LED per zone will get a number from 0 to n, where n is the last LED in the line.
@@ -51,47 +51,64 @@ So each LED per zone will get a number from 0 to n, where n is the last LED in t
 ![LED Chain](media/planning/led-chain.png)
 
 ### Luminant Types
-Currently there are three different types of luminants available that you can choose from. They are all fully supported by TesLight, but not each luminant is suitable for each installation location.
 
-#### Basic WS2812 LED strip 
-This is the most widely availble type of luminant - a series of WS2812 LEDs mounted in series on a thin, flexible PCB strip. 
-These strips are available in various lenghts, widths and density (count of LEDs per meter). 
-Possible installation locations for the LED strip are the dashboard and the foot wells. 
+Currently there are three different types of luminants available that you can choose from. They are all fully supported by NikoLight, but not each luminant is suitable for each installation location.
+
+#### Basic WS2812 LED strip
+
+This is the most widely availble type of luminant - a series of WS2812 LEDs mounted in series on a thin, flexible PCB strip.
+These strips are available in various lenghts, widths and density (count of LEDs per meter).
+Possible installation locations for the LED strip are the dashboard and the foot wells.
 A density of around 60 LEDs/meter is a good compromise between cost/power consumption and good looking light (effects).
-##### Advantages: 
-* easy to obtain in various configurations 
+
+##### Advantages
+
+* easy to obtain in various configurations
 * supports all light effects since many LEDs are distributed across the strip
-##### Disadvantages: 
+
+##### Disadvantages
+
 * can only be installed in locations where it is not directly visible
 
 #### Fiber tube with WS2812 LEDs as light injectors
+
 This type of luminant is a small flexible tube with a tab on it's side. WS2812 LEDs can be placed on one or (better) both ends of the tube to inject light into the tube and make it glow (fairly) evenly along its entire length.
 The fiber tube is suitable for all installation locations in the Tesla Model 3/Y with the exception of the footwell lighting. As of now it is also the only lumimant that can be installed in the 2021 or later center console of Model 3/Y and around the seats.
-##### Advantages: 
+
+##### Advantages of fiber tube
+
 * low cost
-* low power consumption 
+* low power consumption
 * easy, flexible installation
-##### Disadvantages: 
+
+##### Disadvantages of fiber tube
+
 * you can have at most 2 colors per tube segment, one injected from each side, which greatly limits the effects that you can display with it
 * because of it's white(-ish) color the fiber tube visually stands out a bit againts the dark interior in daylight which can look less professional depending on your taste
 
-#### Light bar with WS2812 LEDs 
-The light bar is like a hybrid of the light strip and fiber tube. It consists of a very thin WS2812 LED strip mounted onto an also very thin and flexible light distribution bar that is additionally covered in a black, translucent tape. 
-The density of the currently available light bars is very high with around 130 LEDs/meter). Possible installation locations are the dashboard, the door panels and the pre-2021 center console.
-##### Advantages: 
+#### Light bar with WS2812 LEDs
+
+The light bar is like a hybrid of the light strip and fiber tube. It consists of a very thin WS2812 LED strip mounted onto an also very thin and flexible light distribution bar that is additionally covered in a black, translucent tape.
+The density of the currently available light bars is very high with around 130 LEDs/meter. Possible installation locations are the dashboard, the door panels and the pre-2021 center console.
+
+##### Advantages of light bar
+
 * can be installed almost anywhere in the care, where a fiber tube can be installed as well
 * supports all light effects since many LEDs are distributed across the light bar
 * not very visible in daylight when turned off because it is wrapped in black tape
-##### Disadvantages: 
+
+##### Disadvantages of light bar
+
 * more expensive
 * not as easy to obtain because there are not many shops that carry it (especially in Europe)
-* only available in lengths up to 1 meter (but you can extend it by soldering 2 bars together) 
-* consumes a lot of power because of the high LED count 
+* only available in lengths up to 1 meter (but you can extend it by soldering 2 bars together)
+* consumes a lot of power because of the high LED count
 * can also not extend it very far beyond 1 meter before hitting the recommended 200 LED/channel limit
 
 #### Recommendation
-The recommendation is to use a normal LED strip under the dashboard for ease of installation, cost and power consumption. 
-As an alternative it is also possible to use a light bar for the dashboard as well, but it requires extra effort to solder two light bars together to achieved the required length. 
+
+The recommendation is to use a normal LED strip under the dashboard for ease of installation, cost and power consumption.
+As an alternative it is also possible to use a light bar for the dashboard as well, but it requires extra effort to solder two light bars together to achieved the required length.
 For the 2021 and later models use of a light bar in the dashboard and upper door panels results in a nice continuous line of light from door to door.
 
 The fiber tubes are working well for the center console or around the seats.
@@ -102,15 +119,15 @@ All parts can be found on the [part list](part-list.md).
 
 ### Zones
 
-As explained above, TesLight supports up to **8 different zones**.
+As explained above, NikoLight supports up to **8 different zones**.
 How you select these zones is up to you, but keep in mind that you must be able to install and wire the LEDs in the zones.
 
-Since TesLight was designed with the Tesla Model 3 and Model Y in mind, there is a recommended configuration of the zones.
+Since NikoLight was designed with the Tesla Model 3 and Model Y in mind, there is a recommended configuration of the zones.
 This is the same configuration as shown in the following video (click to open).
 
-[![TesLight Demo](https://img.youtube.com/vi/_N5h1IViB-E/0.jpg)](https://www.youtube.com/watch?v=_N5h1IViB-E)
+[![NikoLight Demo](https://img.youtube.com/vi/_N5h1IViB-E/0.jpg)](https://www.youtube.com/watch?v=_N5h1IViB-E)
 
-The following table assumes that the TesLight controller is placed below the center console for easy access and wiring. (It would be best if the antenna of the ESP32 points to the front and the USB port to the back of the vehicle. This way we ensure consistent acceleration directions from the sensor for all users.)
+The following table assumes that the NikoLight controller is placed below the center console for easy access and wiring. (It would be best if the antenna of the ESP32 points to the front and the USB port to the back of the vehicle. This way we ensure consistent acceleration directions from the sensor for all users.)
 
 | Zone              | LEDs | Type                      | Cable Length | Physical Channel |
 | ----------------- | ---- | ------------------------- | ------------ | ---------------- |
@@ -141,12 +158,12 @@ Make sure to measure the required lengths carefully for individual build.
 ## Power Consumption
 
 Since this project can make use of many LEDs, the power consumption plays an important role.
-TesLight can (and should) be built with an onboard regulator.
+NikoLight can (and should) be built with an onboard regulator.
 This ensures that you stay below the limits the hardware can handle without modifications.
 The regulator has 2 channels and is capable of providing a total of 6 A at 5 V, which is around 30 W of power.
 These 6A are split to 2x 3A on the channels {1, 3, 5, 7} and {2, 4, 6, 8}.
 The load of the two single channels should not exceed 3 A or 15 W at maximum.
-By default, TesLight has a configured power limit of 20 W, or 10 W per regulator.
+By default, NikoLight has a configured power limit of 20 W, or 10 W per regulator.
 If this limit is reached, the brightness is reduced to stay below this limit.
 Also, a temperature limit of 80 °C is enforced by default when the optional temperature sensors are installed.
 
@@ -162,7 +179,7 @@ Instead of powering the board via the power input, it must be powered via an LED
 Make sure to provide stable 5V to an LED output.
 
 However, be careful when dealing with the high currents an external regulator could provide.
-It could significantly heat up your connectors, wires, LEDs or even the TesLight board.
+It could significantly heat up your connectors, wires, LEDs or even the NikoLight board.
 You might need to change the connectors, use thicker wires and thicker copper on the PCB.
 
 Assuming "average" WS2812 LED chips, each channel can draw around 14 mA at 5 V and maximum brightness.
@@ -172,13 +189,13 @@ To calculate the total power draw, the following formula can be used:
 `power = led_count x 0.042 x 5`
 
 From the example configuration above, we assume a total number of 784 LEDs.
-You probably already feel that this could easily exceed the limits of the voltage regulator TesLight comes with.
+You probably already feel that this could easily exceed the limits of the voltage regulator NikoLight comes with.
 
 In theory, we could reach a current of 33 A (784 x 0.042) or 165 W (784 x 0.042 x 5) of power.
 This is not safe to deal with for everyone.
 Also, it would allow for brightness levels, that are far from practical, especially for the light bars.
 
-In a normal use case, the power provided by the TesLight controller is enough.
+In a normal use case, the power provided by the NikoLight controller is enough.
 It still allows for a decent brightness without having to deal with dangerously high currents.
 Like mentioned above, by default the software ensures that a maximum power draw of around 20 W is not exceeded.
 Also, the regulator temperature is limited to 80 °C when the optional temperature sensors are installed.

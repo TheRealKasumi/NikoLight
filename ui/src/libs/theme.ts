@@ -9,3 +9,6 @@ export const changeTheme = (theme: string) => {
     elThemeColor?.setAttribute('content', '#161717');
   }
 };
+
+export const currentTheme = (): 'light' | 'dark' =>
+  document.documentElement.classList.contains('dark') ? 'dark' : 'light';

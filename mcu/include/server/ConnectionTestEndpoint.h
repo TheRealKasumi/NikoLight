@@ -24,7 +24,7 @@
 
 #include "server/RestEndpoint.h"
 
-namespace TL
+namespace NL
 {
 	class ConnectionTestEndpoint : public RestEndpoint
 	{

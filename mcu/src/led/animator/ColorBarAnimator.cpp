@@ -1,7 +1,7 @@
 /**
  * @file ColorBarAnimator.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@TL::ColorBarAnimator}.
+ * @brief Implementation of the {@NL::ColorBarAnimator}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -22,24 +22,24 @@
 #include "led/animator/ColorBarAnimator.h"
 
 /**
- * @brief Create a new instance of {@link TL::ColorBarAnimator}.
+ * @brief Create a new instance of {@link NL::ColorBarAnimator}.
  */
-TL::ColorBarAnimator::ColorBarAnimator()
+NL::ColorBarAnimator::ColorBarAnimator()
 {
 	this->angle = 0.0f;
-	this->colorBarMode = TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_HARD;
-	this->color[0] = TL::Pixel::ColorCode::Black;
-	this->color[1] = TL::Pixel::ColorCode::Black;
+	this->colorBarMode = NL::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_HARD;
+	this->color[0] = NL::Pixel::ColorCode::Black;
+	this->color[1] = NL::Pixel::ColorCode::Black;
 }
 
 /**
- * @brief Create a new instance of {@link TL::ColorBarAnimator}.
+ * @brief Create a new instance of {@link NL::ColorBarAnimator}.
  *
  * @param colorBarMode display mode of the color bars
  * @param color1 first color of the bars
  * @param color2 second color of the bars
  */
-TL::ColorBarAnimator::ColorBarAnimator(const TL::ColorBarAnimator::ColorBarMode colorBarMode, const TL::Pixel color1, const TL::Pixel color2)
+NL::ColorBarAnimator::ColorBarAnimator(const NL::ColorBarAnimator::ColorBarMode colorBarMode, const NL::Pixel color1, const NL::Pixel color2)
 {
 	this->colorBarMode = colorBarMode;
 	this->color[0] = color1;
@@ -47,22 +47,22 @@ TL::ColorBarAnimator::ColorBarAnimator(const TL::ColorBarAnimator::ColorBarMode 
 }
 
 /**
- * @brief Destroy the {@link TL::ColorBarAnimator} instance.
+ * @brief Destroy the {@link NL::ColorBarAnimator} instance.
  */
-TL::ColorBarAnimator::~ColorBarAnimator()
+NL::ColorBarAnimator::~ColorBarAnimator()
 {
 }
 
 /**
- * @brief Initialize the {@link TL::ColorBarAnimator}.
+ * @brief Initialize the {@link NL::ColorBarAnimator}.
  * @param ledStrip LED strip with the pixel data
  */
-void TL::ColorBarAnimator::init(TL::LedStrip &ledStrip)
+void NL::ColorBarAnimator::init(NL::LedStrip &ledStrip)
 {
 	this->angle = 0.0f;
 	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
-		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+		ledStrip.setPixel(NL::Pixel::ColorCode::Black, i);
 	}
 }
 
@@ -70,7 +70,7 @@ void TL::ColorBarAnimator::init(TL::LedStrip &ledStrip)
  * @brief Render the color bars to the vector holding the LED pixel data
  * @param ledStrip LED strip with the pixel data
  */
-void TL::ColorBarAnimator::render(TL::LedStrip &ledStrip)
+void NL::ColorBarAnimator::render(NL::LedStrip &ledStrip)
 {
 	const float middle = ledStrip.getLedCount() / 2;
 	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
@@ -79,13 +79,13 @@ void TL::ColorBarAnimator::render(TL::LedStrip &ledStrip)
 		float colorAngle2 = 0.0f;
 		float offset = this->offset / 5.0f;
 
-		if (this->colorBarMode == TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_HARD || this->colorBarMode == TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_SMOOTH)
+		if (this->colorBarMode == NL::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_HARD || this->colorBarMode == NL::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_SMOOTH)
 		{
 			colorAngle1 = (this->angle + 0.0f) + i * offset;
 			colorAngle2 = (this->angle + 180.0f) + i * offset;
 		}
 
-		else if (this->colorBarMode == TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_HARD || this->colorBarMode == TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_SMOOTH)
+		else if (this->colorBarMode == NL::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_HARD || this->colorBarMode == NL::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_SMOOTH)
 		{
 			colorAngle1 = i < middle ? (this->angle + 0.0f) + i * offset : (this->angle + 0.0f) + (ledStrip.getLedCount() - i) * offset;
 			colorAngle2 = i < middle ? (this->angle + 180.0f) + i * offset : (this->angle + 180.0f) + (ledStrip.getLedCount() - i) * offset;
@@ -94,14 +94,14 @@ void TL::ColorBarAnimator::render(TL::LedStrip &ledStrip)
 		float trapezoidValue1 = this->trapezoid2(colorAngle1);
 		float trapezoidValue2 = this->trapezoid2(colorAngle2);
 
-		if (this->colorBarMode == TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_HARD || this->colorBarMode == TL::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_HARD)
+		if (this->colorBarMode == NL::ColorBarAnimator::ColorBarMode::COLOR_BAR_LINEAR_HARD || this->colorBarMode == NL::ColorBarAnimator::ColorBarMode::COLOR_BAR_CENTER_HARD)
 		{
 			trapezoidValue1 = trapezoidValue1 < 0.5f ? 0.0f : 1.0f;
 			trapezoidValue2 = trapezoidValue2 < 0.5f ? 0.0f : 1.0f;
 		}
 
 		ledStrip.setPixel(
-			TL::Pixel(
+			NL::Pixel(
 				trapezoidValue1 * this->color[0].red + trapezoidValue2 * this->color[1].red,
 				trapezoidValue1 * this->color[0].green + trapezoidValue2 * this->color[1].green,
 				trapezoidValue1 * this->color[0].blue + trapezoidValue2 * this->color[1].blue),
@@ -133,7 +133,7 @@ void TL::ColorBarAnimator::render(TL::LedStrip &ledStrip)
  * @brief Set the mode of the color bar animation.
  * @param ColorBarMode mode of the animation
  */
-void TL::ColorBarAnimator::setColorBarMode(const TL::ColorBarAnimator::ColorBarMode colorBarMode)
+void NL::ColorBarAnimator::setColorBarMode(const NL::ColorBarAnimator::ColorBarMode colorBarMode)
 {
 	this->colorBarMode = colorBarMode;
 }
@@ -143,7 +143,7 @@ void TL::ColorBarAnimator::setColorBarMode(const TL::ColorBarAnimator::ColorBarM
  * @param color1 first color of the bars
  * @param color2 second color of the bars
  */
-void TL::ColorBarAnimator::setColor(const TL::Pixel color1, const TL::Pixel color2)
+void NL::ColorBarAnimator::setColor(const NL::Pixel color1, const NL::Pixel color2)
 {
 	this->color[0] = color1;
 	this->color[1] = color2;

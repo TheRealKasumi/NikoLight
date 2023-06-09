@@ -22,18 +22,18 @@
 #include "led/animator/StaticColorAnimator.h"
 
 /**
- * @brief Create a new instance of {@link TL::StaticColorAnimator}.
+ * @brief Create a new instance of {@link NL::StaticColorAnimator}.
  * @param color color to display
  */
-TL::StaticColorAnimator::StaticColorAnimator(const TL::Pixel color)
+NL::StaticColorAnimator::StaticColorAnimator(const NL::Pixel color)
 {
 	this->color = color;
 }
 
 /**
- * @brief Destroy the {@link TL::StaticColorAnimator}.
+ * @brief Destroy the {@link NL::StaticColorAnimator}.
  */
-TL::StaticColorAnimator::~StaticColorAnimator()
+NL::StaticColorAnimator::~StaticColorAnimator()
 {
 }
 
@@ -41,11 +41,11 @@ TL::StaticColorAnimator::~StaticColorAnimator()
  * @brief Initialize the {@link StaticColorAnimator}.
  * @param ledStrip LED strip with the pixel data
  */
-void TL::StaticColorAnimator::init(TL::LedStrip &ledStrip)
+void NL::StaticColorAnimator::init(NL::LedStrip &ledStrip)
 {
 	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
-		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+		ledStrip.setPixel(NL::Pixel::ColorCode::Black, i);
 	}
 }
 
@@ -53,7 +53,7 @@ void TL::StaticColorAnimator::init(TL::LedStrip &ledStrip)
  * @brief Render the static color to the vector holding the LED pixel data
  * @param ledStrip LED strip with the pixel data
  */
-void TL::StaticColorAnimator::render(TL::LedStrip &ledStrip)
+void NL::StaticColorAnimator::render(NL::LedStrip &ledStrip)
 {
 	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{

@@ -25,7 +25,7 @@
 #include <esp_task_wdt.h>
 #include "configuration/SystemConfiguration.h"
 
-namespace TL
+namespace NL
 {
 	class WatchDog
 	{
@@ -40,9 +40,9 @@ namespace TL
 			ERROR_WDT_NOT_FOUND,	  // The task did not subscribe to a wdt
 		};
 
-		static TL::WatchDog::Error initializeTaskWatchdog();
-		static TL::WatchDog::Error resetTaskWatchdog();
-		static TL::WatchDog::Error deleteTaskWatchdog();
+		static NL::WatchDog::Error initializeTaskWatchdog();
+		static NL::WatchDog::Error resetTaskWatchdog();
+		static NL::WatchDog::Error deleteTaskWatchdog();
 
 	private:
 		WatchDog();

@@ -24,7 +24,7 @@
 
 #include "led/animator/LedAnimator.h"
 
-namespace TL
+namespace NL
 {
 	class PulseAnimator : public LedAnimator
 	{
@@ -35,16 +35,16 @@ namespace TL
 			NON_LINEAR = 1 // Non-Linear mode
 		};
 
-		PulseAnimator(const PulseMode pulseMode, const TL::Pixel color, const float pulseFading, const uint8_t frequencyBandMask);
+		PulseAnimator(const PulseMode pulseMode, const NL::Pixel color, const float pulseFading, const uint8_t frequencyBandMask);
 		~PulseAnimator();
 
-		void init(TL::LedStrip &ledStrip);
-		void render(TL::LedStrip &ledStrip);
+		void init(NL::LedStrip &ledStrip);
+		void render(NL::LedStrip &ledStrip);
 
 	private:
-		TL::Pixel color;
+		NL::Pixel color;
 		float pulseFading;
-		TL::PulseAnimator::PulseMode pulseMode;
+		NL::PulseAnimator::PulseMode pulseMode;
 		uint8_t frequencyBandMask;
 
 		uint8_t mode;

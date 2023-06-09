@@ -1,7 +1,7 @@
 /**
  * @file WebServerManager.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::WebServerManager}.
+ * @brief Implementation of the {@link NL::WebServerManager}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -21,30 +21,30 @@
  */
 #include "server/WebServerManager.h"
 
-bool TL::WebServerManager::initialized = false;
-WebServer *TL::WebServerManager::webServer;
-FS *TL::WebServerManager::fileSystem;
+bool NL::WebServerManager::initialized = false;
+WebServer *NL::WebServerManager::webServer;
+FS *NL::WebServerManager::fileSystem;
 
 /**
  * @brief Start the web server manager.
  * @param fileSystem file system to serve static content from
  */
-void TL::WebServerManager::begin(FS *fileSystem, const uint16_t port)
+void NL::WebServerManager::begin(FS *fileSystem, const uint16_t port)
 {
-	TL::WebServerManager::initialized = true;
-	TL::WebServerManager::webServer = new WebServer(port);
-	TL::WebServerManager::fileSystem = fileSystem;
-	TL::WebServerManager::init();
+	NL::WebServerManager::initialized = true;
+	NL::WebServerManager::webServer = new WebServer(port);
+	NL::WebServerManager::fileSystem = fileSystem;
+	NL::WebServerManager::init();
 }
 
 /**
  * @brief Stop the web server manager.
  */
-void TL::WebServerManager::end()
+void NL::WebServerManager::end()
 {
-	TL::WebServerManager::initialized = false;
-	TL::WebServerManager::webServer->stop();
-	delete TL::WebServerManager::webServer;
+	NL::WebServerManager::initialized = false;
+	NL::WebServerManager::webServer->stop();
+	delete NL::WebServerManager::webServer;
 }
 
 /**
@@ -52,26 +52,26 @@ void TL::WebServerManager::end()
  * @return true when initialized
  * @return false when not initialized
  */
-bool TL::WebServerManager::isInitialize()
+bool NL::WebServerManager::isInitialize()
 {
-	return TL::WebServerManager::initialized;
+	return NL::WebServerManager::initialized;
 }
 
 /**
  * @brief Start the web server.
  */
-void TL::WebServerManager::startServer()
+void NL::WebServerManager::startServer()
 {
-	TL::WebServerManager::webServer->begin();
+	NL::WebServerManager::webServer->begin();
 }
 
 /**
  * @brief Get a reference to the {@link WebServer} instance.
  * @return WebServer* reference to the instance
  */
-WebServer *TL::WebServerManager::getWebServer()
+WebServer *NL::WebServerManager::getWebServer()
 {
-	return TL::WebServerManager::webServer;
+	return NL::WebServerManager::webServer;
 }
 
 /**
@@ -79,9 +79,9 @@ WebServer *TL::WebServerManager::getWebServer()
  * @param uri uri of the endpoint
  * @param handler handler function
  */
-void TL::WebServerManager::addRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction handler)
+void NL::WebServerManager::addRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction handler)
 {
-	TL::WebServerManager::webServer->on(uri, method, handler);
+	NL::WebServerManager::webServer->on(uri, method, handler);
 }
 
 /**
@@ -91,45 +91,45 @@ void TL::WebServerManager::addRequestHandler(const char *uri, http_method method
  * @param requestHandler handler function is called after the upload
  * @param uploadHandler handler function for receiving upload data
  */
-void TL::WebServerManager::addUploadRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction requestHandler, WebServer::THandlerFunction uploadHandler)
+void NL::WebServerManager::addUploadRequestHandler(const char *uri, http_method method, WebServer::THandlerFunction requestHandler, WebServer::THandlerFunction uploadHandler)
 {
-	TL::WebServerManager::webServer->on(uri, method, requestHandler, uploadHandler);
+	NL::WebServerManager::webServer->on(uri, method, requestHandler, uploadHandler);
 }
 
 /**
  * @brief Function must be called regularly to accept new conenctions and handle client.
  */
-void TL::WebServerManager::handleRequest()
+void NL::WebServerManager::handleRequest()
 {
-	TL::WebServerManager::webServer->handleClient();
+	NL::WebServerManager::webServer->handleClient();
 }
 
 /**
- * @brief Initialize the {@link TL::WebServerManager} and start serving static files.
+ * @brief Initialize the {@link NL::WebServerManager} and start serving static files.
  */
-void TL::WebServerManager::init()
+void NL::WebServerManager::init()
 {
 	const char *headerKeys[1] = {"content-type"};
 	webServer->collectHeaders(headerKeys, 1);
 
-	TL::WebServerManager::webServer->onNotFound([]()
-												{ TL::WebServerManager::handleNotFound(); });
-	TL::WebServerManager::webServer->serveStatic(WEB_SERVER_STATIC_CONTENT, *TL::WebServerManager::fileSystem, WEB_SERVER_STATIC_CONTENT);
-	TL::WebServerManager::webServer->on("/", http_method::HTTP_GET, []()
-										{TL::WebServerManager::webServer->sendHeader("Location", "/ui/index.html"); TL::WebServerManager::webServer->send(301); });
+	NL::WebServerManager::webServer->onNotFound([]()
+												{ NL::WebServerManager::handleNotFound(); });
+	NL::WebServerManager::webServer->serveStatic(WEB_SERVER_STATIC_CONTENT, *NL::WebServerManager::fileSystem, WEB_SERVER_STATIC_CONTENT);
+	NL::WebServerManager::webServer->on("/", http_method::HTTP_GET, []()
+										{NL::WebServerManager::webServer->sendHeader("Location", "/ui/index.html"); NL::WebServerManager::webServer->send(301); });
 }
 
 /**
  * @brief Handle not found error.
  */
-void TL::WebServerManager::handleNotFound()
+void NL::WebServerManager::handleNotFound()
 {
-	if (TL::WebServerManager::webServer->method() == HTTP_OPTIONS)
+	if (NL::WebServerManager::webServer->method() == HTTP_OPTIONS)
 	{
-		TL::WebServerManager::webServer->send(200);
+		NL::WebServerManager::webServer->send(200);
 	}
 	else
 	{
-		TL::WebServerManager::webServer->send(404);
+		NL::WebServerManager::webServer->send(404);
 	}
 }

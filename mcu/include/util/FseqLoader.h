@@ -28,7 +28,7 @@
 
 #include "led/driver/LedStrip.h"
 
-namespace TL
+namespace NL
 {
 	class FseqLoader
 	{
@@ -68,13 +68,13 @@ namespace TL
 		FseqLoader(FS *fileSystem);
 		~FseqLoader();
 
-		TL::FseqLoader::Error loadFromFile(const String fileName);
+		NL::FseqLoader::Error loadFromFile(const String fileName);
 		size_t available();
 		void moveToStart();
 		void close();
 
 		FseqHeader getHeader();
-		TL::FseqLoader::Error readLedStrip(TL::LedStrip &ledStrip);
+		NL::FseqLoader::Error readLedStrip(NL::LedStrip &ledStrip);
 
 		void setFillerBytes(const uint8_t fillerBytes);
 		uint8_t getFillerBytes();
@@ -91,7 +91,7 @@ namespace TL
 		uint8_t zoneCounter;
 
 		void initFseqHeader();
-		TL::FseqLoader::Error isValid();
+		NL::FseqLoader::Error isValid();
 	};
 }
 

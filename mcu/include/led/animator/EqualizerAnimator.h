@@ -24,19 +24,19 @@
 
 #include "led/animator/LedAnimator.h"
 
-namespace TL
+namespace NL
 {
 	class EqualizerAnimator : public LedAnimator
 	{
 	public:
-		EqualizerAnimator(const TL::Pixel color1, const TL::Pixel color2, const uint8_t rainbowSpeed, const float autoGain, const uint8_t frequencyBandMask);
+		EqualizerAnimator(const NL::Pixel color1, const NL::Pixel color2, const uint8_t rainbowSpeed, const float autoGain, const uint8_t frequencyBandMask);
 		~EqualizerAnimator();
 
-		void init(TL::LedStrip &ledStrip);
-		void render(TL::LedStrip &ledStrip);
+		void init(NL::LedStrip &ledStrip);
+		void render(NL::LedStrip &ledStrip);
 
 	private:
-		TL::Pixel color[2];
+		NL::Pixel color[2];
 		uint8_t rainbowSpeed;
 		float autoGain;
 		uint8_t frequencyBandMask;

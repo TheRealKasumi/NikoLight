@@ -27,7 +27,7 @@
 #include "configuration/Configuration.h"
 #include "sensor/TemperatureSensor.h"
 
-namespace TL
+namespace NL
 {
 	class Fan
 	{
@@ -51,11 +51,11 @@ namespace TL
 			MANUAL_100 = 5	// Manual fan speed 100%
 		};
 
-		static TL::Fan::Error begin(const uint8_t fanPin, const uint8_t pwmChannel, const uint32_t frequency, const uint8_t resolution);
+		static NL::Fan::Error begin(const uint8_t fanPin, const uint8_t pwmChannel, const uint32_t frequency, const uint8_t resolution);
 		static void end();
 		static bool isInitialized();
 
-		static TL::Fan::Error run(const TL::Fan::FanMode fanMode);
+		static NL::Fan::Error run(const NL::Fan::FanMode fanMode);
 		static uint8_t getPwmValue();
 
 	private:

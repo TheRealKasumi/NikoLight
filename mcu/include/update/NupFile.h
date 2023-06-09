@@ -1,7 +1,7 @@
 /**
- * @file TupFile.h
+ * @file NupFile.h
  * @author TheRealKasumi
- * @brief Contains a class for loading a TesLight Update Package file.
+ * @brief Contains a class for loading a NikoLight Update Package file.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -19,16 +19,16 @@
  * from the owner.
  *
  */
-#ifndef TUP_FILE_H
-#define TUP_FILE_H
+#ifndef NUP_FILE_H
+#define NUP_FILE_H
 
 #include <stdint.h>
 #include <WString.h>
 #include <FS.h>
 
-namespace TL
+namespace NL
 {
-	class TupFile
+	class NupFile
 	{
 	public:
 		enum class Error
@@ -36,11 +36,11 @@ namespace TL
 			OK,						  // No error
 			ERROR_FILE_NOT_FOUND,	  // The file was not found
 			ERROR_IS_DIRECTORY,		  // A directory instead of a file was found
-			ERROR_INVALID_HEADER,	  // The TUP header is invalid
-			ERROR_INVALID_DATA,		  // The TUP data is invalid
-			ERROR_EMPTY_FILE,		  // The TUP has no content
+			ERROR_INVALID_HEADER,	  // The NUP header is invalid
+			ERROR_INVALID_DATA,		  // The NUP data is invalid
+			ERROR_EMPTY_FILE,		  // The NUP has no content
 			ERROR_FILE_READ,		  // The file could not be read
-			ERROR_INVALID_BLOCK_NAME, // The TUP has a invalid data block name
+			ERROR_INVALID_BLOCK_NAME, // The NUP has a invalid data block name
 			ERROR_CREATE_DIR,		  // One of the directories could not be created while unpacking
 			ERROR_CREATE_FILE,		  // One of the files could not be created while unpacking
 			ERROR_MAGIC_NUMBERS,	  // One of the magic numbers in the file header is invalid
@@ -48,7 +48,7 @@ namespace TL
 			ERROR_FILE_HASH			  // The file hash is invalid
 		};
 
-		struct TupHeader
+		struct NupHeader
 		{
 			char magic[4];
 			uint8_t fileVersion;
@@ -56,7 +56,7 @@ namespace TL
 			uint32_t numberBlocks;
 		};
 
-		enum class TupDataType : uint8_t
+		enum class NupDataType : uint8_t
 		{
 			FIRMWARE = 0,
 			FILE = 1,
@@ -64,32 +64,32 @@ namespace TL
 			NONE = 255
 		};
 
-		struct TupDataBlock
+		struct NupDataBlock
 		{
-			TupDataType type;
+			NupDataType type;
 			uint16_t pathLength;
 			char *path;
 			uint32_t size;
 			uint8_t *data;
 		};
 
-		TupFile();
-		~TupFile();
+		NupFile();
+		~NupFile();
 
-		TL::TupFile::Error load(FS *fileSystem, const String fileName);
-		TL::TupFile::Error unpack(FS *fileSystem, const String root);
+		NL::NupFile::Error load(FS *fileSystem, const String fileName);
+		NL::NupFile::Error unpack(FS *fileSystem, const String root);
 		void close();
 
-		TL::TupFile::TupHeader getHeader();
+		NL::NupFile::NupHeader getHeader();
 
 	private:
 		File file;
-		TL::TupFile::TupHeader tupHeader;
+		NL::NupFile::NupHeader nupHeader;
 
 		void initHeader();
-		TL::TupFile::Error loadTupHeader();
+		NL::NupFile::Error loadNupHeader();
 
-		TL::TupFile::Error verify();
+		NL::NupFile::Error verify();
 		uint32_t generateHash();
 
 		String createAbsolutePath(const String root, const char *name, uint16_t nameLength);

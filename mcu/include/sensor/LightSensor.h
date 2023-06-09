@@ -31,7 +31,7 @@
 
 #include "sensor/MotionSensor.h"
 
-namespace TL
+namespace NL
 {
 	class LightSensor
 	{
@@ -57,21 +57,21 @@ namespace TL
 			AUTO_ON_OFF_MOTION = 6
 		};
 
-		static TL::LightSensor::Error begin();
+		static NL::LightSensor::Error begin();
 		static void end();
 		static bool isInitialized();
 
-		static TL::LightSensor::Error getBrightness(float &brightness);
+		static NL::LightSensor::Error getBrightness(float &brightness);
 
 	private:
 		LightSensor();
 
 		static bool initialized;
 		static float lastBrightnessValue;
-		static TL::MotionSensor::MotionSensorData motionData;
+		static NL::MotionSensor::MotionSensorData motionData;
 		static unsigned long motionSensorTriggerTime;
 
-		static TL::LightSensor::Error getBrightnessInt(float &brightness);
+		static NL::LightSensor::Error getBrightnessInt(float &brightness);
 	};
 }
 

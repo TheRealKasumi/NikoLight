@@ -1,7 +1,7 @@
 /**
  * @file MotionSensor.h
  * @author TheRealKasumi
- * @brief Contains a class for reading the motion sensor on the TesLight board.
+ * @brief Contains a class for reading the motion sensor on the NikoLight board.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -28,7 +28,7 @@
 #include "configuration/Configuration.h"
 #include "hardware/MPU6050.h"
 
-namespace TL
+namespace NL
 {
 	class MotionSensor
 	{
@@ -65,19 +65,19 @@ namespace TL
 			float temperatureDeg;
 		};
 
-		static TL::MotionSensor::Error begin();
+		static NL::MotionSensor::Error begin();
 		static void end();
 		static bool isInitialized();
 
-		static TL::MotionSensor::Error run();
-		static TL::MotionSensor::Error calibrate(const bool failOnTemperature);
-		static TL::MotionSensor::MotionSensorData getMotion();
+		static NL::MotionSensor::Error run();
+		static NL::MotionSensor::Error calibrate(const bool failOnTemperature);
+		static NL::MotionSensor::MotionSensorData getMotion();
 
 	private:
 		MotionSensor();
 
 		static bool initialized;
-		static TL::MotionSensor::MotionSensorData motionData;
+		static NL::MotionSensor::MotionSensorData motionData;
 		static unsigned long lastMeasure;
 	};
 }

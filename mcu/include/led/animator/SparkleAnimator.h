@@ -26,7 +26,7 @@
 #include "led/animator/LedAnimator.h"
 #include "configuration/SystemConfiguration.h"
 
-namespace TL
+namespace NL
 {
 	class SparkleAnimator : public LedAnimator
 	{
@@ -45,27 +45,27 @@ namespace TL
 			float lastPosition; // Previous position of a spark
 			float speed;		// Speed of a spark
 			float friction;		// Friction of a spark
-			TL::Pixel color;	// Color of a spark
+			NL::Pixel color;	// Color of a spark
 			float brightness;	// Brightness of a spark
 			float fading;		// Fafing speed of a spark
 		};
 
-		SparkleAnimator(const TL::SparkleAnimator::SpawnPosition spawnPosition, const uint8_t sparkCount, const TL::Pixel color,
+		SparkleAnimator(const NL::SparkleAnimator::SpawnPosition spawnPosition, const uint8_t sparkCount, const NL::Pixel color,
 						const float sparkFriction, const float sparkFading, const float sparkTail, const float birthRate,
 						const float spawnVariance, const float speedVariance, const float brightnessVariance, const float frictionVariance,
 						const float fadingVariance, const bool bounceAtCorner, const uint8_t frequencyBandMask);
 		~SparkleAnimator();
 
-		void init(TL::LedStrip &ledStrip);
-		void render(TL::LedStrip &ledStrip);
+		void init(NL::LedStrip &ledStrip);
+		void render(NL::LedStrip &ledStrip);
 
 	private:
-		std::vector<TL::Pixel> pixelBuffer;
+		std::vector<NL::Pixel> pixelBuffer;
 		std::vector<bool> pixelMask;
 		std::vector<Spark> sparks;
 
-		TL::SparkleAnimator::SpawnPosition spawnPosition;
-		TL::Pixel color;
+		NL::SparkleAnimator::SpawnPosition spawnPosition;
+		NL::Pixel color;
 		float sparkFriction;
 		float sparkFading;
 		float sparkTail;
@@ -81,8 +81,8 @@ namespace TL
 		float colorAngle;
 		uint8_t audioSequence;
 
-		void spawnSparks(TL::LedStrip &ledStrip);
-		void runSparks(TL::LedStrip &ledStrip);
+		void spawnSparks(NL::LedStrip &ledStrip);
+		void runSparks(NL::LedStrip &ledStrip);
 
 		template <typename T>
 		void limit(const T min, const T max, T &value)

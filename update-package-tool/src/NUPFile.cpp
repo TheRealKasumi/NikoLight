@@ -1,19 +1,19 @@
 /**
- * @file TUPFile.cpp
+ * @file NUPFile.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TUPFile} class.
+ * @brief Implementation of the {@link NUPFile} class.
  *
  * @copyright Copyright (c) 2022
  *
  */
-#include "TUPFile.h"
+#include "NUPFile.h"
 
 /**
- * @brief Create a new instance of {@link TUPFile}.
+ * @brief Create a new instance of {@link NUPFile}.
  */
-TUPFile::TUPFile()
+NUPFile::NUPFile()
 {
-	this->header.magic[0] = 'T';
+	this->header.magic[0] = 'N';
 	this->header.magic[0] = 'L';
 	this->header.magic[0] = 'U';
 	this->header.magic[0] = 'P';
@@ -22,13 +22,13 @@ TUPFile::TUPFile()
 }
 
 /**
- * @brief Destroy the {@link TUPFile} instance and free memory.
+ * @brief Destroy the {@link NUPFile} instance and free memory.
  */
-TUPFile::~TUPFile()
+NUPFile::~NUPFile()
 {
 	for (size_t i = 0; i < this->dataBlocks.size(); i++)
 	{
-		const TUPDataBlock dataBlock = this->dataBlocks[i];
+		const NUPDataBlock dataBlock = this->dataBlocks[i];
 		if (dataBlock.path != nullptr)
 		{
 			delete[] dataBlock.path;
@@ -41,12 +41,12 @@ TUPFile::~TUPFile()
 }
 
 /**
- * @brief Generate the TUP file based on the given folder.
+ * @brief Generate the NUP file based on the given folder.
  * @param rootPath root path of the folder with all update files
  * @return true when the file was generated successfully (in memory)
- * @return false when there was an error constructing the TUP
+ * @return false when there was an error constructing the NUP
  */
-bool TUPFile::generateFromFolder(const std::filesystem::path rootPath)
+bool NUPFile::generateFromFolder(const std::filesystem::path rootPath)
 {
 	std::queue<std::filesystem::path> queue;
 	queue.push("");
@@ -80,12 +80,12 @@ bool TUPFile::generateFromFolder(const std::filesystem::path rootPath)
 }
 
 /**
- * @brief Save the in memory TUP file to a file on the disk.
- * @param fileName output file name for the TUP file
+ * @brief Save the in memory NUP file to a file on the disk.
+ * @param fileName output file name for the NUP file
  * @return true when the file was written successfully
  * @return false when there was an error writing the file
  */
-bool TUPFile::saveToFile(const std::filesystem::path fileName)
+bool NUPFile::saveToFile(const std::filesystem::path fileName)
 {
 	std::ofstream file(fileName, std::ios::binary);
 	if (!file.is_open())
@@ -93,7 +93,7 @@ bool TUPFile::saveToFile(const std::filesystem::path fileName)
 		return false;
 	}
 
-	TUPHeader header;
+	NUPHeader header;
 	header.magic[0] = 'T';
 	header.magic[1] = 'L';
 	header.magic[2] = 'U';
@@ -109,7 +109,7 @@ bool TUPFile::saveToFile(const std::filesystem::path fileName)
 
 	for (size_t i = 0; i < this->dataBlocks.size(); i++)
 	{
-		const TUPDataBlock dataBlock = this->dataBlocks[i];
+		const NUPDataBlock dataBlock = this->dataBlocks[i];
 		file.write((char *)&dataBlock.type, 1);
 		file.write((char *)&dataBlock.pathLength, 2);
 		file.write(dataBlock.path, dataBlock.pathLength);
@@ -122,13 +122,13 @@ bool TUPFile::saveToFile(const std::filesystem::path fileName)
 }
 
 /**
- * @brief Add a folder to the TUP file. It doesn't contain any data and is only for the folder creating on the MircoSD card.
+ * @brief Add a folder to the NUP file. It doesn't contain any data and is only for the folder creating on the MircoSD card.
  * @param path relative path of the folder (to the root folder)
  */
-void TUPFile::addFolder(const std::filesystem::path path)
+void NUPFile::addFolder(const std::filesystem::path path)
 {
-	TUPDataBlock dataBlock;
-	dataBlock.type = TUPDataType::DIRECTORY;
+	NUPDataBlock dataBlock;
+	dataBlock.type = NUPDataType::DIRECTORY;
 	dataBlock.pathLength = path.string().length();
 	dataBlock.path = new char[dataBlock.pathLength];
 	std::memcpy(dataBlock.path, path.string().c_str(), dataBlock.pathLength);
@@ -138,13 +138,13 @@ void TUPFile::addFolder(const std::filesystem::path path)
 }
 
 /**
- * @brief Add a file to the TUP file. The data of the file is loaded into memory and kept for writing it to the disk later.
+ * @brief Add a file to the NUP file. The data of the file is loaded into memory and kept for writing it to the disk later.
  * @param fileName absolute file path and name to the file that has to be embedded.
  * @param name relative path and name of the file (to the root folder)
  * @return true when the file was embedded successfully
  * @return false when there was an error embedding the file
  */
-bool TUPFile::addFile(const std::filesystem::path fileName, const std::filesystem::path name)
+bool NUPFile::addFile(const std::filesystem::path fileName, const std::filesystem::path name)
 {
 	const size_t fileSize = std::filesystem::file_size(fileName);
 	if (fileSize == 0)
@@ -158,8 +158,8 @@ bool TUPFile::addFile(const std::filesystem::path fileName, const std::filesyste
 		return false;
 	}
 
-	TUPDataBlock dataBlock;
-	dataBlock.type = name == "firmware.bin" ? TUPDataType::FIRMWARE : TUPDataType::FILE;
+	NUPDataBlock dataBlock;
+	dataBlock.type = name == "firmware.bin" ? NUPDataType::FIRMWARE : NUPDataType::FILE;
 	dataBlock.pathLength = name.string().length();
 	dataBlock.path = new char[dataBlock.pathLength];
 	std::memcpy(dataBlock.path, name.string().c_str(), dataBlock.pathLength);
@@ -183,12 +183,12 @@ bool TUPFile::addFile(const std::filesystem::path fileName, const std::filesyste
  * @brief Generate the simple hash for a weak package check.
  * @return uint32_t 4 bytes with the hash
  */
-uint32_t TUPFile::generateHash()
+uint32_t NUPFile::generateHash()
 {
 	uint32_t hash = 7;
 	for (size_t i = 0; i < this->dataBlocks.size(); i++)
 	{
-		const TUPDataBlock dataBlock = this->dataBlocks[i];
+		const NUPDataBlock dataBlock = this->dataBlocks[i];
 		hash = hash * 31 + dataBlock.type;
 		hash = hash * 31 + dataBlock.pathLength;
 		for (size_t j = 0; j < dataBlock.pathLength; j++)

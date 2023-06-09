@@ -30,7 +30,7 @@
 #include "configuration/SystemConfiguration.h"
 #include "logging/Logger.h"
 
-namespace TL
+namespace NL
 {
 	class WebServerManager
 	{

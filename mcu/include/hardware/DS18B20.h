@@ -27,7 +27,7 @@
 
 #include "OneWire.h"
 
-namespace TL
+namespace NL
 {
 	class DS18B20
 	{
@@ -48,19 +48,19 @@ namespace TL
 			DS18B20_12_BIT = 0B01111111
 		};
 
-		static TL::DS18B20::Error begin(const uint8_t busPin);
+		static NL::DS18B20::Error begin(const uint8_t busPin);
 		static void end();
 		static bool isInitialized();
 
 		static size_t getNumSensors();
-		static TL::DS18B20::Error getSensorAddress(uint64_t &sensorAddress, const size_t sensorIndex);
+		static NL::DS18B20::Error getSensorAddress(uint64_t &sensorAddress, const size_t sensorIndex);
 
-		static TL::DS18B20::Error setResolution(const TL::DS18B20::DS18B20Res resolution, const size_t sensorIndex);
-		static TL::DS18B20::Error getResolution(TL::DS18B20::DS18B20Res &resolution, const size_t sensorIndex);
+		static NL::DS18B20::Error setResolution(const NL::DS18B20::DS18B20Res resolution, const size_t sensorIndex);
+		static NL::DS18B20::Error getResolution(NL::DS18B20::DS18B20Res &resolution, const size_t sensorIndex);
 
-		static TL::DS18B20::Error startMeasurement(const size_t sensorIndex);
-		static TL::DS18B20::Error isMeasurementReady(bool &isReady, const size_t sensorIndex);
-		static TL::DS18B20::Error getTemperature(float &temp, const size_t sensorIndex);
+		static NL::DS18B20::Error startMeasurement(const size_t sensorIndex);
+		static NL::DS18B20::Error isMeasurementReady(bool &isReady, const size_t sensorIndex);
+		static NL::DS18B20::Error getTemperature(float &temp, const size_t sensorIndex);
 
 	private:
 		DS18B20();
@@ -68,11 +68,11 @@ namespace TL
 		static bool initialized;
 		static OneWire oneWire;
 		static std::vector<uint64_t> sensorAddress;
-		static std::vector<TL::DS18B20::DS18B20Res> resolution;
+		static std::vector<NL::DS18B20::DS18B20Res> resolution;
 		static std::vector<float> lastMeasurement;
 		static std::vector<unsigned long> measurementReadyTime;
 
-		static TL::DS18B20::Error getSensors(std::vector<uint64_t> &sensorAddress);
+		static NL::DS18B20::Error getSensors(std::vector<uint64_t> &sensorAddress);
 	};
 }
 

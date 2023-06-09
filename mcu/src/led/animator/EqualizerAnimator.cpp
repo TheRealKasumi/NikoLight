@@ -1,7 +1,7 @@
 /**
  * @file EqualizerAnimator.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@TL::EqualizerAnimator}.
+ * @brief Implementation of the {@NL::EqualizerAnimator}.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
  *
@@ -22,14 +22,14 @@
 #include "led/animator/EqualizerAnimator.h"
 
 /**
- * @brief Create a new instance of {@link TL::EqualizerAnimator}.
+ * @brief Create a new instance of {@link NL::EqualizerAnimator}.
  * @param color1 start color (use black for rainbow)
  * @param color2 end color (use black for rainbow)
  * @param rainbowSpeed speed of the color change in case of rainbow color
  * @param autoGain strength of the automatic gain
  * @param frequencyBandMask bit mask to mask frequency bands in audio mode
  */
-TL::EqualizerAnimator::EqualizerAnimator(const TL::Pixel color1, const TL::Pixel color2, const uint8_t rainbowSpeed, const float autoGain, const uint8_t frequencyBandMask)
+NL::EqualizerAnimator::EqualizerAnimator(const NL::Pixel color1, const NL::Pixel color2, const uint8_t rainbowSpeed, const float autoGain, const uint8_t frequencyBandMask)
 {
 	this->color[0] = color1;
 	this->color[1] = color2;
@@ -55,17 +55,17 @@ TL::EqualizerAnimator::EqualizerAnimator(const TL::Pixel color1, const TL::Pixel
 }
 
 /**
- * @brief Destroy the {@link TL::EqualizerAnimator} instance.
+ * @brief Destroy the {@link NL::EqualizerAnimator} instance.
  */
-TL::EqualizerAnimator::~EqualizerAnimator()
+NL::EqualizerAnimator::~EqualizerAnimator()
 {
 }
 
 /**
- * @brief Initialize the {@link TL::EqualizerAnimator}.
+ * @brief Initialize the {@link NL::EqualizerAnimator}.
  * @param pixels LED strip with the pixel data
  */
-void TL::EqualizerAnimator::init(TL::LedStrip &ledStrip)
+void NL::EqualizerAnimator::init(NL::LedStrip &ledStrip)
 {
 	this->audioSequence = 0;
 	this->audioSequence = 0;
@@ -74,7 +74,7 @@ void TL::EqualizerAnimator::init(TL::LedStrip &ledStrip)
 	this->colorAngle = 0.0f;
 	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
-		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+		ledStrip.setPixel(NL::Pixel::ColorCode::Black, i);
 	}
 }
 
@@ -82,13 +82,13 @@ void TL::EqualizerAnimator::init(TL::LedStrip &ledStrip)
  * @brief Render the equalizer animation.
  * @param pixels LED strip with the pixel data
  */
-void TL::EqualizerAnimator::render(TL::LedStrip &ledStrip)
+void NL::EqualizerAnimator::render(NL::LedStrip &ledStrip)
 {
 	// Check the data source
-	if (this->getDataSource() == TL::LedAnimator::DataSource::DS_AUDIO_FREQUENCY_VALUE)
+	if (this->getDataSource() == NL::LedAnimator::DataSource::DS_AUDIO_FREQUENCY_VALUE)
 	{
 		// Check the sequence number
-		const TL::AudioUnit::AudioAnalysis audioAnalysis = this->getAudioAnalysis();
+		const NL::AudioUnit::AudioAnalysis audioAnalysis = this->getAudioAnalysis();
 		if (audioAnalysis.frequencyBandTriggers.size() == AUDIO_UNIT_NUM_BANDS && audioAnalysis.seq != this->audioSequence)
 		{
 			this->audioSequence = audioAnalysis.seq;
@@ -155,7 +155,7 @@ void TL::EqualizerAnimator::render(TL::LedStrip &ledStrip)
 		if (distance < barWidth)
 		{
 			ledStrip.setPixel(
-				TL::Pixel(
+				NL::Pixel(
 					this->color[0].red * (1.0f - distance) + this->color[1].red * distance,
 					this->color[0].green * (1.0f - distance) + this->color[1].green * distance,
 					this->color[0].blue * (1.0f - distance) + this->color[1].blue * distance),
@@ -164,7 +164,7 @@ void TL::EqualizerAnimator::render(TL::LedStrip &ledStrip)
 		else if (distance < barWidth + 0.05f)
 		{
 			ledStrip.setPixel(
-				TL::Pixel(
+				NL::Pixel(
 					(this->color[0].red * (1.0f - distance) + this->color[1].red * distance) * ((barWidth + 0.05f) - distance) * 20.0f,
 					(this->color[0].green * (1.0f - distance) + this->color[1].green * distance) * ((barWidth + 0.05f) - distance) * 20.0f,
 					(this->color[0].blue * (1.0f - distance) + this->color[1].blue * distance) * ((barWidth + 0.05f) - distance) * 20.0f),
@@ -172,7 +172,7 @@ void TL::EqualizerAnimator::render(TL::LedStrip &ledStrip)
 		}
 		else
 		{
-			ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+			ledStrip.setPixel(NL::Pixel::ColorCode::Black, i);
 		}
 	}
 

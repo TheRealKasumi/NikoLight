@@ -1,7 +1,7 @@
 /**
  * @file AudioUnitConfigurationEndpoint.h
  * @author TheRealKasumi
- * @brief Contains a REST endpoint to configure the TesLight Audio Unit.
+ * @brief Contains a REST endpoint to configure the NikoLight Audio Unit.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -28,7 +28,7 @@
 #include "hardware/AudioUnit.h"
 #include "logging/Logger.h"
 
-namespace TL
+namespace NL
 {
 	class AudioUnitConfigurationEndpoint : public RestEndpoint
 	{

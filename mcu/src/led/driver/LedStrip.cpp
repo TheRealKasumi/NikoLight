@@ -1,7 +1,7 @@
 /**
  * @file LedStrip.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::LedStrip}.
+ * @brief Implementation of the {@link NL::LedStrip}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -22,12 +22,12 @@
 #include "led/driver/LedStrip.h"
 
 /**
- * @brief Create a new instance of {@link TL::LedStrip}.
+ * @brief Create a new instance of {@link NL::LedStrip}.
  * @param ledPin physical pin number for the data output
  * @param ledCount number of visible LEDs
  * @param hiddenLedCount total number of LEDs including invisible ones
  */
-TL::LedStrip::LedStrip(const uint8_t ledPin, const size_t ledCount, const size_t hiddenLedCount)
+NL::LedStrip::LedStrip(const uint8_t ledPin, const size_t ledCount, const size_t hiddenLedCount)
 {
 	this->ledPin = ledPin;
 	this->ledCount = ledCount;
@@ -46,9 +46,9 @@ TL::LedStrip::LedStrip(const uint8_t ledPin, const size_t ledCount, const size_t
 }
 
 /**
- * @brief Destroy the {@link TL::LedStrip} instance.
+ * @brief Destroy the {@link NL::LedStrip} instance.
  */
-TL::LedStrip::~LedStrip()
+NL::LedStrip::~LedStrip()
 {
 }
 
@@ -56,7 +56,7 @@ TL::LedStrip::~LedStrip()
  * @brief Get the LED output pin.
  * @return pin number
  */
-uint8_t TL::LedStrip::getLedPin()
+uint8_t NL::LedStrip::getLedPin()
 {
 	return this->ledPin;
 }
@@ -65,7 +65,7 @@ uint8_t TL::LedStrip::getLedPin()
  * @brief Get the number of LEDs.
  * @return number of LEDs
  */
-size_t TL::LedStrip::getLedCount()
+size_t NL::LedStrip::getLedCount()
 {
 	return this->ledCount;
 }
@@ -74,7 +74,7 @@ size_t TL::LedStrip::getLedCount()
  * @brief Get the number of hidden LEDs. This is the number of visible LEDs + the number of invisible LEDs.
  * @return number of hidden LEDs
  */
-size_t TL::LedStrip::getHiddenLedCount()
+size_t NL::LedStrip::getHiddenLedCount()
 {
 	return this->hiddenLedCount;
 }
@@ -84,14 +84,14 @@ size_t TL::LedStrip::getHiddenLedCount()
  * @param index index of the pixel
  * @return OK when the
  */
-TL::Pixel TL::LedStrip::getPixel(const size_t index)
+NL::Pixel NL::LedStrip::getPixel(const size_t index)
 {
 	if (!this->initialized || index >= this->ledCount)
 	{
 		std::abort();
 	}
 	const size_t ind = index * 3;
-	return TL::Pixel(this->buffer[ind], this->buffer[ind + 1], this->buffer[ind + 2]);
+	return NL::Pixel(this->buffer[ind], this->buffer[ind + 1], this->buffer[ind + 2]);
 }
 
 /**
@@ -99,7 +99,7 @@ TL::Pixel TL::LedStrip::getPixel(const size_t index)
  * @param pixel updated pixel
  * @param index index of the pixel
  */
-void TL::LedStrip::setPixel(const TL::Pixel &pixel, const size_t index)
+void NL::LedStrip::setPixel(const NL::Pixel &pixel, const size_t index)
 {
 	if (!this->initialized || index >= this->ledCount)
 	{
@@ -115,7 +115,7 @@ void TL::LedStrip::setPixel(const TL::Pixel &pixel, const size_t index)
  * @brief Return the base pointer to the buffer.
  * @return pointer to the buffer
  */
-uint8_t *TL::LedStrip::getBuffer()
+uint8_t *NL::LedStrip::getBuffer()
 {
 	if (!this->initialized)
 	{
@@ -128,7 +128,7 @@ uint8_t *TL::LedStrip::getBuffer()
  * @brief Set the base pointer to the buffer.
  * @param buffer base pointer to the buffer
  */
-void TL::LedStrip::setBuffer(uint8_t *buffer)
+void NL::LedStrip::setBuffer(uint8_t *buffer)
 {
 	this->initialized = true;
 	this->buffer = buffer;

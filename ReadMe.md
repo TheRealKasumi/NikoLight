@@ -1,19 +1,19 @@
-# TesLight
+# NikoLight
 
-[![latest release](https://img.shields.io/github/v/release/TheRealKasumi/TesLight)](https://github.com/TheRealKasumi/TesLight/releases/latest)
-![PlatformIO Build](https://github.com/TheRealKasumi/TesLight/actions/workflows/PlatformIO-Build.yml/badge.svg?branch=main)
-![UI Build](https://github.com/TheRealKasumi/TesLight/actions/workflows/ui-build.yml/badge.svg?branch=main)
-![TUP Build](https://github.com/TheRealKasumi/TesLight/actions/workflows/teslight-update-packaging-tool-and-tup-file-build.yml/badge.svg?branch=main)
+[![latest release](https://img.shields.io/github/v/release/TheRealKasumi/NikoLight)](https://github.com/TheRealKasumi/NikoLight/releases/latest)
+![PlatformIO Build](https://github.com/TheRealKasumi/NikoLight/actions/workflows/PlatformIO-Build.yml/badge.svg?branch=main)
+![UI Build](https://github.com/TheRealKasumi/NikoLight/actions/workflows/ui-build.yml/badge.svg?branch=main)
+![TUP Build](https://github.com/TheRealKasumi/NikoLight/actions/workflows/teslight-update-packaging-tool-and-tup-file-build.yml/badge.svg?branch=main)
 
 ## Introduction
 
-TesLight is an open source ambient light that you can build yourself.
+NikoLight is an open source ambient light that you can build yourself.
 The project is primarily aimed at people who are not looking for a ready-made solution and prefer to tinker, modify, extend and work on it as a community.
 As the name suggests, the project was started primarily for Tesla vehicles.
 The focus is on the Model 3 and Model Y.
 However, it can also be used for other cars with some small modifications.
 
-With TesLight you can control up to 8 zones with a variable number of WS2812-type LEDs.
+With NikoLight you can control up to 8 zones with a variable number of WS2812-type LEDs.
 For example, the 4 doors, the center console, the footwell lights and a light bar under the dashboard.
 In total, several hundred LEDs can be controlled individually.
 
@@ -24,15 +24,15 @@ The effects are expandable in the future and can be adapted to your wishes over 
 Even fully customized animation are possible.
 You can create these on your computer and play them back in the car.
 
-TesLight can be easily integrated into your Tesla (and other cars).
+NikoLight can be easily integrated into your Tesla (and other cars).
 There is a sensor that can be connected to the lighting around the footwell.
-This way, TesLight switches on and off automatically when you open or lock the car.
+This way, NikoLight switches on and off automatically when you open or lock the car.
 It is also possible to regulate the brightness together with the factory-installed lights or via the display.
 The controller is also expandable and could support additional hardware in the future.
 For example, there could be a CAN adapter to get more information from the vehicle.
 How relevant these extensions will be, depends a little bit on the community and the support I will receive.
 
-Once built and installed, TesLight can be configured via a browser-based UI.
+Once built and installed, NikoLight can be configured via a browser-based UI.
 When starting the controller, a Wi-Fi hotspot is created, which you can connect to with any device.
 The user interface can be accessed via a normal browser thanks to the integrated web server.
 The project is therefore mostly platform-independent.
@@ -56,11 +56,11 @@ The project is therefore mostly platform-independent.
 
 ## Some Videos and Pictures
 
-[![TesLight Demo 2](https://img.youtube.com/vi/_N5h1IViB-E/0.jpg)](https://www.youtube.com/watch?v=_N5h1IViB-E)
+[![NikoLight Demo 2](https://img.youtube.com/vi/_N5h1IViB-E/0.jpg)](https://www.youtube.com/watch?v=_N5h1IViB-E)
 
 (click to watch on YouTube)
 
-[![TesLight Demo 1](https://img.youtube.com/vi/bwzbVkCsNws/0.jpg)](https://www.youtube.com/watch?v=bwzbVkCsNws)
+[![NikoLight Demo 1](https://img.youtube.com/vi/bwzbVkCsNws/0.jpg)](https://www.youtube.com/watch?v=bwzbVkCsNws)
 
 (click to watch on YouTube)
 
@@ -88,7 +88,7 @@ A lot of our time, effort and money went into this project.
 Nevertheless, we share it publicly with you.
 You can use it for free, modify it and even earn a coffee by building the parts for other people as long as you are a private person without commercial intentions.
 But please **don't steal** our work, be a little **respectful** and **give credits**.
-That said, I hope you have a lot of fun and great experience with TesLight!
+That said, I hope you have a lot of fun and great experience with NikoLight!
 Thank you💖!
 
 ## Contributors
@@ -105,27 +105,27 @@ Thank you💖!
 				</a>
 				<hr />
 				<p style="text-align: left">
-					<a href="https://github.com/TheRealKasumi/TesLight/issues?q=author%3ATheRealKasumi">🐛 bug</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">💻 code</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/issues?q=author%3ATheRealKasumi">🐛 bug</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/commits?author=TheRealKasumi">💻 code</a><br />
 					🖋 content<br />
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">📖 doc</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/ui">🎨 design</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/commits?author=TheRealKasumi">📖 doc</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/tree/main/ui">🎨 design</a><br />
 					💡 example<br />
 					🤔 ideas<br />
-					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/.github">🚇 infra</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">🚧 maintenance</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight">🧑‍🏫 mentoring</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">📦 platform</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight">🔌 plugin</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/tree/main/.github">🚇 infra</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/commits?author=TheRealKasumi">🚧 maintenance</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight">🧑‍🏫 mentoring</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/commits?author=TheRealKasumi">📦 platform</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight">🔌 plugin</a><br />
 					📆 projectManagement<br />
 					📣 promotion<br />
 					💬 question<br />
 					🔬 research<br />
-					<a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3ATheRealKasumi">👀 review</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/pulls?q=is%3Apr+reviewed-by%3ATheRealKasumi">👀 review</a><br />
 					🛡️ security<br />
-					<a href="https://github.com/TheRealKasumi/TesLight">🔧 tool</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=TheRealKasumi">⚠️ test</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/blob/main/documentation/build.md">✅ tutorial</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight">🔧 tool</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/commits?author=TheRealKasumi">⚠️ test</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/blob/main/documentation/build.md">✅ tutorial</a><br />
 					<a href="https://www.youtube.com/watch?v=_N5h1IViB-E">📹 video</a><br />
 				</p>
 			</td>
@@ -138,18 +138,18 @@ Thank you💖!
 				</a>
 				<hr />
 				<p style="text-align: left">
-					<a href="https://github.com/TheRealKasumi/TesLight/issues?q=author%3Adanielbayerlein">🐛 bug</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=danielbayerlein">💻 code</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/ui">🎨 design</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/issues?q=author%3Adanielbayerlein">🐛 bug</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/commits?author=danielbayerlein">💻 code</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/tree/main/ui">🎨 design</a><br />
 					🤔 ideas<br />
-					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/.github">🚇 infra</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=danielbayerlein">🚧 maintenance</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/tree/main/.github">🚇 infra</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/commits?author=danielbayerlein">🚧 maintenance</a><br />
 					📆 projectManagement<br />
 					💬 question<br />
-					<a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3Adanielbayerlein">👀 review</a
+					<a href="https://github.com/TheRealKasumi/NikoLight/pulls?q=is%3Apr+reviewed-by%3Adanielbayerlein">👀 review</a
 					><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/ui/public/locales">🌍 translation</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=danielbayerlein">⚠️ test</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/tree/main/ui/public/locales">🌍 translation</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/commits?author=danielbayerlein">⚠️ test</a><br />
 				</p>
 			</td>
 			<td align="center" valign="top" width="200px">
@@ -161,18 +161,18 @@ Thank you💖!
 				</a>
 				<hr />
 				<p style="text-align: left">
-					<a href="https://github.com/TheRealKasumi/TesLight/issues?q=author%3AJakobLichterfeld">🐛 bug</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">💻 code</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">📖 doc</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/issues?q=author%3AJakobLichterfeld">🐛 bug</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/commits?author=JakobLichterfeld">💻 code</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/commits?author=JakobLichterfeld">📖 doc</a><br />
 					🤔 ideas<br />
-					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/.github">🚇 infra</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">🚧 maintenance</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight">🧑‍🏫 mentoring</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/tree/main/.github">🚇 infra</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/commits?author=JakobLichterfeld">🚧 maintenance</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight">🧑‍🏫 mentoring</a><br />
 					📆 projectManagement<br />
 					💬 question<br />
-					<a href="https://github.com/TheRealKasumi/TesLight/pulls?q=is%3Apr+reviewed-by%3AJakobLichterfeld">👀 review</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=JakobLichterfeld">⚠️ test</a><br />
-					<a href="https://github.com/TheRealKasumi/TesLight/blob/main/documentation/build.md">✅ tutorial</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/pulls?q=is%3Apr+reviewed-by%3AJakobLichterfeld">👀 review</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/commits?author=JakobLichterfeld">⚠️ test</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/blob/main/documentation/build.md">✅ tutorial</a><br />
 				</p>
 			</td>
 			<td align="center" valign="top" width="200px">
@@ -184,7 +184,7 @@ Thank you💖!
 				</a>
 				<hr />
 				<p style="text-align: left">
-					<a href="https://github.com/TheRealKasumi/TesLight/commit/0f9c097bd0b3cda26543b43a7343aa3b4d4c56f0">📖 doc</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/commit/0f9c097bd0b3cda26543b43a7343aa3b4d4c56f0">📖 doc</a><br />
 				</p>
 			</td>
 			<td align="center" valign="top" width="200px">
@@ -196,7 +196,7 @@ Thank you💖!
 				</a>
 				<hr />
 				<p style="text-align: left">
-					<a href="https://github.com/TheRealKasumi/TesLight/commits?author=MathiasSeifert">📖 doc</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/commits?author=MathiasSeifert">📖 doc</a><br />
 				</p>
 			</td>
       </tr>
@@ -210,7 +210,7 @@ Thank you💖!
 				</a>
 				<hr />
 				<p style="text-align: left">
-					<a href="https://github.com/TheRealKasumi/TesLight/issues?q=author%3APhilippDenn">🐛 bug</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/issues?q=author%3APhilippDenn">🐛 bug</a><br />
 					🤔 ideas<br />
 				</p>
 			</td>
@@ -223,7 +223,7 @@ Thank you💖!
 				</a>
 				<hr />
 				<p style="text-align: left">
-					<a href="https://github.com/TheRealKasumi/TesLight/tree/main/model">🎨 design</a><br />
+					<a href="https://github.com/TheRealKasumi/NikoLight/tree/main/model">🎨 design</a><br />
 				</p>
 			</td>
       <td align="center" valign="top" width="200px"></td>

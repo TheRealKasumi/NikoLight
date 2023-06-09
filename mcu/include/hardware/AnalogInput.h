@@ -1,7 +1,7 @@
 /**
  * @file AnalogInput.h
  * @author TheRealKasumi
- * @brief Contains a class for reading the analog input from the TesLight board.
+ * @brief Contains a class for reading the analog input from the NikoLight board.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -24,7 +24,7 @@
 
 #include <Arduino.h>
 
-namespace TL
+namespace NL
 {
 	class AnalogInput
 	{

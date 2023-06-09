@@ -25,7 +25,7 @@
 #include <vector>
 #include "led/animator/LedAnimator.h"
 
-namespace TL
+namespace NL
 {
 	class RainbowAnimator : public LedAnimator
 	{
@@ -37,15 +37,15 @@ namespace TL
 			RAINBOW_CENTER = 2
 		};
 
-		RainbowAnimator(const TL::RainbowAnimator::RainbowMode rainbowMode);
+		RainbowAnimator(const NL::RainbowAnimator::RainbowMode rainbowMode);
 		~RainbowAnimator();
 
-		void init(TL::LedStrip &ledStrip);
-		void render(TL::LedStrip &ledStrip);
+		void init(NL::LedStrip &ledStrip);
+		void render(NL::LedStrip &ledStrip);
 
 	private:
 		float angle;
-		TL::RainbowAnimator::RainbowMode rainbowMode;
+		NL::RainbowAnimator::RainbowMode rainbowMode;
 	};
 }
 

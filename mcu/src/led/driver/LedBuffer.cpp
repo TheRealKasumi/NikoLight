@@ -1,7 +1,7 @@
 /**
  * @file LedBuffer.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@link TL::LedBuffer}.
+ * @brief Implementation of the {@link NL::LedBuffer}.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
  *
@@ -22,10 +22,10 @@
 #include "led/driver/LedBuffer.h"
 
 /**
- * @brief Create a new instance of {@link TL::LedBuffer}.
+ * @brief Create a new instance of {@link NL::LedBuffer}.
  * @param ledStrips vector holding the LED strips
  */
-TL::LedBuffer::LedBuffer(const std::vector<TL::LedStrip> &ledStrips)
+NL::LedBuffer::LedBuffer(const std::vector<NL::LedStrip> &ledStrips)
 {
 	this->ledStrips = ledStrips;
 	this->totalLedCount = 0;
@@ -60,9 +60,9 @@ TL::LedBuffer::LedBuffer(const std::vector<TL::LedStrip> &ledStrips)
 }
 
 /**
- * @brief Destroy the {@link TL::LedBuffer} instance and free memory.
+ * @brief Destroy the {@link NL::LedBuffer} instance and free memory.
  */
-TL::LedBuffer::~LedBuffer()
+NL::LedBuffer::~LedBuffer()
 {
 	if (this->buffer != nullptr)
 	{
@@ -75,7 +75,7 @@ TL::LedBuffer::~LedBuffer()
  * @brief Get the size of the LED buffer in bytes.
  * @return size of the LED buffer in bytes.
  */
-size_t TL::LedBuffer::getBufferSize()
+size_t NL::LedBuffer::getBufferSize()
 {
 	return this->totalLedCount * 3;
 }
@@ -84,7 +84,7 @@ size_t TL::LedBuffer::getBufferSize()
  * @brief Get the base pointer to the LED buffer.
  * @return pointer to the LED buffer
  */
-uint8_t *TL::LedBuffer::getBuffer()
+uint8_t *NL::LedBuffer::getBuffer()
 {
 	return this->buffer;
 }
@@ -93,7 +93,7 @@ uint8_t *TL::LedBuffer::getBuffer()
  * @brief Get the total number of visible LEDs.
  * @return total number of LEDs
  */
-size_t TL::LedBuffer::getTotalLedCount()
+size_t NL::LedBuffer::getTotalLedCount()
 {
 	return this->totalLedCount;
 }
@@ -102,7 +102,7 @@ size_t TL::LedBuffer::getTotalLedCount()
  * @brief Get the highst number of visible LEDs from all strips.
  * @return highest number of LED per strip
  */
-size_t TL::LedBuffer::getMaxLedCount()
+size_t NL::LedBuffer::getMaxLedCount()
 {
 	return this->maxLedCount;
 }
@@ -111,7 +111,7 @@ size_t TL::LedBuffer::getMaxLedCount()
  * @brief Get the total number of all LEDs.
  * @return total number of LEDs
  */
-size_t TL::LedBuffer::getTotalHiddenLedCount()
+size_t NL::LedBuffer::getTotalHiddenLedCount()
 {
 	return this->totalHiddenLedCount;
 }
@@ -120,7 +120,7 @@ size_t TL::LedBuffer::getTotalHiddenLedCount()
  * @brief Get the highst number of LEDs from all strips.
  * @return highest number of LED per strip
  */
-size_t TL::LedBuffer::getMaxHiddenLedCount()
+size_t NL::LedBuffer::getMaxHiddenLedCount()
 {
 	return this->maxHiddenLedCount;
 }
@@ -129,7 +129,7 @@ size_t TL::LedBuffer::getMaxHiddenLedCount()
  * @brief Get the number of LED strips.
  * @return number of LED strips
  */
-size_t TL::LedBuffer::getLedStripCount()
+size_t NL::LedBuffer::getLedStripCount()
 {
 	return this->ledStrips.size();
 }
@@ -139,7 +139,7 @@ size_t TL::LedBuffer::getLedStripCount()
  * @param index index of the LED strip
  * @return reference to the LED strip
  */
-TL::LedStrip &TL::LedBuffer::getLedStrip(const size_t index)
+NL::LedStrip &NL::LedBuffer::getLedStrip(const size_t index)
 {
 	return this->ledStrips.at(index);
 }

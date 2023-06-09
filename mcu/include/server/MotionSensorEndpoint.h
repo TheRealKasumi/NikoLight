@@ -28,7 +28,7 @@
 #include "logging/Logger.h"
 #include "sensor/MotionSensor.h"
 
-namespace TL
+namespace NL
 {
 	class MotionSensorEndpoint : public RestEndpoint
 	{

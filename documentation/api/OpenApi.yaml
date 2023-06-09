@@ -1,20 +1,20 @@
 openapi: 3.0.3
 info:
-   title: TesLight API Documentation
+   title: NikoLight API Documentation
    description: >-
-      This is the interactive API documentation for TesLight. Below all REST
+      This is the interactive API documentation for NikoLight. Below all REST
       endpoints are documented and ready to be tried out.
    contact:
-      name: TesLight on GitHub
-      url: "https://github.com/TheRealKasumi/TesLight"
+      name: NikoLight on GitHub
+      url: "https://github.com/TheRealKasumi/NikoLight"
    version: 1.0.0
 servers:
    - url: "http://192.168.4.1/api"
 tags:
    - name: Connection Test
-     description: Test the connection to the TesLight controller
+     description: Test the connection to the NikoLight controller
    - name: System Information
-     description: Read the system information from the TesLight controller
+     description: Read the system information from the NikoLight controller
    - name: System Configuration
      description: Read and update the system configuration
    - name: LED/Zone Configuration
@@ -63,7 +63,7 @@ paths:
          summary: Get the current system information.
          description: |-
             Request the current system information from the controller.
-            This includes information about the soc, TesLight system and hardware.
+            This includes information about the soc, NikoLight system and hardware.
          operationId: getSystemInformation
          responses:
             "200":
@@ -456,9 +456,9 @@ paths:
       post:
          tags:
             - Update
-         summary: Update the TesLight controller with a new firmware.
+         summary: Update the NikoLight controller with a new firmware.
          description: >-
-            Upload a TesLight update package and update the controller with a new
+            Upload a NikoLight update package and update the controller with a new
             firmware.
          operationId: uploadTUP
          requestBody:
@@ -1050,10 +1050,10 @@ components:
                properties:
                   accessPointSsid:
                      type: string
-                     example: TesLight
+                     example: NikoLight
                   accessPointPassword:
                      type: string
-                     example: TesLightPW
+                     example: NikoLightPW
                   accessPointChannel:
                      type: integer
                      format: uint8
@@ -1437,10 +1437,10 @@ components:
                         properties:
                            accessPointSsid:
                               type: string
-                              example: TesLight
+                              example: NikoLight
                            accessPointPassword:
                               type: string
-                              example: TesLightPW
+                              example: NikoLightPW
                            accessPointChannel:
                               type: integer
                               format: uint8

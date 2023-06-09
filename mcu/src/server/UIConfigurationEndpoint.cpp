@@ -9,124 +9,124 @@
 #include "server/UIConfigurationEndpoint.h"
 
 /**
- * @brief Add all request handler for this {@link TL::RestEndpoint} to the {@link TL::WebServerManager}.
+ * @brief Add all request handler for this {@link NL::RestEndpoint} to the {@link NL::WebServerManager}.
  */
-void TL::UIConfigurationEndpoint::begin()
+void NL::UIConfigurationEndpoint::begin()
 {
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/ui")).c_str(), http_method::HTTP_GET, TL::UIConfigurationEndpoint::getUIConfig);
-	TL::WebServerManager::addRequestHandler((getBaseUri() + F("config/ui")).c_str(), http_method::HTTP_PATCH, TL::UIConfigurationEndpoint::patchUIConfig);
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("config/ui")).c_str(), http_method::HTTP_GET, NL::UIConfigurationEndpoint::getUIConfig);
+	NL::WebServerManager::addRequestHandler((getBaseUri() + F("config/ui")).c_str(), http_method::HTTP_PATCH, NL::UIConfigurationEndpoint::patchUIConfig);
 }
 
 /**
  * @brief Return the UI configuration to the client.
  */
-void TL::UIConfigurationEndpoint::getUIConfig()
+void NL::UIConfigurationEndpoint::getUIConfig()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the UI configuration."));
-	if (!TL::Configuration::isInitialized())
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to get the UI configuration."));
+	if (!NL::Configuration::isInitialized())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The NikoLight configuration was not initialized. Can not access configuration."));
+		NL::UIConfigurationEndpoint::sendSimpleResponse(500, F("The NikoLight configuration was not initialized. Can not access configuration."));
 		return;
 	}
 
 	DynamicJsonDocument jsonDoc(256);
 	const JsonObject uiConfig = jsonDoc.createNestedObject(F("uiConfig"));
-	uiConfig[F("firmware")] = TL::Configuration::getUIConfiguration().firmware;
-	uiConfig[F("language")] = TL::Configuration::getUIConfiguration().language;
-	uiConfig[F("theme")] = TL::Configuration::getUIConfiguration().theme;
-	uiConfig[F("expertMode")] = TL::Configuration::getUIConfiguration().expertMode;
+	uiConfig[F("firmware")] = NL::Configuration::getUIConfiguration().firmware;
+	uiConfig[F("language")] = NL::Configuration::getUIConfiguration().language;
+	uiConfig[F("theme")] = NL::Configuration::getUIConfiguration().theme;
+	uiConfig[F("expertMode")] = NL::Configuration::getUIConfiguration().expertMode;
 
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
-	TL::UIConfigurationEndpoint::sendJsonDocument(200, F("Here is your UI configuration."), jsonDoc);
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Sending the response."));
+	NL::UIConfigurationEndpoint::sendJsonDocument(200, F("Here is your UI configuration."), jsonDoc);
 }
 
 /**
  * @brief Update the UI configuration.
  */
-void TL::UIConfigurationEndpoint::patchUIConfig()
+void NL::UIConfigurationEndpoint::patchUIConfig()
 {
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the UI configuration."));
-	if (!TL::Configuration::isInitialized())
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Received request to update the UI configuration."));
+	if (!NL::Configuration::isInitialized())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The TesLight configuration was not initialized. Can not access configuration."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(500, F("The TesLight configuration was not initialized. Can not access configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("The NikoLight configuration was not initialized. Can not access configuration."));
+		NL::UIConfigurationEndpoint::sendSimpleResponse(500, F("The NikoLight configuration was not initialized. Can not access configuration."));
 		return;
 	}
 
-	if (!TL::UIConfigurationEndpoint::webServer->hasHeader(F("content-type")) || TL::UIConfigurationEndpoint::webServer->header(F("content-type")) != F("application/json"))
+	if (!NL::UIConfigurationEndpoint::webServer->hasHeader(F("content-type")) || NL::UIConfigurationEndpoint::webServer->header(F("content-type")) != F("application/json"))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/json\"."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The content type must be \"application/json\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The content type must be \"application/json\"."));
+		NL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The content type must be \"application/json\"."));
 		return;
 	}
 
-	if (!TL::UIConfigurationEndpoint::webServer->hasArg(F("plain")))
+	if (!NL::UIConfigurationEndpoint::webServer->hasArg(F("plain")))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body with the UI configuration."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(400, F("There must be a valid json body with the UI configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("There must be a valid json body with the UI configuration."));
+		NL::UIConfigurationEndpoint::sendSimpleResponse(400, F("There must be a valid json body with the UI configuration."));
 		return;
 	}
 
-	const String body = TL::UIConfigurationEndpoint::webServer->arg(F("plain"));
+	const String body = NL::UIConfigurationEndpoint::webServer->arg(F("plain"));
 	if (body.length() == 0 || body.length() > 256)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 256 bytes."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 256 bytes."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body must not be empty and the maximum length is 256 bytes."));
+		NL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The body must not be empty and the maximum length is 256 bytes."));
 		return;
 	}
 
 	DynamicJsonDocument jsonDoc(256);
-	if (!TL::UIConfigurationEndpoint::parseJsonDocument(jsonDoc, body))
+	if (!NL::UIConfigurationEndpoint::parseJsonDocument(jsonDoc, body))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The body could not be parsed. The json is invalid."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The body could not be parsed. The json is invalid."));
+		NL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The body could not be parsed. The json is invalid."));
 		return;
 	}
 
 	if (!jsonDoc[F("uiConfig")].is<JsonObject>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"uiConfig\" object."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain a \"uiConfig\" object."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The json must contain a \"uiConfig\" object."));
+		NL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The json must contain a \"uiConfig\" object."));
 		return;
 	}
 
 	const JsonObject uiConfig = jsonDoc[F("uiConfig")].as<JsonObject>();
-	if (!TL::UIConfigurationEndpoint::validateUIConfig(uiConfig))
+	if (!NL::UIConfigurationEndpoint::validateUIConfig(uiConfig))
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The validation of the configuration failed."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The validation of the configuration failed."));
 		return;
 	}
 
-	TL::Configuration::UIConfiguration uiConfiguration;
+	NL::Configuration::UIConfiguration uiConfiguration;
 	uiConfiguration.firmware = FW_VERSION;
 	uiConfiguration.language = uiConfig[F("language")].as<String>();
 	uiConfiguration.theme = uiConfig[F("theme")].as<String>();
 	uiConfiguration.expertMode = uiConfig[F("expertMode")].as<bool>();
 
-	TL::Configuration::setUIConfiguration(uiConfiguration);
-	const TL::Configuration::Error configSaveError = TL::Configuration::save();
-	if (configSaveError == TL::Configuration::Error::ERROR_FILE_OPEN)
+	NL::Configuration::setUIConfiguration(uiConfiguration);
+	const NL::Configuration::Error configSaveError = NL::Configuration::save();
+	if (configSaveError == NL::Configuration::Error::ERROR_FILE_OPEN)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save ui configuration. The configuration file could not be opened."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save ui configuration. The configuration file could not be opened."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save ui configuration. The configuration file could not be opened."));
+		NL::UIConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save ui configuration. The configuration file could not be opened."));
 		return;
 	}
-	else if (configSaveError == TL::Configuration::Error::ERROR_FILE_WRITE)
+	else if (configSaveError == NL::Configuration::Error::ERROR_FILE_WRITE)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save ui configuration. The configuration file could not be written."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save ui configuration. The configuration file could not be written."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save ui configuration. The configuration file could not be written."));
+		NL::UIConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save ui configuration. The configuration file could not be written."));
 		return;
 	}
-	else if (configSaveError != TL::Configuration::Error::OK)
+	else if (configSaveError != NL::Configuration::Error::OK)
 	{
-		TL::Logger::log(TL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save ui configuration."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save ui configuration."));
+		NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to save ui configuration."));
+		NL::UIConfigurationEndpoint::sendSimpleResponse(500, F("Failed to save ui configuration."));
 		return;
 	}
 
-	TL::Logger::log(TL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("UI configuration saved. Sending the response."));
-	TL::UIConfigurationEndpoint::sendSimpleResponse(200, F("Configuration saved! Thank you for telling me your personal preferences! Now I know you even better."));
+	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("UI configuration saved. Sending the response."));
+	NL::UIConfigurationEndpoint::sendSimpleResponse(200, F("Configuration saved! Thank you for telling me your personal preferences! Now I know you even better."));
 }
 
 /**
@@ -135,26 +135,26 @@ void TL::UIConfigurationEndpoint::patchUIConfig()
  * @return true when valid
  * @return false when invalid
  */
-bool TL::UIConfigurationEndpoint::validateUIConfig(const JsonObject &jsonObject)
+bool NL::UIConfigurationEndpoint::validateUIConfig(const JsonObject &jsonObject)
 {
 	if (!jsonObject[F("language")].is<String>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"language\" field must be of type \"string\"."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The \"language\" field must be of type \"string\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"language\" field must be of type \"string\"."));
+		NL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The \"language\" field must be of type \"string\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("theme")].is<String>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"theme\" field must be of type \"string\"."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The \"theme\" field must be of type \"string\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"theme\" field must be of type \"string\"."));
+		NL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The \"theme\" field must be of type \"string\"."));
 		return false;
 	}
 
 	if (!jsonObject[F("expertMode")].is<bool>())
 	{
-		TL::Logger::log(TL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"expertMode\" field must be of type \"boolean\"."));
-		TL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The \"expertMode\" field must be of type \"boolean\"."));
+		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"expertMode\" field must be of type \"boolean\"."));
+		NL::UIConfigurationEndpoint::sendSimpleResponse(400, F("The \"expertMode\" field must be of type \"boolean\"."));
 		return false;
 	}
 

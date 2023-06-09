@@ -1,7 +1,7 @@
 /**
  * @file SparkleAnimator.cpp
  * @author TheRealKasumi
- * @brief Implementation of the {@TL::SparkleAnimator}.
+ * @brief Implementation of the {@NL::SparkleAnimator}.
  *
  * @copyright Copyright (c) 2022 TheRealKasumi
  *
@@ -22,7 +22,7 @@
 #include "led/animator/SparkleAnimator.h"
 
 /**
- * @brief Create a new instance of {@link TL::SparkleAnimator}.
+ * @brief Create a new instance of {@link NL::SparkleAnimator}.
  * @param spawnPosition spawn position of the sparks
  * @param sparkCount number of sparks
  * @param color color of the particles, use pure black for a rainbow effect
@@ -38,7 +38,7 @@
  * @param bounceAtCorner when set to true, the particles will bounce at the end of the LED strip
  * @param frequencyBandMask bit mask to mask frequency bands in audio mode
  */
-TL::SparkleAnimator::SparkleAnimator(const TL::SparkleAnimator::SpawnPosition spawnPosition, const uint8_t sparkCount, const TL::Pixel color,
+NL::SparkleAnimator::SparkleAnimator(const NL::SparkleAnimator::SpawnPosition spawnPosition, const uint8_t sparkCount, const NL::Pixel color,
 									 const float sparkFriction, const float sparkFading, const float sparkTail, const float birthRate,
 									 const float spawnVariance, const float speedVariance, const float brightnessVariance, const float frictionVariance,
 									 const float fadingVariance, const bool bounceAtCorner, const uint8_t frequencyBandMask)
@@ -73,35 +73,35 @@ TL::SparkleAnimator::SparkleAnimator(const TL::SparkleAnimator::SpawnPosition sp
 }
 
 /**
- * @brief Destroy the {@link TL::SparkleAnimator} instance.
+ * @brief Destroy the {@link NL::SparkleAnimator} instance.
  */
-TL::SparkleAnimator::~SparkleAnimator()
+NL::SparkleAnimator::~SparkleAnimator()
 {
 }
 
 /**
- * @brief Initialize the {@link TL::SparkleAnimator}.
+ * @brief Initialize the {@link NL::SparkleAnimator}.
  * @param ledStrip LED strip with the pixel data
  */
-void TL::SparkleAnimator::init(TL::LedStrip &ledStrip)
+void NL::SparkleAnimator::init(NL::LedStrip &ledStrip)
 {
-	this->pixelBuffer.assign(ledStrip.getLedCount(), TL::Pixel::ColorCode::Black);
+	this->pixelBuffer.assign(ledStrip.getLedCount(), NL::Pixel::ColorCode::Black);
 	this->pixelMask.assign(ledStrip.getLedCount(), false);
 	for (size_t i = 0; i < ledStrip.getLedCount(); i++)
 	{
-		ledStrip.setPixel(TL::Pixel::ColorCode::Black, i);
+		ledStrip.setPixel(NL::Pixel::ColorCode::Black, i);
 	}
 	this->colorAngle = 0.0f;
 	this->audioSequence = 0;
 	for (size_t i = 0; i < this->sparks.size(); i++)
 	{
-		TL::SparkleAnimator::Spark spark = this->sparks.at(i);
+		NL::SparkleAnimator::Spark spark = this->sparks.at(i);
 		spark.visible = false;
 		spark.position = 0.0f;
 		spark.lastPosition = 0.0f;
 		spark.speed = 0.0f;
 		spark.friction = 0.0f;
-		spark.color = TL::Pixel::ColorCode::Black;
+		spark.color = NL::Pixel::ColorCode::Black;
 		spark.brightness = 0.0f;
 		spark.fading = 0.0f;
 		this->sparks.at(i) = spark;
@@ -112,13 +112,13 @@ void TL::SparkleAnimator::init(TL::LedStrip &ledStrip)
  * @brief Render the sparkle animator.
  * @param ledStrip LED strip with the pixel data
  */
-void TL::SparkleAnimator::render(TL::LedStrip &ledStrip)
+void NL::SparkleAnimator::render(NL::LedStrip &ledStrip)
 {
 	// Check if new sparks should be spawned depending on the data source
-	if (this->getDataSource() == TL::LedAnimator::DataSource::DS_AUDIO_FREQUENCY_TRIGGER)
+	if (this->getDataSource() == NL::LedAnimator::DataSource::DS_AUDIO_FREQUENCY_TRIGGER)
 	{
 		// Get the audio frequency analysis
-		const TL::AudioUnit::AudioAnalysis audioAnalysis = this->getAudioAnalysis();
+		const NL::AudioUnit::AudioAnalysis audioAnalysis = this->getAudioAnalysis();
 		if (audioAnalysis.frequencyBandTriggers.size() == AUDIO_UNIT_NUM_BANDS && audioAnalysis.seq != this->audioSequence)
 		{
 			// Check the sequency number
@@ -126,7 +126,7 @@ void TL::SparkleAnimator::render(TL::LedStrip &ledStrip)
 			for (size_t i = 0; i < AUDIO_UNIT_NUM_BANDS; i++)
 			{
 				// Spawn new sparks depending on the band mask and the tigger status
-				if (this->frequencyBandMask & (0B10000000 >> i) && audioAnalysis.frequencyBandTriggers.at(i).trigger == TL::AudioUnit::Trigger::TRIGGER_RISING)
+				if (this->frequencyBandMask & (0B10000000 >> i) && audioAnalysis.frequencyBandTriggers.at(i).trigger == NL::AudioUnit::Trigger::TRIGGER_RISING)
 				{
 					this->spawnSparks(ledStrip);
 				}
@@ -147,7 +147,7 @@ void TL::SparkleAnimator::render(TL::LedStrip &ledStrip)
 	// Render the sparks and remember each pixel at which a spark is present
 	for (size_t i = 0; i < this->sparks.size(); i++)
 	{
-		const TL::SparkleAnimator::Spark spark = this->sparks.at(i);
+		const NL::SparkleAnimator::Spark spark = this->sparks.at(i);
 		if (spark.visible)
 		{
 			float exposure = abs(spark.speed);
@@ -167,7 +167,7 @@ void TL::SparkleAnimator::render(TL::LedStrip &ledStrip)
 					break;
 				}
 
-				const TL::Pixel pixel = this->pixelBuffer.at(isPositive ? spark.position - j : spark.position + j);
+				const NL::Pixel pixel = this->pixelBuffer.at(isPositive ? spark.position - j : spark.position + j);
 				int16_t red = pixel.red;
 				int16_t green = pixel.green;
 				int16_t blue = pixel.blue;
@@ -192,7 +192,7 @@ void TL::SparkleAnimator::render(TL::LedStrip &ledStrip)
 	{
 		if (!this->pixelMask.at(i))
 		{
-			const TL::Pixel pixel = this->pixelBuffer.at(i);
+			const NL::Pixel pixel = this->pixelBuffer.at(i);
 			int16_t red = pixel.red;
 			int16_t green = pixel.green;
 			int16_t blue = pixel.blue;
@@ -226,12 +226,12 @@ void TL::SparkleAnimator::render(TL::LedStrip &ledStrip)
  * @brief Spawn new sparks from the set of currently invisible ones.
  * @param ledStrip reference to the LED strip
  */
-void TL::SparkleAnimator::spawnSparks(TL::LedStrip &ledStrip)
+void NL::SparkleAnimator::spawnSparks(NL::LedStrip &ledStrip)
 {
 	size_t spawnCounter = 0;
 	for (size_t i = 0; i < this->sparks.size(); i++)
 	{
-		if (this->getDataSource() == TL::LedAnimator::DataSource::DS_AUDIO_FREQUENCY_TRIGGER)
+		if (this->getDataSource() == NL::LedAnimator::DataSource::DS_AUDIO_FREQUENCY_TRIGGER)
 		{
 			if (spawnCounter >= this->birthRate * this->sparks.size())
 			{
@@ -246,28 +246,28 @@ void TL::SparkleAnimator::spawnSparks(TL::LedStrip &ledStrip)
 			}
 		}
 
-		TL::SparkleAnimator::Spark spark = this->sparks.at(i);
+		NL::SparkleAnimator::Spark spark = this->sparks.at(i);
 		if (!spark.visible)
 		{
 			spark.visible = true;
 
 			switch (this->spawnPosition)
 			{
-			case TL::SparkleAnimator::SpawnPosition::SPAWN_SIDE:
+			case NL::SparkleAnimator::SpawnPosition::SPAWN_SIDE:
 				spark.position = (this->offset / 255.0f) * (ledStrip.getLedCount() - 1.0f);
 				spark.position += this->random(0, ledStrip.getLedCount() - 1.0f) * this->spawnVariance;
 				spark.position = spark.position >= 0 ? spark.position : 0;
 				spark.position = spark.position < ledStrip.getLedCount() ? spark.position : ledStrip.getLedCount() - 1;
 				spark.lastPosition = spark.position;
 				break;
-			case TL::SparkleAnimator::SpawnPosition::SPAWN_CENTER:
+			case NL::SparkleAnimator::SpawnPosition::SPAWN_CENTER:
 				spark.position = ledStrip.getLedCount() / 2.0f;
 				spark.position += this->random(-spark.position, spark.position) * this->spawnVariance;
 				spark.position = spark.position >= 0 ? spark.position : 0;
 				spark.position = spark.position < ledStrip.getLedCount() ? spark.position : ledStrip.getLedCount() - 1;
 				spark.lastPosition = spark.position;
 				break;
-			case TL::SparkleAnimator::SpawnPosition::SPAWN_RANDOM:
+			case NL::SparkleAnimator::SpawnPosition::SPAWN_RANDOM:
 				spark.position = this->random(0, ledStrip.getLedCount() - 1);
 				spark.lastPosition = spark.position;
 				break;
@@ -319,11 +319,11 @@ void TL::SparkleAnimator::spawnSparks(TL::LedStrip &ledStrip)
  * @brief Run the sparks :) . I know, thats a great explanation.
  * @param ledStrip reference to the LED strip
  */
-void TL::SparkleAnimator::runSparks(TL::LedStrip &ledStrip)
+void NL::SparkleAnimator::runSparks(NL::LedStrip &ledStrip)
 {
 	for (size_t i = 0; i < this->sparks.size(); i++)
 	{
-		TL::SparkleAnimator::Spark spark = this->sparks.at(i);
+		NL::SparkleAnimator::Spark spark = this->sparks.at(i);
 		if (spark.visible)
 		{
 			spark.lastPosition = spark.position;

@@ -44,11 +44,11 @@ export const Update = (): JSX.Element => {
           components={{
             github: (
               <a
-                href="https://github.com/TheRealKasumi/TesLight"
+                href="https://github.com/TheRealKasumi/NikoLight"
                 target="_blank"
                 rel="noreferrer"
               >
-                https://github.com/TheRealKasumi/TesLight
+                https://github.com/TheRealKasumi/NikoLight
               </a>
             ),
           }}
@@ -59,7 +59,7 @@ export const Update = (): JSX.Element => {
 
       <form onSubmit={onSubmit}>
         <InputType<FormData>
-          accept=".tup"
+          accept=".nup"
           className="mb-6"
           control={control}
           name="files"

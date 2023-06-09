@@ -27,7 +27,7 @@
 #include <Esp.h>
 #include "configuration/SystemConfiguration.h"
 
-namespace TL
+namespace NL
 {
 	class SystemInformation
 	{
@@ -63,7 +63,7 @@ namespace TL
 			uint8_t audioUnit;
 		};
 
-		struct TLInformation
+		struct NLInformation
 		{
 			float fps;
 			uint16_t ledCount;
@@ -74,21 +74,21 @@ namespace TL
 		static bool isInitialized();
 
 		static void updateSocInfo(const bool fast = true);
-		static TL::SystemInformation::SocInfo getSocInfo();
+		static NL::SystemInformation::SocInfo getSocInfo();
 
-		static void setHardwareInfo(const TL::SystemInformation::HardwareInformation hardwareInfo);
-		static TL::SystemInformation::HardwareInformation getHardwareInfo();
+		static void setHardwareInfo(const NL::SystemInformation::HardwareInformation hardwareInfo);
+		static NL::SystemInformation::HardwareInformation getHardwareInfo();
 
-		static void setTesLightInfo(const TL::SystemInformation::TLInformation systemInfo);
-		static TL::SystemInformation::TLInformation getTesLightInfo();
+		static void setNikoLightInfo(const NL::SystemInformation::NLInformation systemInfo);
+		static NL::SystemInformation::NLInformation getNikoLightInfo();
 
 	private:
 		SystemInformation();
 
 		static bool initialized;
-		static TL::SystemInformation::SocInfo socInfo;
-		static TL::SystemInformation::HardwareInformation hardwareInfo;
-		static TL::SystemInformation::TLInformation systemInfo;
+		static NL::SystemInformation::SocInfo socInfo;
+		static NL::SystemInformation::HardwareInformation hardwareInfo;
+		static NL::SystemInformation::NLInformation systemInfo;
 	};
 }
 

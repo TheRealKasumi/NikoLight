@@ -4,7 +4,7 @@
  * @brief Entry point, initialization and main loop of the program.
  *
  * @copyright Copyright (c) 2022-2023 TheRealKasumi
- * 
+ *
  * This project, including hardware and software, is provided "as is". There is no warranty
  * of any kind, express or implied, including but not limited to the warranties of fitness
  * for a particular purpose and noninfringement. TheRealKasumi (https://github.com/TheRealKasumi)
@@ -20,14 +20,14 @@
  *
  */
 
-#include "TesLight.h"
+#include "NikoLight.h"
 
 /**
  * @brief Initialize the software and hardware.
  */
 void setup()
 {
-	TesLight::begin();
+	NikoLight::begin();
 }
 
 /**
@@ -35,5 +35,5 @@ void setup()
  */
 void loop()
 {
-	TesLight::run();
+	NikoLight::run();
 }

@@ -25,7 +25,7 @@
 #include <vector>
 #include "led/animator/LedAnimator.h"
 
-namespace TL
+namespace NL
 {
 	class GradientAnimator : public LedAnimator
 	{
@@ -36,15 +36,15 @@ namespace TL
 			GRADIENT_CENTER = 1
 		};
 
-		GradientAnimator(const TL::GradientAnimator::GradientMode gradientMode, const TL::Pixel color1, const TL::Pixel color2);
+		GradientAnimator(const NL::GradientAnimator::GradientMode gradientMode, const NL::Pixel color1, const NL::Pixel color2);
 		~GradientAnimator();
 
-		void init(TL::LedStrip &ledStrip);
-		void render(TL::LedStrip &ledStrip);
+		void init(NL::LedStrip &ledStrip);
+		void render(NL::LedStrip &ledStrip);
 
 	private:
-		TL::GradientAnimator::GradientMode gradientMode;
-		TL::Pixel color[2];
+		NL::GradientAnimator::GradientMode gradientMode;
+		NL::Pixel color[2];
 	};
 }
 

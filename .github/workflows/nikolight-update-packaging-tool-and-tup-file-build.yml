@@ -1,4 +1,4 @@
-name: TesLight Update Packaging Tool and TUP file Build
+name: NikoLight Update Packaging Tool and NUP file Build
 on:
   push:
     branches: ["main", "releases/**"]
@@ -22,7 +22,7 @@ jobs:
       - name: Update Tool Build
         uses: ./.github/actions/update-tool-build
 
-  generate_tup_file:
+  generate_nup_file:
     needs: [build_update_tool_for_different_os]
     runs-on: ubuntu-latest
     # prevent stuck jobs
@@ -44,35 +44,35 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: PlatformIO-build_${{ env.short_sha }}
-          path: ./update-package-tool/build/tup/src
+          path: ./update-package-tool/build/nup/src
 
       - name: Download artifact - UI Build
         uses: actions/download-artifact@v3
         with:
           name: UI-build_${{ env.short_sha }}
-          path: ./update-package-tool/build/tup/src
+          path: ./update-package-tool/build/nup/src
 
-      - name: Download artifact - TesLight_Update_Packaging_Tool
+      - name: Download artifact - NikoLight_Update_Packaging_Tool
         uses: actions/download-artifact@v3
         with:
-          name: TesLight_Update_Packaging_Tool_for_${{ runner.os }}
+          name: NikoLight_Update_Packaging_Tool_for_${{ runner.os }}
           path: update-package-tool/build
 
       - name: File permissions
         if: startsWith(${{ runner.os }},'ubuntu') || startsWith(${{ runner.os }},'macOS')
         shell: bash
-        run: chmod +x ./update-package-tool/build/tupt_for_*.exe
+        run: chmod +x ./update-package-tool/build/nupt_for_*.exe
 
-      - name: tup build
+      - name: nup build
         shell: bash
         run: |
-          mkdir -p ./update-package-tool/build/tup/build
-          ./update-package-tool/build/tupt_for_${{ runner.os }}.exe ./update-package-tool/build/tup/build/update_${{ env.short_sha }}.tup ./update-package-tool/build/tup/src
+          mkdir -p ./update-package-tool/build/nup/build
+          ./update-package-tool/build/nupt_for_${{ runner.os }}.exe ./update-package-tool/build/nup/build/update_${{ env.short_sha }}.nup ./update-package-tool/build/nup/src
 
-      - name: publish TesLight Update Package File
+      - name: publish NikoLight Update Package File
         uses: actions/upload-artifact@v3
         with:
-          name: TesLight_Update_Package_${{ env.short_sha }}
-          path: ./update-package-tool/build/tup/build/update_${{ env.short_sha }}.tup
+          name: NikoLight_Update_Package_${{ env.short_sha }}
+          path: ./update-package-tool/build/nup/build/update_${{ env.short_sha }}.nup
           if-no-files-found: error
           retention-days: 90

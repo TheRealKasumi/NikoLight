@@ -1,6 +1,6 @@
 {
 	"info": {
-		"name": "TesLight API",
+		"name": "NikoLight API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -13,10 +13,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/connection_test",
+							"raw": "http://{{NIKOLIGHTIP}}/api/connection_test",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -37,10 +37,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/system",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/system",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -69,10 +69,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/system",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/system",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -94,10 +94,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/led",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/led",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -126,10 +126,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/led",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/led",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -151,10 +151,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/wifi",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/wifi",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -172,7 +172,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"wifiConfig\": {\r\n        \"accessPointSsid\": \"TesLight\",\r\n        \"accessPointPassword\": \"TesLightPW\",\r\n        \"accessPointChannel\": 1,\r\n        \"accessPointHidden\": false,\r\n        \"accessPointMaxConnections\": 1\r\n    }\r\n}",
+							"raw": "{\r\n    \"wifiConfig\": {\r\n        \"accessPointSsid\": \"NikoLight\",\r\n        \"accessPointPassword\": \"NikoLightPW\",\r\n        \"accessPointChannel\": 1,\r\n        \"accessPointHidden\": false,\r\n        \"accessPointMaxConnections\": 1\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -180,10 +180,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/wifi",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/wifi",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -205,10 +205,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/fseq",
+							"raw": "http://{{NIKOLIGHTIP}}/api/fseq",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -234,10 +234,10 @@
 							]
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/fseq?fileName=test.fseq",
+							"raw": "http://{{NIKOLIGHTIP}}/api/fseq?fileName=test.fseq",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -259,10 +259,10 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/fseq?fileName=test.fseq",
+							"raw": "http://{{NIKOLIGHTIP}}/api/fseq?fileName=test.fseq",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -289,10 +289,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/log/size",
+							"raw": "http://{{NIKOLIGHTIP}}/api/log/size",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -309,10 +309,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/log?start=0&count=1024",
+							"raw": "http://{{NIKOLIGHTIP}}/api/log?start=0&count=1024",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -338,10 +338,10 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/log",
+							"raw": "http://{{NIKOLIGHTIP}}/api/log",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -357,7 +357,7 @@
 			"name": "Update",
 			"item": [
 				{
-					"name": "Upload TesLight Update Package",
+					"name": "Upload NikoLight Update Package",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -372,10 +372,10 @@
 							]
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/update",
+							"raw": "http://{{NIKOLIGHTIP}}/api/update",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -396,10 +396,10 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/reset/soft",
+							"raw": "http://{{NIKOLIGHTIP}}/api/reset/soft",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -416,10 +416,10 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/reset/hard",
+							"raw": "http://{{NIKOLIGHTIP}}/api/reset/hard",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -441,10 +441,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/motion/calibration",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/motion/calibration",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -474,10 +474,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/motion/calibration",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/motion/calibration",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -498,10 +498,10 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/motion/calibration/auto",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/motion/calibration/auto",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -525,10 +525,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/audio",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/audio",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -557,10 +557,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/audio",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/audio",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -582,10 +582,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/ui",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/ui",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -614,10 +614,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/ui",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/ui",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -639,10 +639,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/info/system",
+							"raw": "http://{{NIKOLIGHTIP}}/api/info/system",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -664,10 +664,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/profile/active",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/profile/active",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -694,10 +694,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/profile/active",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/profile/active",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -715,10 +715,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/profile",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/profile",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -744,10 +744,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/profile",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/profile",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -773,10 +773,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/profile?source=Default Profile",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/profile?source=Default Profile",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -799,10 +799,10 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://{{TESLIGHTIP}}/api/config/profile?name=Clone Profile",
+							"raw": "http://{{NIKOLIGHTIP}}/api/config/profile?name=Clone Profile",
 							"protocol": "http",
 							"host": [
-								"{{TESLIGHTIP}}"
+								"{{NIKOLIGHTIP}}"
 							],
 							"path": [
 								"api",
@@ -844,7 +844,7 @@
 	],
 	"variable": [
 		{
-			"key": "TESLIGHTIP",
+			"key": "NIKOLIGHTIP",
 			"value": "192.168.4.1",
 			"type": "string"
 		}
