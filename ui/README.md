@@ -3,7 +3,7 @@
 ## Requirements
 
 - [Node.js](https://nodejs.org/) (18.x.x)
-- [pnpm](https://pnpm.io/) (7.x.x) or [npm](https://www.npmjs.com/package/npm) (8.x.x)
+- [pnpm](https://pnpm.io/) (8.x.x) or [npm](https://www.npmjs.com/package/npm) (9.x.x)
 
 ## Installation
 
