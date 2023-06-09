@@ -339,7 +339,7 @@ uint32_t NL::NupFile::generateHash()
 /**
  * @brief Construct the absolute path based on the extraction root and the name of the data block.
  * @param root root path
- * @param path relative path to root from TUP
+ * @param path relative path to root from NUP
  * @param pathLength length of the realative path
  * @return String absolute path
  */

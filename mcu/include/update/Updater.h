@@ -1,7 +1,7 @@
 /**
  * @file Updater.h
  * @author TheRealKasumi
- * @brief Class to install system updates from a TUP file.
+ * @brief Class to install system updates from a NUP file.
  *
  * @copyright Copyright (c) 2023 TheRealKasumi
  *

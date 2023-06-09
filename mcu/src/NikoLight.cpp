@@ -522,7 +522,7 @@ void NikoLight::initializeTimers()
 /**
  * @brief Check if a system update is available for installation. In case a update package was found,
  * 		  it will be installed automatically. This function will restart the controller and will not
- *		  return in case that a TUP was found and the update was installed.
+ *		  return in case that a NUP was found and the update was installed.
  */
 void NikoLight::handleUpdate()
 {
