@@ -227,7 +227,7 @@ bool NL::WiFiConfigurationEndpoint::validateConfiguration(const JsonObject &json
 		return false;
 	}
 
-	if (!NL::WiFiConfigurationEndpoint::isInRange(jsonObject[F("accessPointChannel")].as<uint8_t>(), 0, 12))
+	if (!NL::WiFiConfigurationEndpoint::isInRange(jsonObject[F("accessPointChannel")].as<uint8_t>(), 1, 12))
 	{
 		NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("The \"accessPointChannel\" field is invalid. It must be a valid WiFi channel."));
 		NL::WiFiConfigurationEndpoint::sendSimpleResponse(400, F("The \"accessPointChannel\" field is invalid. It must be a valid WiFi channel."));
