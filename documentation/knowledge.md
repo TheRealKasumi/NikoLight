@@ -332,7 +332,7 @@ The range of the adjustable current/power limit depends on the used board versio
 
 ## Example Configuration Tesla Model 3 and Model Y
 
-Todo from here
+Many Todos here
 
 Channels, Zones and LEDs
 

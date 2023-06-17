@@ -11,7 +11,7 @@
 NikoLight is an open source ambient light that you can build and individualize yourself.
 It was initially created with modern EV's in mind.
 However, recent versions of the project are very flexible.
-NikoLight can be used in almost any vehicle including cars, trucks, campers, boats, ... 
+NikoLight can be used in almost any vehicle including cars, trucks, campers, boats, ...
 
 The project was primarily made for people who are looking for something unique system that differs from boring ambient light systems that can be found all over the internet.
 With NikoLight you can control up to 8 individual zones of WS2812-type LEDs.
@@ -44,35 +44,39 @@ The project is therefore mostly platform-independent.
 
 **Here is a short summary of the currently most interesting features:**
 
-- Up to 8 zones per board
-- Individual control of each LED installed in the car
-- Up to 2000 LEDs can be controlled, more in the future via software update
-- Premade, highly customizable and interactive effects
-- Own effects can be created on a computer and played from the SD card
-- Light shows
-- Motion and sound based effects are available
-- On-board rotation and acceleration sensors
-- External light sensors
-- Extension modules for sound (NikoLight Audio Unit) and CAN (upcoming)
-- Browser based user interface
-- OTA (wireless) updates
-- Compatible with all WS2812-type LEDs (and LEDs with the same protocol)
-- Fiber cables, light bars and LED strips can be used
-- Overcurrent, short circuit and over temperature protection for a high safety level
+-  Up to 8 zones per board
+-  Individual control of each LED installed in the car
+-  Up to 2000 LEDs can be controlled, more in the future via software update
+-  Premade, highly customizable and interactive effects
+-  Own effects can be created on a computer and played from the SD card
+-  Light shows
+-  Motion and sound based effects are available
+-  On-board rotation and acceleration sensors
+-  External light sensors
+-  Extension modules for sound (NikoLight Audio Unit) and CAN (upcoming)
+-  Browser based user interface
+-  OTA (wireless) updates
+-  Compatible with all WS2812-type LEDs (and LEDs with the same protocol)
+-  Fiber cables, light bars and LED strips can be used
+-  Overcurrent, short circuit and over temperature protection for a high safety level
 
 ## Some Videos and Pictures
 
-### Live Demo with Custom Animation
+### Live Demo with Custom Animation by TheRealKasumi
 
 [![NikoLight Demo 2](https://img.youtube.com/vi/_N5h1IViB-E/0.jpg)](https://www.youtube.com/watch?v=_N5h1IViB-E)
 <br/>
 (click to watch on YouTube)
 
-### Live Demo with Custom Animation
+### Live Demo with Custom Animation by TheRealKasumi
 
 [![NikoLight Demo 1](https://img.youtube.com/vi/bwzbVkCsNws/0.jpg)](https://www.youtube.com/watch?v=bwzbVkCsNws)
 <br/>
 (click to watch on YouTube)
+
+### Installation Example by PhilippDenn
+
+![Installation Example](./documentation/media/readme/installation-exampe.jpg)
 
 ### App (web-based)
 
