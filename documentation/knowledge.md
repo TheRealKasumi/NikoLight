@@ -39,7 +39,7 @@ It can also be used to control the brightness of the LEDs or be completely ignor
 
 #### Pinout
 
-![Pinout](./media/knowledge/pcb-pinout-2.2.png)
+![Pinout NikoLight 2.2](./media/knowledge/pcb-pinout-2.2.png)
 
 #### Micro USB
 
@@ -108,7 +108,6 @@ The function of the input can be configured in the software to be used as on/off
 > The ground pin is only intended for smoother readings.
 > Make sure to never connect it to anything with a different voltage potential.
 
-
 #### I²C Connector - 6 Pin XH
 
 The I²C connectors can be used to connect extension modules like the NikoLight Audio Unit or other sensors.
@@ -136,7 +135,99 @@ This means that noise can corrupt the data signal and make the LEDs behave unexp
 
 ### Board Version 2.1
 
-Todo
+![NikoLight 2.1 Wiring](./media/knowledge/wiring-2.1.png)
+
+The main component of this setup is the NikoLight board in the center.
+It contains the MCU (Main Control Unit), which controls all other components that are connected to the board.
+Also, it provides power to all components of the system.
+In the first place, this board will be connected to the LED strips.
+It provides power to the LEDs and also outputs the required data signal.
+The board also creates a WiFi hotspot which can be used to connect to the device.
+Afterwards the browser-based app can be used to configure the system.
+The cooling fan on the bottom is always highly recommended.
+It is connected directly to the NikoLight board and is conntrolled by the MCU.
+The Fan must be installed close to the voltage regulators on the left to keep them cool.
+Other components don't require any cooling.
+Aditionally two small heatsinks are recommended.
+
+On the top, the optional NikoLight Audio Unit can be found.
+Both boards are connected together via the 4 pin XH connector.
+Purpose of the Audio Unit is to capture and digitalize an analog audio signal.
+It is preprocessed and afterwards transmitted to the MCU.
+There it can be used to generate audio based light effect.
+
+The `On/Off/Brigness` connection is an analog sensor of the NikoLight board.
+This sensor can be configured in the app.
+Depending on the input voltage it can turn the LEDs on and off.
+It can also be used to control the brightness of the LEDs or be completely ignored.
+
+#### Micro USB
+
+The micro USB connector can be found on the ESP32 board.
+It can be used as data port to upload a new firmware to the board or to output debug information.
+Usually it is only required for the first time setup or for development purposes.
+After the first setup, firmware updated can be install wireless via the app.
+
+#### Power Conenctor - 4 Pin XH
+
+The power connector is used to power the whole NikoLight system.
+It accepts any DC voltage of 6V up to 35V.
+The positive connection are the two left pins while the negative connection are the two right pins.
+It is theoretically enought to use only one positive and one negative pin.
+But it is recommended to use both. 
+
+The NikoLight board already contains two fuses to avoid damages in case of overload and short-circuits.
+One of them is resettable and triggers in case of a longer overload scenario.
+This means the board can be directly connected to a battery or any switched power line of the vehicle.
+However it should be able to provide at least 5A of continious current and cable sizes must be chosen accordingly.
+The power input of the board is NOT officially protected against reverse polarity.
+Make sure to connect it correctly.
+
+#### LED Connector - 3 Pin XH
+
+The 3 pin XH connectors are used to connect the LEDs to the NikoLight board.
+They provide a stable voltage of 5V and transmit a 5V data signal to the LEDs.
+Since these connectors are powered by two separate regulators, each pair of 4 connectors can deliver up to 3A continously.
+This mean in total, there is a continous current of 6A available.
+Generally it is recommended to not use more than 3A per connector to prevent them from heating up.
+
+All connectors on the left are connected to the first regulator while all pins on the right are connected to the second regulator.
+Both regulators feature over-temperature, short-circuit and over-load protections.
+Further, the MCU calculates the power consumption depending on the LED configuration and adjusts the brightness to stay within limits.
+The LED counts and current values can be configured in the UI.
+
+#### Fan Connector
+
+The fan connector is used to connect a 5V cooling fan.
+It is always highly recommended to install a suitable cooling fan to keep the regulators cool.
+The fan is controlle by the MCU via a PWM signal and the speed is adjustend depending on the board temperature.
+It can output up to 300mA but it is recommended to stay below that limit.
+Most 30x30x6mm fans require significantly less power.
+
+#### Analog Input
+
+The analog input is connected to a voltage devider, a low-pass filter and analog to digital converter.
+This means the MCU can measure the voltage at the connector to control the LEDs.
+Due to the low-pass filter, PWM signals with a frequency higher than 25Hz can be used as well.
+The function of the input can be configured in the software to be used as on/off switch or to control the brightness of the LEDs.
+
+> :warning:
+> The input shares the same ground reference as the rest of the setup.
+> The ground pin is only intended for smoother readings.
+> Make sure to never connect it to anything with a different voltage potential.
+
+#### I²C Connector - 4 Pin XH
+
+The I²C connector can be used to connect extension modules like the NikoLight Audio Unit or other sensors.
+All devices share the same I²C bus that is also used on the board.
+Therefore it must be ensure that the signal is not degraded by long and bad wiring.
+The signal level is 3.3V and the signals must never exceed 3.6V.
+Internal 2.2k pull-up resistors are used which makes external ones optional.
+Besides the I²C data lanes these conectors also provide power to external modules.
+There is a 3.3V line for up to 500mA continiously and 800mA peak.
+It is highly recommended to stay below that limit since the MCU and other on-board electronics are powered by this line.
+The 3.3V line features an over-temperature, over-current and short-circuit protection.
+High current peaks and noise can lead to resets of the MCU or other hardware modules.
 
 ## Luminant Types
 
@@ -200,29 +291,7 @@ Possible installation locations are the dashboard, the door panels and center co
 - consumes a lot of power because of the high LED count and can potentially get hot
 - can also not be extend beyond 2 meters before hitting the 250 LED/channel limit
 
-
-
-
-
-
-
-
-
-
-
-Todo from here
-
-
-
-
-
-
-
-
-
-
-
-## Considderations regarding Power Consumption
+## Considerations regarding Power Consumption
 
 Since NikoLight can control up to 2000 LEDs (and more), the power consumption can become relevant.
 Assuming "average" WS2812B LED chips, each channel can draw around 16mA at 5V and maximum brightness.
@@ -234,63 +303,25 @@ current = led_count x 0.048
 power = current x 5.0
 ```
 
-Assuming there will be 800 LEDs connected to NikoLight, the theoretical current draw could reach 800 x 0.048 = 38.4A.
+Assuming there will be 800 LEDs connected to NikoLight (typical setup), the theoretical current draw could reach 800 x 0.048 = 38.4A.
 At 5V this equals a power draw of 192W.
 Such high currents would easily overload the voltage regulators of any NikoLight board and the wiring would become very challening.
 Most likely it could even cause trouble to get that amout of power from you vehicle.
 Luckily, the power draw is a lot lower in real world applications.
 First of all the power draw of the LEDs will be a little bit lower in practice.
-But most important the maximum brightness of all channels will most likely never be used.
- 
+Usually the LED draw around 14mA.
+But most important the maximum brightness of all channels will most likely never be used at the same time.
+In a real world appliaction you will likely not set any brightness value higher than 30-50%.
+This reduces the power draw significantly.
 
+Each NikoLight board allows to set a custom current/power limit in the software.
+Assuming the LEDs are configured correctly, the board will always enforce these limit.
+This means when there is no misconfiguration, it should not be possible to overload or destroy the regulators when the system is in a healthy stage and working correctly.
+The range of the adjustable current/power limit depends on the used board version.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+> :information_source: There are also so called WS2812C LEDs, which are a low power version of the WS2812B LEDs.
+> When you require a very high number of LEDs, these can be a good alternative.
+> Since it is a low power version, these will obviously offer a lower brightness.
 
 
 
@@ -301,7 +332,7 @@ But most important the maximum brightness of all channels will most likely never
 
 ## Example Configuration Tesla Model 3 and Model Y
 
-Todo
+Todo from here
 
 Channels, Zones and LEDs
 
