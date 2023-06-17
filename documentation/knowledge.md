@@ -323,11 +323,9 @@ The range of the adjustable current/power limit depends on the used board versio
 > When you require a very high number of LEDs, these can be a good alternative.
 > Since it is a low power version, these will obviously offer a lower brightness.
 
+## Hardware Extensions and Sensors
 
-
-
-
-
+Here we could add some information about all hardware extensions and sensor
 
 
 ## Example Configuration Tesla Model 3 and Model Y

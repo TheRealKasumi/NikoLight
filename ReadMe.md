@@ -80,33 +80,33 @@ The project is therefore mostly platform-independent.
 
 ### App (web-based)
 
-![App](documentation/media/readme/app.jpg)
+![App](./documentation/media/readme/app.jpg)
 
 ### NikoLight 2.2 Board
 
-![NikoLight 2.2 PCB](documentation/media/readme/NikoLight-pcb-2.2.png)
+![NikoLight 2.2 PCB](./documentation/media/readme/NikoLight-pcb-2.2.png)
 
 ### NikoLight 2.1 Board
 
-![NikoLight 2.1 PCB](documentation/media/readme/NikoLight-pcb-2.1.png)
+![NikoLight 2.1 PCB](./documentation/media/readme/NikoLight-pcb-2.1.png)
 
 ### NikoLight Audio Unit 1.0
 
-![Audio Unit 1.0 PCB](documentation/media/readme/Audio-Unit-pcb-1.0.png)
+![Audio Unit 1.0 PCB](./documentation/media/readme/Audio-Unit-pcb-1.0.png)
 
 ## General Knowledge Collection
 
-We highly recommend to read the [General Knowledge Collection](documentation/knowledge.md) before the project is started.
+We highly recommend to read the [General Knowledge Collection](./documentation/knowledge.md) before the project is started.
 It contains important information about the project and how to set it up.
 This will answer many questions and save you some trouble later.
 
 ## Part List
 
-A list of required and optional parts can be found [here](documentation/part-list.md).
+A list of required and optional parts can be found [here](./documentation/part-list.md).
 
 ## Build Guide
 
-The build guide can be found [here](documentation/build.md).
+The build guide can be found [here](./documentation/build.md).
 
 ## Discord Server
 
