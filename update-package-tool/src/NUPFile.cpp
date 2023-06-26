@@ -107,7 +107,7 @@ bool NUPFile::saveToFile(const std::filesystem::path fileName)
 	}
 
 	NUPHeader header;
-	header.magic[0] = 'T';
+	header.magic[0] = 'N';
 	header.magic[1] = 'L';
 	header.magic[2] = 'U';
 	header.magic[3] = 'P';
