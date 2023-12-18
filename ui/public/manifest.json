@@ -15,6 +15,6 @@
   ],
   "name": "NikoLight",
   "short_name": "NikoLight",
-  "start_url": ".",
+  "start_url": "./index.html",
   "theme_color": "#161717"
 }
