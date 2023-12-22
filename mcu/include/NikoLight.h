@@ -35,6 +35,7 @@
 #include "hardware/BH1750.h"
 #include "hardware/AudioUnit.h"
 #include "hardware/Fan.h"
+#include "hardware/LM75BD.h"
 #include "led/LedManager.h"
 #include "sensor/TemperatureSensor.h"
 #include "sensor/LightSensor.h"
@@ -83,6 +84,11 @@ private:
 	// Counter
 	static uint16_t frameCounter;
 	static float ledPowerCounter;
+
+	// Workaround for v2.2
+	#if defined(HW_VERSION_2_2)
+		static NL::LM75BD *lm75bd;
+	#endif
 
 	// Initialization functions
 	static void printLogo();
