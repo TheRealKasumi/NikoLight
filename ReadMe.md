@@ -5,6 +5,17 @@
 ![UI Build](https://github.com/TheRealKasumi/NikoLight/actions/workflows/ui-build.yml/badge.svg?branch=main)
 ![NUP Build](https://github.com/TheRealKasumi/NikoLight/actions/workflows/nikolight-update-packaging-tool-and-nup-file-build.yml/badge.svg?branch=main)
 
+## Disclaimer for Hardware 2.2
+
+Currently I am rewriting the firmware from scratch including many improvements and new features.
+The release was planned for Christmas 2023.
+Even when many parts of the new firmware are already working, I am currently a little time limited and will not be able to finish it in time.
+Instead, I added experimental support for the v2.2 hardware to the current firmware.
+This does not come with all the new software and hardware features but it allows you to use the new (2.2) NikoLight boards with a significantly higher power output and the overall improved hardware.
+
+The hardware version can be adjusted in the [SystemConfiguration.h](./mcu/include/configuration/SystemConfiguration.h).
+Again, keep in mind that this experimental and there might be some hidden issues.
+
 ## Introduction
 
 NikoLight is an open source ambient light that you can build yourself.
