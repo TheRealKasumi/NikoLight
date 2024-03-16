@@ -24,7 +24,7 @@
 
 // Version configuration
 #define FW_VERSION "1.1.0" // Firmware version of the MCU
-#define HW_VERSION_2_1     // Hardware version
+#define HW_VERSION_2_1     // Hardware version (HW_VERSION_1_0, HW_VERSION_2_0, HW_VERSION_2_1, HW_VERSION_2_2 [!experimental!])
 
 #if defined(HW_VERSION_1_0)
 	#define HW_VERSION "1.0"
@@ -32,6 +32,8 @@
 	#define HW_VERSION "2.0"
 #elif defined(HW_VERSION_2_1)
 	#define HW_VERSION "2.1"
+#elif defined(HW_VERSION_2_2)
+	#define HW_VERSION "2.2"
 #else
 	#error "A valid hardware version must be defined."
 #endif
@@ -49,7 +51,7 @@
 
 // Configuration of the runtime configuration
 #define CONFIGURATION_FILE_VERSION 14		  // Version of the configuration file
-#define CONFIGURATION_FILE_NAME "/config.tli" // File name of the configuration file
+#define CONFIGURATION_FILE_NAME "/config.nli" // File name of the configuration file
 #define CONFIGURATION_MAX_PROFILES 50		  // Maximum number of profiles
 
 // LED and effect configuration
@@ -60,6 +62,8 @@
 	#define LED_DEFAULT_OUTPUT_PINS {13, 17, 14, 21, 15, 22, 16, 25}
 #elif defined(HW_VERSION_2_1)
 	#define LED_DEFAULT_OUTPUT_PINS {13, 14, 15, 16, 17, 21, 22, 25}
+#elif defined(HW_VERSION_2_2)
+	#define LED_DEFAULT_OUTPUT_PINS {4, 12, 13, 14, 15, 16, 17, 21}
 #endif
 #define LED_DEFAULT_COUNTS {2, 2, 2, 2, 2, 2, 2, 2}					  // Default number of LEDs for each channel
 #define LED_DEFAULT_CHANNEL_CURRENT 16 								  // Default current per LED channel in mA
@@ -74,51 +78,96 @@
 #define ANIMATOR_DEFAULT_FADE_SPEED 30 								  // Default fading speed
 
 // Voltage regulator
-#define REGULATOR_VOLTAGE 5.0f																	      		  // Output Voltage in V
-#define REGULATOR_CURRENT_LIMIT 3.0f																	      // Current limit per regulator in A
-#define REGULATOR_POWER_LIMIT 15																			  // Output power limit per regulator in W
-#define REGULATOR_HIGH_TEMP_LIMIT 100																	      // Temp limit in °C where brightness is reduced
-#define REGULATOR_CUT_OFF_TEMP_LIMIT 110																      // Temp limit in °C where LEDs are turned off
-#define REGULATOR_DEFAULT_POWER_LIMIT 12																	  // Default output power per regulator in W
-#define REGULATOR_DEFAULT_HIGH_TEMP 70																	      // Temp in °C where brightness is reduced
-#define REGULATOR_DEFAULT_CUT_OFF_TEMP 85																      // Temp in °C where LEDs are turned off
-#if defined(HW_VERSION_1_0)																				      // Number of regulators depending on hardware version
-	#define REGULATOR_COUNT 1
+#if defined(HW_VERSION_1_0)																				      
+	#define REGULATOR_COUNT 1																				// Number of regulators depending on hardware version
+	#define REGULATOR_VOLTAGE 5.0f																			// Output Voltage in V
+	#define REGULATOR_CURRENT_LIMIT 2.0f																	// Current limit per regulator in A
+	#define REGULATOR_POWER_LIMIT 10																		// Output power limit per regulator in W
+	#define REGULATOR_HIGH_TEMP_LIMIT 90																	// Temp limit in °C where brightness is reduced
+	#define REGULATOR_CUT_OFF_TEMP_LIMIT 100																// Temp limit in °C where LEDs are turned off
+	#define REGULATOR_DEFAULT_POWER_LIMIT 8 																// Default output power per regulator in W
+	#define REGULATOR_DEFAULT_HIGH_TEMP 70																	// Temp in °C where brightness is reduced
+	#define REGULATOR_DEFAULT_CUT_OFF_TEMP 80																// Temp in °C where LEDs are turned off
+	#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}	// Map a output pin to a regulator index depending on hardware version
 #elif defined(HW_VERSION_2_0)
-	#define REGULATOR_COUNT 2
+	#define REGULATOR_COUNT 2																					// Number of regulators depending on hardware version
+	#define REGULATOR_VOLTAGE 5.0f																				// Output Voltage in V
+	#define REGULATOR_CURRENT_LIMIT 3.0f																		// Current limit per regulator in A
+	#define REGULATOR_POWER_LIMIT 15																			// Output power limit per regulator in W
+	#define REGULATOR_HIGH_TEMP_LIMIT 90																		// Temp limit in °C where brightness is reduced
+	#define REGULATOR_CUT_OFF_TEMP_LIMIT 100																	// Temp limit in °C where LEDs are turned off
+	#define REGULATOR_DEFAULT_POWER_LIMIT 12																	// Default output power per regulator in W
+	#define REGULATOR_DEFAULT_HIGH_TEMP 70																		// Temp in °C where brightness is reduced
+	#define REGULATOR_DEFAULT_CUT_OFF_TEMP 80																	// Temp in °C where LEDs are turned off
+	#define REGULATOR_ZONE_MAPPING {{13, 0}, {17, 1}, {14, 0}, {21, 1}, {15, 0}, {22, 1}, {16, 0}, {25, 1}}		// Map a output pin to a regulator index depending on hardware version
 #elif defined(HW_VERSION_2_1)
-	#define REGULATOR_COUNT 2
-#endif
-#if defined(HW_VERSION_1_0)																				      // Map a output pin to a regulator index depending on hardware version
-	#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 0}, {15, 0}, {16, 0}, {17,0}, {21, 0}, {22, 0}, {25, 0}}
-#elif defined(HW_VERSION_2_0)
-	#define REGULATOR_ZONE_MAPPING {{13, 0}, {17, 1}, {14, 0}, {21, 1}, {15, 0}, {22, 1}, {16, 0}, {25, 1}}
-#elif defined(HW_VERSION_2_1)
-	#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 1}, {15, 0}, {16, 1}, {17, 0}, {21, 1}, {22, 0}, {25, 1}}	
+	#define REGULATOR_COUNT 2																					// Number of regulators depending on hardware version
+	#define REGULATOR_VOLTAGE 5.0f																				// Output Voltage in V
+	#define REGULATOR_CURRENT_LIMIT 3.0f																		// Current limit per regulator in A
+	#define REGULATOR_POWER_LIMIT 15																			// Output power limit per regulator in W
+	#define REGULATOR_HIGH_TEMP_LIMIT 90																		// Temp limit in °C where brightness is reduced
+	#define REGULATOR_CUT_OFF_TEMP_LIMIT 100																	// Temp limit in °C where LEDs are turned off
+	#define REGULATOR_DEFAULT_POWER_LIMIT 12																	// Default output power per regulator in W
+	#define REGULATOR_DEFAULT_HIGH_TEMP 70																		// Temp in °C where brightness is reduced
+	#define REGULATOR_DEFAULT_CUT_OFF_TEMP 80																	// Temp in °C where LEDs are turned off
+	#define REGULATOR_ZONE_MAPPING {{13, 0}, {14, 1}, {15, 0}, {16, 1}, {17, 0}, {21, 1}, {22, 0}, {25, 1}}		// Map a output pin to a regulator index depending on hardware version
+#elif defined(HW_VERSION_2_2)
+	#define REGULATOR_COUNT 1																					// Number of regulators depending on hardware version
+	#define REGULATOR_VOLTAGE 5.0f																				// Output Voltage in V
+	#define REGULATOR_CURRENT_LIMIT 8.0f																		// Current limit per regulator in A
+	#define REGULATOR_POWER_LIMIT 40																			// Output power limit per regulator in W
+	#define REGULATOR_HIGH_TEMP_LIMIT 65																		// Temp limit in °C where brightness is reduced
+	#define REGULATOR_CUT_OFF_TEMP_LIMIT 75																		// Temp limit in °C where LEDs are turned off
+	#define REGULATOR_DEFAULT_POWER_LIMIT 30																	// Default output power per regulator in W
+	#define REGULATOR_DEFAULT_HIGH_TEMP 60																		// Temp in °C where brightness is reduced
+	#define REGULATOR_DEFAULT_CUT_OFF_TEMP 70																	// Temp in °C where LEDs are turned off
+	#define REGULATOR_ZONE_MAPPING {{4, 0}, {12, 0}, {13, 0}, {14, 0}, {15, 0}, {16, 0}, {17, 0}, {21, 0}}		// Map a output pin to a regulator index depending on hardware version
 #endif
 
-
-// I2C configuration
-#define IIC_SDA_PIN 32		 // SDA pin
-#define IIC_SCL_PIN 33 		 // SCL pin
-#define IIC_FREQUENCY 400000 // I²C bus frequency
+// I²C configuration
+#if defined(HW_VERSION_1_0) || defined(HW_VERSION_2_0) || defined(HW_VERSION_2_1)	
+	#define IIC_SDA_PIN 32			// SDA pin
+	#define IIC_SCL_PIN 33			// SCL pin
+	#define IIC_FREQUENCY 400000	// I²C bus frequency
+	#define AUDIO_UNIT_ADDRESS 42	// I²C address of the NikoLight Audio Unit
+	#define BH1750_ADDRESS 0x23		// I²C address of the BH1750
+	#define DS3231M_ADDRESS 0x00	// I²C address of the DS3231M
+	#define ICM20602_ADDRESS 0x00	// I²C address of the ICM20602
+	#define INA3221_ADDRESS 0x00	// I²C address of the INA3221
+	#define LM75BD_ADDRESS 0x00		// I²C address of the LM75BD
+	#define MPU6050_ADDRESS 0x68	// I²C address of the MPU6050
+#elif defined(HW_VERSION_2_2)
+	#define IIC_SDA_PIN 32			// SDA pin
+	#define IIC_SCL_PIN 33			// SCL pin
+	#define IIC_FREQUENCY 400000	// I²C bus frequency
+	#define AUDIO_UNIT_ADDRESS 42	// I²C address of the NikoLight Audio Unit
+	#define BH1750_ADDRESS 0x23		// I²C address of the BH1750
+	#define DS3231M_ADDRESS 0x68	// I²C address of the DS3231M
+	#define ICM20602_ADDRESS 0x69	// I²C address of the ICM20602
+	#define INA3221_ADDRESS 0x40	// I²C address of the INA3221
+	#define LM75BD_ADDRESS 0x48		// I²C address of the LM75BD
+	#define MPU6050_ADDRESS 0x69	// I²C address of the MPU6050
+#endif
 
 // OneWire configuration
-#define ONE_WIRE_PIN 26 // Pin of the OneWire bus
+#if defined(HW_VERSION_1_0) || defined(HW_VERSION_2_0) || defined(HW_VERSION_2_1)	
+	#define ONE_WIRE_PIN 26		// Pin of the OneWire bus
+#elif defined(HW_VERSION_2_2)
+	#define ONE_WIRE_PIN 0		// Pin of the OneWire bus
+#endif
 
 // Analog input configuration
-#define ANALOG_INPUT_PIN 35			 // Physical pin for the analog voltage sensor
-#define ANALOG_INPUT_MODE INPUT		 // Input mode of the analog input
-#define ANALOG_INPUT_MAX_VOLTAGE 3.3 // Maximum input voltage of the analog input
-
-// MPU6050 configuration
-#define MPU6050_IIC_ADDRESS 0x68 // I²C address of the MPU6050 motion sensor
-
-// BH1750 configuration
-#define BH1750_IIC_ADDRESS 0x23	// I²C address of the BH1750 brightness sensor
+#if defined(HW_VERSION_1_0) || defined(HW_VERSION_2_0) || defined(HW_VERSION_2_1)	
+	#define ANALOG_INPUT_PIN 35			 // Physical pin for the analog voltage sensor
+	#define ANALOG_INPUT_MODE INPUT		 // Input mode of the analog input
+	#define ANALOG_INPUT_MAX_VOLTAGE 3.3 // Maximum input voltage of the analog input
+#elif defined(HW_VERSION_2_2)
+	#define ANALOG_INPUT_PIN 36			 // Physical pin for the analog voltage sensor
+	#define ANALOG_INPUT_MODE INPUT		 // Input mode of the analog input
+	#define ANALOG_INPUT_MAX_VOLTAGE 3.3 // Maximum input voltage of the analog input
+#endif
 
 // Audio unit configuration
-#define AUDIO_UNIT_IIC_ADDRESS 42																							// I²C address of the NikoLight Audio Unit
 #define AUDIO_UNIT_NUM_BANDS 8																								// Number of frequency bands the audio unit must provide
 #define AUDIO_UNIT_DEFAULT_NOISE_THESHOLD 0																					// Peak2Peak Threshold under which analog values are set to the average
 #define AUDIO_UNIT_DEFAULT_FREQ_BAND_INDEX {{1, 3}, {4, 6}, {7, 13}, {14, 28}, {29, 62}, {63, 136}, {137, 298}, {299, 450}} // Indices of the frequency bins to map them into the frequency bands
@@ -140,15 +189,21 @@
 #define TEMP_SENSOR_RESOLUTION 127	// Resolution register of the temperature sensors
 
 // Cooling fan configuration
-#define FAN_PWM_PIN 27			// Output pin for the fan
+#if defined(HW_VERSION_1_0) || defined(HW_VERSION_2_0) || defined(HW_VERSION_2_1)	
+	#define FAN_PWM_PIN 27			// Output pin for the fan
+	#define FAN_DEFAULT_TEMP_MIN 60	// Minimum temperature where the fan starts
+	#define FAN_DEFAULT_TEMP_MAX 80	// Maximum temeprature where the fan runs at full speed
+#elif defined(HW_VERSION_2_2)
+	#define FAN_PWM_PIN 2			// Output pin for the fan
+	#define FAN_DEFAULT_TEMP_MIN 45	// Minimum temperature where the fan starts
+	#define FAN_DEFAULT_TEMP_MAX 60	// Maximum temeprature where the fan runs at full speed
+#endif
 #define FAN_PWM_CHANNEL 0		// PWM channel for the fan control
 #define FAN_PWM_FREQUENCY 50000	// PWM frequency of the fan in Hz
 #define FAN_PWM_RESOLUTION 8 	// Resolution of the fan control in bits
 #define FAN_DEFAULT_MODE 0 		// Fan mode, 0 = automatic
 #define FAN_DEFAULT_PWM_MIN 75	// Minimum PWM value for the fan (stall guard)
 #define FAN_DEFAULT_PWM_MAX 255	// Maximum PWm value for the fan
-#define FAN_DEFAULT_TEMP_MIN 60	// Minimum temperature where the fan starts
-#define FAN_DEFAULT_TEMP_MAX 80	// Maximum temeprature where the fan runs at full speed
 
 // WiFi configuration
 #define AP_DEFAULT_SSID "NikoLight"		 // Default SSID of the access point

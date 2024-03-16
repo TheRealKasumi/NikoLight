@@ -36,6 +36,10 @@ unsigned long NikoLight::webServerTimer = 0;
 uint16_t NikoLight::frameCounter = 0;
 float NikoLight::ledPowerCounter = 0.0f;
 
+#ifdef HW_VERSION_2_2
+NL::LM75BD *NikoLight::lm75bd = nullptr;
+#endif
+
 /**
  * @brief Initialize the NikoLight software and hardware.
  */
@@ -62,6 +66,21 @@ void NikoLight::begin()
 	NikoLight::createtWiFiNetwork();		  // Create the WiFi network for clients to connect to
 	NikoLight::initializeTimers();			  // Initialize the timers
 	NL::WatchDog::initializeTaskWatchdog();	  // Initialize the watchdog timer
+
+	/**
+	 * FIXME: Temporary workaround for 2.2 hardware to enable the SIC461.
+	 */
+#ifdef HW_VERSION_2_2
+	NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("WARNING:"));
+	NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Applying temporary workaround to enable SIC461 on a v2.2 board."));
+	NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Please be aware that the v2.2 board has a powerful regulator for the LED output."));
+	NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("With the current firmware, this output is unprotected."));
+	NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Short circuit currents can be as high as 15-20A."));
+	NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Please ensure beforehand that your wiring is correct and proceed with caution."));
+	pinMode(27, OUTPUT);
+	digitalWrite(27, HIGH);
+#endif
+
 	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("NikoLight initialized successfully, going into work mode."));
 }
 
@@ -216,10 +235,15 @@ void NikoLight::initializeHardwareModules()
 	}
 
 	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Search and initialize hardware modules."));
-	NL::MPU6050::begin(MPU6050_IIC_ADDRESS);
+	NL::MPU6050::begin(MPU6050_ADDRESS);
+#if defined(HW_VERSION_1_0) || defined(HW_VERSION_2_0) || defined(HW_VERSION_2_1)
 	NL::DS18B20::begin(ONE_WIRE_PIN);
-	NL::BH1750::begin(BH1750_IIC_ADDRESS, NL::BH1750::BH1750Res::BH1750_LOW);
-	NL::AudioUnit::begin(AUDIO_UNIT_IIC_ADDRESS);
+#elif defined(HW_VERSION_2_2)
+	NikoLight::lm75bd = new NL::LM75BD(LM75BD_ADDRESS);
+	NL::Logger::log(NL::Logger::LogLevel::WARN, SOURCE_LOCATION, F("Trying to emulate DS18B20 with LM75BD for v2.2 board. Please check manually if the temperature readings are correct."));
+#endif
+	NL::BH1750::begin(BH1750_ADDRESS, NL::BH1750::BH1750Res::BH1750_LOW);
+	NL::AudioUnit::begin(AUDIO_UNIT_ADDRESS);
 
 	if (NL::AudioUnit::isInitialized())
 	{
@@ -256,7 +280,12 @@ void NikoLight::initializeHardwareModules()
 
 	NL::SystemInformation::HardwareInformation hwInfo = NL::SystemInformation::getHardwareInfo();
 	hwInfo.mpu6050 = NL::MPU6050::isInitialized();
+#if defined(HW_VERSION_1_0) || defined(HW_VERSION_2_0) || defined(HW_VERSION_2_1)
 	hwInfo.ds18b20 = NL::DS18B20::isInitialized() ? NL::DS18B20::getNumSensors() : 0;
+#elif defined(HW_VERSION_2_2)
+	hwInfo.ds18b20 = NikoLight::lm75bd != nullptr ? 1 : 0;
+#endif
+
 	hwInfo.bh1750 = NL::BH1750::isInitialized();
 	hwInfo.audioUnit = NL::AudioUnit::isInitialized();
 	NL::SystemInformation::setHardwareInfo(hwInfo);
@@ -384,7 +413,11 @@ void NikoLight::initializeLightSensor()
 void NikoLight::initializeTemperatureSensor()
 {
 	NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("Initialize temperature sensor."));
+#if defined(HW_VERSION_1_0) || defined(HW_VERSION_2_0) || defined(HW_VERSION_2_1)
 	const NL::TemperatureSensor::Error tempSensorError = NL::TemperatureSensor::begin();
+#elif defined(HW_VERSION_2_2)
+	const NL::TemperatureSensor::Error tempSensorError = NL::TemperatureSensor::begin(NikoLight::lm75bd);
+#endif
 	if (tempSensorError == NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE)
 	{
 		NL::Logger::log(NL::Logger::LogLevel::INFO, SOURCE_LOCATION, F("No DS18B20 sensor could be found."));

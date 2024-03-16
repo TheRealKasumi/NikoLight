@@ -27,6 +27,10 @@
 #include "configuration/SystemConfiguration.h"
 #include "hardware/DS18B20.h"
 
+#if defined(HW_VERSION_2_2)
+#include "hardware/LM75BD.h"
+#endif
+
 namespace NL
 {
 	class TemperatureSensor
@@ -38,7 +42,12 @@ namespace NL
 			ERROR_DS18B20_UNAVAILABLE // The DS18B20 sensor is not available
 		};
 
+#if defined(HW_VERSION_1_0) || defined(HW_VERSION_2_0) || defined(HW_VERSION_2_1)
 		static NL::TemperatureSensor::Error begin();
+#elif defined(HW_VERSION_2_2)
+		static NL::TemperatureSensor::Error begin(NL::LM75BD *lm75);
+#endif
+
 		static void end();
 		static bool isInitialized();
 
@@ -48,6 +57,10 @@ namespace NL
 
 	private:
 		TemperatureSensor();
+
+#if defined HW_VERSION_2_2
+		static NL::LM75BD *lm75;
+#endif
 
 		static bool initialized;
 	};

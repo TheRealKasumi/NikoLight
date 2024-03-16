@@ -23,11 +23,16 @@
 
 bool NL::TemperatureSensor::initialized = false;
 
+#ifdef HW_VERSION_2_2
+NL::LM75BD *NL::TemperatureSensor::lm75 = nullptr;
+#endif
+
 /**
  * @brief Start the temperature sensor.
  * @return OK when the temperature sensor was initialized
  * @return ERROR_DS18B20_UNAVAILABLE when no temperature sensor is available
  */
+#if defined(HW_VERSION_1_0) || defined(HW_VERSION_2_0) || defined(HW_VERSION_2_1)
 NL::TemperatureSensor::Error NL::TemperatureSensor::begin()
 {
 	NL::TemperatureSensor::initialized = false;
@@ -51,6 +56,20 @@ NL::TemperatureSensor::Error NL::TemperatureSensor::begin()
 	NL::TemperatureSensor::initialized = true;
 	return NL::TemperatureSensor::Error::OK;
 }
+#elif defined(HW_VERSION_2_2)
+NL::TemperatureSensor::Error NL::TemperatureSensor::begin(NL::LM75BD *lm75)
+{
+	NL::TemperatureSensor::initialized = false;
+	NL::TemperatureSensor::lm75 = lm75;
+	if (lm75 == nullptr)
+	{
+		return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+	}
+
+	NL::TemperatureSensor::initialized = true;
+	return NL::TemperatureSensor::Error::OK;
+}
+#endif
 
 /**
  * @brief Stop the temperature sensor.
@@ -123,6 +142,7 @@ NL::TemperatureSensor::Error NL::TemperatureSensor::getMinTemperature(float &tem
  */
 NL::TemperatureSensor::Error NL::TemperatureSensor::getMaxTemperature(float &temp)
 {
+#if defined(HW_VERSION_1_0) || defined(HW_VERSION_2_0) || defined(HW_VERSION_2_1)
 	if (!NL::DS18B20::isInitialized() || NL::DS18B20::getNumSensors() == 0)
 	{
 		temp = 0.0f;
@@ -156,6 +176,15 @@ NL::TemperatureSensor::Error NL::TemperatureSensor::getMaxTemperature(float &tem
 			temp = currentTemp;
 		}
 	}
+#elif defined(HW_VERSION_2_2)
+	if (NL::TemperatureSensor::lm75 == nullptr)
+	{
+		temp = 0.0f;
+		return NL::TemperatureSensor::Error::ERROR_DS18B20_UNAVAILABLE;
+	}
+
+	temp = NL::TemperatureSensor::lm75->getTemperature();
+#endif
 
 	return NL::TemperatureSensor::Error::OK;
 }
