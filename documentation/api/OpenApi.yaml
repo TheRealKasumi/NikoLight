@@ -460,7 +460,7 @@ paths:
          description: >-
             Upload a NikoLight update package and update the controller with a new
             firmware.
-         operationId: uploadNUP
+         operationId: uploadTUP
          requestBody:
             content:
                multipart/form-data:

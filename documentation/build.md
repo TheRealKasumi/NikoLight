@@ -1,140 +1,25 @@
 # Build Guide
 
-Before starting with this guide, make sure to read the [planning](planning.md) document and [part list](part-list.md) first.
+Before starting with this guide, make sure to read the [General Knowledge Collection](./knowledge.md) and [Part List](part-list.md) first.
 They contain important information and some considerations before beginning the project.
-If you start to build the project blindly, you might run into issues later.
+If you start to build the project blindly, you might run into a lot of issues and questions later.
 
-## General Knowledge about the Hardware
 
-Let's start with some general knowledge about the hardware.
-I know this might be boring, but I also have to cover people who want to know more about it.
 
-At first the NikoLight controller is based on an ESP32 microcontroller board, which is placed on a custom PCB.
-The ESP32 contains two Tensilica-LX6 cores, running at 80MHz or 240MHz.
-They come with 512kB of SRAM and 4MB of flash memory.
-Also, they have onboard WiFi (802.11bgn) as well as Bluetooth (classic and LE).
-Hardware support for SPI, I2C, CAN, UART, etc. could be used in the future.
-Generally the board operates at the 3.3V level.
-It has a voltage regulator which will provide the 3.3V from the 5V, provided by the NikoLight PCB.
-If you plan to do your own customisations please keep in mind that all IO pins can only handle 3.3V and a very limited current in the range of a few milliamps.
 
-The NikoLight PCB contains a few active and passive components.
-First of all, there is voltage regulator, providing stable 5V to the LEDs and the ESP32 board.
-To be more precise, there now are two channels that can provide a max of 3A per channel or 6A in total.
-There is no force to build both channels.
-The board also works with a single regulator but then the output power is more limited of course.
-For a single regulator build the Jumper 'J1' should be closed.
 
-By default the channels of the regulators are not connected but of course they share a common ground.
-The reason for not connecting them is that this can lead to trouble due to manufacuting tolerances.
-If one of the two regulators provides a slightly higher voltage than the other regulator, most of the load will be driven by the regulator with the higher voltage.
-This could lead to one regulator overheating and also to unwanted osccilations.
-In case you feel confident connecting the outputs together, this is possible via the jumper `J1`.
-Otherwise each regulator will drive 4 output channels.
-The first regulator will drive the channels 2, 4, 6, 8 and the second regulator will drive the channels 1, 3, 5, 7.
 
-The dual regulator build is always recommended to be more flexible and have more headroom.
-When properly configured, the software will now also keep an eye on your power consumption.
-The power draw is calculated and limited for each regulator by limiting the LED brightness.
-Also two temperature sensors can be added to the regulators. For Temperature Sensor Install Position see following picture:
 
-<a href="media/build/install_temperature_sensor.jpg"><img src="media/build/install_temperature_sensor.jpg" alt="Temperature Sensor Install Position" style="width:150px"></a>
 
-The software will then also check for the temperature, control a cooling fan and reduce the power output if necessary.
-For even more protection there is a fuse and a poly fuse in place.
 
-The regulators can handle an input voltage of up to 45V according to the [specs](https://www.ti.com/lit/ds/symlink/lm2596.pdf?ts=1663311548260&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FLM2596), which makes the board also very usable for 24V applications.
-But keep in mind that the input capacitors might need to be changed and that these 45V are an absolute maximum rating.
 
-Next the PCB holds a MPU6050 motion sensor.
-It is used for interactive animations using acceleration and rotation data.
-The sensor is suitable for up to 16g's but NikoLight is using a limit of 2g's currently.
-If anyone can prove to me that 2g's are not enough in a Tesla, then I will congratulate you and we can talk about setting it to 4g in the software😋.
-Hidden challenge?
-I... I would never challenge you to do stupid things...
 
-![Girl Shy](media/fun/girl-shy.gif)
 
-Umm... we better continue... So... where did we stop?
 
-Since we learned the hard way that it is not a good idea to drive WS2812-type LEDs with a 3.3V signal, there now is a 74HCT541D on the board.
-It can safely read the 3.3V data signals from the ESP32 board and convert it to a 5V level.
-This now allows us so safely drive all kind of WS2812-type LEDs, even over longer signal wires.
 
-There is also a voltage divider, with a following low-pass filter used to lower and smooth the voltage of the sensor pin
-It can then be used by the ESP32 and converted into a digital value using it's ADC (analog digital converter).
-This pin can be connected to your car's existing ambient light to give NikoLight a signal when to turn on and off or to adjust the brightness automatically.
-
-Lastly, there are some passive components like resistors and capacitors to protect the data lines, pull the I2C data lines to 3.3V and to smooth some things out...
-I guess we are getting too basic here...
-
-Like mentioned the used LED type is WS2812 or compatible.
-These LEDs have integrated controllers, capable of receiving a digital 24 bit colour value.
-When connected in series they function as a shift register.
-NikoLight is able to drive a variable number of LEDs in series (up to a few hundred).
-The LEDs operate at 5V and **only 5V**.
-Never connect them directly to the 12V of your car.
-If you are using other LEDs that are 12V compatible and share the same data protocoll, make sure to never feed 12V into the NikoLight board via the power output or data pins.
-
-The following picture shows the pinout of the NikoLight board.
-
-![NikoLight Pinout](media/build/nikolight-pinout.png)
-
-As you can see there are 8 connectors for the LED outputs.
-These provide power to your LEDs and a data signal suitable for driving the WS2812 type.
-The connectors are ordered like this:
-
-| 1 | 2 |<br>
-| 3 | 4 |<br>
-| 5 | 6 |<br>
-| 7 | 8 |
-
-By default these outputs are mapped to the following zones.
-This mapping can be changed via the (build time) configuration.
-However the mapping was not chosen randomly and should only be changed if you know what you are doing.
-Since there now are 2 voltage regulators, the power draw should be split as even as possible between the regulators.
-The mapping was chosen based on this criteria.
-
-| Channel   | Mapped to        |
-| --------- | ---------------- |
-| Channel 1 | Dash             |
-| Channel 2 | Center console   |
-| Channel 3 | Front left door  |
-| Channel 4 | Front right door |
-| Channel 5 | Rear left door   |
-| Channel 6 | Rear right door  |
-| Channel 7 | Footwell left    |
-| Channel 8 | Footwell right   |
-
-At the bottom of the PCB there are 3 connectors, a micro USB port and a micro SD card slot.
-
-The 4 pin XH connector is for powering the board.
-The input voltage can be up to 45V with suitable capacitors (absolute maximum rating).
-Keep in mind that according to the picture diagram above, the right pin is connected to ground.
-Never connect the ground pin to the positive wire of your footwell lights.
-If you are sure that there is a good ground connection, which is usually the case, there is no need to use it.
-One last thing to keep in mind is that only positive voltages can be measured, so avoid doing something crazy with this simple input.
-
-The center 2 pin XH connector can be used as a sensor to measure the voltage of your car's ambient light and supply NikoLight an on/off or brightness signal.
-The pin can be used with analog voltages and also PWM signals due to the low-pass filter.
-It is recommended to not measure voltages above 19V with this controller.
-There is an overvoltage protection in place and exceeding this limit for a short period should be possible but not recommended.
-Instead the resistor `R9` and `R10` of the voltage devider can be adjusted accordingly.
-Use an "electricity thief" to get the signal of the factory build footwell lights without harm. It could look like this if you add the correct plugs to get the signal without any harm. See [part list](part-list.md).
-
-<a href="media/build/get_signal_of_footwell_lights_without_harm.jpg"><img src="media/build/get_signal_of_footwell_lights_without_harm.jpg" alt="get signal of footwell lights without harm" style="width:150px"></a>
-<a href="media/build/get_signal_of_footwell_lights_without_harm_2.jpg"><img src="media/build/get_signal_of_footwell_lights_without_harm_2.jpg" alt="get signal of footwell lights without harm 2" style="width:150px"></a>
-
-Another 2 pin XH connector is for powering an optinal, 5V cooling fan.
-
-There is a micro USB port on the ESP32 board which will later be used to upload the software.
-This should be a one time proceedure due to the OTA (wireless) updates.
-The micro SDCard is required by NikoLight.
-It's used to save configuration data, UI files and custom animations of the user.
 
 ## Clone or Download the Project Files
 
-Alright, now the point has come where we can start.
 At first you should clone or download the project files.
 Go to the [project's main page](https://github.com/TheRealKasumi/NikoLight) and click the `Code` button.
 You can then decide if you want to clone the repository using [Git](https://git-scm.com/) or [download](https://github.com/TheRealKasumi/NikoLight/archive/refs/heads/main.zip) it as zip file.
@@ -517,7 +402,7 @@ Nikolight Firmware version 1.0.0
 00:00:00:072 [INFO] (src/main.cpp) (setup) (342): Switching to SD card logger.
 00:00:00:593 [INFO] (src/main.cpp) (setup) (346): Switched to SD card logger.
 00:00:00:645 [INFO] (src/main.cpp) (setup) (354): Check if system update is available.
-[   674][E][vfs_api.cpp:104] open(): /sd/update/update.nup does not exist, no permits for creation
+[   674][E][vfs_api.cpp:104] open(): /sd/update/update.tup does not exist, no permits for creation
 00:00:00:675 [INFO] (src/main.cpp) (setup) (362): No available system update found.
 00:00:00:832 [INFO] (src/main.cpp) (setup) (365): Initialize, load and save configuration.
 [  1045][E][vfs_api.cpp:104] open(): /sd/config.tli does not exist, no permits for creation
