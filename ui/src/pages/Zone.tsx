@@ -117,8 +117,19 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
     mode: 'onChange',
   });
 
-  const onSubmit = handleSubmit(
-    async ({
+  const onSubmit = handleSubmit(async (formData, event) => {
+    // Get name of button
+    const btnName = event?.nativeEvent.submitter.name;
+
+    if (btnName === "MultiSubmit") {
+      await handleNormalSubmit(formData,true);
+    }
+    else {
+      await handleNormalSubmit(formData,false);
+    }
+  });
+  
+  const handleNormalSubmit = async ({
       animationMode,
       animationSettings,
       channelCurrents,
@@ -128,7 +139,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
       dataSource,
       type,
       ...rest
-    }) => {
+    }, submit2all) => {
       const led = JSON.parse(JSON.stringify(data)) as NonNullable<typeof data>;
 
       // Set animation settings
@@ -170,12 +181,65 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
         type: Number(type),
       };
 
-      await mutateAsync(led);
+      if (submit2all)
+      {
+        // Do not copy ledCount, ledVoltage, Offset and Reverse status to other Channels
+        delete rest.ledCount;
+        delete rest.ledVoltage;
+        delete rest.offset;
+        delete rest.reverse;
 
+        // Loop over all zoneId
+        for (let curZoneId = 0; curZoneId < 8; curZoneId++)
+        {
+          console.log("Aktuelle Channel :  " + curZoneId);
+          // Set animation settings
+          led[curZoneId].animationSettings = animationSettings.map(
+            (animationSetting, index) => {
+              const rgbColor1 = hexRgb(color1);
+              const rgbColor2 = hexRgb(color2);
+
+              switch (index) {
+                case 0:
+                  return Number(animationMode);
+                case 1:
+                  return rgbColor1.red;
+                case 2:
+                  return rgbColor1.green;
+                case 3:
+                  return rgbColor1.blue;
+                case 4:
+                  return rgbColor2.red;
+                case 5:
+                  return rgbColor2.green;
+                case 6:
+                  return rgbColor2.blue;
+                case 18:
+                  return frequencyBands
+                    .map((item) => 128 / Math.pow(2, Number(item) - 1))
+                    .reduce((prev, curr) => prev + curr, 0);
+                default:
+                  return Number(animationSetting);
+              }
+            },
+          );
+
+          led[curZoneId] = {
+            ...led[curZoneId],
+            ...rest,
+            channelCurrents: [...Array(3)].fill(channelCurrents),
+            dataSource: Number(dataSource),
+            type: Number(type),
+          };        
+
+        }
+      }
+      
+      await mutateAsync(led);
+    
       // Reset dirty fields
       reset({}, { keepValues: true });
-    },
-  );
+  };
 
   const onReset = async () => {
     reset(DEFAULT_VALUES);
@@ -822,8 +886,12 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
           )}
         </fieldset>
 
-        <Button type="submit" className="mb-4" disabled={isSubmitting}>
+        <Button type="submit" name={'SingleSubmit'} className="mb-4" disabled={isSubmitting}>
           {t('zone.submit')}
+        </Button>
+
+        <Button type="submit" name={'MultiSubmit'} className="mb-4" disabled={isSubmitting}>
+          {t('zone.submit2all')}
         </Button>
 
         <Button type="reset" onClick={onReset} disabled={isSubmitting}>
