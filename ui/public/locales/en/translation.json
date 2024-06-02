@@ -203,6 +203,7 @@
     "speed": "Speed",
     "speedVariance": "Speed Variance",
     "submit": "Apply Settings",
+    "submit2all": "Apply to all Channels",
     "submitSuccessful": "Successfully saved!",
     "variance": "Variance"
   },
