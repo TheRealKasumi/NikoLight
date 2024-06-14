@@ -40,12 +40,13 @@ type FormData = {
   frequencyBands: string[];
   dataSource: string;
   fadeSpeed: number;
-  ledCount: number;
-  ledVoltage: number;
+  ledCount?: number;
+  ledVoltage?: number;
   offset: number;
-  reverse: boolean;
+  reverse?: boolean;
   speed: number;
   type: string;
+  submit2all: boolean;
 };
 
 const DEFAULT_VALUES: FormData = {
