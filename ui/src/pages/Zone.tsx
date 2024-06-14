@@ -1,4 +1,4 @@
-import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
+import { ArrowsRightLeftIcon, ArrowsPointingOutIcon } from '@heroicons/react/24/outline';
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { useMatch } from '@tanstack/react-router';
 import hexRgb from 'hex-rgb';
@@ -64,6 +64,7 @@ const DEFAULT_VALUES: FormData = {
   reverse: false,
   speed: 50,
   type: '0',
+  submit2all: false,
 };
 
 type FormProps = { zoneId: number };
@@ -117,19 +118,8 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
     mode: 'onChange',
   });
 
-  const onSubmit = handleSubmit(async (formData, event) => {
-    // Get name of button
-    const btnName = event?.nativeEvent.submitter.name;
-
-    if (btnName === "MultiSubmit") {
-      await handleNormalSubmit(formData,true);
-    }
-    else {
-      await handleNormalSubmit(formData,false);
-    }
-  });
-  
-  const handleNormalSubmit = async ({
+  const onSubmit = handleSubmit(
+    async ({
       animationMode,
       animationSettings,
       channelCurrents,
@@ -139,7 +129,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
       dataSource,
       type,
       ...rest
-    }, submit2all) => {
+    }) => {
       const led = JSON.parse(JSON.stringify(data)) as NonNullable<typeof data>;
 
       // Set animation settings
@@ -181,17 +171,17 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
         type: Number(type),
       };
 
-      if (submit2all)
-      {
-        // Do not copy ledCount, ledVoltage, Offset and Reverse status to other Channels
-        delete rest.ledCount;
-        delete rest.ledVoltage;
-        delete rest.offset;
+      // If flag is set to propagate current settings to all channels
+      if (rest.submit2all) {
+        // Do not copy ledCount, ledVoltage and Reverse status to other Channels
+        // remove values which should not be copied
         delete rest.reverse;
-
+        delete rest.ledVoltage;
+	delete rest.ledCount;
+        
         // Loop over all zoneId
-        for (let curZoneId = 0; curZoneId < 8; curZoneId++)
-        {
+        for (let curZoneId = 0; curZoneId < 8; curZoneId++) {
+          
           console.log("Aktuelle Channel :  " + curZoneId);
           // Set animation settings
           led[curZoneId].animationSettings = animationSettings.map(
@@ -239,7 +229,8 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
     
       // Reset dirty fields
       reset({}, { keepValues: true });
-  };
+    } 
+  );
 
   const onReset = async () => {
     reset(DEFAULT_VALUES);
@@ -884,14 +875,27 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
               </div>
             </label>
           )}
+          
+          <label className="mb-6 flex flex-row">
+            <div className="mr-4 self-center">
+              <ArrowsPointingOutIcon className="h-4 w-4 text-zinc" />
+            </div>
+            <div className="flex flex-col">
+              <span>{t('zone.submit2all.label')}</span>
+              <span className="text-sm text-zinc">
+                {t('zone.submit2all.desc')}
+              </span>
+            </div>
+            <div className="flex-grow self-center text-right">
+              <Switch<FormData> control={control} name="submit2all" />
+            </div>
+          </label>
         </fieldset>
 
-        <Button type="submit" name={'SingleSubmit'} className="mb-4" disabled={isSubmitting}>
-          {t('zone.submit')}
-        </Button>
+        
 
-        <Button type="submit" name={'MultiSubmit'} className="mb-4" disabled={isSubmitting}>
-          {t('zone.submit2all')}
+        <Button type="submit" className="mb-4" disabled={isSubmitting}>
+          {t('zone.submit')}
         </Button>
 
         <Button type="reset" onClick={onReset} disabled={isSubmitting}>
