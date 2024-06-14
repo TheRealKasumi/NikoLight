@@ -1,4 +1,5 @@
-import {  ArrowsRightLeftIcon, ArrowsPointingOutIcon } from '@heroicons/react/24/outline';
+import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
+import { ArrowsPointingOutIcon } from '@heroicons/react/24/outline';
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { useMatch } from '@tanstack/react-router';
 import hexRgb from 'hex-rgb';
@@ -182,7 +183,6 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
 
         // Loop over all zoneId
         for (let curZoneId = 0; curZoneId < 8; curZoneId++) {
-
           // Set animation settings
           led[curZoneId].animationSettings = animationSettings.map(
             (animationSetting, index) => {
@@ -221,7 +221,6 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             dataSource: Number(dataSource),
             type: Number(type),
           };
-
         }
       }
 
