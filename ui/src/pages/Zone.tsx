@@ -1,4 +1,4 @@
-import { ArrowsRightLeftIcon, ArrowsPointingOutIcon } from '@heroicons/react/24/outline';
+import {  ArrowsRightLeftIcon, ArrowsPointingOutIcon } from '@heroicons/react/24/outline';
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { useMatch } from '@tanstack/react-router';
 import hexRgb from 'hex-rgb';
@@ -178,12 +178,11 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
         // remove values which should not be copied
         delete rest.reverse;
         delete rest.ledVoltage;
-	delete rest.ledCount;
-        
+        delete rest.ledCount;
+
         // Loop over all zoneId
         for (let curZoneId = 0; curZoneId < 8; curZoneId++) {
-          
-          console.log("Aktuelle Channel :  " + curZoneId);
+
           // Set animation settings
           led[curZoneId].animationSettings = animationSettings.map(
             (animationSetting, index) => {
@@ -221,16 +220,16 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             channelCurrents: [...Array(3)].fill(channelCurrents),
             dataSource: Number(dataSource),
             type: Number(type),
-          };        
+          };
 
         }
       }
-      
+
       await mutateAsync(led);
-    
+
       // Reset dirty fields
       reset({}, { keepValues: true });
-    } 
+    },
   );
 
   const onReset = async () => {
@@ -876,7 +875,7 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
               </div>
             </label>
           )}
-          
+
           <label className="mb-6 flex flex-row">
             <div className="mr-4 self-center">
               <ArrowsPointingOutIcon className="h-4 w-4 text-zinc" />
@@ -892,8 +891,6 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
             </div>
           </label>
         </fieldset>
-
-        
 
         <Button type="submit" className="mb-4" disabled={isSubmitting}>
           {t('zone.submit')}
