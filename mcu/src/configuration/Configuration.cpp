@@ -402,7 +402,7 @@ void NL::Configuration::loadDefaults()
 
 	// WiFi config
 	NL::Configuration::wifiConfig.accessPointSsid = F(AP_DEFAULT_SSID);
-	NL::Configuration::wifiConfig.accessPointPassword = F(AP_DEDAULT_PASSWORD);
+	NL::Configuration::wifiConfig.accessPointPassword = F(AP_DEFAULT_PASSWORD);
 	NL::Configuration::wifiConfig.accessPointChannel = AP_DEFAULT_CHANNEL;
 	NL::Configuration::wifiConfig.accessPointHidden = AP_DEFAULT_HIDDEN;
 	NL::Configuration::wifiConfig.accessPointMaxConnections = AP_DEFAULT_MAX_CONN;

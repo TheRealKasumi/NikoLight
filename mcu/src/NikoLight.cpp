@@ -662,7 +662,7 @@ void NikoLight::createtWiFiNetwork()
 			NL::Logger::log(NL::Logger::LogLevel::ERROR, SOURCE_LOCATION, F("Failed to start WiFi access point. Loading default settings and retry."));
 			NL::Configuration::WiFiConfig wifiConfig = NL::Configuration::getWiFiConfig();
 			wifiConfig.accessPointSsid = F(AP_DEFAULT_SSID);
-			wifiConfig.accessPointPassword = F(AP_DEDAULT_PASSWORD);
+			wifiConfig.accessPointPassword = F(AP_DEFAULT_PASSWORD);
 			wifiConfig.accessPointChannel = AP_DEFAULT_CHANNEL;
 			wifiConfig.accessPointHidden = AP_DEFAULT_HIDDEN;
 			wifiConfig.accessPointMaxConnections = AP_DEFAULT_MAX_CONN;

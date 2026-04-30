@@ -206,13 +206,13 @@
 #define FAN_DEFAULT_PWM_MAX 255	// Maximum PWm value for the fan
 
 // WiFi configuration
-#define AP_DEFAULT_SSID "NikoLight"		 // Default SSID of the access point
-#define AP_DEDAULT_PASSWORD "NikoLightPW" // Default password of the access point
-#define AP_DEFAULT_CHANNEL 1			 // Default channel of the access point
-#define AP_DEFAULT_HIDDEN false			 // Hide or show the SSID by default
-#define AP_DEFAULT_MAX_CONN 1			 // Default maximum number of connections to the access point
-#define WIFI_DEFAULT_SSID ""			 // Default SSID of a WiFi network
-#define WIFI_DEFAULT_PASSWORD ""		 // Default password of a WiFi network
+#define AP_DEFAULT_SSID "NikoLight"			// Default SSID of the access point
+#define AP_DEFAULT_PASSWORD "NikoLightPW"	// Default password of the access point
+#define AP_DEFAULT_CHANNEL 1				// Default channel of the access point
+#define AP_DEFAULT_HIDDEN false				// Hide or show the SSID by default
+#define AP_DEFAULT_MAX_CONN 1				// Default maximum number of connections to the access point
+#define WIFI_DEFAULT_SSID ""				// Default SSID of a WiFi network
+#define WIFI_DEFAULT_PASSWORD ""			// Default password of a WiFi network
 
 // Webserver configuration
 #define WEB_SERVER_PORT 80					   // Port of the web server
