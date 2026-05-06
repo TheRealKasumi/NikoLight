@@ -203,6 +203,10 @@
     "speed": "Geschwindigkeit",
     "speedVariance": "Geschwindigkeitsabweichung",
     "submit": "Einstellungen übernehmen",
+    "submit2all":{
+      "desc":"Übernimmt die aktuellen Einstellungen für alle Kanäle",
+      "label": "Für alle Channels übernehmen"
+    },
     "submitSuccessful": "Erfolgreich gespeichert!",
     "variance": "Abweichung"
   },

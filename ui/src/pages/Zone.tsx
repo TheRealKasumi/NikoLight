@@ -1,4 +1,5 @@
 import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
+import { ArrowsPointingOutIcon } from '@heroicons/react/24/outline';
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { useMatch } from '@tanstack/react-router';
 import hexRgb from 'hex-rgb';
@@ -40,12 +41,13 @@ type FormData = {
   frequencyBands: string[];
   dataSource: string;
   fadeSpeed: number;
-  ledCount: number;
-  ledVoltage: number;
+  ledCount?: number;
+  ledVoltage?: number;
   offset: number;
-  reverse: boolean;
+  reverse?: boolean;
   speed: number;
   type: string;
+  submit2all: boolean;
 };
 
 const DEFAULT_VALUES: FormData = {
@@ -64,6 +66,7 @@ const DEFAULT_VALUES: FormData = {
   reverse: false,
   speed: 50,
   type: '0',
+  submit2all: false,
 };
 
 type FormProps = { zoneId: number };
@@ -169,6 +172,57 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
         dataSource: Number(dataSource),
         type: Number(type),
       };
+
+      // If flag is set to propagate current settings to all channels
+      if (rest.submit2all) {
+        // Do not copy ledCount, ledVoltage and Reverse status to other Channels
+        // remove values which should not be copied
+        delete rest.reverse;
+        delete rest.ledVoltage;
+        delete rest.ledCount;
+
+        // Loop over all zoneId
+        for (let curZoneId = 0; curZoneId < 8; curZoneId++) {
+          // Set animation settings
+          led[curZoneId].animationSettings = animationSettings.map(
+            (animationSetting, index) => {
+              const rgbColor1 = hexRgb(color1);
+              const rgbColor2 = hexRgb(color2);
+
+              switch (index) {
+                case 0:
+                  return Number(animationMode);
+                case 1:
+                  return rgbColor1.red;
+                case 2:
+                  return rgbColor1.green;
+                case 3:
+                  return rgbColor1.blue;
+                case 4:
+                  return rgbColor2.red;
+                case 5:
+                  return rgbColor2.green;
+                case 6:
+                  return rgbColor2.blue;
+                case 18:
+                  return frequencyBands
+                    .map((item) => 128 / Math.pow(2, Number(item) - 1))
+                    .reduce((prev, curr) => prev + curr, 0);
+                default:
+                  return Number(animationSetting);
+              }
+            },
+          );
+
+          led[curZoneId] = {
+            ...led[curZoneId],
+            ...rest,
+            channelCurrents: [...Array(3)].fill(channelCurrents),
+            dataSource: Number(dataSource),
+            type: Number(type),
+          };
+        }
+      }
 
       await mutateAsync(led);
 
@@ -820,6 +874,21 @@ const Form = ({ zoneId }: FormProps): JSX.Element => {
               </div>
             </label>
           )}
+
+          <label className="mb-6 flex flex-row">
+            <div className="mr-4 self-center">
+              <ArrowsPointingOutIcon className="h-4 w-4 text-zinc" />
+            </div>
+            <div className="flex flex-col">
+              <span>{t('zone.submit2all.label')}</span>
+              <span className="text-sm text-zinc">
+                {t('zone.submit2all.desc')}
+              </span>
+            </div>
+            <div className="flex-grow self-center text-right">
+              <Switch<FormData> control={control} name="submit2all" />
+            </div>
+          </label>
         </fieldset>
 
         <Button type="submit" className="mb-4" disabled={isSubmitting}>
