@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Update Tool Build
         uses: ./.github/actions/update-tool-build
@@ -29,7 +29,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Get correct short commit SHA stored into env.short_sha
         uses: ./.github/actions/get-correct-short-commit-sha
