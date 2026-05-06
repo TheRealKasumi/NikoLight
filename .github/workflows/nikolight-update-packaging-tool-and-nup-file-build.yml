@@ -70,7 +70,7 @@ jobs:
           ./update-package-tool/build/nupt_for_${{ runner.os }}.exe ./update-package-tool/build/nup/build/update_${{ env.short_sha }}.nup ./update-package-tool/build/nup/src
 
       - name: publish NikoLight Update Package File
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: NikoLight_Update_Package_${{ env.short_sha }}
           path: ./update-package-tool/build/nup/build/update_${{ env.short_sha }}.nup
